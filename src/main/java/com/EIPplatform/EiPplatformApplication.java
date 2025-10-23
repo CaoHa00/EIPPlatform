@@ -1,4 +1,4 @@
-package java.com.EIPplatform;
+package com.EIPplatform;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
