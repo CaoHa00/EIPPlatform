@@ -1,16 +1,10 @@
-package com.EIPplatform.model.entity.user.authentication;
+package com.EIPplatform.model.entity.user.userInformation;
 
 import java.time.LocalDateTime;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.UUID;
-
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import com.EIPplatform.configuration.AuditMetaData;
-import com.EIPplatform.model.entity.user.userInformation.UserDetail;
 import com.fasterxml.jackson.annotation.JsonBackReference;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
@@ -19,11 +13,8 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.JoinTable;
-import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
-import jakarta.validation.constraints.Email;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -32,43 +23,45 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.FieldDefaults;
 
+@Builder
 @Entity
+@Table(name = "user_history_consumption") // Table name in the database
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "[user_account]")
-@Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @EntityListeners(AuditingEntityListener.class)
-public class UserAccount {
+public class UserHistoryConsumption {
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(columnDefinition = "uniqueidentifier")
-    UUID userAccountId;
-
-    @Email
-    @Column(nullable = false, unique = true)
-    String email;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "user_history_consumption_id", updatable = false, nullable = false)
+    Long userHistoryConsumptionId;
 
     @Column(nullable = false)
-    String password;
+    String productVolume;
 
-    @Builder.Default
     @Column(nullable = false)
-    boolean enable = true;
+    String productUnit;
 
-    @Column(nullable = false, columnDefinition = "NVARCHAR(10)")
-    String phoneNumber;
+    @Column(nullable = false)
+    String fuelConsumption;;
 
-    @ManyToMany
-    @JoinTable(name = "user_role", joinColumns = @JoinColumn(name = "user_account_id"), inverseJoinColumns = @JoinColumn(name = "role_id"))
-    @Builder.Default
-    Set<Role> roles = new HashSet<>();
+    @Column(nullable = false)
+    String fuelUnit; // (Litres / Kilograms / Tons)
+
+    @Column(nullable = false)
+    String electricityConsumption; // kWh
+
+    @Column(nullable = false)
+    String waterConsumption; // m3
+
+    @Column(nullable = false)
+    String yearUpdated;
 
     @ManyToOne
-    @JoinColumn(name = "user_detail_id")
-    @JsonBackReference(value = "userDetailsAccount-ref")
+    @JoinColumn(name = "user_detail_id", nullable = false)
+    @JsonBackReference(value = "userDetailsHistoryConsumption-ref")
     UserDetail userDetail;
 
     @Embedded

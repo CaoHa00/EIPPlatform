@@ -1,5 +1,4 @@
 package com.EIPplatform.model.dto.authentication;
-
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -16,7 +15,7 @@ public class AuthenticationResponse {
 
     boolean authenticated;
 
-    UserResponse user;
+    UserAccountAuthenticationResponse user;
 
     Tokens tokens;
 }

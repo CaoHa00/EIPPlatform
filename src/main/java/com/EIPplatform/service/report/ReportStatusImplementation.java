@@ -16,7 +16,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @Transactional
 public class ReportStatusImplementation implements ReportStatusInterface {
-     private final ReportStatusRepository repository;
+    private final ReportStatusRepository repository;
     private final ReportStatusMapper mapper;
     
     @Override

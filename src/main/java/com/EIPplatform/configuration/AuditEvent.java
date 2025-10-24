@@ -1,17 +1,20 @@
-package com.EIPplatform.model.dto.authentication;
+package com.EIPplatform.configuration;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
 
+import java.time.LocalDateTime;
+import java.util.UUID;
 @Data
-@NoArgsConstructor
-@AllArgsConstructor
 @Builder
+@AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class IsValidTokenRequest {
-        String token;
+public class AuditEvent {
+    
+    UUID userId;
+    String action;
+    LocalDateTime date;
 }
