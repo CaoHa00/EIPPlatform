@@ -1,15 +1,12 @@
 package com.EIPplatform.mapper.report;
 
 import org.mapstruct.Mapper;
-import org.mapstruct.factory.Mappers;
 
 import com.EIPplatform.model.dto.report.ReportStatusDto;
 import com.EIPplatform.model.entity.report.ReportStatus;
 
 @Mapper(componentModel = "spring")
 public interface ReportStatusMapper {
-    
-    ReportStatusMapper INSTANCE = Mappers.getMapper(ReportStatusMapper.class);
     
     // Entity to DTO
     ReportStatusDto toDTO(ReportStatus entity);
