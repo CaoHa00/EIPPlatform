@@ -1,19 +1,19 @@
 package com.EIPplatform.model.entity.user.userInformation;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
+import com.EIPplatform.model.entity.permitsHistory.EnvPermits;
+import com.EIPplatform.model.entity.permitsHistory.HistoryConsumption;
+import com.EIPplatform.model.entity.report.Report;
+import com.EIPplatform.model.entity.user.authentication.UserAccount;
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import jakarta.persistence.*;
+import org.hibernate.annotations.UuidGenerator;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import com.EIPplatform.configuration.AuditMetaData;
-
-import jakarta.persistence.Column;
-import jakarta.persistence.Embedded;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EntityListeners;
-import jakarta.persistence.Table;
 
 import lombok.Builder;
 import lombok.AccessLevel;
@@ -24,55 +24,71 @@ import lombok.Setter;
 import lombok.experimental.FieldDefaults;
 
 
+@Builder
 @Entity
+@Table(name = "user_detail", indexes = {
+        @Index(name = "idx_tax_code", columnList = "tax_code", unique = true),
+        @Index(name = "idx_user_account_id", columnList = "user_account_id")
+})
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "[user_detail_id]")
-@Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-@EntityListeners(AuditingEntityListener.class)
 public class UserDetail {
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(columnDefinition = "uniqueidentifier")
+    @GeneratedValue
+    @UuidGenerator
+    @Column(name = "user_detail_id", updatable = false, nullable = false)
     UUID userDetailId;
 
-    @Column(nullable = false, unique = true)
-    String phoneNumber;
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_account_id", unique = true)
+    @JsonBackReference(value = "useraccount-detail")
+    UserAccount userAccount;
 
-    @Column(nullable = false)
-    String location;
-    
-    @Column(nullable = false)
-    String industrySector;
-
+    @Column(name = "company_name", nullable = false)
     String companyName;
 
-    @Column(nullable = false, unique = true)
-    String taxCode; // Mã số thuế cá nhân/doanh nghiệp
+    @Column(name = "legal_representative", nullable = false)
+    String legalRepresentative;
 
-    //... add more fields as necessary
+    @Column(name = "phone_number", nullable = false)
+    String phoneNumber;
 
-    @Embedded
-    @Builder.Default
-    AuditMetaData auditMetaData = new AuditMetaData();
+    @Column(name = "address", nullable = false)
+    String address;
 
-    public LocalDateTime getCreatedAt() {
-        return auditMetaData.getCreatedAt();
-    }
+    @Column(name = "industry_sector")
+    String industrySector;
 
-    public String getCreatedBy() {
-        return auditMetaData.getCreatedBy();
-    }
+    @Column(name = "scale_capacity", columnDefinition = "NVARCHAR(MAX)")
+    String scaleCapacity;
 
-    public LocalDateTime getUpdatedAt() {
-        return auditMetaData.getUpdatedAt();
-    }
+    @Column(name = "business_license_no", nullable = false)
+    String businessLicenseNo;
 
-    public String getUpdatedBy() {
-        return auditMetaData.getUpdatedBy();
-    }
+    @Column(name = "tax_code", nullable = false, unique = true)
+    String taxCode;
 
+    @Column(name = "iso_14001_cert")
+    String iso14001Cert;
+
+    @Column(name = "created_at", nullable = false, updatable = false, columnDefinition = "DATETIME2 DEFAULT GETDATE()")
+    LocalDateTime createdAt;
+
+    @Column(name = "updated_at", columnDefinition = "DATETIME2 DEFAULT GETDATE()")
+    LocalDateTime updatedAt;
+
+    @OneToMany(mappedBy = "userDetail", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonManagedReference(value = "userdetail-permits")
+    List<EnvPermits> envPermits;
+
+    @OneToMany(mappedBy = "userDetail", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonManagedReference(value = "userdetail-history")
+    List<HistoryConsumption> historyConsumptions;
+
+    @OneToMany(mappedBy = "userDetail", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonManagedReference(value = "userdetail-reports")
+    List<Report> reports;
 }
