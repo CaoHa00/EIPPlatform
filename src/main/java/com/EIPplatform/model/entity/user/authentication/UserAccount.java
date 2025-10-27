@@ -54,6 +54,9 @@ public class UserAccount {
     @Column(nullable = false)
     String password;
 
+    @Column(nullable = false)
+    String fullName;
+
     @Builder.Default
     @Column(nullable = false)
     boolean enable = true;

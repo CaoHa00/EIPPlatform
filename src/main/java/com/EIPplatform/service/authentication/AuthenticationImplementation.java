@@ -24,14 +24,17 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+
 @Service
 @Slf4j
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class AuthenticationImplementation implements AuthenticationServiceInterface {
+
     PasswordEncoder passwordEncoder;
     UserAccountRepository userRepository;
     ExceptionFactory exceptionFactory;
+
     // Long MAX_VERIFICATION_REQUEST = 3L;
     // InvalidatedTokenRepository invalidatedTokenRepository;
     // JWTServiceImplementation JWTService;
@@ -49,9 +52,9 @@ public class AuthenticationImplementation implements AuthenticationServiceInterf
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
-        // done
+    // done
     @TrackHistoryActions(action = "User with email {email} loginned", trackParams = {
-            "email" })
+        "email"})
     public AuthenticationResponse loginAuthenticate(LoginRequest request, HttpServletRequest httpRequest) {
 
         String email = request.getEmail();
@@ -62,18 +65,20 @@ public class AuthenticationImplementation implements AuthenticationServiceInterf
         if (!user.isEnable()) {
             throw exceptionFactory.createCustomException(AuthenticationError.USER_DELETED);
         }
-        boolean authenticated = passwordEncoder.matches(request.getPassword(), user.getPassword());
-
-        //Tokens tokens = JWTService.generateTokenPair(user, httpRequest);
-        if (!authenticated) {
-            throw new AppException(AuthenticationError.LOGIN_FAILED);
+        //boolean authenticated = passwordEncoder.matches(request.getPassword(), user.getPassword());
+        if (request.getPassword() == null || !request.getPassword().equals(user.getPassword())) {
+            throw exceptionFactory.createCustomException(AuthenticationError.LOGIN_FAILED);
         }
+        //Tokens tokens = JWTService.generateTokenPair(user, httpRequest);
+        // if (!authenticated) {
+        //     throw new AppException(AuthenticationError.LOGIN_FAILED);
+        // }
         return AuthenticationResponse.builder()
                 .authenticated(true)
                 .user(UserAccountAuthenticationResponse.builder()
                         .userAccountId(user.getUserAccountId())
                         .email(user.getEmail())
-                        // .fullName(user.getFullName())
+                        .fullName(user.getFullName())
                         .roles(user.getRoles().stream().map(each -> each.getRoleName().name()).toList())
                         .build())
                 // .tokens(tokens)
@@ -91,7 +96,6 @@ public class AuthenticationImplementation implements AuthenticationServiceInterf
     //             log.info("Access token already expired");
     //         }
     //     }
-
     //     if (refreshToken != null) {
     //         try {
     //             invalidatedTokenForLogout(refreshToken);
@@ -99,9 +103,7 @@ public class AuthenticationImplementation implements AuthenticationServiceInterf
     //             log.info("Refresh token already expired");
     //         }
     //     }
-
     // }
-
     @SuppressWarnings("unused")
     private String extractCookieValue(HttpServletRequest request, String cookieName) {
         if (request.getCookies() != null) {

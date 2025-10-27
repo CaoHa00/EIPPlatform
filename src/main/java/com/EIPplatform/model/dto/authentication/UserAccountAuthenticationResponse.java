@@ -22,6 +22,7 @@ public class UserAccountAuthenticationResponse {
     String password;
     boolean enable;
     String phoneNumber;
+    String fullName;
     List<String> roles;
     UserDetailDTO userDetail;
 }
