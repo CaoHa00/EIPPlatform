@@ -26,7 +26,7 @@ public class UserDetailDTO {
     @NotBlank(message = "FIELD_REQUIRED")
     String location;
 
-    @NotBlank(message = "FIELD_REQUIRED")    
+    @NotBlank(message = "FIELD_REQUIRED") 
     String industrySector;
 
     @NotBlank(message = "FIELD_REQUIRED")

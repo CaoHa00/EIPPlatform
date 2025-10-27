@@ -21,7 +21,8 @@ public class UserAccountDTO {
     UUID userAccountId;
     String email;
     String password;
-    boolean enable;
+    // boolean enable;
+    String fullName;
     String phoneNumber;
     
     @JsonIgnore

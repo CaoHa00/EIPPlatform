@@ -39,7 +39,6 @@ public class UserDetailImplementation implements UserDetailInterface {
         var entity = userDetailMapper.toEntity(dto);
         entity = userDetailRepository.save(entity);
         return userDetailMapper.toDTO(entity);
-        
     }
 
     @Override

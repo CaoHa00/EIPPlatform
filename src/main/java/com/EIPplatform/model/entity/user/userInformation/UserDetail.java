@@ -72,18 +72,6 @@ public class UserDetail {
     @Column(nullable = false, unique = true)
     String taxCode;
 
-    @Column(nullable = true)
-    String envPermitNumber;
-
-    @Column(nullable = true)
-    LocalDateTime envPermitIssueDate; // Ngày cấp phép môi trường
-
-    @Column(nullable = true)
-    String envPermitIssuer; // Cơ quan cấp phép môi trường
-
-    @Column(nullable = true)
-    String envPermitOthersNote;
-
     @OneToMany(mappedBy = "userDetail", fetch = FetchType.LAZY)
     @JsonManagedReference(value = "userDetailsHistoryConsumption-ref")
     @Builder.Default
