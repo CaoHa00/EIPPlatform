@@ -12,8 +12,6 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import org.hibernate.annotations.UuidGenerator;
-import org.springframework.data.jpa.domain.support.AuditingEntityListener;
-import com.EIPplatform.configuration.AuditMetaData;
 
 import lombok.Builder;
 import lombok.AccessLevel;

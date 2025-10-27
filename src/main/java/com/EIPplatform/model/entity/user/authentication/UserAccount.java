@@ -1,16 +1,13 @@
 package com.EIPplatform.model.entity.user.authentication;
 
 import java.time.LocalDateTime;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.UUID;
 
 import com.EIPplatform.model.entity.report.Report;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Email;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -21,8 +18,6 @@ import lombok.Setter;
 import lombok.experimental.FieldDefaults;
 
 import org.hibernate.annotations.UuidGenerator;
-import org.springframework.data.jpa.domain.support.AuditingEntityListener;
-import com.EIPplatform.configuration.AuditMetaData;
 import com.EIPplatform.model.entity.user.userInformation.UserDetail;
 
 @Builder

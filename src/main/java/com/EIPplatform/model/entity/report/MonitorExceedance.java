@@ -6,7 +6,7 @@ import lombok.experimental.FieldDefaults;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
+
 @Builder
 @Entity
 @Table(name = "monitor_exceedance", indexes = {

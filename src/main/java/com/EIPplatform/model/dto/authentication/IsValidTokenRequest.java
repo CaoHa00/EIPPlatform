@@ -1,7 +1,5 @@
 package com.EIPplatform.model.dto.authentication;
 
-import java.util.UUID;
-
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -15,6 +13,5 @@ import lombok.experimental.FieldDefaults;
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class IsValidTokenRequest {
-    boolean valid;
-    UUID userId;
+        String token;
 }
