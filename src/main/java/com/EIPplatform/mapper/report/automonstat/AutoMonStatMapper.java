@@ -9,10 +9,12 @@ import java.util.List;
 
 @Mapper(componentModel = "spring")
 public interface AutoMonStatMapper {
-    @Mapping(target = "reportId", source = "report.id")
+
+    @Mapping(target = "reportId", source = "report.reportId")
     AutoMonStatDTO toDTO(AutoMonStat entity);
 
-    @Mapping(target = "report.id", source = "reportId")
+    @Mapping(target = "statId", ignore = true)
+    @Mapping(target = "report", ignore = true)
     AutoMonStat toEntity(AutoMonStatDTO dto);
 
     List<AutoMonStatDTO> toDTOList(List<AutoMonStat> entities);

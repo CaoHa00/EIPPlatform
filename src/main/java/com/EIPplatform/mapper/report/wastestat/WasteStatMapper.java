@@ -15,16 +15,12 @@ public interface WasteStatMapper {
     @Mapping(target = "reportId", source = "report.reportId")
     WasteStatDTO toDTO(WasteStat entity);
 
-    @Mapping(target = "wasteType", source = "wasteType")
-    @Mapping(target = "volumeCy", source = "volumeCy")
-    @Mapping(target = "receiverOrg", source = "receiverOrg")
-    @Mapping(target = "volumePy", source = "volumePy")
+    @Mapping(target = "statId", ignore = true)
+    @Mapping(target = "report", ignore = true)
     WasteStat toEntity(WasteStatRequest request);
 
-    @Mapping(target = "wasteType", source = "wasteType")
-    @Mapping(target = "volumeCy", source = "volumeCy")
-    @Mapping(target = "receiverOrg", source = "receiverOrg")
-    @Mapping(target = "volumePy", source = "volumePy")
+    @Mapping(target = "statId", ignore = true)
+    @Mapping(target = "report", ignore = true)
     void updateEntityFromRequest(WasteStatRequest request, @MappingTarget WasteStat entity);
 
     List<WasteStatDTO> toDTOList(List<WasteStat> entities);

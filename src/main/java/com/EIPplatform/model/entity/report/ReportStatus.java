@@ -22,7 +22,7 @@ public class ReportStatus {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "status_id", updatable = false, nullable = false)
-    Integer statusId;
+    Long statusId;
 
     @Column(name = "status_name", nullable = false)
     String statusName;

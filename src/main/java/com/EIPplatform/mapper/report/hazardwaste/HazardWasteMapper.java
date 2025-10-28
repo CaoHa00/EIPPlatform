@@ -17,24 +17,17 @@ public interface HazardWasteMapper {
     @Mapping(target = "sectionType", source = "reportSection.sectionType")
     HazardWasteDTO toDTO(HazardWaste entity);
 
-    @Mapping(target = "wasteName", source = "wasteName")
-    @Mapping(target = "hwCode", source = "hwCode")
-    @Mapping(target = "volumeCy", source = "volumeCy")
-    @Mapping(target = "treatmentMethod", source = "treatmentMethod")
-    @Mapping(target = "receiverOrg", source = "receiverOrg")
-    @Mapping(target = "volumePy", source = "volumePy")
+    @Mapping(target = "hwStatId", ignore = true)
+    @Mapping(target = "reportSection", ignore = true)
+    @Mapping(target = "report", ignore = true)
     @Mapping(target = "sectionType", ignore = true)
     HazardWaste toEntity(HazardWasteRequest request);
 
-    @Mapping(target = "wasteName", source = "wasteName")
-    @Mapping(target = "hwCode", source = "hwCode")
-    @Mapping(target = "volumeCy", source = "volumeCy")
-    @Mapping(target = "treatmentMethod", source = "treatmentMethod")
-    @Mapping(target = "receiverOrg", source = "receiverOrg")
-    @Mapping(target = "volumePy", source = "volumePy")
+    @Mapping(target = "hwStatId", ignore = true)
+    @Mapping(target = "reportSection", ignore = true)
+    @Mapping(target = "report", ignore = true)
     @Mapping(target = "sectionType", ignore = true)
     void updateEntityFromRequest(HazardWasteRequest request, @MappingTarget HazardWaste entity);
 
     List<HazardWasteDTO> toDTOList(List<HazardWaste> entities);
-
 }

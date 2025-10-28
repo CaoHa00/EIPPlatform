@@ -59,13 +59,13 @@ public class BusinessDetail {
     @Column(nullable = false, unique = true)
     String taxCode;
 
-    @OneToMany(mappedBy = "bussinessDetail", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "businessDetail", fetch = FetchType.LAZY)
     @JsonManagedReference(value = "bussinessDetail-historyConsumption-ref")
     @Builder.Default
     List<UserHistoryConsumption> userHistoryConsumptions = new ArrayList<>();
 
-    @OneToMany(mappedBy = "bussinessDetail", fetch = FetchType.LAZY)
-    @JsonManagedReference(value = "bussinessDetail-account-ref")
+    @OneToMany(mappedBy = "businessDetail", fetch = FetchType.LAZY)
+    @JsonManagedReference(value = "businessDetail-account-ref")
     @Builder.Default
     List<UserAccount> userAccounts = new ArrayList<>();
 
@@ -73,11 +73,12 @@ public class BusinessDetail {
     @Builder.Default
     AuditMetaData auditMetaData = new AuditMetaData();
 
-    @OneToMany(mappedBy = "bussinessDetail", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JsonManagedReference(value = "bussinessDetail-reports")
+    @OneToMany(mappedBy = "businessDetail", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonManagedReference(value = "businessDetail-reports")
     List<Report> reports;
 
-    @OneToMany(mappedBy = "bussinessDetail", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "businessDetail", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference(value = "bussinessDetail-permits")
     List<EnvPermits> envPermits;
+
 }

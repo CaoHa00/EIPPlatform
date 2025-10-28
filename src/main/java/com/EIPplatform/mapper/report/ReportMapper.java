@@ -9,13 +9,15 @@ import com.EIPplatform.model.entity.report.ReportStatus;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.Named;
+
 import java.util.List;
 
 @Mapper(componentModel = "spring")
 public interface ReportMapper {
 
-    @Mapping(source = "businessDetail.businessDetailId", target = "businessDetailId")
-    @Mapping(source = "businessDetail.businessName", target = "businessName")
+    @Mapping(source = "businessDetail.bussinessDetailId", target = "businessDetailId")
+    @Mapping(source = "businessDetail.companyName", target = "businessName")
     @Mapping(source = "businessDetail.taxCode", target = "taxCode")
     @Mapping(source = "reportType", target = "reportType")
     @Mapping(source = "reportStatus", target = "reportStatus")
@@ -31,8 +33,8 @@ public interface ReportMapper {
     @Mapping(target = "files", ignore = true)
     ReportDTO toBasicDTO(Report report);
 
-    @Mapping(source = "businessDetail.businessDetailId", target = "businessDetailId")
-    @Mapping(source = "businessDetail.businessName", target = "businessName")
+    @Mapping(source = "businessDetail.bussinessDetailId", target = "businessDetailId")
+    @Mapping(source = "businessDetail.companyName", target = "businessName")
     @Mapping(source = "businessDetail.taxCode", target = "taxCode")
     @Mapping(source = "reportType", target = "reportType")
     @Mapping(source = "reportStatus", target = "reportStatus")
@@ -48,35 +50,53 @@ public interface ReportMapper {
     @Mapping(source = "reportFiles", target = "files")
     ReportDTO toFullDTO(Report report);
 
-    default ReportDTO toDTO(Report report) {
-        return toBasicDTO(report);
-    }
-
+    @Mapping(target = "reportId", ignore = true)
     @Mapping(target = "reportCode", source = "reportCode")
     @Mapping(target = "businessDetail", source = "businessDetail")
     @Mapping(target = "reportType", source = "reportType")
-    @Mapping(source = "request.reportYear", target = "reportYear")
-    @Mapping(source = "request.reportingPeriod", target = "reportingPeriod")
+    @Mapping(target = "reportYear", source = "request.reportYear")
+    @Mapping(target = "reportingPeriod", source = "request.reportingPeriod")
     @Mapping(target = "reportStatus", source = "status")
-    @Mapping(target = "completionPercentage", constant = "java(BigDecimal.ZERO)")
+    @Mapping(target = "completionPercentage", expression = "java(java.math.BigDecimal.ZERO)")
     @Mapping(target = "version", constant = "1")
     @Mapping(target = "isDeleted", constant = "false")
-    @Mapping(target = "createdAt", expression = "java(LocalDateTime.now())")
-    @Mapping(target = "updatedAt", expression = "java(LocalDateTime.now())")
+    @Mapping(target = "createdAt", expression = "java(java.time.LocalDateTime.now())")
+    @Mapping(target = "updatedAt", expression = "java(java.time.LocalDateTime.now())")
     @Mapping(target = "parentReport", ignore = true)
     @Mapping(target = "submittedBy", ignore = true)
+    @Mapping(target = "submittedAt", ignore = true)
     @Mapping(target = "reviewedBy", ignore = true)
+    @Mapping(target = "reviewedAt", ignore = true)
+    @Mapping(target = "reviewNotes", ignore = true)
+    @Mapping(target = "deletedAt", ignore = true)
     @Mapping(target = "reportFields", ignore = true)
     @Mapping(target = "reportSections", ignore = true)
     @Mapping(target = "reportFiles", ignore = true)
-    @Mapping(target = "deletedAt", ignore = true)
-    @Mapping(target = "submittedAt", ignore = true)
-    @Mapping(target = "reviewedAt", ignore = true)
-    @Mapping(target = "reviewNotes", ignore = true)
+    @Mapping(target = "monitorExceedances", ignore = true)
+    @Mapping(target = "wasteStats", ignore = true)
+    @Mapping(target = "hazardWastes", ignore = true)
+    @Mapping(target = "autoMonStats", ignore = true)
+    @Mapping(target = "childReports", ignore = true)
     Report toEntity(CreateReportRequest request, BusinessDetail businessDetail,
                     ReportType reportType, ReportStatus status, String reportCode);
 
-    List<ReportDTO> toDTOList(List<Report> entities);
+    @Named("toBasicDTOList")
+    default List<ReportDTO> toDTOList(List<Report> entities) {
+        if (entities == null) {
+            return null;
+        }
+        return entities.stream()
+                .map(this::toBasicDTO)
+                .toList();
+    }
 
-    List<Report> toEntityList(List<ReportDTO> dtos);
+    @Named("toFullDTOList")
+    default List<ReportDTO> toFullDTOList(List<Report> entities) {
+        if (entities == null) {
+            return null;
+        }
+        return entities.stream()
+                .map(this::toFullDTO)
+                .toList();
+    }
 }

@@ -4,24 +4,15 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
+import com.EIPplatform.model.entity.fileStorage.FileStorage;
+import com.EIPplatform.model.entity.user.userInformation.UserDetail;
+import jakarta.persistence.*;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import com.EIPplatform.configuration.AuditMetaData;
 import com.EIPplatform.model.entity.user.userInformation.BusinessDetail;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Embedded;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EntityListeners;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.JoinTable;
-import jakarta.persistence.ManyToMany;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
 import jakarta.validation.constraints.Email;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -63,6 +54,11 @@ public class UserAccount {
     @Column(nullable = false, columnDefinition = "NVARCHAR(10)")
     String phoneNumber;
 
+    @OneToOne
+    @JoinColumn(name = "file_storage_id")
+    private FileStorage fileStorage;
+
+
     @ManyToMany
     @JoinTable(name = "user_role",
             joinColumns = @JoinColumn(name = "user_account_id"),
@@ -72,8 +68,13 @@ public class UserAccount {
     Set<Role> roles = new HashSet<>();
 
     @ManyToOne
-    @JoinColumn(name = "bussiness_detail_id")
-    @JsonBackReference(value = "bussinessDetail-account-ref")
+    @JoinColumn(name = "user_detail_id")
+    @JsonBackReference(value = "userDetailsAccount-ref")
+    UserDetail userDetail;
+
+    @ManyToOne
+    @JoinColumn(name = "business_detail_id")
+    @JsonBackReference(value = "businessDetail-account-ref")
     BusinessDetail businessDetail;
 
     @Embedded

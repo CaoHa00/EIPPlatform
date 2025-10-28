@@ -63,8 +63,14 @@ public class UserHistoryConsumption {
     @JsonBackReference(value = "bussinessDetail-historyConsumption-ref")
     BusinessDetail businessDetail;
 
+    @ManyToOne
+    @JoinColumn(name = "user_detail_id", nullable = false)
+    @JsonBackReference(value = "userDetail-historyConsumption-ref")
+    private UserDetail userDetail;
+
     @Embedded
     @Builder.Default
     AuditMetaData auditMetaData = new AuditMetaData();
+
 
 }

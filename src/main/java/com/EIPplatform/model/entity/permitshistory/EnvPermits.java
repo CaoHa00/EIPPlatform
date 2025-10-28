@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "env_permits", indexes = {
         @Index(name = "idx_permit_number", columnList = "permit_number"),
-        @Index(name = "idx_user_detail_id", columnList = "user_detail_id")
+        @Index(name = "idx_business_detail_id", columnList = "business_detail_id")
 })
 @Getter
 @Setter
@@ -27,7 +27,7 @@ public class EnvPermits {
     Long permitId;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "bussinessDetail-permits")
+    @JoinColumn(name = "business_detail_id")
     @JsonBackReference(value = "bussinessDetail-permits")
     BusinessDetail businessDetail;
 

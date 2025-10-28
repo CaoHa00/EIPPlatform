@@ -32,6 +32,13 @@ public class ReportFile {
     @Column(name = "file_path", nullable = false)
     String filePath;
 
-    @Column(name = "upload_date", nullable = false, columnDefinition = "DATETIME2 DEFAULT GETDATE()")
+    @Column(name = "file_size")
+    Long fileSize;
+
+    @Column(name = "file_type", length = 50)
+    String fileType;
+
+    @Column(name = "upload_date", nullable = false,
+            columnDefinition = "DATETIME2 DEFAULT GETDATE()")
     LocalDateTime uploadDate;
 }

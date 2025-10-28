@@ -9,24 +9,21 @@ import org.mapstruct.MappingTarget;
 
 import java.util.List;
 
-@Mapper(componentModel = "spring", uses = {ReportTemplateMapper.class})
+@Mapper(componentModel = "spring")
 public interface ReportTypeMapper {
 
+    @Mapping(target = "reportTemplateId", source = "reportTemplate.reportTemplateId")
     @Mapping(target = "templateName", source = "reportTemplate.templateName")
     ReportTypeDTO toDTO(ReportType entity);
 
-    @Mapping(target = "reportName", source = "reportName")
-    @Mapping(target = "reportTemplate.reportTemplateId", source = "reportTemplateId")
-    @Mapping(target = "dueDate", source = "dueDate")
-    @Mapping(target = "frequency", source = "frequency")
-    @Mapping(target = "description", source = "description")
+    @Mapping(target = "reportTypeId", ignore = true)
+    @Mapping(target = "reportTemplate", ignore = true)
+    @Mapping(target = "reports", ignore = true)
     ReportType toEntity(ReportTypeRequest request);
 
-    @Mapping(target = "reportName", source = "reportName")
-    @Mapping(target = "reportTemplate.reportTemplateId", source = "reportTemplateId")
-    @Mapping(target = "dueDate", source = "dueDate")
-    @Mapping(target = "frequency", source = "frequency")
-    @Mapping(target = "description", source = "description")
+    @Mapping(target = "reportTypeId", ignore = true)
+    @Mapping(target = "reportTemplate", ignore = true)
+    @Mapping(target = "reports", ignore = true)
     void updateEntityFromRequest(ReportTypeRequest request, @MappingTarget ReportType entity);
 
     List<ReportTypeDTO> toDTOList(List<ReportType> entities);

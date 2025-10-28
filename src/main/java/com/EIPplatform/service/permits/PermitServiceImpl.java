@@ -211,7 +211,7 @@ public class PermitServiceImpl implements PermitService {
         BusinessDetail businessDetail = userDetailRepository.findByUserAccounts_UserAccountId(userId)
                 .orElseThrow(() -> exceptionFactory.createNotFoundException("UserDetail", "userId", userId, UserError.NOT_FOUND));
 
-        List<EnvPermits> permits = permitsRepository.findByUserDetail_UserDetailId(
+        List<EnvPermits> permits = permitsRepository.findByBusinessDetail_BussinessDetailId(
                 businessDetail.getBussinessDetailId()
         );
 

@@ -15,17 +15,14 @@ public interface ReportFileMapper {
     @Mapping(target = "reportId", source = "report.reportId")
     ReportFileDTO toDTO(ReportFile entity);
 
-    @Mapping(target = "fileName", source = "fileName")
-    @Mapping(target = "filePath", source = "filePath")
-    @Mapping(target = "fileSize", source = "fileSize")
-    @Mapping(target = "fileType", source = "fileType")
+    @Mapping(target = "fileId", ignore = true)
+    @Mapping(target = "report", ignore = true)
     @Mapping(target = "uploadDate", ignore = true)
     ReportFile toEntity(ReportFileRequest request);
 
-    @Mapping(target = "fileName", source = "fileName")
-    @Mapping(target = "filePath", source = "filePath")
-    @Mapping(target = "fileSize", source = "fileSize")
-    @Mapping(target = "fileType", source = "fileType")
+    @Mapping(target = "fileId", ignore = true)
+    @Mapping(target = "report", ignore = true)
+    @Mapping(target = "uploadDate", ignore = true)
     void updateEntityFromRequest(ReportFileRequest request, @MappingTarget ReportFile entity);
 
     List<ReportFileDTO> toDTOList(List<ReportFile> entities);

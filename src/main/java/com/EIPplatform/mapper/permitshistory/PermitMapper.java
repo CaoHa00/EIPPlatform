@@ -17,19 +17,25 @@ public interface PermitMapper {
 
     EnvPermitDTO toDTO(EnvPermits permit);
 
-    @Mapping(target = "userDetail", ignore = true)
+    @Mapping(target = "permitId", ignore = true)
+    @Mapping(target = "businessDetail", ignore = true)
+    @Mapping(target = "permitFilePath", ignore = true)
     @Mapping(target = "isActive", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
     EnvPermits toEntity(CreatePermitRequest request, @Context BusinessDetail businessDetail);
 
     @AfterMapping
-    default void setUserDetailAndDefaults(@MappingTarget EnvPermits entity, @Context BusinessDetail businessDetail) {
+    default void setBusinessDetailAndDefaults(@MappingTarget EnvPermits entity, @Context BusinessDetail businessDetail) {
         entity.setBusinessDetail(businessDetail);
         entity.setIsActive(true);
         entity.setCreatedAt(LocalDateTime.now());
     }
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+    @Mapping(target = "permitId", ignore = true)
+    @Mapping(target = "businessDetail", ignore = true)
+    @Mapping(target = "isActive", ignore = true)
+    @Mapping(target = "createdAt", ignore = true)
     void updateEntityFromDTO(UpdatePermitRequest request, @MappingTarget EnvPermits permit);
 
     @AfterMapping
@@ -42,9 +48,4 @@ public interface PermitMapper {
     }
 
     List<EnvPermitDTO> toDTOList(List<EnvPermits> permits);
-
-    @Mapping(target = "userDetail", ignore = true)
-    @Mapping(target = "isActive", ignore = true)
-    @Mapping(target = "createdAt", ignore = true)
-    List<EnvPermits> toEntityList(List<CreatePermitRequest> requests);
 }
