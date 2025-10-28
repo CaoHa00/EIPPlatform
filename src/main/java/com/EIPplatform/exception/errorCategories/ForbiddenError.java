@@ -11,8 +11,8 @@ import lombok.experimental.FieldDefaults;
 
 @Getter
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-public enum ForbiddenError implements ErrorCodeInterface  {
-        // 4000 -> 4099
+public enum ForbiddenError implements ErrorCodeInterface {
+    // 4000 -> 4099
     FORBIDDEN(4000, "Access forbidden", HttpStatus.FORBIDDEN);
 
     private final int code;
@@ -24,4 +24,6 @@ public enum ForbiddenError implements ErrorCodeInterface  {
         this.message = message;
         this.statusCode = statusCode;
     }
+
 }
+

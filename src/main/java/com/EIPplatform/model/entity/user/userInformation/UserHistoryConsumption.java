@@ -1,6 +1,5 @@
 package com.EIPplatform.model.entity.user.userInformation;
 
-import java.time.LocalDateTime;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import com.EIPplatform.configuration.AuditMetaData;
@@ -25,7 +24,7 @@ import lombok.experimental.FieldDefaults;
 
 @Builder
 @Entity
-@Table(name = "user_history_consumption") // Table name in the database
+@Table(name = "user_history_consumption")
 @Getter
 @Setter
 @NoArgsConstructor
@@ -60,28 +59,12 @@ public class UserHistoryConsumption {
     String yearUpdated;
 
     @ManyToOne
-    @JoinColumn(name = "user_detail_id", nullable = false)
-    @JsonBackReference(value = "userDetailsHistoryConsumption-ref")
-    UserDetail userDetail;
+    @JoinColumn(name = "bussiness_detail_id", nullable = false)
+    @JsonBackReference(value = "bussinessDetail-historyConsumption-ref")
+    BusinessDetail businessDetail;
 
     @Embedded
     @Builder.Default
     AuditMetaData auditMetaData = new AuditMetaData();
-
-    public LocalDateTime getCreatedAt() {
-        return auditMetaData.getCreatedAt();
-    }
-
-    public String getCreatedBy() {
-        return auditMetaData.getCreatedBy();
-    }
-
-    public LocalDateTime getUpdatedAt() {
-        return auditMetaData.getUpdatedAt();
-    }
-
-    public String getUpdatedBy() {
-        return auditMetaData.getUpdatedBy();
-    }
 
 }

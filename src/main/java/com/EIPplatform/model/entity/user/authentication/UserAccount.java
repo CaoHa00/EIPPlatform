@@ -1,6 +1,5 @@
 package com.EIPplatform.model.entity.user.authentication;
 
-import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
@@ -8,7 +7,7 @@ import java.util.UUID;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import com.EIPplatform.configuration.AuditMetaData;
-import com.EIPplatform.model.entity.user.userInformation.UserDetail;
+import com.EIPplatform.model.entity.user.userInformation.BusinessDetail;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 
 import jakarta.persistence.Column;
@@ -65,33 +64,19 @@ public class UserAccount {
     String phoneNumber;
 
     @ManyToMany
-    @JoinTable(name = "user_role", joinColumns = @JoinColumn(name = "user_account_id"), inverseJoinColumns = @JoinColumn(name = "role_id"))
+    @JoinTable(name = "user_role",
+            joinColumns = @JoinColumn(name = "user_account_id"),
+            inverseJoinColumns = @JoinColumn(name = "role_id")
+    )
     @Builder.Default
     Set<Role> roles = new HashSet<>();
 
     @ManyToOne
-    @JoinColumn(name = "user_detail_id")
-    @JsonBackReference(value = "userDetailsAccount-ref")
-    UserDetail userDetail;
+    @JoinColumn(name = "bussiness_detail_id")
+    @JsonBackReference(value = "bussinessDetail-account-ref")
+    BusinessDetail businessDetail;
 
     @Embedded
     @Builder.Default
     AuditMetaData auditMetaData = new AuditMetaData();
-
-    public LocalDateTime getCreatedAt() {
-        return auditMetaData.getCreatedAt();
-    }
-
-    public String getCreatedBy() {
-        return auditMetaData.getCreatedBy();
-    }
-
-    public LocalDateTime getUpdatedAt() {
-        return auditMetaData.getUpdatedAt();
-    }
-
-    public String getUpdatedBy() {
-        return auditMetaData.getUpdatedBy();
-    }
-
 }

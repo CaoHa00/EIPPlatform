@@ -6,14 +6,14 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
 import com.EIPplatform.model.dto.userInformation.UserDetailWithHistoryConsumptionDTO;
-import com.EIPplatform.model.entity.user.userInformation.UserDetail;
+import com.EIPplatform.model.entity.user.userInformation.BusinessDetail;
 @Mapper(
     componentModel = "spring",
     uses = { UserDetailMapper.class, UserHistoryConsumptionMapper.class }
 )
 public interface UserDetailWithHistoryConsumptionMapper {
     @Mapping(target = "userDetail", source = "entity")
-    UserDetailWithHistoryConsumptionDTO toDTO(UserDetail entity);
+    UserDetailWithHistoryConsumptionDTO toDTO(BusinessDetail entity);
 
-    List<UserDetailWithHistoryConsumptionDTO> toDTOList(List<UserDetail> entities);
+    List<UserDetailWithHistoryConsumptionDTO> toDTOList(List<BusinessDetail> entities);
 }
