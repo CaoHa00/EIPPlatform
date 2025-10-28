@@ -1,25 +1,20 @@
-package com.EIPplatform.model.entity.user.userInformation;
+package com.EIPplatform.model.entity.fileStorage;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.UUID;
 
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import com.EIPplatform.configuration.AuditMetaData;
 import com.EIPplatform.model.entity.user.authentication.UserAccount;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
@@ -30,62 +25,38 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.FieldDefaults;
 
-
 @Entity
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "[user_detail]")
+@Table(name = "[file_storage]")
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @EntityListeners(AuditingEntityListener.class)
-public class UserDetail {
+public class FileStorage {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(columnDefinition = "uniqueidentifier")
-    UUID userDetailId;
-
-    @Column(nullable = false, unique = true)
-    String companyName;
+    UUID roleId;
 
     @Column(nullable = false)
-    String legalPresentative;
+    String fileName;
 
     @Column(nullable = false)
-    String phoneNumber;
+    String filePath;
 
     @Column(nullable = false)
-    String location;
+    // object business_id later
+    // many files can belong to one business object
+    String businessDetailId;
 
     @Column(nullable = false)
-    String industrySector;
+    @OneToOne(mappedBy = "fileStorage") // defines who submited
+    UserAccount userAccount;
 
     @Column(nullable = false)
-    String scaleCapacity;
-
-    @Column(nullable = true)
-    String ISO_certificate_14001;
-
-    @Column(nullable = false)
-    String businessRegistrationNumber;
-
-    @Column(nullable = false, unique = true)
-    String taxCode;
-
-    @OneToMany(mappedBy = "userDetail", fetch = FetchType.LAZY)
-    @JsonManagedReference(value = "userDetailsHistoryConsumption-ref")
-    @Builder.Default
-    List<UserHistoryConsumption> userHistoryConsumptions = new ArrayList<>();
-
-    @OneToMany(mappedBy = "userDetail", fetch = FetchType.LAZY)
-    @JsonManagedReference(value = "userDetailsAccount-ref")
-    @Builder.Default
-    List<UserAccount> userAccounts = new ArrayList<>();
-
-    @OneToOne(mappedBy = "userDetail", fetch = FetchType.LAZY)
-    @JsonManagedReference(value = "userDetailsUserProfile-ref")
-    UserProfile userProfile;
+    String fileType;
 
     @Embedded
     @Builder.Default
@@ -99,12 +70,20 @@ public class UserDetail {
         return auditMetaData.getCreatedBy();
     }
 
-    public LocalDateTime getUpdatedAt() {
-        return auditMetaData.getUpdatedAt();
+    public Boolean getIsDeleted() {
+        return auditMetaData.getIsDeleted();
     }
 
-    public String getUpdatedBy() {
-        return auditMetaData.getUpdatedBy();
+    public LocalDateTime getVerifiedAt() {
+        return auditMetaData.getVerifiedAt();
+    }
+
+    public String getVerifiedBy() {
+        return auditMetaData.getVerifiedBy();
+    }
+
+    public String getRemark() {
+        return auditMetaData.getRemark();
     }
 
 }
