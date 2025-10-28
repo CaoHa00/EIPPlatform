@@ -1,57 +1,42 @@
 package com.EIPplatform.model.entity.report;
-// Trạng thái báo cáo 
 
-import java.time.LocalDateTime;
+import java.util.List;
 
-import com.EIPplatform.configuration.AuditMetaData;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import jakarta.persistence.*;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Embedded;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import lombok.*;
+import lombok.experimental.FieldDefaults;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 @Builder
 @Entity
-@Table(name = "report_status") // Table name in the database
+@Table(name = "report_status", indexes = {
+        @Index(name = "idx_status_code", columnList = "status_code")
+})
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class ReportStatus {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "report_status_id", updatable = false, nullable = false)
-    Long reportStatusId;
+    @Column(name = "status_id", updatable = false, nullable = false)
+    Integer statusId;
 
-    @Column(name = "report_status_name", nullable = false)
-    String reportStatusName;
+    @Column(name = "status_name", nullable = false)
+    String statusName;
 
-    @Embedded
-    @Builder.Default
-    AuditMetaData auditMetaData = new AuditMetaData();
+    @Column(name = "status_code", nullable = false)
+    String statusCode;
 
-    public LocalDateTime getCreatedAt() {
-        return auditMetaData.getCreatedAt();
-    }
+    @Column(name = "status_order")
+    Integer statusOrder;
 
-    public String getCreatedBy() {
-        return auditMetaData.getCreatedBy();
-    }
+    @Column(name = "description", columnDefinition = "NVARCHAR(MAX)")
+    String description;
 
-    public LocalDateTime getUpdatedAt() {
-        return auditMetaData.getUpdatedAt();
-    }
-
-    public String getUpdatedBy() {
-        return auditMetaData.getUpdatedBy();
-    }
-
+    @OneToMany(mappedBy = "reportStatus", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonManagedReference(value = "status-report")
+    List<Report> reports;
 }

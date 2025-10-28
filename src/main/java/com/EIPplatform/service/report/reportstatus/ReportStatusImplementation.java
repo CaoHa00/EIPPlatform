@@ -1,9 +1,9 @@
-package com.EIPplatform.service.report;
+package com.EIPplatform.service.report.reportstatus;
 
 import com.EIPplatform.mapper.report.ReportStatusMapper;
-import com.EIPplatform.model.dto.report.ReportStatusDto;
+import com.EIPplatform.model.dto.report.reportstatus.ReportStatusDTO;
 import com.EIPplatform.model.entity.report.ReportStatus;
-import com.EIPplatform.repository.report.ReportStatusRepository;
+import com.EIPplatform.repository.report.reportstatus.ReportStatusRepository;
 
 import lombok.RequiredArgsConstructor;
 
@@ -21,7 +21,7 @@ public class ReportStatusImplementation implements ReportStatusInterface {
     
     @Override
     @Transactional(readOnly = true)
-    public ReportStatusDto findById(Long id) {
+    public ReportStatusDTO findById(Long id) {
         ReportStatus entity = repository.findById(id)
                 .orElseThrow(() -> new RuntimeException("ReportStatus not found with id: " + id));
         return mapper.toDTO(entity);
@@ -38,13 +38,13 @@ public class ReportStatusImplementation implements ReportStatusInterface {
     
     @Override
     @Transactional(readOnly = true)
-    public List<ReportStatusDto> findAll() {
+    public List<ReportStatusDTO> findAll() {
         List<ReportStatus> entities = repository.findAll();
         return mapper.toDTOList(entities);
     }
     
     @Override
-    public ReportStatusDto create(ReportStatusDto dto) {
+    public ReportStatusDTO create(ReportStatusDTO dto) {
         // Kiểm tra tên đã tồn tại chưa
         if (repository.existsByReportStatusName(dto.getReportStatusName())) {
             throw new RuntimeException("ReportStatus name already exists: " + dto.getReportStatusName());
@@ -56,7 +56,7 @@ public class ReportStatusImplementation implements ReportStatusInterface {
     }
     
     @Override
-    public ReportStatusDto update(Long id, ReportStatusDto dto) {
+    public ReportStatusDTO update(Long id, ReportStatusDTO dto) {
         ReportStatus existingEntity = repository.findById(id)
                 .orElseThrow(() -> new RuntimeException("ReportStatus not found with id: " + id));
         
