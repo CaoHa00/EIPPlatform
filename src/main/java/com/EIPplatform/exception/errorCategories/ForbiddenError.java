@@ -24,4 +24,6 @@ public enum ForbiddenError implements ErrorCodeInterface {
         this.message = message;
         this.statusCode = statusCode;
     }
+
 }
+
