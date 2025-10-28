@@ -15,25 +15,25 @@ import java.util.List;
 public interface ReportSectionMapper {
 
     @Mapping(target = "reportId", source = "report.reportId")
-    @Mapping(target = "exceedances", ignore = true)
-    @Mapping(target = "hazardWastes", ignore = true)
+    @Mapping(target = "exceedances", source = "monitorExceedances")
+    @Mapping(target = "hazardWastes", source = "hazardWastes")
     ReportSectionDTO toDTO(ReportSection entity);
 
-    @Mapping(target = "sectionType", source = "sectionType")
-    @Mapping(target = "sectionData", source = "sectionData")
-    @Mapping(target = "version", ignore = true)
-    @Mapping(target = "createdAt", ignore = true)
-    @Mapping(target = "updatedAt", ignore = true)
-    @Mapping(target = "exceedances", ignore = true)
+    @Mapping(target = "sectionId", ignore = true)
+    @Mapping(target = "report", ignore = true)
+    @Mapping(target = "version", constant = "1")
+    @Mapping(target = "createdAt", expression = "java(java.time.LocalDateTime.now())")
+    @Mapping(target = "updatedAt", expression = "java(java.time.LocalDateTime.now())")
+    @Mapping(target = "monitorExceedances", ignore = true)
     @Mapping(target = "hazardWastes", ignore = true)
     ReportSection toEntity(ReportSectionRequest request);
 
-    @Mapping(target = "sectionType", source = "sectionType")
-    @Mapping(target = "sectionData", source = "sectionData")
+    @Mapping(target = "sectionId", ignore = true)
+    @Mapping(target = "report", ignore = true)
     @Mapping(target = "version", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
-    @Mapping(target = "updatedAt", ignore = true)
-    @Mapping(target = "exceedances", ignore = true)
+    @Mapping(target = "updatedAt", expression = "java(java.time.LocalDateTime.now())")
+    @Mapping(target = "monitorExceedances", ignore = true)
     @Mapping(target = "hazardWastes", ignore = true)
     void updateEntityFromRequest(ReportSectionRequest request, @MappingTarget ReportSection entity);
 

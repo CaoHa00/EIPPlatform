@@ -3,20 +3,12 @@ package com.EIPplatform.model.entity.fileStorage;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+import jakarta.persistence.*;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import com.EIPplatform.configuration.AuditMetaData;
 import com.EIPplatform.model.entity.user.authentication.UserAccount;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Embedded;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EntityListeners;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.OneToOne;
-import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -51,7 +43,6 @@ public class FileStorage {
     // many files can belong to one business object
     String businessDetailId;
 
-    @Column(nullable = false)
     @OneToOne(mappedBy = "fileStorage") // defines who submited
     UserAccount userAccount;
 

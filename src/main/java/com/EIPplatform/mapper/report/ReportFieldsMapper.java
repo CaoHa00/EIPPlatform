@@ -15,13 +15,14 @@ public interface ReportFieldsMapper {
     @Mapping(target = "reportId", source = "report.reportId")
     ReportFieldDTO toDTO(ReportFields entity);
 
-    @Mapping(target = "fieldName", source = "fieldName")
-    @Mapping(target = "fieldValue", source = "fieldValue")
+    @Mapping(target = "fieldId", ignore = true)
+    @Mapping(target = "report", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
     ReportFields toEntity(ReportFieldRequest request);
 
-    @Mapping(target = "fieldName", source = "fieldName")
-    @Mapping(target = "fieldValue", source = "fieldValue")
+    @Mapping(target = "fieldId", ignore = true)
+    @Mapping(target = "report", ignore = true)
+    @Mapping(target = "createdAt", ignore = true)
     void updateEntityFromRequest(ReportFieldRequest request, @MappingTarget ReportFields entity);
 
     List<ReportFieldDTO> toDTOList(List<ReportFields> entities);

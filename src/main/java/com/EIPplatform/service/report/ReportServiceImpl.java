@@ -90,7 +90,7 @@ public class ReportServiceImpl implements ReportService {
         Report report = reportMapper.toEntity(request, businessDetail, reportType, draftStatus, reportCode);
         report = reportRepository.save(report);
         log.info("Report created successfully: {}", reportCode);
-        return reportMapper.toDTO(report);
+        return reportMapper.toBasicDTO(report);
     }
 
     @Override
@@ -107,7 +107,7 @@ public class ReportServiceImpl implements ReportService {
         report.setUpdatedAt(LocalDateTime.now());
         report = reportRepository.save(report);
         log.info("Report updated successfully: {}", reportId);
-        return reportMapper.toDTO(report);
+        return reportMapper.toBasicDTO(report);
     }
 
     @Override
@@ -129,7 +129,7 @@ public class ReportServiceImpl implements ReportService {
         );
 
         return reports.stream()
-                .map(reportMapper::toDTO)
+                .map(reportMapper::toBasicDTO)
                 .collect(Collectors.toList());
     }
 
@@ -209,7 +209,7 @@ public class ReportServiceImpl implements ReportService {
         List<Report> reports = reportRepository.findUpcomingReports(businessDetailId, startDate, endDate);
 
         return reports.stream()
-                .map(reportMapper::toDTO)
+                .map(reportMapper::toBasicDTO)
                 .collect(Collectors.toList());
     }
 
@@ -289,7 +289,7 @@ public class ReportServiceImpl implements ReportService {
     public ReportDTO getReportById(UUID reportId) {
         UserAccount currentUser = getCurrentUser();
         Report report = validateBusinessOwnership(reportId, currentUser);
-        return reportMapper.toDTO(report);
+        return reportMapper.toBasicDTO(report);
     }
 
     @Override
@@ -339,7 +339,7 @@ public class ReportServiceImpl implements ReportService {
         );
 
         return reports.stream()
-                .map(reportMapper::toDTO)
+                .map(reportMapper::toBasicDTO)
                 .collect(Collectors.toList());
     }
 
@@ -395,7 +395,7 @@ public class ReportServiceImpl implements ReportService {
 
         log.info("New version created for report: {}", reportId);
 
-        return reportMapper.toDTO(newVersion);
+        return reportMapper.toBasicDTO(newVersion);
     }
 
     @Override
@@ -412,7 +412,7 @@ public class ReportServiceImpl implements ReportService {
         List<Report> versions = reportRepository.findByParentReportOrderByVersionDesc(parentReport);
 
         return versions.stream()
-                .map(reportMapper::toDTO)
+                .map(reportMapper::toBasicDTO)
                 .collect(Collectors.toList());
     }
 

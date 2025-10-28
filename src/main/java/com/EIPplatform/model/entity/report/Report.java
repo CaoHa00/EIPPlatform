@@ -41,7 +41,7 @@ public class Report {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "business_detail_id", nullable = false)
-    @JsonBackReference(value = "business-reports")
+    @JsonBackReference(value = "businessDetail-reports")
     BusinessDetail businessDetail;
 
     @ManyToOne(fetch = FetchType.LAZY)

@@ -14,11 +14,11 @@ import java.util.UUID;
 @Repository
 public interface EnvPermitsRepository extends JpaRepository<EnvPermits, Long> {
 
-    List<com.EIPplatform.model.entity.permitshistory.EnvPermits> findByUserDetail(BusinessDetail businessDetail);
-
-    List<EnvPermits> findByUserDetailAndIsActive(
+    List<EnvPermits> findByBusinessDetailAndIsActive(
             BusinessDetail businessDetail, Boolean isActive
     );
+
+    List<EnvPermits> findByBusinessDetail(BusinessDetail businessDetail);
 
     @Query("SELECT ep FROM EnvPermits ep WHERE ep.businessDetail.bussinessDetailId = :userId " +
             "AND (:permitType IS NULL OR ep.permitType = :permitType) " +
@@ -41,7 +41,7 @@ public interface EnvPermitsRepository extends JpaRepository<EnvPermits, Long> {
             @Param("expiryThreshold") LocalDate expiryThreshold
     );
 
-    List<EnvPermits> findByUserDetail_UserDetailId(UUID userDetailId);
+    List<EnvPermits> findByBusinessDetail_BussinessDetailId(UUID businessDetailId);
 
     @Query("SELECT COUNT(ep) FROM EnvPermits ep " +
             "WHERE ep.businessDetail.bussinessDetailId = :userId AND ep.isActive = true")

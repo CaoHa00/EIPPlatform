@@ -19,6 +19,7 @@ public enum ReportError implements ErrorCodeInterface {
     REPORT_STATUS_NOT_FOUND(1203, "Report status not found", HttpStatus.NOT_FOUND),
     REPORT_DUPLICATE(1204, "Report already exists", HttpStatus.CONFLICT),
     FORBIDDEN_BUSINESS_ACCESS(1205, "Forbidden access to business", HttpStatus.FORBIDDEN),
+    REPORT_STATUS_DUPLICATE(1207, "Report status already exists",HttpStatus.BAD_REQUEST),
     INVALID_REPORT_OPERATION(1206, "Invalid operation on report", HttpStatus.BAD_REQUEST);
 
     private final int code;

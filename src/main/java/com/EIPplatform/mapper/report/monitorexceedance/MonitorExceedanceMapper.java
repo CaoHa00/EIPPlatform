@@ -17,28 +17,17 @@ public interface MonitorExceedanceMapper {
     @Mapping(target = "sectionType", source = "reportSection.sectionType")
     MonitorExceedanceDTO toDTO(MonitorExceedance entity);
 
-    @Mapping(target = "pointName", source = "pointName")
-    @Mapping(target = "pointSymbol", source = "pointSymbol")
-    @Mapping(target = "monitoringDate", source = "monitoringDate")
-    @Mapping(target = "longitude", source = "longitude")
-    @Mapping(target = "latitude", source = "latitude")
-    @Mapping(target = "exceededParam", source = "exceededParam")
-    @Mapping(target = "resultValue", source = "resultValue")
-    @Mapping(target = "qcvnLimit", source = "qcvnLimit")
+    @Mapping(target = "exceedanceId", ignore = true)
+    @Mapping(target = "reportSection", ignore = true)
+    @Mapping(target = "report", ignore = true)
     @Mapping(target = "sectionType", ignore = true)
     MonitorExceedance toEntity(MonitorExceedanceRequest request);
 
-    @Mapping(target = "pointName", source = "pointName")
-    @Mapping(target = "pointSymbol", source = "pointSymbol")
-    @Mapping(target = "monitoringDate", source = "monitoringDate")
-    @Mapping(target = "longitude", source = "longitude")
-    @Mapping(target = "latitude", source = "latitude")
-    @Mapping(target = "exceededParam", source = "exceededParam")
-    @Mapping(target = "resultValue", source = "resultValue")
-    @Mapping(target = "qcvnLimit", source = "qcvnLimit")
+    @Mapping(target = "exceedanceId", ignore = true)
+    @Mapping(target = "reportSection", ignore = true)
+    @Mapping(target = "report", ignore = true)
     @Mapping(target = "sectionType", ignore = true)
     void updateEntityFromRequest(MonitorExceedanceRequest request, @MappingTarget MonitorExceedance entity);
 
     List<MonitorExceedanceDTO> toDTOList(List<MonitorExceedance> entities);
-
 }
