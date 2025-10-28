@@ -17,9 +17,9 @@ import com.EIPplatform.model.dto.userInformation.UserDetailDTO;
 import com.EIPplatform.model.dto.userInformation.UserDetailWithHistoryConsumptionDTO;
 import com.EIPplatform.service.userInformation.UserDetailInterface;
 
+import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import lombok.AccessLevel;
 
 @RestController
 @RequestMapping("/api/user-detail")
