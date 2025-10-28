@@ -1,4 +1,4 @@
-package java.com.EIPplatform;
+package com.EIPplatform;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;

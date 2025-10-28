@@ -8,7 +8,7 @@
         <version>3.5.0</version>
         <relativePath /> <!-- lookup parent from repository -->
     </parent>
-	<groupId>java.com.EIPplatform</groupId>
+	<groupId>com.EIPplatform</groupId>
 	<artifactId>EIPplatform</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>EIPplatform</name>
