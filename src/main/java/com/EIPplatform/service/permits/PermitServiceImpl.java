@@ -70,13 +70,13 @@ public class PermitServiceImpl implements PermitService {
     public EnvPermitDTO createEnvPermit(UUID userAccountId, CreateMainPermitRequest request, MultipartFile file) {
         BusinessDetail businessDetail = getBusinessDetailByUserAccountId(userAccountId);
 
-        if (envPermitsRepository.existsByBusinessDetail_BussinessDetailId(businessDetail.getBusinessDetailId())) {
+        if (envPermitsRepository.existsByBusinessDetail_BusinessDetailId(businessDetail.getBusinessDetailId())) {
             throw exceptionFactory.createValidationException(
                     "EnvPermit", "already exists", "", ValidationError.DUPLICATE_VALUE
             );
         }
 
-        long componentCount = componentPermitRepository.countByBusinessDetail_BussinessDetailId(
+        long componentCount = componentPermitRepository.countByBusinessDetail_BusinessDetailId(
                 businessDetail.getBusinessDetailId());
         if (componentCount > 0) {
             throw exceptionFactory.createValidationException(
@@ -115,7 +115,7 @@ public class PermitServiceImpl implements PermitService {
         BusinessDetail businessDetail = getBusinessDetailByUserAccountId(userAccountId);
 
         EnvPermits envPermit = envPermitsRepository
-                .findByBusinessDetail_BussinessDetailId(businessDetail.getBussinessDetailId())
+                .findByBusinessDetail_BusinessDetailId(businessDetail.getBusinessDetailId())
                 .orElse(null);
 
         return envPermit != null ? permitMapper.toMainPermitDTO(envPermit) : null;
@@ -125,8 +125,8 @@ public class PermitServiceImpl implements PermitService {
     @Transactional(readOnly = true)
     public boolean hasEnvPermit(UUID userAccountId) {
         BusinessDetail businessDetail = getBusinessDetailByUserAccountId(userAccountId);
-        return envPermitsRepository.existsByBusinessDetail_BussinessDetailId(
-                businessDetail.getBussinessDetailId());
+        return envPermitsRepository.existsByBusinessDetail_BusinessDetailId(
+                businessDetail.getBusinessDetailId());
     }
 
     @Override
@@ -134,9 +134,9 @@ public class PermitServiceImpl implements PermitService {
         BusinessDetail businessDetail = getBusinessDetailByUserAccountId(userAccountId);
 
         EnvPermits envPermit = envPermitsRepository
-                .findByBusinessDetail_BussinessDetailId(businessDetail.getBussinessDetailId())
+                .findByBusinessDetail_BusinessDetailId(businessDetail.getBusinessDetailId())
                 .orElseThrow(() -> exceptionFactory.createNotFoundException(
-                        "EnvPermit", "businessDetailId", businessDetail.getBussinessDetailId(),
+                        "EnvPermit", "businessDetailId", businessDetail.getBusinessDetailId(),
                         PermitError.NOT_FOUND));
 
         // Update metadata
@@ -184,9 +184,9 @@ public class PermitServiceImpl implements PermitService {
         BusinessDetail businessDetail = getBusinessDetailByUserAccountId(userAccountId);
 
         EnvPermits envPermit = envPermitsRepository
-                .findByBusinessDetail_BussinessDetailId(businessDetail.getBussinessDetailId())
+                .findByBusinessDetail_BusinessDetailId(businessDetail.getBusinessDetailId())
                 .orElseThrow(() -> exceptionFactory.createNotFoundException(
-                        "EnvPermit", "businessDetailId", businessDetail.getBussinessDetailId(),
+                        "EnvPermit", "businessDetailId", businessDetail.getBusinessDetailId(),
                         PermitError.NOT_FOUND));
 
         if (envPermit.getPermitFilePath() != null) {
@@ -206,9 +206,9 @@ public class PermitServiceImpl implements PermitService {
         BusinessDetail businessDetail = getBusinessDetailByUserAccountId(userAccountId);
 
         EnvPermits envPermit = envPermitsRepository
-                .findByBusinessDetail_BussinessDetailId(businessDetail.getBussinessDetailId())
+                .findByBusinessDetail_BusinessDetailId(businessDetail.getBusinessDetailId())
                 .orElseThrow(() -> exceptionFactory.createNotFoundException(
-                        "EnvPermit", "businessDetailId", businessDetail.getBussinessDetailId(),
+                        "EnvPermit", "businessDetailId", businessDetail.getBusinessDetailId(),
                         PermitError.NOT_FOUND));
 
         envPermit.setIsActive(true);
@@ -221,9 +221,9 @@ public class PermitServiceImpl implements PermitService {
         BusinessDetail businessDetail = getBusinessDetailByUserAccountId(userAccountId);
 
         EnvPermits envPermit = envPermitsRepository
-                .findByBusinessDetail_BussinessDetailId(businessDetail.getBussinessDetailId())
+                .findByBusinessDetail_BusinessDetailId(businessDetail.getBusinessDetailId())
                 .orElseThrow(() -> exceptionFactory.createNotFoundException(
-                        "EnvPermit", "businessDetailId", businessDetail.getBussinessDetailId(),
+                        "EnvPermit", "businessDetailId", businessDetail.getBusinessDetailId(),
                         PermitError.NOT_FOUND));
 
         envPermit.setIsActive(false);
@@ -247,7 +247,7 @@ public class PermitServiceImpl implements PermitService {
             );
         }
 
-        checkDuplicateComponentPermitNumber(businessDetail.getBussinessDetailId(), request.getPermitNumber());
+        checkDuplicateComponentPermitNumber(businessDetail.getBusinessDetailId(), request.getPermitNumber());
 
         EnvComponentPermit componentPermit = EnvComponentPermit.builder()
                 .businessDetail(businessDetail)
@@ -299,7 +299,7 @@ public class PermitServiceImpl implements PermitService {
         }
 
         for (String permitNumber : permitNumbers) {
-            checkDuplicateComponentPermitNumber(businessDetail.getBussinessDetailId(), permitNumber);
+            checkDuplicateComponentPermitNumber(businessDetail.getBusinessDetailId(), permitNumber);
         }
 
         List<EnvComponentPermit> permits = requests.stream()
@@ -336,7 +336,7 @@ public class PermitServiceImpl implements PermitService {
         BusinessDetail businessDetail = getBusinessDetailByUserAccountId(userAccountId);
 
         List<EnvComponentPermit> permits = componentPermitRepository
-                .findByBusinessDetail_BussinessDetailId(businessDetail.getBussinessDetailId());
+                .findByBusinessDetail_BusinessDetailId(businessDetail.getBusinessDetailId());
 
         return permits.stream()
                 .map(permitMapper::toComponentPermitDTO)
@@ -349,8 +349,8 @@ public class PermitServiceImpl implements PermitService {
         BusinessDetail businessDetail = getBusinessDetailByUserAccountId(userAccountId);
 
         List<EnvComponentPermit> permits = componentPermitRepository
-                .findByBusinessDetail_BussinessDetailIdAndPermitType(
-                        businessDetail.getBussinessDetailId(), permitType);
+                .findByBusinessDetail_BusinessDetailIdAndPermitType(
+                        businessDetail.getBusinessDetailId(), permitType);
 
         return permits.stream()
                 .map(permitMapper::toComponentPermitDTO)
@@ -363,8 +363,8 @@ public class PermitServiceImpl implements PermitService {
         BusinessDetail businessDetail = getBusinessDetailByUserAccountId(userAccountId);
 
         List<EnvComponentPermit> permits = componentPermitRepository
-                .findByBusinessDetail_BussinessDetailIdAndIsActive(
-                        businessDetail.getBussinessDetailId(), true);
+                .findByBusinessDetail_BusinessDetailIdAndIsActive(
+                        businessDetail.getBusinessDetailId(), true);
 
         return permits.stream()
                 .map(permitMapper::toComponentPermitDTO)
@@ -377,8 +377,8 @@ public class PermitServiceImpl implements PermitService {
         BusinessDetail businessDetail = getBusinessDetailByUserAccountId(userAccountId);
 
         List<EnvComponentPermit> permits = componentPermitRepository
-                .findByBusinessDetail_BussinessDetailIdAndIsActive(
-                        businessDetail.getBussinessDetailId(), false);
+                .findByBusinessDetail_BusinessDetailIdAndIsActive(
+                        businessDetail.getBusinessDetailId(), false);
 
         return permits.stream()
                 .map(permitMapper::toComponentPermitDTO)
@@ -408,7 +408,7 @@ public class PermitServiceImpl implements PermitService {
         if (request.getPermitNumber() != null &&
                 !request.getPermitNumber().equals(permit.getPermitNumber())) {
             checkDuplicateComponentPermitNumber(
-                    permit.getBusinessDetail().getBussinessDetailId(),
+                    permit.getBusinessDetail().getBusinessDetailId(),
                     request.getPermitNumber()
             );
         }
@@ -516,7 +516,7 @@ public class PermitServiceImpl implements PermitService {
         BusinessDetail businessDetail = getBusinessDetailByUserAccountId(userAccountId);
 
         List<EnvComponentPermit> permits = componentPermitRepository
-                .findByBusinessDetail_BussinessDetailId(businessDetail.getBussinessDetailId());
+                .findByBusinessDetail_BusinessDetailId(businessDetail.getBusinessDetailId());
 
         permits.forEach(permit -> {
             if (permit.getPermitFilePath() != null) {
@@ -537,8 +537,8 @@ public class PermitServiceImpl implements PermitService {
         BusinessDetail businessDetail = getBusinessDetailByUserAccountId(userAccountId);
 
         List<EnvComponentPermit> inactivePermits = componentPermitRepository
-                .findByBusinessDetail_BussinessDetailIdAndIsActive(
-                        businessDetail.getBussinessDetailId(), false);
+                .findByBusinessDetail_BusinessDetailIdAndIsActive(
+                        businessDetail.getBusinessDetailId(), false);
 
         inactivePermits.forEach(permit -> {
             if (permit.getPermitFilePath() != null) {
@@ -562,9 +562,9 @@ public class PermitServiceImpl implements PermitService {
         BusinessDetail businessDetail = getBusinessDetailByUserAccountId(userAccountId);
 
         EnvPermits envPermit = envPermitsRepository
-                .findByBusinessDetail_BussinessDetailId(businessDetail.getBussinessDetailId())
+                .findByBusinessDetail_BusinessDetailId(businessDetail.getBusinessDetailId())
                 .orElseThrow(() -> exceptionFactory.createNotFoundException(
-                        "EnvPermit", "businessDetailId", businessDetail.getBussinessDetailId(),
+                        "EnvPermit", "businessDetailId", businessDetail.getBusinessDetailId(),
                         PermitError.NOT_FOUND));
 
         validatePermitFile(file);
@@ -591,9 +591,9 @@ public class PermitServiceImpl implements PermitService {
         BusinessDetail businessDetail = getBusinessDetailByUserAccountId(userAccountId);
 
         EnvPermits envPermit = envPermitsRepository
-                .findByBusinessDetail_BussinessDetailId(businessDetail.getBussinessDetailId())
+                .findByBusinessDetail_BusinessDetailId(businessDetail.getBusinessDetailId())
                 .orElseThrow(() -> exceptionFactory.createNotFoundException(
-                        "EnvPermit", "businessDetailId", businessDetail.getBussinessDetailId(),
+                        "EnvPermit", "businessDetailId", businessDetail.getBusinessDetailId(),
                         PermitError.NOT_FOUND));
 
         if (envPermit.getPermitFilePath() == null) {
@@ -653,9 +653,9 @@ public class PermitServiceImpl implements PermitService {
     public Resource downloadEnvPermitFile(UUID userAccountId) {
         BusinessDetail businessDetail = getBusinessDetailByUserAccountId(userAccountId);
         EnvPermits envPermit = envPermitsRepository
-                .findByBusinessDetail_BussinessDetailId(businessDetail.getBussinessDetailId())
+                .findByBusinessDetail_BusinessDetailId(businessDetail.getBusinessDetailId())
                 .orElseThrow(() -> exceptionFactory.createNotFoundException(
-                        "EnvPermit", "businessDetailId", businessDetail.getBussinessDetailId(),
+                        "EnvPermit", "businessDetailId", businessDetail.getBusinessDetailId(),
                         PermitError.NOT_FOUND));
 
         if (envPermit.getPermitFilePath() == null) {
@@ -686,7 +686,7 @@ public class PermitServiceImpl implements PermitService {
     public boolean hasEnvPermitFile(UUID userAccountId) {
         BusinessDetail businessDetail = getBusinessDetailByUserAccountId(userAccountId);
 
-        return envPermitsRepository.findByBusinessDetail_BussinessDetailId(businessDetail.getBussinessDetailId())
+        return envPermitsRepository.findByBusinessDetail_BusinessDetailId(businessDetail.getBusinessDetailId())
                 .map(permit -> permit.getPermitFilePath() != null &&
                         fileStorageService.fileExists(permit.getPermitFilePath()))
                 .orElse(false);
@@ -709,15 +709,15 @@ public class PermitServiceImpl implements PermitService {
         boolean hasEnvPermit = hasEnvPermit(userAccountId);
 
         long totalComponentPermits = componentPermitRepository
-                .countByBusinessDetail_BussinessDetailId(businessDetail.getBussinessDetailId());
+                .countByBusinessDetail_BusinessDetailId(businessDetail.getBusinessDetailId());
         long activeComponentPermits = componentPermitRepository
-                .countByBusinessDetail_BussinessDetailIdAndIsActive(
-                        businessDetail.getBussinessDetailId(), true);
+                .countByBusinessDetail_BusinessDetailIdAndIsActive(
+                        businessDetail.getBusinessDetailId(), true);
 
         Map<String, Long> permitsByType = new HashMap<>();
         if (totalComponentPermits > 0) {
             List<Object[]> typeCounts = componentPermitRepository
-                    .countPermitsByType(businessDetail.getBussinessDetailId());
+                    .countPermitsByType(businessDetail.getBusinessDetailId());
             permitsByType = typeCounts.stream()
                     .collect(Collectors.toMap(
                             obj -> (String) obj[0],
@@ -741,8 +741,8 @@ public class PermitServiceImpl implements PermitService {
     public boolean isComponentPermitNumberUnique(UUID userAccountId, String permitNumber) {
         BusinessDetail businessDetail = getBusinessDetailByUserAccountId(userAccountId);
 
-        return !componentPermitRepository.existsByBusinessDetail_BussinessDetailIdAndPermitNumber(
-                businessDetail.getBussinessDetailId(), permitNumber
+        return !componentPermitRepository.existsByBusinessDetail_BusinessDetailIdAndPermitNumber(
+                businessDetail.getBusinessDetailId(), permitNumber
         );
     }
 
@@ -833,7 +833,7 @@ public class PermitServiceImpl implements PermitService {
 
     private void checkDuplicateComponentPermitNumber(UUID businessDetailId, String permitNumber) {
         if (permitNumber != null && !permitNumber.trim().isEmpty()) {
-            if (componentPermitRepository.existsByBusinessDetail_BussinessDetailIdAndPermitNumber(
+            if (componentPermitRepository.existsByBusinessDetail_BusinessDetailIdAndPermitNumber(
                     businessDetailId, permitNumber)) {
                 throw exceptionFactory.createValidationException(
                         "PermitNumber", "duplicate", permitNumber, ValidationError.DUPLICATE_VALUE
