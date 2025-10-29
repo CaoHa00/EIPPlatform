@@ -4,13 +4,14 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
-
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import com.EIPplatform.configuration.AuditMetaData;
+import com.EIPplatform.model.entity.permitshistory.EnvComponentPermit;
 import com.EIPplatform.model.entity.permitshistory.EnvPermits;
 import com.EIPplatform.model.entity.report.Report;
 import com.EIPplatform.model.entity.user.authentication.UserAccount;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import jakarta.persistence.CascadeType;
@@ -23,6 +24,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -93,9 +95,13 @@ public class BusinessDetail {
     @JsonManagedReference(value = "businessDetail-reports")
     List<Report> reports;
 
-    @OneToMany(mappedBy = "businessDetail", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonManagedReference(value = "businessDetail-permits")
-    List<EnvPermits> envPermits;
+    @OneToOne(mappedBy = "businessDetail", fetch = FetchType.LAZY, optional = true, cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonBackReference(value = "businessDetail-mainPermit")
+    EnvPermits envPermits;
+
+    @OneToMany(mappedBy = "businessDetail", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonBackReference(value = "businessDetail-componentPermits")
+    List<EnvComponentPermit> envComponentPermits = new ArrayList<>();
 
      public LocalDateTime getCreatedAt() {
         return auditMetaData.getCreatedAt();
