@@ -1,4 +1,6 @@
-package com.EIPplatform.model.dto.userInformation;
+package com.EIPplatform.model.dto.businessInformation;
+
+import java.util.UUID;
 
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
@@ -8,8 +10,8 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class UserHistoryConsumptionDTO {
-    Long userHistoryConsumptionId;
+public class BusinessHistoryConsumptionDTO {
+    Long businessHistoryConsumptionId;
     String productVolume;
     String productUnit;
     String fuelConsumption;
@@ -17,9 +19,9 @@ public class UserHistoryConsumptionDTO {
     String electricityConsumption;
     String waterConsumption;
     
-    @NotBlank(message = "FIELD_REQUIRED")
-    String yearUpdated;
+    // @NotBlank(message = "FIELD_REQUIRED")
+    // String yearUpdated;
     
     @NotBlank(message = "FIELD_REQUIRED")
-    Long userId;
+    UUID businessDetailId;
 }

@@ -1,13 +1,14 @@
 package com.EIPplatform.repository.permitshistory;
 
-import com.EIPplatform.model.entity.permitshistory.EnvPermits;
+import java.util.Optional;
+import java.util.UUID;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import java.util.Optional;
-import java.util.UUID;
+import com.EIPplatform.model.entity.permitshistory.EnvPermits;
 
 @Repository
 public interface EnvPermitsRepository extends JpaRepository<EnvPermits, Long> {
@@ -30,4 +31,5 @@ public interface EnvPermitsRepository extends JpaRepository<EnvPermits, Long> {
             "JOIN bd.userAccounts ua " +
             "WHERE ua.userAccountId = :userId")
     boolean existsByUserId(@Param("userId") UUID userId);
+
 }

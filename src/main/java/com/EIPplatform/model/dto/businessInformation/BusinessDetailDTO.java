@@ -1,19 +1,17 @@
-package com.EIPplatform.model.dto.userInformation;
+package com.EIPplatform.model.dto.businessInformation;
 
-import java.time.LocalDateTime;
 import java.util.UUID;
+
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class UserDetailDTO {
+public class BusinessDetailDTO {
 
-    UUID userDetailId;
-
+    UUID businessDetailId;
     @NotBlank(message = "FIELD_REQUIRED")
     String companyName;
 
@@ -26,7 +24,7 @@ public class UserDetailDTO {
     @NotBlank(message = "FIELD_REQUIRED")
     String location;
 
-    @NotBlank(message = "FIELD_REQUIRED") 
+    @NotBlank(message = "FIELD_REQUIRED")
     String industrySector;
 
     @NotBlank(message = "FIELD_REQUIRED")
@@ -38,5 +36,4 @@ public class UserDetailDTO {
 
     @NotBlank(message = "FIELD_REQUIRED")
     String taxCode;
-
 }

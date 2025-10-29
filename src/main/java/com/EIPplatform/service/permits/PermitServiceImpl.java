@@ -7,13 +7,19 @@ import com.EIPplatform.exception.errorCategories.UserError;
 import com.EIPplatform.exception.errorCategories.ValidationError;
 import com.EIPplatform.mapper.permitshistory.PermitMapper;
 import com.EIPplatform.model.dto.fileStorage.FileStorageRequest;
-import com.EIPplatform.model.dto.permitshistory.*;
+import com.EIPplatform.model.dto.permitshistory.CreateComponentPermitRequest;
+import com.EIPplatform.model.dto.permitshistory.CreateMainPermitRequest;
+import com.EIPplatform.model.dto.permitshistory.EnvComponentPermitDTO;
+import com.EIPplatform.model.dto.permitshistory.EnvPermitDTO;
+import com.EIPplatform.model.dto.permitshistory.PermitStatisticsDTO;
+import com.EIPplatform.model.dto.permitshistory.UpdateComponentPermitRequest;
+import com.EIPplatform.model.dto.permitshistory.UpdateEnvPermitRequest;
 import com.EIPplatform.model.entity.permitshistory.EnvPermits;
 import com.EIPplatform.model.entity.permitshistory.EnvComponentPermit;
-import com.EIPplatform.model.entity.user.userInformation.BusinessDetail;
+import com.EIPplatform.model.entity.user.businessInformation.BusinessDetail;
 import com.EIPplatform.repository.permitshistory.EnvPermitsRepository;
+import com.EIPplatform.repository.user.BusinessDetailRepository;
 import com.EIPplatform.repository.permitshistory.EnvComponentPermitRepository;
-import com.EIPplatform.repository.user.BussinessDetailRepository;
 import com.EIPplatform.service.fileStorage.FileStorageService;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
@@ -37,7 +43,7 @@ public class PermitServiceImpl implements PermitService {
 
     EnvPermitsRepository envPermitsRepository;
     EnvComponentPermitRepository componentPermitRepository;
-    BussinessDetailRepository businessDetailRepository;
+    BusinessDetailRepository businessDetailRepository;
     FileStorageService fileStorageService;
     PermitMapper permitMapper;
     ExceptionFactory exceptionFactory;
@@ -46,7 +52,7 @@ public class PermitServiceImpl implements PermitService {
     public PermitServiceImpl(
             EnvPermitsRepository envPermitsRepository,
             EnvComponentPermitRepository componentPermitRepository,
-            BussinessDetailRepository businessDetailRepository,
+            BusinessDetailRepository businessDetailRepository,
             FileStorageService fileStorageService,
             PermitMapper permitMapper,
             ExceptionFactory exceptionFactory) {
@@ -64,14 +70,14 @@ public class PermitServiceImpl implements PermitService {
     public EnvPermitDTO createEnvPermit(UUID userAccountId, CreateMainPermitRequest request, MultipartFile file) {
         BusinessDetail businessDetail = getBusinessDetailByUserAccountId(userAccountId);
 
-        if (envPermitsRepository.existsByBusinessDetail_BussinessDetailId(businessDetail.getBussinessDetailId())) {
+        if (envPermitsRepository.existsByBusinessDetail_BussinessDetailId(businessDetail.getBusinessDetailId())) {
             throw exceptionFactory.createValidationException(
                     "EnvPermit", "already exists", "", ValidationError.DUPLICATE_VALUE
             );
         }
 
         long componentCount = componentPermitRepository.countByBusinessDetail_BussinessDetailId(
-                businessDetail.getBussinessDetailId());
+                businessDetail.getBusinessDetailId());
         if (componentCount > 0) {
             throw exceptionFactory.createValidationException(
                     "EnvPermit",
@@ -647,8 +653,40 @@ public class PermitServiceImpl implements PermitService {
     public Resource downloadEnvPermitFile(UUID userAccountId) {
         BusinessDetail businessDetail = getBusinessDetailByUserAccountId(userAccountId);
 
+<<<<<<< HEAD
         EnvPermits envPermit = envPermitsRepository
                 .findByBusinessDetail_BussinessDetailId(businessDetail.getBussinessDetailId())
+=======
+        LocalDate thresholdDate = LocalDate.now().minusYears(5).plusDays(daysThreshold);
+
+        List<EnvPermits> expiringPermits = permitsRepository.findExpiringPermits(userId, thresholdDate);
+
+        return expiringPermits.stream()
+                .map(permitMapper::toDTO)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<EnvPermitDTO> getAllPermitsByUser(UUID userId) {
+        log.info("Getting all permits for user: {}", userId);
+
+        BusinessDetail businessDetail = userDetailRepository.findByUserAccounts_UserAccountId(userId)
+                .orElseThrow(() -> exceptionFactory.createNotFoundException("UserDetail", "userId", userId, UserError.NOT_FOUND));
+
+        List<EnvPermits> permits = permitsRepository.findByBusinessDetail_BusinessDetailId(
+                businessDetail.getBusinessDetailId()
+        );
+
+        return permits.stream()
+                .map(permitMapper::toDTO)
+                .collect(Collectors.toList());
+    }
+
+
+    private EnvPermits getPermitAndValidateOwnership(Long permitId, UUID userId) {
+        EnvPermits permit = permitsRepository.findById(permitId)
+>>>>>>> origin/develop
                 .orElseThrow(() -> exceptionFactory.createNotFoundException(
                         "EnvPermit", "businessDetailId", businessDetail.getBussinessDetailId(),
                         PermitError.NOT_FOUND));

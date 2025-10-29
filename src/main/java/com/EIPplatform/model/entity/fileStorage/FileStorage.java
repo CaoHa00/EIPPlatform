@@ -3,12 +3,20 @@ package com.EIPplatform.model.entity.fileStorage;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-import jakarta.persistence.*;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import com.EIPplatform.configuration.AuditMetaData;
 import com.EIPplatform.model.entity.user.authentication.UserAccount;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Embedded;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EntityListeners;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -49,6 +57,9 @@ public class FileStorage {
     @Column(nullable = false)
     String fileType;
 
+    @Column(nullable = false)
+    String fileSize;
+
     @Embedded
     @Builder.Default
     AuditMetaData auditMetaData = new AuditMetaData();
@@ -72,9 +83,4 @@ public class FileStorage {
     public String getVerifiedBy() {
         return auditMetaData.getVerifiedBy();
     }
-
-    public String getRemark() {
-        return auditMetaData.getRemark();
-    }
-
 }

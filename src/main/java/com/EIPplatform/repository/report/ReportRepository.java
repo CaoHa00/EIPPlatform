@@ -2,7 +2,7 @@ package com.EIPplatform.repository.report;
 
 import com.EIPplatform.model.entity.report.Report;
 import com.EIPplatform.model.entity.report.ReportType;
-import com.EIPplatform.model.entity.user.userInformation.BusinessDetail;
+import com.EIPplatform.model.entity.user.businessInformation.BusinessDetail;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -46,7 +46,7 @@ public interface ReportRepository extends JpaRepository<Report, UUID> {
      * ✅ CHANGED: Tìm báo cáo với filters
      */
     @Query("SELECT r FROM Report r WHERE " +
-            "(:businessDetailId IS NULL OR r.businessDetail.bussinessDetailId = :businessDetailId) " +
+            "(:businessDetailId IS NULL OR r.businessDetail.businessDetailId = :businessDetailId) " +
             "AND (:reportYear IS NULL OR r.reportYear = :reportYear) " +
             "AND (:reportTypeId IS NULL OR r.reportType.reportTypeId = :reportTypeId) " +
             "AND (:statusId IS NULL OR r.reportStatus.statusId = :statusId) " +
@@ -63,7 +63,7 @@ public interface ReportRepository extends JpaRepository<Report, UUID> {
     /**
      * ✅ CHANGED: Đếm báo cáo theo business và status
      */
-    @Query("SELECT COUNT(r) FROM Report r WHERE r.businessDetail.bussinessDetailId = :businessDetailId " +
+    @Query("SELECT COUNT(r) FROM Report r WHERE r.businessDetail.businessDetailId = :businessDetailId " +
             "AND r.reportStatus.statusCode = :statusCode AND r.isDeleted = false")
     Long countByBusinessAndStatus(
             @Param("businessDetailId") UUID businessDetailId,
@@ -83,7 +83,7 @@ public interface ReportRepository extends JpaRepository<Report, UUID> {
      */
     @Query("SELECT r FROM Report r WHERE r.reportType.dueDate BETWEEN :startDate AND :endDate " +
             "AND r.reportStatus.statusCode = 'DRAFT' " +
-            "AND r.businessDetail.bussinessDetailId = :businessDetailId " +
+            "AND r.businessDetail.businessDetailId = :businessDetailId " +
             "AND r.isDeleted = false")
     List<Report> findUpcomingReports(
             @Param("businessDetailId") UUID businessDetailId,
@@ -105,13 +105,13 @@ public interface ReportRepository extends JpaRepository<Report, UUID> {
     /**
      * NEW: Tính completion percentage trung bình theo business
      */
-    @Query("SELECT AVG(r.completionPercentage) FROM Report r WHERE r.businessDetail.bussinessDetailId = :businessDetailId AND r.isDeleted = false")
+    @Query("SELECT AVG(r.completionPercentage) FROM Report r WHERE r.businessDetail.businessDetailId = :businessDetailId AND r.isDeleted = false")
     BigDecimal getAverageCompletionPercentageByBusiness(@Param("businessDetailId") UUID businessDetailId);
 
     /**
      *  NEW: Tìm tất cả báo cáo của một business
      */
-    @Query("SELECT r FROM Report r WHERE r.businessDetail.bussinessDetailId = :businessDetailId " +
+    @Query("SELECT r FROM Report r WHERE r.businessDetail.businessDetailId = :businessDetailId " +
             "AND r.isDeleted = false ORDER BY r.createdAt DESC")
     List<Report> findAllByBusinessDetailId(@Param("businessDetailId") UUID businessDetailId);
 
