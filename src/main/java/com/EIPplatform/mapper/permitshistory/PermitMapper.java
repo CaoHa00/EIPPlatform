@@ -4,8 +4,15 @@ import com.EIPplatform.model.dto.permitshistory.CreatePermitRequest;
 import com.EIPplatform.model.dto.permitshistory.EnvPermitDTO;
 import com.EIPplatform.model.dto.permitshistory.UpdatePermitRequest;
 import com.EIPplatform.model.entity.permitshistory.EnvPermits;
-import com.EIPplatform.model.entity.user.userInformation.BusinessDetail;
-import org.mapstruct.*;
+import com.EIPplatform.model.entity.user.businessInformation.BusinessDetail;
+
+import org.mapstruct.AfterMapping;
+import org.mapstruct.BeanMapping;
+import org.mapstruct.Context;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.MappingTarget;
+import org.mapstruct.NullValuePropertyMappingStrategy;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;

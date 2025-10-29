@@ -1,13 +1,28 @@
 package com.EIPplatform.model.entity.permitshistory;
 
-import com.EIPplatform.model.entity.user.userInformation.BusinessDetail;
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import jakarta.persistence.*;
-import lombok.*;
-import lombok.experimental.FieldDefaults;
-
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+
+import com.EIPplatform.model.entity.user.businessInformation.BusinessDetail;
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Index;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.experimental.FieldDefaults;
 
 @Builder
 @Entity
@@ -28,7 +43,7 @@ public class EnvPermits {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "business_detail_id")
-    @JsonBackReference(value = "bussinessDetail-permits")
+    @JsonBackReference(value = "businessDetail-permits")
     BusinessDetail businessDetail;
 
     @Column(name = "permit_type", nullable = false)

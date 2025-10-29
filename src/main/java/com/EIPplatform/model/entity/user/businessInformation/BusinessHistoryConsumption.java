@@ -1,9 +1,12 @@
-package com.EIPplatform.model.entity.user.userInformation;
+package com.EIPplatform.model.entity.user.businessInformation;
+
+import java.time.LocalDateTime;
 
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import com.EIPplatform.configuration.AuditMetaData;
 import com.fasterxml.jackson.annotation.JsonBackReference;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
@@ -24,18 +27,18 @@ import lombok.experimental.FieldDefaults;
 
 @Builder
 @Entity
-@Table(name = "user_history_consumption")
+@Table(name = "business_history_consumption")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @EntityListeners(AuditingEntityListener.class)
-public class UserHistoryConsumption {
+public class BusinessHistoryConsumption {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "user_history_consumption_id", updatable = false, nullable = false)
-    Long userHistoryConsumptionId;
+    @Column(name = "business_history_consumption_id", updatable = false, nullable = false)
+    Long businessHistoryConsumptionId;
 
     @Column(nullable = false)
     String productVolume;
@@ -59,18 +62,28 @@ public class UserHistoryConsumption {
     String yearUpdated;
 
     @ManyToOne
-    @JoinColumn(name = "bussiness_detail_id", nullable = false)
-    @JsonBackReference(value = "bussinessDetail-historyConsumption-ref")
+    @JoinColumn(name = "business_detail_id", nullable = false)
+    @JsonBackReference(value = "businessDetail-historyConsumption-ref")
     BusinessDetail businessDetail;
-
-    @ManyToOne
-    @JoinColumn(name = "user_detail_id", nullable = false)
-    @JsonBackReference(value = "userDetail-historyConsumption-ref")
-    private UserDetail userDetail;
 
     @Embedded
     @Builder.Default
     AuditMetaData auditMetaData = new AuditMetaData();
 
+    public LocalDateTime getCreatedAt() {
+        return auditMetaData.getCreatedAt();
+    }
+
+    public String getCreatedBy() {
+        return auditMetaData.getCreatedBy();
+    }
+
+    public LocalDateTime getUpdatedAt() {
+        return auditMetaData.getUpdatedAt();
+    }
+
+    public String getUpdatedBy() {
+        return auditMetaData.getUpdatedBy();
+    }
 
 }

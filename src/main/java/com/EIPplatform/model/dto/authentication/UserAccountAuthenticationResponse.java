@@ -3,7 +3,8 @@ package com.EIPplatform.model.dto.authentication;
 import java.util.List;
 import java.util.UUID;
 
-import com.EIPplatform.model.dto.userInformation.UserDetailDTO;
+import com.EIPplatform.model.entity.user.userInformation.UserProfile;
+
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -17,6 +18,7 @@ import lombok.experimental.FieldDefaults;
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class UserAccountAuthenticationResponse {
+
     UUID userAccountId;
     String email;
     String password;
@@ -24,5 +26,5 @@ public class UserAccountAuthenticationResponse {
     String phoneNumber;
     String fullName;
     List<String> roles;
-    UserDetailDTO userDetail;
+    UserProfile userProfile;
 }

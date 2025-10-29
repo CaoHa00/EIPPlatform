@@ -4,15 +4,29 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
-import com.EIPplatform.model.entity.fileStorage.FileStorage;
-import com.EIPplatform.model.entity.user.userInformation.UserDetail;
-import jakarta.persistence.*;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import com.EIPplatform.configuration.AuditMetaData;
-import com.EIPplatform.model.entity.user.userInformation.BusinessDetail;
+import com.EIPplatform.model.entity.fileStorage.FileStorage;
+import com.EIPplatform.model.entity.user.businessInformation.BusinessDetail;
+import com.EIPplatform.model.entity.user.userInformation.UserProfile;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Embedded;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EntityListeners;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
 import jakarta.validation.constraints.Email;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -67,10 +81,9 @@ public class UserAccount {
     @Builder.Default
     Set<Role> roles = new HashSet<>();
 
-    @ManyToOne
-    @JoinColumn(name = "user_detail_id")
-    @JsonBackReference(value = "userDetailsAccount-ref")
-    UserDetail userDetail;
+    @OneToOne(mappedBy = "userAccount", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonBackReference(value = "userAccountUserProfile-ref")
+    private UserProfile userProfile;
 
     @ManyToOne
     @JoinColumn(name = "business_detail_id")

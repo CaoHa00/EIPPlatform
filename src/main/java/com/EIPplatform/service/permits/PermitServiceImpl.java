@@ -11,9 +11,9 @@ import com.EIPplatform.model.dto.permitshistory.EnvPermitDTO;
 import com.EIPplatform.model.dto.permitshistory.PermitFilterRequest;
 import com.EIPplatform.model.dto.permitshistory.UpdatePermitRequest;
 import com.EIPplatform.model.entity.permitshistory.EnvPermits;
-import com.EIPplatform.model.entity.user.userInformation.BusinessDetail;
+import com.EIPplatform.model.entity.user.businessInformation.BusinessDetail;
 import com.EIPplatform.repository.permitshistory.EnvPermitsRepository;
-import com.EIPplatform.repository.user.BussinessDetailRepository;
+import com.EIPplatform.repository.user.BusinessDetailRepository;
 import jakarta.annotation.Resource;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
@@ -36,7 +36,7 @@ import java.util.stream.Collectors;
 public class PermitServiceImpl implements PermitService {
 
     EnvPermitsRepository permitsRepository;
-    BussinessDetailRepository userDetailRepository;
+    BusinessDetailRepository userDetailRepository;
     StorageService storageService;
     PermitMapper permitMapper;
     ExceptionFactory exceptionFactory;
@@ -44,7 +44,7 @@ public class PermitServiceImpl implements PermitService {
     @Autowired
     public PermitServiceImpl(
             EnvPermitsRepository permitsRepository,
-            BussinessDetailRepository userDetailRepository,
+            BusinessDetailRepository userDetailRepository,
             StorageService storageService,
             PermitMapper permitMapper,
             ExceptionFactory exceptionFactory) {
@@ -211,8 +211,8 @@ public class PermitServiceImpl implements PermitService {
         BusinessDetail businessDetail = userDetailRepository.findByUserAccounts_UserAccountId(userId)
                 .orElseThrow(() -> exceptionFactory.createNotFoundException("UserDetail", "userId", userId, UserError.NOT_FOUND));
 
-        List<EnvPermits> permits = permitsRepository.findByBusinessDetail_BussinessDetailId(
-                businessDetail.getBussinessDetailId()
+        List<EnvPermits> permits = permitsRepository.findByBusinessDetail_BusinessDetailId(
+                businessDetail.getBusinessDetailId()
         );
 
         return permits.stream()

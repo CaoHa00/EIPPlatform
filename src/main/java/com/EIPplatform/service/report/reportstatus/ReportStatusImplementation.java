@@ -57,14 +57,14 @@ public class ReportStatusImplementation implements ReportStatusInterface {
             );
         }
 
-        ReportStatus entity = repository.findById(id).get();
-        if (entity.getReports() != null && !entity.getReports().isEmpty()) {
-            throw exceptionFactory.createCustomException(
-                    List.of("reports"),
-                    List.of(entity.getReports().size()),
-                    ReportError.INVALID_REPORT_OPERATION
-            );
-        }
+        // ReportStatus entity = repository.findById(id).get();
+        // if (entity.getReports() != null && !entity.getReports().isEmpty()) {
+        //     throw exceptionFactory.createCustomException(
+        //             List.of("reports"),
+        //             List.of(entity.getReports().size()),
+        //             ReportError.INVALID_REPORT_OPERATION
+        //     );
+        // }
 
         repository.deleteById(id);
         log.info("Deleted ReportStatus with id: {}", id);
@@ -101,8 +101,8 @@ public class ReportStatusImplementation implements ReportStatusInterface {
         ReportStatus entity = mapper.toEntity(dto);
         ReportStatus savedEntity = repository.save(entity);
 
-        log.info("Created ReportStatus: {} with code: {}",
-                savedEntity.getStatusName(), savedEntity.getStatusCode());
+        // log.info("Created ReportStatus: {} with code: {}",
+        //         savedEntity.getStatusName(), savedEntity.getStatusCode());
 
         return mapper.toDTO(savedEntity);
     }
@@ -114,30 +114,30 @@ public class ReportStatusImplementation implements ReportStatusInterface {
                         "ReportStatus", "statusId", id, ReportError.REPORT_STATUS_NOT_FOUND
                 ));
 
-        if (!existingEntity.getStatusName().equals(dto.getStatusName())
-                && repository.existsByStatusName(dto.getStatusName())) {
-            throw exceptionFactory.createAlreadyExistsException(
-                    "ReportStatus",
-                    "statusName",
-                    dto.getStatusName(),
-                    ReportError.REPORT_STATUS_DUPLICATE
-            );
-        }
+        // if (!existingEntity.getStatusName().equals(dto.getStatusName())
+        //         && repository.existsByStatusName(dto.getStatusName())) {
+        //     throw exceptionFactory.createAlreadyExistsException(
+        //             "ReportStatus",
+        //             "statusName",
+        //             dto.getStatusName(),
+        //             ReportError.REPORT_STATUS_DUPLICATE
+        //     );
+        // }
 
-        if (!existingEntity.getStatusCode().equals(dto.getStatusCode())
-                && repository.existsByStatusCode(dto.getStatusCode())) {
-            throw exceptionFactory.createAlreadyExistsException(
-                    "ReportStatus",
-                    "statusCode",
-                    dto.getStatusCode(),
-                    ReportError.REPORT_STATUS_DUPLICATE
-            );
-        }
+        // if (!existingEntity.getStatusCode().equals(dto.getStatusCode())
+        //         && repository.existsByStatusCode(dto.getStatusCode())) {
+        //     throw exceptionFactory.createAlreadyExistsException(
+        //             "ReportStatus",
+        //             "statusCode",
+        //             dto.getStatusCode(),
+        //             ReportError.REPORT_STATUS_DUPLICATE
+        //     );
+        // }
 
-        existingEntity.setStatusName(dto.getStatusName());
-        existingEntity.setStatusCode(dto.getStatusCode());
-        existingEntity.setStatusOrder(dto.getStatusOrder());
-        existingEntity.setDescription(dto.getDescription());
+        // existingEntity.setStatusName(dto.getStatusName());
+        // existingEntity.setStatusCode(dto.getStatusCode());
+        // existingEntity.setStatusOrder(dto.getStatusOrder());
+        // existingEntity.setDescription(dto.getDescription());
 
         ReportStatus updatedEntity = repository.save(existingEntity);
 
