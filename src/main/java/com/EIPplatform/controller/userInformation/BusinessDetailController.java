@@ -20,7 +20,7 @@ import com.EIPplatform.service.userInformation.BusinessDetailInterface;
 import lombok.RequiredArgsConstructor;
 
 @RestController
-@RequestMapping("/api/business-details")
+@RequestMapping("/api/v1/business-details")
 @RequiredArgsConstructor
 public class BusinessDetailController {
 

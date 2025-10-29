@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/api/business-history-consumptions")
+@RequestMapping("/api/v1/business-history-consumptions")
 @RequiredArgsConstructor
 public class BusinessHistoryConsumptionController {
 
