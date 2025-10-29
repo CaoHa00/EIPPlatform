@@ -4,8 +4,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import com.EIPplatform.model.entity.permitshistory.EnvComponentPermit;
 import com.EIPplatform.model.entity.permitshistory.EnvPermits;
 import com.EIPplatform.model.entity.report.Report;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.experimental.FieldDefaults;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
@@ -77,8 +79,12 @@ public class BusinessDetail {
     @JsonManagedReference(value = "businessDetail-reports")
     List<Report> reports;
 
-    @OneToMany(mappedBy = "businessDetail", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonManagedReference(value = "bussinessDetail-permits")
-    List<EnvPermits> envPermits;
+    @OneToOne(mappedBy = "businessDetail", fetch = FetchType.LAZY, optional = true, cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonBackReference(value = "businessDetail-mainPermit")
+    EnvPermits envPermits;
+
+    @OneToMany(mappedBy = "businessDetail", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonBackReference(value = "businessDetail-componentPermits")
+    List<EnvComponentPermit> envComponentPermits = new ArrayList<>();
 
 }

@@ -1,49 +1,33 @@
 package com.EIPplatform.repository.permitshistory;
 
 import com.EIPplatform.model.entity.permitshistory.EnvPermits;
-import com.EIPplatform.model.entity.user.userInformation.BusinessDetail;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import java.time.LocalDate;
-import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Repository
 public interface EnvPermitsRepository extends JpaRepository<EnvPermits, Long> {
 
-    List<EnvPermits> findByBusinessDetailAndIsActive(
-            BusinessDetail businessDetail, Boolean isActive
-    );
+    // Basic query methods for Main Permit (1:1 relationship)
+    Optional<EnvPermits> findByBusinessDetail_BussinessDetailId(UUID businessDetailId);
 
-    List<EnvPermits> findByBusinessDetail(BusinessDetail businessDetail);
+    boolean existsByBusinessDetail_BussinessDetailId(UUID businessDetailId);
 
-    @Query("SELECT ep FROM EnvPermits ep WHERE ep.businessDetail.bussinessDetailId = :userId " +
-            "AND (:permitType IS NULL OR ep.permitType = :permitType) " +
-            "AND (:isActive IS NULL OR ep.isActive = :isActive) " +
-            "AND (:issueDateFrom IS NULL OR ep.issueDate >= :issueDateFrom) " +
-            "AND (:issueDateTo IS NULL OR ep.issueDate <= :issueDateTo)")
-    List<EnvPermits> findByUserAndFilters(
-            @Param("userId") UUID userId,
-            @Param("permitType") String permitType,
-            @Param("isActive") Boolean isActive,
-            @Param("issueDateFrom") LocalDate issueDateFrom,
-            @Param("issueDateTo") LocalDate issueDateTo
-    );
+    // Query using userAccountId
+    @Query("SELECT p FROM EnvPermits p " +
+            "JOIN p.businessDetail bd " +
+            "JOIN bd.userAccounts ua " +
+            "WHERE ua.userAccountId = :userId")
+    Optional<EnvPermits> findByUserId(@Param("userId") UUID userId);
 
-    @Query("SELECT ep FROM EnvPermits ep WHERE ep.businessDetail.bussinessDetailId = :userId " +
-            "AND ep.issueDate < :expiryThreshold " +
-            "AND ep.isActive = true")
-    List<EnvPermits> findExpiringPermits(
-            @Param("userId") UUID userId,
-            @Param("expiryThreshold") LocalDate expiryThreshold
-    );
-
-    List<EnvPermits> findByBusinessDetail_BussinessDetailId(UUID businessDetailId);
-
-    @Query("SELECT COUNT(ep) FROM EnvPermits ep " +
-            "WHERE ep.businessDetail.bussinessDetailId = :userId AND ep.isActive = true")
-    Long countActivePermits(@Param("userId") UUID userId);
+    @Query("SELECT CASE WHEN COUNT(p) > 0 THEN true ELSE false END " +
+            "FROM EnvPermits p " +
+            "JOIN p.businessDetail bd " +
+            "JOIN bd.userAccounts ua " +
+            "WHERE ua.userAccountId = :userId")
+    boolean existsByUserId(@Param("userId") UUID userId);
 }

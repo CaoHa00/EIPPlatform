@@ -39,9 +39,4 @@ public class UserDetailDTO {
     @NotBlank(message = "FIELD_REQUIRED")
     String taxCode;
 
-    // Hôm sau thực thi logic cho các loại giấy phép môi trường
-    String envPermitNumber;
-    LocalDateTime envPermitIssueDate; // Ngày cấp phép môi trường
-    String envPermitIssuer; // Cơ quan cấp phép môi trường
-    String envPermitOthersNote;
 }

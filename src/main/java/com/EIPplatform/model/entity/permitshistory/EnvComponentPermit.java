@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 
 @Builder
 @Entity
-@Table(name = "env_permits", indexes = {
+@Table(name = "env_component_permits", indexes = {
         @Index(name = "idx_permit_number", columnList = "permit_number"),
         @Index(name = "idx_business_detail_id", columnList = "business_detail_id")
 })
@@ -20,28 +20,31 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class EnvPermits {
+public class EnvComponentPermit {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "permit_id", updatable = false, nullable = false)
     Long permitId;
 
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "business_detail_id", unique = true)
-    @JsonBackReference(value = "businessDetail-mainPermit")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "business_detail_id")
+    @JsonBackReference(value = "businessDetail-componentPermits")
     BusinessDetail businessDetail;
 
+    @Column(name = "permit_type", nullable = false)
+    String permitType;
+
+    @Column(name = "project_name", nullable = false)
+    String projectName;
+
     @Column(name = "permit_number", nullable = false)
-            String permitNumber;
+    String permitNumber;
 
     @Column(name = "issue_date", nullable = false)
     LocalDate issueDate;
 
     @Column(name = "issuer_org", nullable = false)
     String issuerOrg;
-
-    @Column(name = "project_name")
-    String projectName;
 
     @Column(name = "permit_file_path")
     String permitFilePath;
