@@ -1,32 +1,33 @@
 package com.EIPplatform.repository.permitshistory;
 
-import com.EIPplatform.model.entity.permitshistory.EnvComponentPermit;
+import java.util.List;
+import java.util.UUID;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import java.util.List;
-import java.util.UUID;
+import com.EIPplatform.model.entity.permitshistory.EnvComponentPermit;
 
 @Repository
 public interface EnvComponentPermitRepository extends JpaRepository<EnvComponentPermit, Long> {
 
     // Basic query methods by businessDetailId
-    List<EnvComponentPermit> findByBusinessDetail_BussinessDetailId(UUID businessDetailId);
+    List<EnvComponentPermit> findByBusinessDetail_BusinessDetailId(UUID businessDetailId);
 
-    List<EnvComponentPermit> findByBusinessDetail_BussinessDetailIdAndPermitType(
+    List<EnvComponentPermit> findByBusinessDetail_BusinessDetailIdAndPermitType(
             UUID businessDetailId, String permitType);
 
-    List<EnvComponentPermit> findByBusinessDetail_BussinessDetailIdAndIsActive(
+    List<EnvComponentPermit> findByBusinessDetail_BusinessDetailIdAndIsActive(
             UUID businessDetailId, Boolean isActive);
 
-    boolean existsByBusinessDetail_BussinessDetailIdAndPermitNumber(
+    boolean existsByBusinessDetail_BusinessDetailIdAndPermitNumber(
             UUID businessDetailId, String permitNumber);
 
-    long countByBusinessDetail_BussinessDetailId(UUID businessDetailId);
+    long countByBusinessDetail_BusinessDetailId(UUID businessDetailId);
 
-    long countByBusinessDetail_BussinessDetailIdAndIsActive(UUID businessDetailId, Boolean isActive);
+    long countByBusinessDetail_BusinessDetailIdAndIsActive(UUID businessDetailId, Boolean isActive);
 
     // Query using userAccountId
     @Query("SELECT cp FROM EnvComponentPermit cp " +
@@ -72,7 +73,7 @@ public interface EnvComponentPermitRepository extends JpaRepository<EnvComponent
 
     // Statistics
     @Query("SELECT cp.permitType, COUNT(cp) FROM EnvComponentPermit cp " +
-            "WHERE cp.businessDetail.bussinessDetailId = :businessDetailId " +
+            "WHERE cp.businessDetail.businessDetailId = :businessDetailId " +
             "GROUP BY cp.permitType")
     List<Object[]> countPermitsByType(@Param("businessDetailId") UUID businessDetailId);
 

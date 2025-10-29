@@ -14,9 +14,9 @@ import com.EIPplatform.model.entity.permitshistory.EnvPermits;
 public interface EnvPermitsRepository extends JpaRepository<EnvPermits, Long> {
 
     // Basic query methods for Main Permit (1:1 relationship)
-    Optional<EnvPermits> findByBusinessDetail_BussinessDetailId(UUID businessDetailId);
+    Optional<EnvPermits> findByBusinessDetail_BusinessDetailId(UUID businessDetailId);
 
-    boolean existsByBusinessDetail_BussinessDetailId(UUID businessDetailId);
+    boolean existsByBusinessDetail_BusinessDetailId(UUID businessDetailId);
 
     // Query using userAccountId
     @Query("SELECT p FROM EnvPermits p " +
