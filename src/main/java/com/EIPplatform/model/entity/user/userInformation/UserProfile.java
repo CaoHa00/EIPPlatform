@@ -1,12 +1,16 @@
 package com.EIPplatform.model.entity.user.userInformation;
 
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
+import com.EIPplatform.configuration.AuditMetaData;
+import com.EIPplatform.model.entity.user.authentication.UserAccount;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import jakarta.persistence.Column;
+import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
 import jakarta.persistence.GeneratedValue;
@@ -50,7 +54,27 @@ public class UserProfile {
     // Other information fields can be added here
 
     @OneToOne
-    @JoinColumn(name = "user_detail_id", nullable = false)
-    @JsonManagedReference(value = "userDetailsUserProfile-ref")
-    UserDetail userDetail;
+    @JoinColumn(name = "user_account_id", nullable = false)
+    @JsonManagedReference(value = "userAccountUserProfile-ref")
+    private UserAccount userAccount;
+
+    @Embedded
+    @Builder.Default
+    AuditMetaData auditMetaData = new AuditMetaData();
+
+     public LocalDateTime getCreatedAt() {
+        return auditMetaData.getCreatedAt();
+    }
+
+    public String getCreatedBy() {
+        return auditMetaData.getCreatedBy();
+    }
+
+    public LocalDateTime getUpdatedAt() {
+        return auditMetaData.getUpdatedAt();
+    }
+
+    public String getUpdatedBy() {
+        return auditMetaData.getUpdatedBy();
+    }
 }

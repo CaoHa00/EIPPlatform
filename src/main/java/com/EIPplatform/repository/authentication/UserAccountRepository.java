@@ -17,7 +17,7 @@ public interface UserAccountRepository extends JpaRepository<UserAccount, UUID> 
 
     void deleteByUserAccountId(UUID id);
 
-    List<UserAccount> findByUserDetailUserDetailId(UUID userDetailId);
+    List<UserAccount> findByUserProfileUserProfileId(UUID userDetailId);
 
     @Query("""
             select u

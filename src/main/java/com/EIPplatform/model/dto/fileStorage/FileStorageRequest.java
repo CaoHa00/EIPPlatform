@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class FileStorageRequest {
-      private String businessName;
+    private String businessName;
     private String sector;
     
     /**

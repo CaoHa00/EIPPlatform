@@ -1,27 +1,43 @@
-package com.EIPplatform.model.entity.user.userInformation;
+package com.EIPplatform.model.entity.user.businessInformation;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import com.EIPplatform.model.entity.permitshistory.EnvPermits;
-import com.EIPplatform.model.entity.report.Report;
-import jakarta.persistence.*;
-import lombok.experimental.FieldDefaults;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import com.EIPplatform.configuration.AuditMetaData;
+import com.EIPplatform.model.entity.permitshistory.EnvPermits;
+import com.EIPplatform.model.entity.report.Report;
 import com.EIPplatform.model.entity.user.authentication.UserAccount;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
-import lombok.*;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Embedded;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EntityListeners;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.experimental.FieldDefaults;
 
 @Entity
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "[bussiness_detail]")
+@Table(name = "[business_detail]")
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @EntityListeners(AuditingEntityListener.class)
@@ -29,8 +45,8 @@ public class BusinessDetail {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(name = "bussiness_detail_id", columnDefinition = "uniqueidentifier")
-    UUID bussinessDetailId;
+    @Column(name = "business_detail_id", columnDefinition = "uniqueidentifier")
+    UUID businessDetailId;
 
     @Column(nullable = false, unique = true)
     String companyName;
@@ -51,7 +67,7 @@ public class BusinessDetail {
     String scaleCapacity;
 
     @Column
-    String isoCertificate14001;
+    String ISO_certificate_14001;
 
     @Column(nullable = false)
     String businessRegistrationNumber;
@@ -60,9 +76,9 @@ public class BusinessDetail {
     String taxCode;
 
     @OneToMany(mappedBy = "businessDetail", fetch = FetchType.LAZY)
-    @JsonManagedReference(value = "bussinessDetail-historyConsumption-ref")
+    @JsonManagedReference(value = "businessDetail-historyConsumption-ref")
     @Builder.Default
-    List<UserHistoryConsumption> userHistoryConsumptions = new ArrayList<>();
+    List<BusinessHistoryConsumption> businessHistoryConsumptions = new ArrayList<>();
 
     @OneToMany(mappedBy = "businessDetail", fetch = FetchType.LAZY)
     @JsonManagedReference(value = "businessDetail-account-ref")
@@ -78,7 +94,22 @@ public class BusinessDetail {
     List<Report> reports;
 
     @OneToMany(mappedBy = "businessDetail", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonManagedReference(value = "bussinessDetail-permits")
+    @JsonManagedReference(value = "businessDetail-permits")
     List<EnvPermits> envPermits;
 
+     public LocalDateTime getCreatedAt() {
+        return auditMetaData.getCreatedAt();
+    }
+
+    public String getCreatedBy() {
+        return auditMetaData.getCreatedBy();
+    }
+
+    public LocalDateTime getUpdatedAt() {
+        return auditMetaData.getUpdatedAt();
+    }
+
+    public String getUpdatedBy() {
+        return auditMetaData.getUpdatedBy();
+    }
 }

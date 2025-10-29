@@ -1,7 +1,8 @@
 package com.EIPplatform.repository.permitshistory;
 
 import com.EIPplatform.model.entity.permitshistory.EnvPermits;
-import com.EIPplatform.model.entity.user.userInformation.BusinessDetail;
+import com.EIPplatform.model.entity.user.businessInformation.BusinessDetail;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -20,7 +21,7 @@ public interface EnvPermitsRepository extends JpaRepository<EnvPermits, Long> {
 
     List<EnvPermits> findByBusinessDetail(BusinessDetail businessDetail);
 
-    @Query("SELECT ep FROM EnvPermits ep WHERE ep.businessDetail.bussinessDetailId = :userId " +
+    @Query("SELECT ep FROM EnvPermits ep WHERE ep.businessDetail.businessDetailId = :userId " +
             "AND (:permitType IS NULL OR ep.permitType = :permitType) " +
             "AND (:isActive IS NULL OR ep.isActive = :isActive) " +
             "AND (:issueDateFrom IS NULL OR ep.issueDate >= :issueDateFrom) " +
@@ -33,7 +34,7 @@ public interface EnvPermitsRepository extends JpaRepository<EnvPermits, Long> {
             @Param("issueDateTo") LocalDate issueDateTo
     );
 
-    @Query("SELECT ep FROM EnvPermits ep WHERE ep.businessDetail.bussinessDetailId = :userId " +
+    @Query("SELECT ep FROM EnvPermits ep WHERE ep.businessDetail.businessDetailId = :userId " +
             "AND ep.issueDate < :expiryThreshold " +
             "AND ep.isActive = true")
     List<EnvPermits> findExpiringPermits(
@@ -41,9 +42,9 @@ public interface EnvPermitsRepository extends JpaRepository<EnvPermits, Long> {
             @Param("expiryThreshold") LocalDate expiryThreshold
     );
 
-    List<EnvPermits> findByBusinessDetail_BussinessDetailId(UUID businessDetailId);
+    List<EnvPermits> findByBusinessDetail_BusinessDetailId(UUID businessDetailId);
 
     @Query("SELECT COUNT(ep) FROM EnvPermits ep " +
-            "WHERE ep.businessDetail.bussinessDetailId = :userId AND ep.isActive = true")
+            "WHERE ep.businessDetail.businessDetailId = :userId AND ep.isActive = true")
     Long countActivePermits(@Param("userId") UUID userId);
 }

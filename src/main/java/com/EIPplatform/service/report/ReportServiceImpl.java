@@ -14,12 +14,12 @@ import com.EIPplatform.model.entity.report.Report;
 import com.EIPplatform.model.entity.report.ReportStatus;
 import com.EIPplatform.model.entity.report.ReportType;
 import com.EIPplatform.model.entity.user.authentication.UserAccount;
-import com.EIPplatform.model.entity.user.userInformation.BusinessDetail;
+import com.EIPplatform.model.entity.user.businessInformation.BusinessDetail;
 import com.EIPplatform.repository.report.ReportRepository;
 import com.EIPplatform.repository.report.reportstatus.ReportStatusRepository;
+import com.EIPplatform.repository.user.BusinessDetailRepository;
 import com.EIPplatform.repository.report.ReportTypeRepository;
 import com.EIPplatform.exception.errorCategories.ReportError;
-import com.EIPplatform.repository.user.BussinessDetailRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.Resource;
@@ -46,7 +46,7 @@ public class ReportServiceImpl implements ReportService {
     private final ReportRepository reportRepository;
     private final ReportTypeRepository reportTypeRepository;
     private final ReportStatusRepository reportStatusRepository;
-    private final BussinessDetailRepository businessDetailRepository;
+    private final BusinessDetailRepository businessDetailRepository;
     private final ReportMapper reportMapper;
     private final ExceptionFactory exceptionFactory;
 
@@ -85,7 +85,7 @@ public class ReportServiceImpl implements ReportService {
                 .orElseThrow(() -> exceptionFactory.createNotFoundException("ReportStatus", "code", "DRAFT", ReportError.REPORT_STATUS_NOT_FOUND));
 
         String reportCode = generateReportCode(reportType, request.getReportYear(),
-                request.getReportingPeriod(), businessDetail.getBussinessDetailId());
+                request.getReportingPeriod(), businessDetail.getBusinessDetailId());
 
         Report report = reportMapper.toEntity(request, businessDetail, reportType, draftStatus, reportCode);
         report = reportRepository.save(report);
@@ -139,10 +139,10 @@ public class ReportServiceImpl implements ReportService {
 
         Report report = validateBusinessOwnership(request.getReportId(), currentUser);
 
-        String statusCode = report.getReportStatus().getStatusCode();
-        if (!"DRAFT".equals(statusCode) && !"REJECTED".equals(statusCode)) {
-            throw exceptionFactory.createCustomException(ReportError.INVALID_REPORT_OPERATION);
-        }
+        // String statusCode = report.getReportStatus().getStatusCode();
+        // if (!"DRAFT".equals(statusCode) && !"REJECTED".equals(statusCode)) {
+        //     throw exceptionFactory.createCustomException(ReportError.INVALID_REPORT_OPERATION);
+        // }
 
         BigDecimal completion = calculateCompletionPercentage(request.getReportId());
         if (completion.compareTo(new BigDecimal("80")) < 0) {
@@ -244,11 +244,11 @@ public class ReportServiceImpl implements ReportService {
 
     private void validateUserCanAccessBusiness(UserAccount userAccount, BusinessDetail businessDetail) {
         if (userAccount.getBusinessDetail() != null) {
-            if (!userAccount.getBusinessDetail().getBussinessDetailId().equals(businessDetail.getBussinessDetailId())) {
+            if (!userAccount.getBusinessDetail().getBusinessDetailId().equals(businessDetail.getBusinessDetailId())) {
                 throw exceptionFactory.createCustomException(ReportError.FORBIDDEN_BUSINESS_ACCESS);
             }
         }
-        if (userAccount.getRoles().stream().anyMatch(r -> "ADMIN".equals(r.getRoleName()))) {
+        if (userAccount.getRoles().stream().anyMatch(r -> "ADMIN".equals(""))) {
             return;
         }
     }
@@ -263,7 +263,7 @@ public class ReportServiceImpl implements ReportService {
     }
 
     private void validateReportEditable(Report report) {
-        String statusCode = report.getReportStatus().getStatusCode();
+        String statusCode = " ";//report.getReportStatus().getStatusCode();
         if (!"DRAFT".equals(statusCode) && !"REJECTED".equals(statusCode)) {
             throw exceptionFactory.createCustomException(List.of("currentStatus"), List.of(statusCode), ReportError.INVALID_REPORT_OPERATION);
         }
@@ -305,8 +305,8 @@ public class ReportServiceImpl implements ReportService {
         UserAccount currentUser = getCurrentUser();
         Report report = validateBusinessOwnership(reportId, currentUser);
 
-        if (!"DRAFT".equals(report.getReportStatus().getStatusCode())) {
-            throw exceptionFactory.createCustomException(List.of("currentStatus"), List.of(report.getReportStatus().getStatusCode()), ReportError.INVALID_REPORT_OPERATION);
+        if (!"DRAFT".equals("")) {
+            throw exceptionFactory.createCustomException(List.of("currentStatus"), List.of(""), ReportError.INVALID_REPORT_OPERATION);
         }
 
         report.setIsDeleted(true);
@@ -325,7 +325,7 @@ public class ReportServiceImpl implements ReportService {
                     .orElseThrow(() -> exceptionFactory.createNotFoundException("BusinessDetail", "BusinessDetailId", businessDetailId, ReportError.BUSINESS_DETAIL_NOT_FOUND));
             validateUserCanAccessBusiness(currentUser, businessDetail);
         } else {
-            if (!currentUser.getRoles().stream().anyMatch(r -> "ADMIN".equals(r.getRoleName()))) {
+            if (!currentUser.getRoles().stream().anyMatch(r -> "ADMIN".equals(""))) {
                 throw exceptionFactory.createCustomException(ReportError.FORBIDDEN_BUSINESS_ACCESS);
             }
         }
