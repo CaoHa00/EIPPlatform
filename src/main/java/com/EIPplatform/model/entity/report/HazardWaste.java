@@ -22,10 +22,7 @@ public class HazardWaste {
     @Column(name = "hw_stat_id", updatable = false, nullable = false)
     Integer hwStatId;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "section_id")
-    @JsonBackReference(value = "section-hazard")
-    ReportSection reportSection;
+    
 
     @Column(name = "waste_name", nullable = false)
     String wasteName;
@@ -51,6 +48,6 @@ public class HazardWaste {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "report_id")
     @JsonBackReference(value = "report-hazard")
-    Report report;
+    Report_A05 report;
 
 }

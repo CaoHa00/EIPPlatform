@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.UUID;
 
 import com.EIPplatform.model.entity.permitshistory.EnvPermits;
-import com.EIPplatform.model.entity.report.Report;
+import com.EIPplatform.model.entity.report.Report_A05;
 import jakarta.persistence.*;
 import lombok.experimental.FieldDefaults;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
@@ -75,7 +75,7 @@ public class BusinessDetail {
 
     @OneToMany(mappedBy = "businessDetail", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JsonManagedReference(value = "businessDetail-reports")
-    List<Report> reports;
+    List<Report_A05> reports_A05;
 
     @OneToMany(mappedBy = "businessDetail", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference(value = "bussinessDetail-permits")

@@ -1,3 +1,4 @@
+
 package com.EIPplatform.model.entity.report;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
@@ -25,7 +26,7 @@ public class AutoMonStat {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "report_id")
     @JsonBackReference(value = "report-auto")
-    Report report;
+    Report_A05 report;
 
     @Column(name = "param_name", nullable = false)
     String paramName;

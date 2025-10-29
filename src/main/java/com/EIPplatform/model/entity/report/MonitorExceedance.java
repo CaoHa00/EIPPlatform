@@ -23,11 +23,6 @@ public class MonitorExceedance {
     @Column(name = "exceedance_id", updatable = false, nullable = false)
     Integer exceedanceId;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "section_id")
-    @JsonBackReference(value = "section-exceed")
-    ReportSection reportSection;  // Assume ReportSection exists for dynamic sections
-
     @Column(name = "point_name", nullable = false)
     String pointName;
 
@@ -58,6 +53,6 @@ public class MonitorExceedance {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "report_id")
     @JsonBackReference(value = "report-exceed")
-    private Report report;
+    private Report_A05 report;
 
 }

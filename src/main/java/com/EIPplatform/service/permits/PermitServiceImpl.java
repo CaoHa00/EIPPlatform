@@ -1,262 +1,262 @@
-package com.EIPplatform.service.permits;
+// package com.EIPplatform.service.permits;
 
-import com.EIPplatform.exception.ExceptionFactory;
-import com.EIPplatform.exception.errorCategories.ForbiddenError;
-import com.EIPplatform.exception.errorCategories.PermitError;
-import com.EIPplatform.exception.errorCategories.UserError;
-import com.EIPplatform.exception.errorCategories.ValidationError;
-import com.EIPplatform.mapper.permitshistory.PermitMapper;
-import com.EIPplatform.model.dto.permitshistory.CreatePermitRequest;
-import com.EIPplatform.model.dto.permitshistory.EnvPermitDTO;
-import com.EIPplatform.model.dto.permitshistory.PermitFilterRequest;
-import com.EIPplatform.model.dto.permitshistory.UpdatePermitRequest;
-import com.EIPplatform.model.entity.permitshistory.EnvPermits;
-import com.EIPplatform.model.entity.user.userInformation.BusinessDetail;
-import com.EIPplatform.repository.permitshistory.EnvPermitsRepository;
-import com.EIPplatform.repository.user.BussinessDetailRepository;
-import jakarta.annotation.Resource;
-import lombok.AccessLevel;
-import lombok.experimental.FieldDefaults;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
+// import com.EIPplatform.exception.ExceptionFactory;
+// import com.EIPplatform.exception.errorCategories.ForbiddenError;
+// import com.EIPplatform.exception.errorCategories.PermitError;
+// import com.EIPplatform.exception.errorCategories.UserError;
+// import com.EIPplatform.exception.errorCategories.ValidationError;
+// import com.EIPplatform.mapper.permitshistory.PermitMapper;
+// import com.EIPplatform.model.dto.permitshistory.CreatePermitRequest;
+// import com.EIPplatform.model.dto.permitshistory.EnvPermitDTO;
+// import com.EIPplatform.model.dto.permitshistory.PermitFilterRequest;
+// import com.EIPplatform.model.dto.permitshistory.UpdatePermitRequest;
+// import com.EIPplatform.model.entity.permitshistory.EnvPermits;
+// import com.EIPplatform.model.entity.user.userInformation.BusinessDetail;
+// import com.EIPplatform.repository.permitshistory.EnvPermitsRepository;
+// import com.EIPplatform.repository.user.BussinessDetailRepository;
+// import jakarta.annotation.Resource;
+// import lombok.AccessLevel;
+// import lombok.experimental.FieldDefaults;
+// import lombok.extern.slf4j.Slf4j;
+// import org.springframework.beans.factory.annotation.Autowired;
+// import org.springframework.stereotype.Service;
+// import org.springframework.transaction.annotation.Transactional;
+// import org.springframework.web.multipart.MultipartFile;
 
-import java.time.LocalDate;
-import java.util.Arrays;
-import java.util.List;
-import java.util.UUID;
-import java.util.stream.Collectors;
+// import java.time.LocalDate;
+// import java.util.Arrays;
+// import java.util.List;
+// import java.util.UUID;
+// import java.util.stream.Collectors;
 
-@Service
-@Transactional
-@Slf4j
-@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-public class PermitServiceImpl implements PermitService {
+// @Service
+// @Transactional
+// @Slf4j
+// @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+// public class PermitServiceImpl implements PermitService {
 
-    EnvPermitsRepository permitsRepository;
-    BussinessDetailRepository userDetailRepository;
-    StorageService storageService;
-    PermitMapper permitMapper;
-    ExceptionFactory exceptionFactory;
+//     EnvPermitsRepository permitsRepository;
+//     BussinessDetailRepository userDetailRepository;
+//     StorageService storageService;
+//     PermitMapper permitMapper;
+//     ExceptionFactory exceptionFactory;
 
-    @Autowired
-    public PermitServiceImpl(
-            EnvPermitsRepository permitsRepository,
-            BussinessDetailRepository userDetailRepository,
-            StorageService storageService,
-            PermitMapper permitMapper,
-            ExceptionFactory exceptionFactory) {
-        this.permitsRepository = permitsRepository;
-        this.userDetailRepository = userDetailRepository;
-        this.storageService = storageService;
-        this.permitMapper = permitMapper;
-        this.exceptionFactory = exceptionFactory;
-    }
+//     @Autowired
+//     public PermitServiceImpl(
+//             EnvPermitsRepository permitsRepository,
+//             BussinessDetailRepository userDetailRepository,
+//             StorageService storageService,
+//             PermitMapper permitMapper,
+//             ExceptionFactory exceptionFactory) {
+//         this.permitsRepository = permitsRepository;
+//         this.userDetailRepository = userDetailRepository;
+//         this.storageService = storageService;
+//         this.permitMapper = permitMapper;
+//         this.exceptionFactory = exceptionFactory;
+//     }
 
-    @Override
-    public EnvPermitDTO createPermit(UUID userId, CreatePermitRequest request, MultipartFile file) {
+//     @Override
+//     public EnvPermitDTO createPermit(UUID userId, CreatePermitRequest request, MultipartFile file) {
 
-        BusinessDetail businessDetail = userDetailRepository.findByUserAccounts_UserAccountId(userId)
-                .orElseThrow(() -> exceptionFactory.createNotFoundException("UserDetail", "userId", userId, UserError.NOT_FOUND));
+//         BusinessDetail businessDetail = userDetailRepository.findByUserAccounts_UserAccountId(userId)
+//                 .orElseThrow(() -> exceptionFactory.createNotFoundException("UserDetail", "userId", userId, UserError.NOT_FOUND));
 
-        EnvPermits permit = permitMapper.toEntity(request, businessDetail);
+//         EnvPermits permit = permitMapper.toEntity(request, businessDetail);
 
-        if (file != null && !file.isEmpty()) {
-            validatePermitFile(file);
-            String filePath = storageService.uploadFile(file, "permits");
-            permit.setPermitFilePath(filePath);
-        }
+//         if (file != null && !file.isEmpty()) {
+//             validatePermitFile(file);
+//             String filePath = storageService.uploadFile(file, "permits");
+//             permit.setPermitFilePath(filePath);
+//         }
 
-        permit = permitsRepository.save(permit);
-        log.info("Permit created successfully: {}", permit.getPermitId());
-        return permitMapper.toDTO(permit);
-    }
+//         permit = permitsRepository.save(permit);
+//         log.info("Permit created successfully: {}", permit.getPermitId());
+//         return permitMapper.toDTO(permit);
+//     }
 
-    @Override
-    public EnvPermitDTO updatePermit(UUID userId, Long permitId, UpdatePermitRequest request) {
-        log.info("Updating permit: {} for user: {}", permitId, userId);
+//     @Override
+//     public EnvPermitDTO updatePermit(UUID userId, Long permitId, UpdatePermitRequest request) {
+//         log.info("Updating permit: {} for user: {}", permitId, userId);
 
-        EnvPermits permit = getPermitAndValidateOwnership(permitId, userId);
+//         EnvPermits permit = getPermitAndValidateOwnership(permitId, userId);
 
-        String oldValues = String.format("Type: %s, Number: %s",
-                permit.getPermitType(), permit.getPermitNumber());
+//         String oldValues = String.format("Type: %s, Number: %s",
+//                 permit.getPermitType(), permit.getPermitNumber());
 
-        permitMapper.updateEntityFromDTO(request, permit);
-        permit = permitsRepository.save(permit);
+//         permitMapper.updateEntityFromDTO(request, permit);
+//         permit = permitsRepository.save(permit);
 
-        log.info("Permit updated successfully: {}", permitId);
-        return permitMapper.toDTO(permit);
-    }
+//         log.info("Permit updated successfully: {}", permitId);
+//         return permitMapper.toDTO(permit);
+//     }
 
-    @Override
-    public EnvPermitDTO uploadPermitFile(UUID userId, Long permitId, MultipartFile file) {
-        log.info("Uploading file for permit: {}", permitId);
+//     @Override
+//     public EnvPermitDTO uploadPermitFile(UUID userId, Long permitId, MultipartFile file) {
+//         log.info("Uploading file for permit: {}", permitId);
 
-        EnvPermits permit = getPermitAndValidateOwnership(permitId, userId);
+//         EnvPermits permit = getPermitAndValidateOwnership(permitId, userId);
 
-        validatePermitFile(file);
+//         validatePermitFile(file);
 
-        if (permit.getPermitFilePath() != null) {
-            storageService.deleteFile(permit.getPermitFilePath());
-        }
+//         if (permit.getPermitFilePath() != null) {
+//             storageService.deleteFile(permit.getPermitFilePath());
+//         }
 
-        String filePath = storageService.uploadFile(file, "permits");
-        permit.setPermitFilePath(filePath);
-        permit = permitsRepository.save(permit);
+//         String filePath = storageService.uploadFile(file, "permits");
+//         permit.setPermitFilePath(filePath);
+//         permit = permitsRepository.save(permit);
 
-        log.info("Permit file uploaded successfully: {}", permitId);
-        return permitMapper.toDTO(permit);
-    }
+//         log.info("Permit file uploaded successfully: {}", permitId);
+//         return permitMapper.toDTO(permit);
+//     }
 
-    @Override
-    @Transactional(readOnly = true)
-    public List<EnvPermitDTO> getPermitsByUser(UUID userId, PermitFilterRequest filter) {
-        log.info("Getting permits for user: {}", userId);
+//     @Override
+//     @Transactional(readOnly = true)
+//     public List<EnvPermitDTO> getPermitsByUser(UUID userId, PermitFilterRequest filter) {
+//         log.info("Getting permits for user: {}", userId);
 
-        List<EnvPermits> permitList = permitsRepository.findByUserAndFilters(
-                userId,
-                filter.getPermitType(),
-                filter.getIsActive(),
-                filter.getIssueDateFrom(),
-                filter.getIssueDateTo()
-        );
+//         List<EnvPermits> permitList = permitsRepository.findByUserAndFilters(
+//                 userId,
+//                 filter.getPermitType(),
+//                 filter.getIsActive(),
+//                 filter.getIssueDateFrom(),
+//                 filter.getIssueDateTo()
+//         );
 
-        return permitList.stream()
-                .map(permitMapper::toDTO)
-                .collect(Collectors.toList());
-    }
+//         return permitList.stream()
+//                 .map(permitMapper::toDTO)
+//                 .collect(Collectors.toList());
+//     }
 
-    @Override
-    @Transactional(readOnly = true)
-    public EnvPermitDTO getPermitById(UUID userId, Long permitId) {
-        log.info("Getting permit: {} for user: {}", permitId, userId);
+//     @Override
+//     @Transactional(readOnly = true)
+//     public EnvPermitDTO getPermitById(UUID userId, Long permitId) {
+//         log.info("Getting permit: {} for user: {}", permitId, userId);
 
-        EnvPermits permit = getPermitAndValidateOwnership(permitId, userId);
-        return permitMapper.toDTO(permit);
-    }
+//         EnvPermits permit = getPermitAndValidateOwnership(permitId, userId);
+//         return permitMapper.toDTO(permit);
+//     }
 
-    @Override
-    public void deactivatePermit(UUID userId, Long permitId) {
-        log.info("Deactivating permit: {}", permitId);
+//     @Override
+//     public void deactivatePermit(UUID userId, Long permitId) {
+//         log.info("Deactivating permit: {}", permitId);
 
-        EnvPermits permit = getPermitAndValidateOwnership(permitId, userId);
-        permit.setIsActive(false);
-        permitsRepository.save(permit);
+//         EnvPermits permit = getPermitAndValidateOwnership(permitId, userId);
+//         permit.setIsActive(false);
+//         permitsRepository.save(permit);
 
-        log.info("Permit deactivated successfully: {}", permitId);
-    }
+//         log.info("Permit deactivated successfully: {}", permitId);
+//     }
 
-    @Override
-    public void activatePermit(UUID userId, Long permitId) {
-        log.info("Activating permit: {}", permitId);
+//     @Override
+//     public void activatePermit(UUID userId, Long permitId) {
+//         log.info("Activating permit: {}", permitId);
 
-        EnvPermits permit = getPermitAndValidateOwnership(permitId, userId);
-        permit.setIsActive(true);
-        permitsRepository.save(permit);
+//         EnvPermits permit = getPermitAndValidateOwnership(permitId, userId);
+//         permit.setIsActive(true);
+//         permitsRepository.save(permit);
 
-        log.info("Permit activated successfully: {}", permitId);
-    }
+//         log.info("Permit activated successfully: {}", permitId);
+//     }
 
-    @Override
-    public void deletePermit(UUID userId, Long permitId) {
-        log.info("Deleting permit: {}", permitId);
+//     @Override
+//     public void deletePermit(UUID userId, Long permitId) {
+//         log.info("Deleting permit: {}", permitId);
 
-        EnvPermits permit = getPermitAndValidateOwnership(permitId, userId);
+//         EnvPermits permit = getPermitAndValidateOwnership(permitId, userId);
 
-        if (permit.getPermitFilePath() != null) {
-            storageService.deleteFile(permit.getPermitFilePath());
-        }
+//         if (permit.getPermitFilePath() != null) {
+//             storageService.deleteFile(permit.getPermitFilePath());
+//         }
 
-        permitsRepository.delete(permit);
+//         permitsRepository.delete(permit);
 
-        log.info("Permit deleted successfully: {}", permitId);
-    }
+//         log.info("Permit deleted successfully: {}", permitId);
+//     }
 
-    @Override
-    @Transactional(readOnly = true)
-    public Resource downloadPermitFile(UUID userId, Long permitId) {
-        log.info("Downloading permit file: {}", permitId);
+//     @Override
+//     @Transactional(readOnly = true)
+//     public Resource downloadPermitFile(UUID userId, Long permitId) {
+//         log.info("Downloading permit file: {}", permitId);
 
-        EnvPermits permit = getPermitAndValidateOwnership(permitId, userId);
+//         EnvPermits permit = getPermitAndValidateOwnership(permitId, userId);
 
-        if (permit.getPermitFilePath() == null) {
-            throw exceptionFactory.createNotFoundException("PermitFile", "permitId", permitId, PermitError.FILE_NOT_FOUND);
-        }
+//         if (permit.getPermitFilePath() == null) {
+//             throw exceptionFactory.createNotFoundException("PermitFile", "permitId", permitId, PermitError.FILE_NOT_FOUND);
+//         }
 
-        return (Resource) storageService.downloadFile(permit.getPermitFilePath());
-    }
+//         return (Resource) storageService.downloadFile(permit.getPermitFilePath());
+//     }
 
-    @Override
-    @Transactional(readOnly = true)
-    public List<EnvPermitDTO> getExpiringPermits(UUID userId, int daysThreshold) {
-        log.info("Getting expiring permits for user: {} with threshold: {} days",
-                userId, daysThreshold);
+//     @Override
+//     @Transactional(readOnly = true)
+//     public List<EnvPermitDTO> getExpiringPermits(UUID userId, int daysThreshold) {
+//         log.info("Getting expiring permits for user: {} with threshold: {} days",
+//                 userId, daysThreshold);
 
-        LocalDate thresholdDate = LocalDate.now().minusYears(5).plusDays(daysThreshold);
+//         LocalDate thresholdDate = LocalDate.now().minusYears(5).plusDays(daysThreshold);
 
-        List<EnvPermits> expiringPermits = permitsRepository.findExpiringPermits(userId, thresholdDate);
+//         List<EnvPermits> expiringPermits = permitsRepository.findExpiringPermits(userId, thresholdDate);
 
-        return expiringPermits.stream()
-                .map(permitMapper::toDTO)
-                .collect(Collectors.toList());
-    }
+//         return expiringPermits.stream()
+//                 .map(permitMapper::toDTO)
+//                 .collect(Collectors.toList());
+//     }
 
-    @Override
-    @Transactional(readOnly = true)
-    public List<EnvPermitDTO> getAllPermitsByUser(UUID userId) {
-        log.info("Getting all permits for user: {}", userId);
+//     @Override
+//     @Transactional(readOnly = true)
+//     public List<EnvPermitDTO> getAllPermitsByUser(UUID userId) {
+//         log.info("Getting all permits for user: {}", userId);
 
-        BusinessDetail businessDetail = userDetailRepository.findByUserAccounts_UserAccountId(userId)
-                .orElseThrow(() -> exceptionFactory.createNotFoundException("UserDetail", "userId", userId, UserError.NOT_FOUND));
+//         BusinessDetail businessDetail = userDetailRepository.findByUserAccounts_UserAccountId(userId)
+//                 .orElseThrow(() -> exceptionFactory.createNotFoundException("UserDetail", "userId", userId, UserError.NOT_FOUND));
 
-        List<EnvPermits> permits = permitsRepository.findByBusinessDetail_BussinessDetailId(
-                businessDetail.getBussinessDetailId()
-        );
+//         List<EnvPermits> permits = permitsRepository.findByBusinessDetail_BussinessDetailId(
+//                 businessDetail.getBussinessDetailId()
+//         );
 
-        return permits.stream()
-                .map(permitMapper::toDTO)
-                .collect(Collectors.toList());
-    }
-
-
-    private EnvPermits getPermitAndValidateOwnership(Long permitId, UUID userId) {
-        EnvPermits permit = permitsRepository.findById(permitId)
-                .orElseThrow(() -> exceptionFactory.createNotFoundException(
-                        "EnvPermits", "permitId", permitId, PermitError.NOT_FOUND));
-
-        BusinessDetail businessDetail = permit.getBusinessDetail();
-
-        boolean isOwner = businessDetail.getUserAccounts().stream()
-                .anyMatch(account -> account.getUserAccountId().equals(userId));
-
-        if (!isOwner) {
-            throw exceptionFactory.createCustomException(
-                    "Permit",
-                    Arrays.asList("accessReason"),
-                    Arrays.asList("You do not have access to this license"),
-                    ForbiddenError.FORBIDDEN
-            );
-        }
-
-        return permit;
-    }
+//         return permits.stream()
+//                 .map(permitMapper::toDTO)
+//                 .collect(Collectors.toList());
+//     }
 
 
-    private void validatePermitFile(MultipartFile file) {
-        if (file.isEmpty()) {
-            throw exceptionFactory.createValidationException("File", "empty", true, ValidationError.EMPTY_FILE);
-        }
+//     private EnvPermits getPermitAndValidateOwnership(Long permitId, UUID userId) {
+//         EnvPermits permit = permitsRepository.findById(permitId)
+//                 .orElseThrow(() -> exceptionFactory.createNotFoundException(
+//                         "EnvPermits", "permitId", permitId, PermitError.NOT_FOUND));
 
-        String contentType = file.getContentType();
-        if (!"application/pdf".equals(contentType)) {
-            throw exceptionFactory.createValidationException("File", "contentType", contentType, ValidationError.INVALID_TYPE);
-        }
+//         BusinessDetail businessDetail = permit.getBusinessDetail();
 
-        long maxSize = 10 * 1024 * 1024;
-        if (file.getSize() > maxSize) {
-            throw exceptionFactory.createValidationException("File", "size", file.getSize(), ValidationError.TOO_LARGE);
-        }
-    }
-}
+//         boolean isOwner = businessDetail.getUserAccounts().stream()
+//                 .anyMatch(account -> account.getUserAccountId().equals(userId));
+
+//         if (!isOwner) {
+//             throw exceptionFactory.createCustomException(
+//                     "Permit",
+//                     Arrays.asList("accessReason"),
+//                     Arrays.asList("You do not have access to this license"),
+//                     ForbiddenError.FORBIDDEN
+//             );
+//         }
+
+//         return permit;
+//     }
+
+
+//     private void validatePermitFile(MultipartFile file) {
+//         if (file.isEmpty()) {
+//             throw exceptionFactory.createValidationException("File", "empty", true, ValidationError.EMPTY_FILE);
+//         }
+
+//         String contentType = file.getContentType();
+//         if (!"application/pdf".equals(contentType)) {
+//             throw exceptionFactory.createValidationException("File", "contentType", contentType, ValidationError.INVALID_TYPE);
+//         }
+
+//         long maxSize = 10 * 1024 * 1024;
+//         if (file.getSize() > maxSize) {
+//             throw exceptionFactory.createValidationException("File", "size", file.getSize(), ValidationError.TOO_LARGE);
+//         }
+//     }
+// }
