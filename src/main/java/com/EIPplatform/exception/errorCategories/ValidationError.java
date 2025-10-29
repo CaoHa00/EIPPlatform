@@ -52,7 +52,30 @@ public enum ValidationError implements ErrorCodeInterface {
     FIELD_MIN(9036, "This field must be at least {0}", HttpStatus.BAD_REQUEST),
     FIELD_MAX(9037, "This field must be at most {0}", HttpStatus.BAD_REQUEST),
     INVALID_TYPE(9038, "Invalid file type", HttpStatus.BAD_REQUEST),
-    TOO_LARGE(9039, "File is too large", HttpStatus.BAD_REQUEST);
+    TOO_LARGE(9039, "File is too large", HttpStatus.BAD_REQUEST),
+    DUPLICATE_VALUE(9040, "Duplicate value found", HttpStatus.BAD_REQUEST),
+
+    // Permit-specific validation errors (9041-9060)
+    INVALID_STATE(9041, "Invalid state for this operation", HttpStatus.BAD_REQUEST),
+    MAIN_PERMIT_ALREADY_EXISTS(9042, "Main environmental permit already exists for this business", HttpStatus.BAD_REQUEST),
+    COMPONENT_PERMITS_EXIST(9043, "Cannot create main permit when component permits exist", HttpStatus.BAD_REQUEST),
+    MAIN_PERMIT_EXISTS(9044, "Cannot create component permits when main permit exists", HttpStatus.BAD_REQUEST),
+    INVALID_PERMIT_NUMBER(9045, "Invalid permit number format", HttpStatus.BAD_REQUEST),
+    DUPLICATE_PERMIT_NUMBER(9046, "Permit number already exists", HttpStatus.BAD_REQUEST),
+    INVALID_ISSUE_DATE(9047, "Issue date cannot be in the future", HttpStatus.BAD_REQUEST),
+    INVALID_PERMIT_TYPE(9048, "Invalid permit type", HttpStatus.BAD_REQUEST),
+    PERMIT_FILE_REQUIRED(9049, "Permit file is required", HttpStatus.BAD_REQUEST),
+    INVALID_FILE_EXTENSION(9050, "Invalid file extension. Only PDF, JPG, JPEG, PNG are allowed", HttpStatus.BAD_REQUEST),
+    FILE_SIZE_EXCEEDED(9051, "File size exceeds maximum allowed size (10MB)", HttpStatus.BAD_REQUEST),
+    PERMIT_ALREADY_ACTIVE(9052, "Permit is already active", HttpStatus.BAD_REQUEST),
+    PERMIT_ALREADY_INACTIVE(9053, "Permit is already inactive", HttpStatus.BAD_REQUEST),
+    BATCH_SIZE_EXCEEDED(9054, "Batch size exceeds maximum allowed limit", HttpStatus.BAD_REQUEST),
+    DUPLICATE_IN_BATCH(9055, "Duplicate permit numbers found in batch request", HttpStatus.BAD_REQUEST),
+    INVALID_ISSUER_ORG(9056, "Invalid issuer organization", HttpStatus.BAD_REQUEST),
+    INVALID_PROJECT_NAME(9057, "Invalid project name", HttpStatus.BAD_REQUEST),
+    PERMIT_EXPIRED(9058, "Permit has expired", HttpStatus.BAD_REQUEST),
+    NO_PERMITS_TO_DELETE(9059, "No permits found to delete", HttpStatus.BAD_REQUEST),
+    CANNOT_DELETE_ACTIVE_PERMIT(9060, "Cannot delete active permit. Please deactivate first", HttpStatus.BAD_REQUEST);
 
     int code;
     String message;
