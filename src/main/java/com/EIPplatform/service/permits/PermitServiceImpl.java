@@ -652,41 +652,8 @@ public class PermitServiceImpl implements PermitService {
     @Transactional(readOnly = true)
     public Resource downloadEnvPermitFile(UUID userAccountId) {
         BusinessDetail businessDetail = getBusinessDetailByUserAccountId(userAccountId);
-
-<<<<<<< HEAD
         EnvPermits envPermit = envPermitsRepository
                 .findByBusinessDetail_BussinessDetailId(businessDetail.getBussinessDetailId())
-=======
-        LocalDate thresholdDate = LocalDate.now().minusYears(5).plusDays(daysThreshold);
-
-        List<EnvPermits> expiringPermits = permitsRepository.findExpiringPermits(userId, thresholdDate);
-
-        return expiringPermits.stream()
-                .map(permitMapper::toDTO)
-                .collect(Collectors.toList());
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public List<EnvPermitDTO> getAllPermitsByUser(UUID userId) {
-        log.info("Getting all permits for user: {}", userId);
-
-        BusinessDetail businessDetail = userDetailRepository.findByUserAccounts_UserAccountId(userId)
-                .orElseThrow(() -> exceptionFactory.createNotFoundException("UserDetail", "userId", userId, UserError.NOT_FOUND));
-
-        List<EnvPermits> permits = permitsRepository.findByBusinessDetail_BusinessDetailId(
-                businessDetail.getBusinessDetailId()
-        );
-
-        return permits.stream()
-                .map(permitMapper::toDTO)
-                .collect(Collectors.toList());
-    }
-
-
-    private EnvPermits getPermitAndValidateOwnership(Long permitId, UUID userId) {
-        EnvPermits permit = permitsRepository.findById(permitId)
->>>>>>> origin/develop
                 .orElseThrow(() -> exceptionFactory.createNotFoundException(
                         "EnvPermit", "businessDetailId", businessDetail.getBussinessDetailId(),
                         PermitError.NOT_FOUND));
