@@ -1,8 +1,6 @@
 package com.EIPplatform.model.dto.api;
 
 import java.util.UUID;
-import com.EIPplatform.model.dto.userInformation.UserDetailDTO;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -24,7 +22,4 @@ public class UserAccountDTO {
     // boolean enable;
     String fullName;
     String phoneNumber;
-    
-    @JsonIgnore
-    UserDetailDTO userDetail;
 }

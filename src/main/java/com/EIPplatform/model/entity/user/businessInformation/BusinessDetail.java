@@ -1,16 +1,20 @@
-package com.EIPplatform.model.entity.user.userInformation;
+package com.EIPplatform.model.entity.user.businessInformation;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
-
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import com.EIPplatform.configuration.AuditMetaData;
+import com.EIPplatform.model.entity.permitshistory.EnvComponentPermit;
+import com.EIPplatform.model.entity.permitshistory.EnvPermits;
+import com.EIPplatform.model.entity.report.Report;
 import com.EIPplatform.model.entity.user.authentication.UserAccount;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
@@ -30,27 +34,27 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.FieldDefaults;
 
-
 @Entity
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "[user_detail]")
+@Table(name = "[business_detail]")
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @EntityListeners(AuditingEntityListener.class)
-public class UserDetail {
+public class BusinessDetail {
+
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(columnDefinition = "uniqueidentifier")
-    UUID userDetailId;
+    @Column(name = "business_detail_id", columnDefinition = "uniqueidentifier")
+    UUID businessDetailId;
 
     @Column(nullable = false, unique = true)
     String companyName;
 
     @Column(nullable = false)
-    String legalPresentative;
+    String legalRepresentative;
 
     @Column(nullable = false)
     String phoneNumber;
@@ -64,7 +68,7 @@ public class UserDetail {
     @Column(nullable = false)
     String scaleCapacity;
 
-    @Column(nullable = true)
+    @Column
     String ISO_certificate_14001;
 
     @Column(nullable = false)
@@ -73,25 +77,33 @@ public class UserDetail {
     @Column(nullable = false, unique = true)
     String taxCode;
 
-    @OneToMany(mappedBy = "userDetail", fetch = FetchType.LAZY)
-    @JsonManagedReference(value = "userDetailsHistoryConsumption-ref")
+    @OneToMany(mappedBy = "businessDetail", fetch = FetchType.LAZY)
+    @JsonManagedReference(value = "businessDetail-historyConsumption-ref")
     @Builder.Default
-    List<UserHistoryConsumption> userHistoryConsumptions = new ArrayList<>();
+    List<BusinessHistoryConsumption> businessHistoryConsumptions = new ArrayList<>();
 
-    @OneToMany(mappedBy = "userDetail", fetch = FetchType.LAZY)
-    @JsonManagedReference(value = "userDetailsAccount-ref")
+    @OneToMany(mappedBy = "businessDetail", fetch = FetchType.LAZY)
+    @JsonManagedReference(value = "businessDetail-account-ref")
     @Builder.Default
     List<UserAccount> userAccounts = new ArrayList<>();
-
-    @OneToOne(mappedBy = "userDetail", fetch = FetchType.LAZY)
-    @JsonManagedReference(value = "userDetailsUserProfile-ref")
-    UserProfile userProfile;
 
     @Embedded
     @Builder.Default
     AuditMetaData auditMetaData = new AuditMetaData();
 
-    public LocalDateTime getCreatedAt() {
+    @OneToMany(mappedBy = "businessDetail", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonManagedReference(value = "businessDetail-reports")
+    List<Report> reports;
+
+    @OneToOne(mappedBy = "businessDetail", fetch = FetchType.LAZY, optional = true, cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonBackReference(value = "businessDetail-mainPermit")
+    EnvPermits envPermits;
+
+    @OneToMany(mappedBy = "businessDetail", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonBackReference(value = "businessDetail-componentPermits")
+    List<EnvComponentPermit> envComponentPermits = new ArrayList<>();
+
+     public LocalDateTime getCreatedAt() {
         return auditMetaData.getCreatedAt();
     }
 
@@ -106,5 +118,4 @@ public class UserDetail {
     public String getUpdatedBy() {
         return auditMetaData.getUpdatedBy();
     }
-
 }

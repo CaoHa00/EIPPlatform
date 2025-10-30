@@ -1,68 +1,57 @@
 package com.EIPplatform.service.permits;
 
-import com.EIPplatform.model.dto.permitshistory.CreatePermitRequest;
-import com.EIPplatform.model.dto.permitshistory.EnvPermitDTO;
-import com.EIPplatform.model.dto.permitshistory.PermitFilterRequest;
-import com.EIPplatform.model.dto.permitshistory.UpdatePermitRequest;
-import jakarta.annotation.Resource;
+import com.EIPplatform.model.dto.permitshistory.*;
+import org.springframework.core.io.Resource;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.UUID;
 
 public interface PermitService {
-    /**
-     * Tạo giấy phép môi trường mới
-     */
-    EnvPermitDTO createPermit(UUID userId, CreatePermitRequest request, MultipartFile file);
 
-    /**
-     * Cập nhật thông tin giấy phép
-     */
-    EnvPermitDTO updatePermit(UUID userId, Long permitId, UpdatePermitRequest request);
+    // ==================== ENV PERMITS ====================
+    EnvPermitDTO createEnvPermit(UUID userAccountId, CreateMainPermitRequest request, MultipartFile file);
+    EnvPermitDTO getEnvPermit(UUID userAccountId);
+    boolean hasEnvPermit(UUID userAccountId);
+    EnvPermitDTO updateEnvPermit(UUID userAccountId, UpdateEnvPermitRequest request,MultipartFile file);
+    void deleteEnvPermit(UUID userAccountId);
+    void activateEnvPermit(UUID userAccountId);
+    void deactivateEnvPermit(UUID userAccountId);
 
-    /**
-     * Upload file giấy phép
-     */
-    EnvPermitDTO uploadPermitFile(UUID userId, Long permitId, MultipartFile file);
+    // ==================== COMPONENT PERMITS ====================
+    EnvComponentPermitDTO createComponentPermit(UUID userAccountId, CreateComponentPermitRequest request, MultipartFile file);
+    List<EnvComponentPermitDTO> createMultipleComponentPermits(UUID userAccountId, List<CreateComponentPermitRequest> requests);
+    EnvComponentPermitDTO getComponentPermitById(UUID userAccountId, Long permitId);
+    List<EnvComponentPermitDTO> getAllComponentPermits(UUID userAccountId);
+    List<EnvComponentPermitDTO> getComponentPermitsByType(UUID userAccountId, String permitType);
+    List<EnvComponentPermitDTO> getActiveComponentPermits(UUID userAccountId);
+    List<EnvComponentPermitDTO> getInactiveComponentPermits(UUID userAccountId);
+    List<EnvComponentPermitDTO> searchComponentPermits(UUID userAccountId, String keyword);
+    EnvComponentPermitDTO updateComponentPermit(UUID userAccountId, Long permitId, UpdateComponentPermitRequest request,MultipartFile file);
+    void activateComponentPermit(UUID userAccountId, Long permitId);
+    void deactivateComponentPermit(UUID userAccountId, Long permitId);
+    void toggleComponentPermitStatus(UUID userAccountId, Long permitId);
+    void activateMultipleComponentPermits(UUID userAccountId, List<Long> permitIds);
+    void deactivateMultipleComponentPermits(UUID userAccountId, List<Long> permitIds);
+    void deleteComponentPermit(UUID userAccountId, Long permitId);
+    void deleteMultipleComponentPermits(UUID userAccountId, List<Long> permitIds);
+    void deleteAllComponentPermits(UUID userAccountId);
+    void deleteInactiveComponentPermits(UUID userAccountId);
 
-    /**
-     * Lấy danh sách giấy phép của doanh nghiệp
-     */
-    List<EnvPermitDTO> getPermitsByUser(UUID userId, PermitFilterRequest filter);
+    // ==================== FILE OPERATIONS ====================
+    EnvPermitDTO uploadEnvPermitFile(UUID userAccountId, MultipartFile file);
+    void deleteEnvPermitFile(UUID userAccountId);
+    EnvComponentPermitDTO uploadComponentPermitFile(UUID userAccountId, Long permitId, MultipartFile file);
+    void deleteComponentPermitFile(UUID userAccountId, Long permitId);
+    Resource downloadEnvPermitFile(UUID userAccountId);
+    Resource downloadComponentPermitFile(UUID userAccountId, Long permitId);
+    boolean hasEnvPermitFile(UUID userAccountId);
+    boolean hasComponentPermitFile(UUID userAccountId, Long permitId);
 
-    /**
-     * Lấy chi tiết giấy phép
-     */
-    EnvPermitDTO getPermitById(UUID userId, Long permitId);
+    // ==================== STATISTICS ====================
+    PermitStatisticsDTO getPermitStatistics(UUID userAccountId);
 
-    /**
-     * Vô hiệu hóa giấy phép
-     */
-    void deactivatePermit(UUID userId, Long permitId);
-
-    /**
-     * Kích hoạt giấy phép
-     */
-    void activatePermit(UUID userId, Long permitId);
-
-    /**
-     * Xóa giấy phép
-     */
-    void deletePermit(UUID userId, Long permitId);
-
-    /**
-     * Download file giấy phép
-     */
-    Resource downloadPermitFile(UUID userId, Long permitId);
-
-    /**
-     * Kiểm tra giấy phép sắp hết hạn
-     */
-    List<EnvPermitDTO> getExpiringPermits(UUID userId, int daysThreshold);
-
-    /**
-     * Lấy tất cả giấy phép của user
-     */
-    List<EnvPermitDTO> getAllPermitsByUser(UUID userId);
+    // ==================== VALIDATION ====================
+    boolean isComponentPermitNumberUnique(UUID userAccountId, String permitNumber);
+    void validateComponentPermitOwnership(UUID userAccountId, Long permitId);
 }

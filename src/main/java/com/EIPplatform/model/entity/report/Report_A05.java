@@ -1,7 +1,7 @@
 package com.EIPplatform.model.entity.report;
 
 import com.EIPplatform.model.entity.user.authentication.UserAccount;
-import com.EIPplatform.model.entity.user.userInformation.BusinessDetail;
+import com.EIPplatform.model.entity.user.businessInformation.BusinessDetail;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;

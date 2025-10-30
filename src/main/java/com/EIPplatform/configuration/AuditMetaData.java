@@ -41,7 +41,6 @@ public class AuditMetaData implements Serializable {
     private String updatedBy;
 
     // ==== Trạng thái logic ====
-
     @Column(name = "is_deleted", nullable = false)
     @Builder.Default
     private Boolean isDeleted = false;
@@ -58,5 +57,11 @@ public class AuditMetaData implements Serializable {
 
     @Column(name = "verified_by", length = 100)
     private String verifiedBy;
+
+    @Column(name = "deleted_at")
+    private LocalDateTime deletedAt;
+
+    @Column(name = "deleted_by", length = 100)
+    private String deletedBy;
 
 }
