@@ -3,18 +3,18 @@ package com.EIPplatform.service.userInformation;
 import java.util.List;
 import java.util.UUID;
 
-import com.EIPplatform.exception.ExceptionFactory;
 import com.EIPplatform.exception.errorCategories.UserError;
 import com.EIPplatform.model.dto.businessInformation.BusinessDetailResponse;
 import com.EIPplatform.model.entity.user.authentication.UserAccount;
 import com.EIPplatform.model.entity.user.businessInformation.BusinessDetail;
-import com.EIPplatform.model.enums.OperationType;
 import com.EIPplatform.repository.authentication.UserAccountRepository;
+import com.EIPplatform.util.BusinessDetailUtils;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.EIPplatform.exception.ExceptionFactory;
 import com.EIPplatform.mapper.businessInformation.BusinessDetailMapper;
 import com.EIPplatform.mapper.businessInformation.BusinessDetailWithHistoryConsumptionMapper;
 import com.EIPplatform.model.dto.businessInformation.BusinessDetailDTO;
@@ -33,6 +33,7 @@ public class BusinessDetailImplementation implements BusinessDetailInterface {
     BusinessDetailWithHistoryConsumptionMapper businessDetailWithHistoryConsumptionMapper;
     UserAccountRepository userAccountRepository;
     ExceptionFactory exceptionFactory;
+    BusinessDetailUtils businessDetailUtils;
 
     @Override
     public BusinessDetailResponse findByBusinessDetailId(UUID businessDetailId) {
@@ -61,7 +62,9 @@ public class BusinessDetailImplementation implements BusinessDetailInterface {
 
     @Override
     public BusinessDetailResponse createBusinessDetail(UUID userAccountId, BusinessDetailDTO dto) {
-        validateOperationDetails(dto.getOperationType(), dto.getSeasonalDescription());
+        businessDetailUtils.validateOperationDetails(dto.getOperationType(), dto.getSeasonalDescription());
+
+        businessDetailUtils.validateUniqueFields(dto, null);
 
         UserAccount userAccount = userAccountRepository.findByUserAccountId(userAccountId)
                 .orElseThrow(() -> exceptionFactory.createNotFoundException(
@@ -97,7 +100,9 @@ public class BusinessDetailImplementation implements BusinessDetailInterface {
                         UserError.NOT_FOUND
                 ));
 
-        validateOperationDetails(dto.getOperationType(), dto.getSeasonalDescription());
+        businessDetailUtils.validateOperationDetails(dto.getOperationType(), dto.getSeasonalDescription());
+
+        businessDetailUtils.validateUniqueFields(dto, id);
 
         entity.setCompanyName(dto.getCompanyName());
         entity.setLegalRepresentative(dto.getLegalPresentative());
@@ -130,13 +135,5 @@ public class BusinessDetailImplementation implements BusinessDetailInterface {
                         UserError.NOT_FOUND
                 ));
         return businessDetailWithHistoryConsumptionMapper.toDTO(entity);
-    }
-
-    private void validateOperationDetails(com.EIPplatform.model.enums.OperationType operationType, String seasonalDescription) {
-        if (OperationType.SEASONAL.equals(operationType)) {
-            if (seasonalDescription == null || seasonalDescription.trim().isEmpty()) {
-                throw new IllegalArgumentException("Seasonal must provide description of operating hours");
-            }
-        }
     }
 }
