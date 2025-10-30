@@ -23,8 +23,8 @@ import com.EIPplatform.model.entity.permitshistory.EnvComponentPermit;
 import com.EIPplatform.model.entity.permitshistory.EnvPermits;
 import com.EIPplatform.model.entity.user.businessInformation.BusinessDetail;
 
-// @Mapper(componentModel = "spring")
-// public interface PermitMapper {
+@Mapper(componentModel = "spring")
+public interface PermitMapper {
 
     // ==================== MAIN PERMIT MAPPINGS ====================
 

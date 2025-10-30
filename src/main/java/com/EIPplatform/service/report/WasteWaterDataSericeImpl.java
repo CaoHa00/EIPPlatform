@@ -5,8 +5,8 @@ import java.util.UUID;
 import org.springframework.stereotype.Service;
 
 import com.EIPplatform.mapper.report.WasteWaterDataMapper;
+import com.EIPplatform.model.dto.report.report.ReportA05DraftDTO;
 import com.EIPplatform.model.dto.report.report.WasteWaterDataDTO;
-import com.EIPplatform.model.entity.report.ReportA05DraftDTO;
 import com.EIPplatform.repository.report.ReportA05Repository;
 import com.EIPplatform.repository.report.WasteWaterRepository;
 
@@ -37,7 +37,7 @@ public class WasteWaterDataSericeImpl implements WasteWaterDataService {
         } catch (Exception e) {
             // TODO: handle exception
         }
-        dto.setReportId(reportId);
+        // dto.setReportId(reportId);
         reportCacheService.updateWasteWaterData(reportId, dto);
         log.info("Waste water data updated to CACHE successfully for report: {}", reportId);
     }
@@ -54,21 +54,21 @@ public class WasteWaterDataSericeImpl implements WasteWaterDataService {
         
         return draft.getWasteWaterData();
     }
-    @Override
-    public void saveReportFromCacheToDatabase(UUID reportId) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'saveReportFromCacheToDatabase'");
-    }
-    @Override
-    public WasteWaterDataDTO getWasteWaterDataFromDatabase(UUID reportId) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getWasteWaterDataFromDatabase'");
-    }
-    @Override
-    public void deleteDraftFromCache(UUID reportId) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'deleteDraftFromCache'");
-    }
+    // @Override
+    // public void saveReportFromCacheToDatabase(UUID reportId) {
+    //     // TODO Auto-generated method stub
+    //     throw new UnsupportedOperationException("Unimplemented method 'saveReportFromCacheToDatabase'");
+    // }
+    // @Override
+    // public WasteWaterDataDTO getWasteWaterDataFromDatabase(UUID reportId) {
+    //     // TODO Auto-generated method stub
+    //     throw new UnsupportedOperationException("Unimplemented method 'getWasteWaterDataFromDatabase'");
+    // }
+    // @Override
+    // public void deleteDraftFromCache(UUID reportId) {
+    //     // TODO Auto-generated method stub
+    //     throw new UnsupportedOperationException("Unimplemented method 'deleteDraftFromCache'");
+    // }
   
 
     

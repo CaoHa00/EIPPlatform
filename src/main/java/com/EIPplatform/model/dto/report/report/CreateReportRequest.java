@@ -17,17 +17,12 @@ import java.util.UUID;
 @AllArgsConstructor
 @Builder
 public class CreateReportRequest implements Serializable {
-    @NotNull(message = "FIELD_REQUIRED")
-    private UUID businessDetailId;
-
-    @NotNull(message = "FIELD_REQUIRED")
-    private Integer reportTypeId;
-
-    @NotNull(message = "FIELD_REQUIRED")
-    @Min(value = 2000, message = "INVALID_REPORT_YEAR_MIN")
-    @Max(value = 2100, message = "INVALID_REPORT_YEAR_MAX")
-    private Integer reportYear;
-
-    @Size(max = 100, message = "INVALID_REPORTING_PERIOD_LENGTH")
-    private String reportingPeriod;
+    // @NotNull(message = "Business detail ID is required")
+    // check lại nếu sau này có businesDetail thì sẽ bỏ ra vì đang test
+    UUID businessDetailId;
+    
+    @NotNull(message = "Report year is required")
+    Integer reportYear;
+    
+    String reportingPeriod;
 }

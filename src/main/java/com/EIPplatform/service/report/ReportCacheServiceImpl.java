@@ -2,13 +2,16 @@ package com.EIPplatform.service.report;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.util.LinkedHashMap;
 import java.util.UUID;
 
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
+import com.EIPplatform.model.dto.report.report.ReportA05DraftDTO;
 import com.EIPplatform.model.dto.report.report.WasteWaterDataDTO;
-import com.EIPplatform.model.entity.report.ReportA05DraftDTO;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -46,37 +49,52 @@ public class ReportCacheServiceImpl implements ReportCacheService{
     public ReportA05DraftDTO getDraftReport(UUID reportId) {
         log.info("Getting draft report from cache: {}", reportId);
         String key = buildCacheKey(reportId);
-        Object cached = redisTemplate.opsForValue().get(key);
-        
-        if(cached == null) {
-            log.warn("Dart report not found in cache: {}", reportId);
+        try {
+            Object cached = redisTemplate.opsForValue().get(key);
+            
+            if (cached == null) {
+                log.warn("Draft report not found in cache: {}", reportId);
+                return null;
+            }
+            
+            // ✅ Handle LinkedHashMap (old data format)
+            if (cached instanceof LinkedHashMap) {
+                log.warn("Found LinkedHashMap in cache, converting to DTO");
+                ObjectMapper mapper = new ObjectMapper();
+                mapper.registerModule(new JavaTimeModule());
+                return mapper.convertValue(cached, ReportA05DraftDTO.class);
+            }
+            
+            return (ReportA05DraftDTO) cached;
+            
+        } catch (Exception e) {
+            // ✅ Handle deserialization error - delete corrupted cache
+            log.error("Failed to deserialize draft from cache, deleting corrupted entry: {}", key, e);
+            redisTemplate.delete(key);
             return null;
         }
-        return (ReportA05DraftDTO) cached;
     }
 
-    @Override
-    public void updateWasteWaterData(UUID reportId, WasteWaterDataDTO wasteWaterData) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'updateWasteWaterData'");
-    }
-
-    @Override
-    public void deleteDraftReport(UUID reportId) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'deleteDraftReport'");
-    }
-
-    @Override
-    public boolean existsDraftReport(UUID reportId) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'existsDraftReport'");
-    }
-
-    @Override
-    public Integer calculateCompletionPercentage(UUID reportId) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'calculateCompletionPercentage'");
-    }
     
+    @Override
+   public void updateWasteWaterData(UUID reportId, WasteWaterDataDTO wasteWaterData) {
+        log.info("Updating waste water data in cache: {}", reportId);
+        
+        // Lấy draft hiện tại (hoặc tạo mới nếu chưa có)
+        ReportA05DraftDTO draft = getDraftReport(reportId);
+        if (draft == null) {
+            draft = ReportA05DraftDTO.builder()
+                .reportId(reportId)
+                .build();
+        }
+        
+        // Cập nhật waste water data
+        draft.setWasteWaterData(wasteWaterData);
+        
+        // Lưu lại
+        saveDraftReport(draft);
+        
+        log.info("Updated waste water data in cache for report: {}", reportId);
+    }
+
 }

@@ -11,15 +11,13 @@ import org.hibernate.annotations.UuidGenerator;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.UUID;
 
 @Builder
 @Entity
-@Table(name = "report", indexes = {
-        @Index(name = "idx_report_year_status", columnList = "report_year, status_id"),
+@Table(name = "reporta05", indexes = {
+        @Index(name = "idx_report_year", columnList = "report_year"), 
         @Index(name = "idx_business_detail_id", columnList = "business_detail_id"),
-        @Index(name = "idx_report_type_id", columnList = "report_type_id"),
         @Index(name = "idx_submitted_by", columnList = "submitted_by"),
         @Index(name = "idx_report_code", columnList = "report_code")
 })
@@ -28,7 +26,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class Report_A05 {
+public class ReportA05 {
 
     @Id
     @GeneratedValue
@@ -40,17 +38,15 @@ public class Report_A05 {
     String reportCode;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "business_detail_id", nullable = false)
+    @JoinColumn(name = "business_detail_id", nullable = true)
     @JsonBackReference(value = "businessDetail-reports")
     BusinessDetail businessDetail;
 
-  
     @Column(name = "report_year", nullable = false)
     Integer reportYear;
 
     @Column(name = "reporting_period", length = 50)
     String reportingPeriod;
-
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "submitted_by")
@@ -77,11 +73,6 @@ public class Report_A05 {
     @Column(name = "version", nullable = false)
     Integer version;
 
-//     @ManyToOne(fetch = FetchType.LAZY)
-//     @JoinColumn(name = "parent_report_id")
-//     @JsonBackReference(value = "report-parent")
-//     Report_A05 parentReport;
-
     @Column(name = "is_deleted", columnDefinition = "BIT DEFAULT 0")
     Boolean isDeleted;
 
@@ -95,47 +86,28 @@ public class Report_A05 {
     @Column(name = "updated_at", columnDefinition = "DATETIME2 DEFAULT GETDATE()")
     LocalDateTime updatedAt;
 
-        @OneToOne(mappedBy = "report", cascade = CascadeType.ALL, 
-          fetch = FetchType.LAZY, orphanRemoval = true)
-        @JsonManagedReference(value = "report-wastewater")
-        WasteWaterData wasteWaterData;
+    @OneToOne(mappedBy = "report", cascade = CascadeType.ALL, 
+              fetch = FetchType.LAZY, orphanRemoval = true)
+    @JsonManagedReference(value = "report-wastewater")
+    WasteWaterData wasteWaterData;
 
-        @PrePersist
-        protected void onCreate() {
+    @PrePersist
+    protected void onCreate() {
         createdAt = LocalDateTime.now();
         updatedAt = LocalDateTime.now();
         if (version == null) {
-                version = 1;
+            version = 1;
         }
         if (isDeleted == null) {
-                isDeleted = false;
+            isDeleted = false;
         }
         if (completionPercentage == null) {
-                completionPercentage = BigDecimal.ZERO;
+            completionPercentage = BigDecimal.ZERO;
         }
-        }
+    }
 
-        @PreUpdate
-        protected void onUpdate() {
+    @PreUpdate
+    protected void onUpdate() {
         updatedAt = LocalDateTime.now();
-        }
-//     @OneToMany(mappedBy = "report", cascade = CascadeType.ALL,
-//             fetch = FetchType.LAZY, orphanRemoval = true)
-//     @JsonManagedReference(value = "report-exceed")
-//     List<MonitorExceedance> monitorExceedances;
-    
-//     @OneToMany(mappedBy = "report", cascade = CascadeType.ALL,
-//             fetch = FetchType.LAZY, orphanRemoval = true)
-//     @JsonManagedReference(value = "report-hazard")
-//     List<HazardWaste> hazardWastes;
-
-//     @OneToMany(mappedBy = "report", cascade = CascadeType.ALL,
-//             fetch = FetchType.LAZY, orphanRemoval = true)
-//     @JsonManagedReference(value = "report-auto")
-//     List<AutoMonStat> autoMonStats;
-
-//     @OneToMany(mappedBy = "parentReport", cascade = CascadeType.ALL,
-//             fetch = FetchType.LAZY, orphanRemoval = true)
-//     @JsonManagedReference(value = "report-children")
-//     List<Report_A05> childReports;
+    }
 }

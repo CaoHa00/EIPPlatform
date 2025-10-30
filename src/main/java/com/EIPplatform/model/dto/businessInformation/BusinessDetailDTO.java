@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class BusinessDetailDTO {
+public class  BusinessDetailDTO {
 
     UUID businessDetailId;
     @NotBlank(message = "FIELD_REQUIRED")

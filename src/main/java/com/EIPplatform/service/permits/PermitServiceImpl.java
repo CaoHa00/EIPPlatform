@@ -1,4 +1,4 @@
-// package com.EIPplatform.service.permits;
+package com.EIPplatform.service.permits;
 
 import com.EIPplatform.exception.ExceptionFactory;
 import com.EIPplatform.exception.errorCategories.ForbiddenError;
@@ -35,11 +35,11 @@ import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
-// @Service
-// @Transactional
-// @Slf4j
-// @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-// public class PermitServiceImpl implements PermitService {
+@Service
+@Transactional
+@Slf4j
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+public class PermitServiceImpl implements PermitService {
 
     EnvPermitsRepository envPermitsRepository;
     EnvComponentPermitRepository componentPermitRepository;
@@ -766,7 +766,7 @@ import java.util.stream.Collectors;
                 .orElseThrow(() -> exceptionFactory.createNotFoundException(
                         "ComponentPermit", "permitId", permitId, PermitError.NOT_FOUND));
 
-//         BusinessDetail businessDetail = permit.getBusinessDetail();
+        BusinessDetail businessDetail = permit.getBusinessDetail();
 
         boolean isOwner = businessDetail.getUserAccounts().stream()
                 .anyMatch(account -> account.getUserAccountId().equals(userAccountId));
@@ -780,8 +780,8 @@ import java.util.stream.Collectors;
             );
         }
 
-//         return permit;
-//     }
+        return permit;
+    }
 
     private String uploadPermitFile(BusinessDetail businessDetail, MultipartFile file, String subFolder, int year) {
         validatePermitFile(file);

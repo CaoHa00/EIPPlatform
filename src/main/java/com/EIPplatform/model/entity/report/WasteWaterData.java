@@ -41,7 +41,7 @@ public class WasteWaterData {
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "report_id", nullable = false, unique = true)
     @JsonBackReference(value = "report-wastewater")
-    Report_A05 report;
+    ReportA05 report;
     
     // ============= NƯỚC THẢI SINH HOẠT =============
     @Column(name = "treatment_ww_desc", columnDefinition = "NVARCHAR(MAX)")

@@ -9,7 +9,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import com.EIPplatform.configuration.AuditMetaData;
 import com.EIPplatform.model.entity.permitshistory.EnvComponentPermit;
 import com.EIPplatform.model.entity.permitshistory.EnvPermits;
-import com.EIPplatform.model.entity.report.Report;
+import com.EIPplatform.model.entity.report.ReportA05;
 import com.EIPplatform.model.entity.user.authentication.UserAccount;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
@@ -52,7 +52,7 @@ public class BusinessDetail {
 
     @Column(nullable = false, unique = true)
     String companyName;
-
+    
     @Column(nullable = false)
     String legalRepresentative;
 
@@ -93,7 +93,7 @@ public class BusinessDetail {
 
     @OneToMany(mappedBy = "businessDetail", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JsonManagedReference(value = "businessDetail-reports")
-    List<Report> reports;
+    List<ReportA05> reports;
 
     @OneToOne(mappedBy = "businessDetail", fetch = FetchType.LAZY, optional = true, cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonBackReference(value = "businessDetail-mainPermit")

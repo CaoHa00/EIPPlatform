@@ -2,8 +2,8 @@ package com.EIPplatform.service.report;
 
 import java.util.UUID;
 
+import com.EIPplatform.model.dto.report.report.ReportA05DraftDTO;
 import com.EIPplatform.model.dto.report.report.WasteWaterDataDTO;
-import com.EIPplatform.model.entity.report.ReportA05DraftDTO;
 
 public interface ReportCacheService {
     /**
@@ -21,18 +21,7 @@ public interface ReportCacheService {
      */
     void updateWasteWaterData(UUID reportId, WasteWaterDataDTO wasteWaterData);
     
-    /**
-     * Xóa draft khỏi cache (sau khi save vào DB)
-     */
-    void deleteDraftReport(UUID reportId);
-    
-    /**
-     * Kiểm tra draft có tồn tại không
-     */
-    boolean existsDraftReport(UUID reportId);
-    
-    /**
-     * Tính % hoàn thành
-     */
-    Integer calculateCompletionPercentage(UUID reportId);
+    //  * Xóa draft khỏi cache (sau khi save vào DB)
+    //  */
+  
 }

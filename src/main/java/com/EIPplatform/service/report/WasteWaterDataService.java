@@ -22,16 +22,16 @@ public interface WasteWaterDataService {
     /**
      * LƯU TOÀN BỘ REPORT từ cache xuống DATABASE
      * Dùng khi user click "Save/Submit"
-     */
-    void saveReportFromCacheToDatabase(UUID reportId);
+//      */
+//     void saveReportFromCacheToDatabase(UUID reportId);
     
-    /**
-     * Lấy waste water data từ DATABASE (dùng khi load lại report đã submit)
-     */
-    WasteWaterDataDTO getWasteWaterDataFromDatabase(UUID reportId);
+//     /**
+//      * Lấy waste water data từ DATABASE (dùng khi load lại report đã submit)
+//      */
+//     WasteWaterDataDTO getWasteWaterDataFromDatabase(UUID reportId);
     
-    /**
-     * Xóa draft khỏi cache
-     */
-    void deleteDraftFromCache(UUID reportId);
+//     /**
+//      * Xóa draft khỏi cache
+//      */
+//     void deleteDraftFromCache(UUID reportId);
 }

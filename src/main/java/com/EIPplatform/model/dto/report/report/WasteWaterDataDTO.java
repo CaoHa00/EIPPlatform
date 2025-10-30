@@ -17,8 +17,7 @@ public class WasteWaterDataDTO {
     
     Long wwId;
     
-    @NotNull(message = "Report ID is required")
-    UUID reportId;
+   
     
     // ============= NƯỚC THẢI SINH HOẠT =============
     String treatmentWwDesc;
