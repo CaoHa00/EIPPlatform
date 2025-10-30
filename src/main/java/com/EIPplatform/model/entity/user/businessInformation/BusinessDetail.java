@@ -4,28 +4,18 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+
+import com.EIPplatform.model.enums.OperationType;
+import jakarta.persistence.*;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import com.EIPplatform.configuration.AuditMetaData;
 import com.EIPplatform.model.entity.permitshistory.EnvComponentPermit;
 import com.EIPplatform.model.entity.permitshistory.EnvPermits;
-import com.EIPplatform.model.entity.report.Report;
 import com.EIPplatform.model.entity.user.authentication.UserAccount;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Column;
-import jakarta.persistence.Embedded;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EntityListeners;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.OneToOne;
-import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -77,6 +67,13 @@ public class BusinessDetail {
     @Column(nullable = false, unique = true)
     String taxCode;
 
+    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
+    OperationType operationType = OperationType.REGULAR;
+
+    @Column(length = 500)
+    String seasonalDescription;
+
     @OneToMany(mappedBy = "businessDetail", fetch = FetchType.LAZY)
     @JsonManagedReference(value = "businessDetail-historyConsumption-ref")
     @Builder.Default
@@ -91,9 +88,9 @@ public class BusinessDetail {
     @Builder.Default
     AuditMetaData auditMetaData = new AuditMetaData();
 
-    @OneToMany(mappedBy = "businessDetail", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JsonManagedReference(value = "businessDetail-reports")
-    List<Report> reports;
+//    @OneToMany(mappedBy = "businessDetail", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+//    @JsonManagedReference(value = "businessDetail-reports")
+//    List<Report> reports;
 
     @OneToOne(mappedBy = "businessDetail", fetch = FetchType.LAZY, optional = true, cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonBackReference(value = "businessDetail-mainPermit")
