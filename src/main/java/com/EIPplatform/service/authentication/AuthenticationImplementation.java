@@ -5,16 +5,11 @@ import java.text.ParseException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import com.EIPplatform.annotations.TrackHistoryActions;
 import com.EIPplatform.exception.ExceptionFactory;
-import com.EIPplatform.exception.errorCategories.AuthenticationError;
-import com.EIPplatform.exception.exceptions.AppException;
 import com.EIPplatform.model.dto.authentication.AuthenticationResponse;
 import com.EIPplatform.model.dto.authentication.IsValidTokenRequest;
 import com.EIPplatform.model.dto.authentication.IsValidTokenResponse;
 import com.EIPplatform.model.dto.authentication.LoginRequest;
-import com.EIPplatform.model.dto.authentication.UserAccountAuthenticationResponse;
-import com.EIPplatform.model.entity.user.authentication.UserAccount;
 import com.EIPplatform.repository.authentication.UserAccountRepository;
 import com.nimbusds.jose.JOSEException;
 
