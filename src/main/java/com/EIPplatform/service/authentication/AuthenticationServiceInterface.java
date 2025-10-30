@@ -18,7 +18,7 @@ public interface AuthenticationServiceInterface {
 
     AuthenticationResponse loginAuthenticate(LoginRequest request, HttpServletRequest httpRequest);
 
-    //void logout(IsValidTokenRequest request, HttpServletRequest httpRequest) throws JOSEException, ParseException;
+    void logout(IsValidTokenRequest request, HttpServletRequest httpRequest) throws JOSEException, ParseException;
 
     // void passwordChangeVerification(PasswordChangeVerificationRequest request);
 
