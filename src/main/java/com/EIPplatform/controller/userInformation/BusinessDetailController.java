@@ -1,73 +1,85 @@
 package com.EIPplatform.controller.userInformation;
 
+import com.EIPplatform.model.dto.api.ApiResponse;
+import com.EIPplatform.model.dto.businessInformation.BusinessDetailDTO;
+import com.EIPplatform.model.dto.businessInformation.BusinessDetailResponse;
+import com.EIPplatform.model.dto.businessInformation.BusinessDetailWithHistoryConsumptionDTO;
+import com.EIPplatform.service.userInformation.BusinessDetailInterface;
+import jakarta.validation.Valid;
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
+import org.springframework.web.bind.annotation.*;
+
 import java.util.List;
 import java.util.UUID;
 
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
-import com.EIPplatform.model.dto.businessInformation.BusinessDetailDTO;
-import com.EIPplatform.model.dto.businessInformation.BusinessDetailWithHistoryConsumptionDTO;
-import com.EIPplatform.service.userInformation.BusinessDetailInterface;
-
-import lombok.RequiredArgsConstructor;
-
 @RestController
 @RequestMapping("/api/v1/business-details")
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @RequiredArgsConstructor
 public class BusinessDetailController {
 
-    private final BusinessDetailInterface businessDetailService;
+    BusinessDetailInterface businessDetailService;
 
-    // 🔹 Lấy toàn bộ danh sách (tạm chưa hỗ trợ)
+    // ==================== BUSINESS DETAIL ENDPOINTS ====================
+
     @GetMapping
-    public ResponseEntity<List<BusinessDetailDTO>> getAllBusinessDetails() {
-        throw new UnsupportedOperationException("Not supported yet.");
+    public ApiResponse<List<BusinessDetailResponse>> getAllBusinessDetails(
+            @RequestParam UUID userAccountId) {
+        var result = businessDetailService.findAll();
+        return ApiResponse.<List<BusinessDetailResponse>>builder()
+                .result(result)
+                .build();
     }
 
-    // 🔹 Lấy thông tin business detail theo ID
     @GetMapping("/{id}")
-    public ResponseEntity<BusinessDetailDTO> getBusinessDetailById(@PathVariable UUID id) {
-        BusinessDetailDTO dto = businessDetailService.findById(id);
-        if (dto == null) {
-            return ResponseEntity.notFound().build();
-        }
-        return ResponseEntity.ok(dto);
-    }
-
-    // 🔹 Lấy thông tin business detail kèm lịch sử tiêu thụ (ví dụ điện/nước)
-    @GetMapping("/{id}/with-history")
-    public ResponseEntity<BusinessDetailWithHistoryConsumptionDTO> getBusinessDetailWithHistory(
+    public ApiResponse<BusinessDetailResponse> getBusinessDetailById(
+            @RequestParam UUID userAccountId,
             @PathVariable UUID id) {
-        BusinessDetailWithHistoryConsumptionDTO dto = businessDetailService.getBusinessDetailWithHistoryConsumption(id);
-        return ResponseEntity.ok(dto);
+        var result = businessDetailService.findByBusinessDetailId(id);
+        return ApiResponse.<BusinessDetailResponse>builder()
+                .result(result)
+                .build();
     }
 
-    // 🔹 Tạo mới business detail
+    @GetMapping("/{id}/with-history")
+    public ApiResponse<BusinessDetailWithHistoryConsumptionDTO> getBusinessDetailWithHistory(
+            @RequestParam UUID userAccountId,
+            @PathVariable UUID id) {
+        var result = businessDetailService.getBusinessDetailWithHistoryConsumption(id);
+        return ApiResponse.<BusinessDetailWithHistoryConsumptionDTO>builder()
+                .result(result)
+                .build();
+    }
+
     @PostMapping
-    public ResponseEntity<BusinessDetailDTO> createBusinessDetail(@RequestBody BusinessDetailDTO dto) {
-        BusinessDetailDTO created = businessDetailService.create(dto);
-        return ResponseEntity.ok(created);
+    public ApiResponse<BusinessDetailResponse> createBusinessDetail(
+            @RequestParam UUID userAccountId,
+            @RequestBody @Valid BusinessDetailDTO dto) {
+        var result = businessDetailService.createBusinessDetail(userAccountId, dto);
+        return ApiResponse.<BusinessDetailResponse>builder()
+                .result(result)
+                .build();
     }
 
-    // 🔹 Cập nhật business detail (tạm chưa hỗ trợ)
     @PutMapping("/{id}")
-    public ResponseEntity<BusinessDetailDTO> updateBusinessDetail(@PathVariable UUID id,
-                                                                  @RequestBody BusinessDetailDTO dto) {
-        throw new UnsupportedOperationException("Not supported yet.");
+    public ApiResponse<BusinessDetailResponse> updateBusinessDetail(
+            @RequestParam UUID userAccountId,
+            @PathVariable UUID id,
+            @RequestBody @Valid BusinessDetailDTO dto) {
+        var result = businessDetailService.updateBusinessDetail(id, dto);
+        return ApiResponse.<BusinessDetailResponse>builder()
+                .result(result)
+                .build();
     }
 
-    // 🔹 Xóa business detail
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteBusinessDetail(@PathVariable UUID id) {
-        businessDetailService.deleteById(id);
-        return ResponseEntity.noContent().build();
+    public ApiResponse<Void> deleteBusinessDetail(
+            @RequestParam UUID userAccountId,
+            @PathVariable UUID id) {
+        businessDetailService.deleteByBusinessDetailId(id);
+        return ApiResponse.<Void>builder()
+                .build();
     }
 }

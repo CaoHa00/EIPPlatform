@@ -1,8 +1,9 @@
 package com.EIPplatform.model.dto.businessInformation;
 
-import java.util.UUID;
-
+import com.EIPplatform.model.enums.OperationType;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -10,8 +11,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class BusinessDetailDTO {
-
-    UUID businessDetailId;
     @NotBlank(message = "FIELD_REQUIRED")
     String companyName;
 
@@ -36,4 +35,10 @@ public class BusinessDetailDTO {
 
     @NotBlank(message = "FIELD_REQUIRED")
     String taxCode;
+
+    @NotNull(message = "Operation type is required")
+    OperationType operationType = OperationType.REGULAR;
+
+    @Size(max = 500, message = "Description too long")
+    String seasonalDescription;
 }
