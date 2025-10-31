@@ -19,7 +19,7 @@ public interface ReportCacheService {
     /**
      * Cập nhật phần waste water vào draft
      */
-    void updateWasteWaterData(UUID reportId, WasteWaterDataDTO wasteWaterData);
+    void updateWasteWaterData(UUID reportId, ReportA05DraftDTO wasteWaterData);
     
     //  * Xóa draft khỏi cache (sau khi save vào DB)
     //  */

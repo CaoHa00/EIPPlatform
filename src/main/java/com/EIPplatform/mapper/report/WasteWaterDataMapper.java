@@ -4,6 +4,7 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 
+import com.EIPplatform.model.dto.report.report.ReportA05DraftDTO;
 import com.EIPplatform.model.dto.report.report.WasteWaterDataDTO;
 import com.EIPplatform.model.entity.report.WasteWaterData;
 
@@ -24,5 +25,5 @@ public interface WasteWaterDataMapper {
      */
     @Mapping(target = "report", ignore = true)
     @Mapping(target = "wwId", ignore = true)
-    void updateEntityFromDTO(WasteWaterDataDTO dto, @MappingTarget WasteWaterData entity);
+    void updateEntityFromDTO(ReportA05DraftDTO dto, @MappingTarget WasteWaterData entity);
 }

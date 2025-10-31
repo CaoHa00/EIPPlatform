@@ -25,7 +25,7 @@ public class WasteWaterDataSericeImpl implements WasteWaterDataService {
     WasteWaterDataMapper wasteWaterDataMapper;
     ReportCacheService  reportCacheService;
     @Override
-    public void updateWasteWaterDataToCache(UUID reportId, WasteWaterDataDTO dto) {
+    public void updateWasteWaterDataToCache(UUID reportId, ReportA05DraftDTO dto) {
         log.info("Updating waste water data to CACHE for report: {}", reportId);
 
         //checking the report is exit or not

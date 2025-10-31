@@ -77,7 +77,7 @@ public class ReportCacheServiceImpl implements ReportCacheService{
 
     
     @Override
-   public void updateWasteWaterData(UUID reportId, WasteWaterDataDTO wasteWaterData) {
+   public void updateWasteWaterData(UUID reportId, ReportA05DraftDTO wasteWaterData) {
         log.info("Updating waste water data in cache: {}", reportId);
         
         // Lấy draft hiện tại (hoặc tạo mới nếu chưa có)
@@ -89,8 +89,8 @@ public class ReportCacheServiceImpl implements ReportCacheService{
         }
         
         // Cập nhật waste water data
-        draft.setWasteWaterData(wasteWaterData);
-        
+        draft.setWasteWaterData(wasteWaterData.getWasteWaterData());
+        draft.setWasteManagementData(wasteWaterData.getWasteManagementData());
         // Lưu lại
         saveDraftReport(draft);
         

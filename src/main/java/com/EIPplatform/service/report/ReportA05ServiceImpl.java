@@ -134,7 +134,7 @@ public class ReportA05ServiceImpl implements ReportA05Service {
     }
 
     @Override
-    public WasteWaterDataDTO saveDraftWasteWaterData(UUID reportId, WasteWaterDataDTO data) {
+    public ReportA05DraftDTO saveDraftWasteWaterData(UUID reportId, ReportA05DraftDTO data) {
         
         if(!reportA05Repository.existsById(reportId) ) {
             throw new RuntimeException("Report not found: " + reportId);
@@ -148,7 +148,7 @@ public class ReportA05ServiceImpl implements ReportA05Service {
     }
 
     @Override
-    public WasteWaterDataDTO getDraftWasteWaterData(UUID reportId) {
+    public ReportA05DraftDTO getDraftData(UUID reportId) {
        log.info("Getting draft wastewater data from cache for report: {}", reportId);
 
        ReportA05DraftDTO draft = reportCacheService.getDraftReport(reportId);
@@ -156,66 +156,66 @@ public class ReportA05ServiceImpl implements ReportA05Service {
               log.warn("No draft wastewater data found in cache for report: {}", reportId);
               return null;
          }
-        return draft.getWasteWaterData();
+        return draft;
     }
 
-    @Override
-    public ReportA05DTO saveWasteWaterDataToDatabase(UUID reportId) {
-       log.info("Saving wastewater data from cache to database for report: {}", reportId);
+    // @Override
+    // public ReportA05DraftDTO saveWasteWaterDataToDatabase(UUID reportId) {
+    //    log.info("Saving wastewater data from cache to database for report: {}", reportId);
         
-        // 1. Lấy draft data từ cache
-        WasteWaterDataDTO draftData = getDraftWasteWaterData(reportId);
-        if (draftData == null) {
-            throw new RuntimeException("No draft wastewater data found in cache for report: " + reportId);
-        }
+    //     // 1. Lấy draft data từ cache
+    //     ReportA05DraftDTO draftData = getDraftWasteWaterData(reportId);
+    //     if (draftData == null) { 
+    //         throw new RuntimeException("No draft wastewater data found in cache for report: " + reportId);
+    //     }
         
-        // 2. Lấy report
-        ReportA05 report = reportA05Repository.findById(reportId)
-            .orElseThrow(() -> new RuntimeException("Report not found: " + reportId));
+    //     // 2. Lấy report
+    //     ReportA05 report = reportA05Repository.findById(reportId)
+    //         .orElseThrow(() -> new RuntimeException("Report not found: " + reportId));
         
-        // 3. Nếu đã có wastewater data → update
-        if (report.getWasteWaterData() != null) {
-            log.info("Updating existing wastewater data");
-            WasteWaterData existing = report.getWasteWaterData();
-            wasteWaterDataMapper.updateEntityFromDTO(draftData, existing);
-        } else {
-            // 4. Nếu chưa có → tạo mới
-            log.info("Creating new wastewater data");
-            WasteWaterData wasteWaterData = wasteWaterDataMapper.toEntity(draftData);
-            wasteWaterData.setReport(report);
-            report.setWasteWaterData(wasteWaterData);
-        }
+    //     // 3. Nếu đã có wastewater data → update
+    //     if (report.getWasteWaterData() != null) {
+    //         log.info("Updating existing wastewater data");
+    //         ReportA05DraftDTO existing = reportCacheService.getDraftReport(reportId);
+    //         wasteWaterDataMapper.updateEntityFromDTO(draftData, existing);
+    //     } else {
+    //         // 4. Nếu chưa có → tạo mới
+    //         log.info("Creating new wastewater data");
+    //         WasteWaterData wasteWaterData = wasteWaterDataMapper.toEntity(draftData);
+    //         wasteWaterData.setReport(report);
+    //         report.setWasteWaterData(wasteWaterData);
+    //     }
         
-        // 5. Cập nhật completion percentage
-        // Integer completionPercentage = reportCacheService.calculateCompletionPercentage(reportId);
-        // report.setCompletionPercentage(BigDecimal.valueOf(completionPercentage));
+    //     // 5. Cập nhật completion percentage
+    //     // Integer completionPercentage = reportCacheService.calculateCompletionPercentage(reportId);
+    //     // report.setCompletionPercentage(BigDecimal.valueOf(completionPercentage));
         
-        // 6. Lưu vào DB
-        ReportA05 saved = reportA05Repository.save(report);
+    //     // 6. Lưu vào DB
+    //     ReportA05 saved = reportA05Repository.save(report);
         
-        // 7. CẬP NHẬT cache (không xóa) - để user có thể edit tiếp
-        // Nếu muốn xóa, gọi: reportCacheService.deleteDraftReport(reportId);
+    //     // 7. CẬP NHẬT cache (không xóa) - để user có thể edit tiếp
+    //     // Nếu muốn xóa, gọi: reportCacheService.deleteDraftReport(reportId);
         
-        log.info("Saved wastewater data to database");
+    //     log.info("Saved wastewater data to database");
         
-        BusinessDetail bd = saved.getBusinessDetail();
-        return ReportA05DTO.builder()
-            .reportId(saved.getReportId())
-            .reportCode(saved.getReportCode())
-            .businessDetailId(bd != null ? bd.getBusinessDetailId() : null)
-            .companyName(bd != null ? bd.getCompanyName() : null)
-            .reportYear(saved.getReportYear())
-            .reportingPeriod(saved.getReportingPeriod())
-            .completionPercentage(saved.getCompletionPercentage())
-            .createdAt(saved.getCreatedAt())
-            .build();
-    }
+    //     BusinessDetail bd = saved.getBusinessDetail();
+    //     return ReportA05DTO.builder()
+    //         .reportId(saved.getReportId())
+    //         .reportCode(saved.getReportCode())
+    //         .businessDetailId(bd != null ? bd.getBusinessDetailId() : null)
+    //         .companyName(bd != null ? bd.getCompanyName() : null)
+    //         .reportYear(saved.getReportYear())
+    //         .reportingPeriod(saved.getReportingPeriod())
+    //         .completionPercentage(saved.getCompletionPercentage())
+    //         .createdAt(saved.getCreatedAt())
+    //         .build();
+    // }
 
-    @Override
-    public void deleteDraftWasteWaterData(UUID reportId) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'deleteDraftWasteWaterData'");
-    }
+    // @Override
+    // public void deleteDraftWasteWaterData(UUID reportId) {
+    //     // TODO Auto-generated method stub
+    //     throw new UnsupportedOperationException("Unimplemented method 'deleteDraftWasteWaterData'");
+    // }
 
 }
     

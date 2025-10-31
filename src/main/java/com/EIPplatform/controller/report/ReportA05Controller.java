@@ -3,6 +3,7 @@ package com.EIPplatform.controller.report;
 import com.EIPplatform.model.dto.api.ApiResponse;
 import com.EIPplatform.model.dto.report.report.CreateReportRequest;
 import com.EIPplatform.model.dto.report.report.ReportA05DTO;
+import com.EIPplatform.model.dto.report.report.ReportA05DraftDTO;
 import com.EIPplatform.model.dto.report.report.WasteWaterDataDTO;
 import com.EIPplatform.model.entity.report.ReportA05;
 import com.EIPplatform.service.report.ReportA05Service;
@@ -53,20 +54,20 @@ public class ReportA05Controller {
 
     // 3. Lưu waste water vào CACHE
     @PutMapping("/{reportId}/wastewater/draft")
-    public ResponseEntity<WasteWaterDataDTO> saveDraftWasteWaterData(
+    public ResponseEntity<ReportA05DraftDTO> saveDraftWasteWaterData(
             @PathVariable UUID reportId,
-            @Valid @RequestBody WasteWaterDataDTO data) {
+            @Valid @RequestBody ReportA05DraftDTO data) {
         log.info("PUT /api/v1/reports/{}/wastewater/draft", reportId);
-        WasteWaterDataDTO saved = reportA05Service.saveDraftWasteWaterData(reportId, data);
+        ReportA05DraftDTO saved = reportA05Service.saveDraftWasteWaterData(reportId, data);
         return ResponseEntity.ok(saved);
     }
     // 4. Lấy waste water từ CACHE
     @GetMapping("/{reportId}/wastewater/draft")
-    public ResponseEntity<WasteWaterDataDTO> getDraftWasteWaterData(
+    public ResponseEntity<ReportA05DraftDTO> getDraftWasteWaterData(
             @PathVariable UUID reportId) {
         log.info("GET /api/v1/reports/{}/wastewater/draft", reportId);
-        WasteWaterDataDTO data = reportA05Service.getDraftWasteWaterData(reportId);
-        
+        ReportA05DraftDTO data = reportA05Service.getDraftData(reportId);
+
         if (data == null) {
             return ResponseEntity.noContent().build();
         }

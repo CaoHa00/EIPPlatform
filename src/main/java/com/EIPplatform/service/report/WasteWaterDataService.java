@@ -3,6 +3,7 @@ package com.EIPplatform.service.report;
 import java.util.List;
 import java.util.UUID;
 
+import com.EIPplatform.model.dto.report.report.ReportA05DraftDTO;
 import com.EIPplatform.model.dto.report.report.WasteWaterDataDTO;
 
 public interface WasteWaterDataService {
@@ -12,7 +13,7 @@ public interface WasteWaterDataService {
      * Dùng khi user đang nhập liệu
  * @throws Exception 
      */
-    void updateWasteWaterDataToCache(UUID reportId, WasteWaterDataDTO dto) throws Exception;
+    void updateWasteWaterDataToCache(UUID reportId, ReportA05DraftDTO dto) throws Exception;
     
     /**
      * Lấy waste water data từ CACHE
