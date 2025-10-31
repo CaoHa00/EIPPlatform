@@ -1,5 +1,6 @@
 package com.EIPplatform.model.entity.report;
 
+import com.EIPplatform.model.entity.report.wastemanagement.WasteManagementData;
 import com.EIPplatform.model.entity.user.authentication.UserAccount;
 import com.EIPplatform.model.entity.user.businessInformation.BusinessDetail;
 import com.fasterxml.jackson.annotation.JsonBackReference;
@@ -16,7 +17,7 @@ import java.util.UUID;
 @Builder
 @Entity
 @Table(name = "reporta05", indexes = {
-        @Index(name = "idx_report_year", columnList = "report_year"), 
+        @Index(name = "idx_report_year", columnList = "report_year"),
         @Index(name = "idx_business_detail_id", columnList = "business_detail_id"),
         @Index(name = "idx_submitted_by", columnList = "submitted_by"),
         @Index(name = "idx_report_code", columnList = "report_code")
@@ -86,10 +87,17 @@ public class ReportA05 {
     @Column(name = "updated_at", columnDefinition = "DATETIME2 DEFAULT GETDATE()")
     LocalDateTime updatedAt;
 
-    @OneToOne(mappedBy = "report", cascade = CascadeType.ALL, 
-              fetch = FetchType.LAZY, orphanRemoval = true)
+    // ============= RELATIONSHIPS =============
+
+    @OneToOne(mappedBy = "report", cascade = CascadeType.ALL,
+            fetch = FetchType.LAZY, orphanRemoval = true)
     @JsonManagedReference(value = "report-wastewater")
     WasteWaterData wasteWaterData;
+
+    @OneToOne(mappedBy = "report", cascade = CascadeType.ALL,
+            fetch = FetchType.LAZY, orphanRemoval = true)
+    @JsonManagedReference(value = "report-waste-management")
+    WasteManagementData wasteManagementData;
 
     @PrePersist
     protected void onCreate() {

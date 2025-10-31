@@ -161,11 +161,9 @@ public class PermitServiceImpl implements PermitService {
             envPermit.setProjectName(request.getProjectName());
         }
 
-        // Handle file update if provided
         if (file != null && !file.isEmpty()) {
             PermitUtils.validatePermitFile(file, exceptionFactory);
 
-            // Delete old file if exists
             if (envPermit.getPermitFilePath() != null) {
                 try {
                     fileStorageService.deleteFile(envPermit.getPermitFilePath());
@@ -174,7 +172,6 @@ public class PermitServiceImpl implements PermitService {
                 }
             }
 
-            // Upload new file with appropriate year
             int year = (request.getIssueDate() != null) ? request.getIssueDate().getYear() :
                     (envPermit.getIssueDate() != null ? envPermit.getIssueDate().getYear() : LocalDate.now().getYear());
             String filePath = PermitUtils.uploadPermitFile(businessDetail, file, "env-permit", year, fileStorageService, exceptionFactory);
