@@ -1,13 +1,17 @@
 package com.EIPplatform.service.report;
 
-import com.EIPplatform.mapper.report.ReportA05Mapper;
+import com.EIPplatform.exception.ExceptionFactory;
+import com.EIPplatform.exception.errorCategories.ReportError;
 import com.EIPplatform.mapper.report.WasteWaterDataMapper;
+import com.EIPplatform.mapper.report.wastemanagement.WasteManagementDataMapper;
 import com.EIPplatform.model.dto.report.report.CreateReportRequest;
 import com.EIPplatform.model.dto.report.report.ReportA05DTO;
 import com.EIPplatform.model.dto.report.report.ReportA05DraftDTO;
 import com.EIPplatform.model.dto.report.report.WasteWaterDataDTO;
+import com.EIPplatform.model.dto.report.wastemanagement.WasteManagementDataDTO;
 import com.EIPplatform.model.entity.report.ReportA05;
 import com.EIPplatform.model.entity.report.WasteWaterData;
+import com.EIPplatform.model.entity.report.wastemanagement.WasteManagementData;
 import com.EIPplatform.model.entity.user.businessInformation.BusinessDetail;
 import com.EIPplatform.repository.report.ReportA05Repository;
 import com.EIPplatform.repository.user.BusinessDetailRepository;
@@ -19,6 +23,7 @@ import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 import org.springframework.stereotype.Service;
@@ -28,188 +33,186 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class ReportA05ServiceImpl implements ReportA05Service {
-    
+
     ReportA05Repository reportA05Repository;
     BusinessDetailRepository businessDetailRepository;
     ReportCacheService reportCacheService;
     WasteWaterDataMapper wasteWaterDataMapper;
+    WasteManagementDataMapper wasteManagementDataMapper;
+    ExceptionFactory exceptionFactory;
 
+    // Creates a new report with basic metadata and saves it to the database
     @Override
     @Transactional
     public ReportA05DTO createReport(CreateReportRequest request) {
-        log.info("Creating report for business: {}, year: {}", 
-            request.getBusinessDetailId(), request.getReportYear());
-        
-        // 1. Kiểm tra business có tồn tại
-        BusinessDetail businessDetail = businessDetailRepository
-            .findById(request.getBusinessDetailId())
-            .orElseThrow(() -> new RuntimeException(
-                "Business not found: " + request.getBusinessDetailId()));
-        
-        // // 2. Generate report code đơn giản (UUID)
-        // String reportCode = "RPT-" + java.util.UUID.randomUUID().toString().substring(0, 8).toUpperCase();
-        
-        // // 3. Tạo report
-        // ReportA05 report = ReportA05.builder()
-        //     .reportCode(reportCode)
-        //     .businessDetail(businessDetail)
-        //     .reportYear(request.getReportYear())
-        //     .reportingPeriod(request.getReportingPeriod())
-        //     .version(1)
-        //     .isDeleted(false)
-        //     .completionPercentage(BigDecimal.ZERO)
-        //     .build();
-        
-        // // 4. Lưu vào DB
-        // ReportA05 saved = reportA05Repository.save(report);
-        // log.info("Created report: {}", saved.getReportCode());
-        
-        // // 5. Trả về DTO
-        // return ReportA05DTO.builder()
-        //     .reportId(saved.getReportId())
-        //     .reportCode(saved.getReportCode())
-        //     .businessDetailId(businessDetail.getBusinessDetailId())
-        //     .companyName(businessDetail.getCompanyName())
-        //     .reportYear(saved.getReportYear())
-        //     .reportingPeriod(saved.getReportingPeriod())
-        //     .completionPercentage(saved.getCompletionPercentage())
-        //     .createdAt(saved.getCreatedAt())
-        //     .build();
         // 1. Kiểm tra business (CHỈ KHI CÓ businessDetailId)
-    // BusinessDetail businessDetail = null;
-    // if (request.getBusinessDetailId() != null) {
-    //     businessDetail = businessDetailRepository
-    //         .findById(request.getBusinessDetailId())
-    //         .orElseThrow(() -> new RuntimeException(
-    //             "Business not found: " + request.getBusinessDetailId()));
-    // }
-    
+        BusinessDetail businessDetail = null;
+        if (request.getBusinessDetailId() != null) {
+            businessDetail = businessDetailRepository
+                    .findById(request.getBusinessDetailId())
+                    .orElseThrow(() -> exceptionFactory.createNotFoundException("BusinessDetail", request.getBusinessDetailId(), ReportError.BUSINESS_NOT_FOUND));
+        }
 
-    
-    // 2. Generate report code đơn giản
-    String reportCode = "RPT-" + java.util.UUID.randomUUID().toString().substring(0, 8).toUpperCase();
-    
-    // 3. Tạo report (businessDetail có thể null)
-    ReportA05 report = ReportA05.builder()
-        .reportCode(reportCode)
-        .businessDetail(businessDetail) // CÓ THỂ NULL
-        .reportYear(request.getReportYear())
-        .reportingPeriod(request.getReportingPeriod())
-        .version(1)
-        .isDeleted(false)
-        .completionPercentage(BigDecimal.ZERO)
-        .build();
-    
-    // 4. Lưu vào DB
-    ReportA05 saved = reportA05Repository.save(report);
-    log.info("Created report: {}", saved.getReportCode());
-    
-    // 5. Trả về DTO
-    return ReportA05DTO.builder()
-        .reportId(saved.getReportId())
-        .reportCode(saved.getReportCode())
-        .businessDetailId(businessDetail != null ? businessDetail.getBusinessDetailId() : null)
-        .companyName(businessDetail != null ? businessDetail.getCompanyName() : null)
-        .reportYear(saved.getReportYear())
-        .reportingPeriod(saved.getReportingPeriod())
-        .completionPercentage(saved.getCompletionPercentage())
-        .createdAt(saved.getCreatedAt())
-        .build();
+        // 2. Generate report code đơn giản
+        String reportCode = "RPT-" + java.util.UUID.randomUUID().toString().substring(0, 8).toUpperCase();
+
+        // 3. Tạo report (businessDetail có thể null)
+        ReportA05 report = ReportA05.builder()
+                .reportCode(reportCode)
+                .businessDetail(businessDetail) // CÓ THỂ NULL
+                .reportYear(request.getReportYear())
+                .reportingPeriod(request.getReportingPeriod())
+                .version(1)
+                .isDeleted(false)
+                .completionPercentage(BigDecimal.ZERO)
+                .build();
+
+        // 4. Lưu vào DB
+        ReportA05 saved = reportA05Repository.save(report);
+
+        // 5. Trả về DTO
+        return ReportA05DTO.builder()
+                .reportId(saved.getReportId())
+                .reportCode(saved.getReportCode())
+                .businessDetailId(businessDetail != null ? businessDetail.getBusinessDetailId() : null)
+                .companyName(businessDetail != null ? businessDetail.getCompanyName() : null)
+                .reportYear(saved.getReportYear())
+                .reportingPeriod(saved.getReportingPeriod())
+                .completionPercentage(saved.getCompletionPercentage())
+                .createdAt(saved.getCreatedAt())
+                .build();
     }
 
+    // Retrieves report details by ID
     @Override
     public ReportA05DTO getReportById(UUID reportId) {
         ReportA05 report = reportA05Repository.findById(reportId)
-            .orElseThrow(() -> new RuntimeException("Report not found: " + reportId));
+                .orElseThrow(() -> exceptionFactory.createNotFoundException("ReportA05", reportId, ReportError.REPORT_NOT_FOUND));
         return ReportA05DTO.builder()
-            .reportId(report.getReportId())
-            .reportCode(report.getReportCode())
-            .businessDetailId(report.getBusinessDetail() != null ? report.getBusinessDetail().getBusinessDetailId() : null)
-            .companyName(report.getBusinessDetail() != null ? report.getBusinessDetail().getCompanyName() : null)
-            .reportYear(report.getReportYear())
-            .reportingPeriod(report.getReportingPeriod())
-            .completionPercentage(report.getCompletionPercentage())
-            .createdAt(report.getCreatedAt())
-            .build();
+                .reportId(report.getReportId())
+                .reportCode(report.getReportCode())
+                .businessDetailId(report.getBusinessDetail() != null ? report.getBusinessDetail().getBusinessDetailId() : null)
+                .companyName(report.getBusinessDetail() != null ? report.getBusinessDetail().getCompanyName() : null)
+                .reportYear(report.getReportYear())
+                .reportingPeriod(report.getReportingPeriod())
+                .completionPercentage(report.getCompletionPercentage())
+                .createdAt(report.getCreatedAt())
+                .build();
     }
 
+    // Saves draft wastewater data to cache
     @Override
     public ReportA05DraftDTO saveDraftWasteWaterData(UUID reportId, ReportA05DraftDTO data) {
-        
         if(!reportA05Repository.existsById(reportId) ) {
-            throw new RuntimeException("Report not found: " + reportId);
+            throw exceptionFactory.createNotFoundException("ReportA05", reportId, ReportError.REPORT_NOT_FOUND);
         }
 
-              // Lưu vào cache qua ReportCacheService
+        // Lưu vào cache qua ReportCacheService
         reportCacheService.updateWasteWaterData(reportId, data);
-        log.info("Saved draft wastewater data to cache for report: {}", reportId);
 
         return data;
     }
 
+    // Retrieves draft data from cache
     @Override
     public ReportA05DraftDTO getDraftData(UUID reportId) {
-       log.info("Getting draft wastewater data from cache for report: {}", reportId);
-
-       ReportA05DraftDTO draft = reportCacheService.getDraftReport(reportId);
-         if (draft == null || draft.getWasteWaterData() == null) {
-              log.warn("No draft wastewater data found in cache for report: {}", reportId);
-              return null;
-         }
+        ReportA05DraftDTO draft = reportCacheService.getDraftReport(reportId);
+        if (draft == null || draft.getWasteWaterData() == null) {
+            return null;
+        }
         return draft;
     }
 
-    // @Override
-    // public ReportA05DraftDTO saveWasteWaterDataToDatabase(UUID reportId) {
-    //    log.info("Saving wastewater data from cache to database for report: {}", reportId);
-        
-    //     // 1. Lấy draft data từ cache
-    //     ReportA05DraftDTO draftData = getDraftWasteWaterData(reportId);
-    //     if (draftData == null) { 
-    //         throw new RuntimeException("No draft wastewater data found in cache for report: " + reportId);
-    //     }
-        
-    //     // 2. Lấy report
-    //     ReportA05 report = reportA05Repository.findById(reportId)
-    //         .orElseThrow(() -> new RuntimeException("Report not found: " + reportId));
-        
-    //     // 3. Nếu đã có wastewater data → update
-    //     if (report.getWasteWaterData() != null) {
-    //         log.info("Updating existing wastewater data");
-    //         ReportA05DraftDTO existing = reportCacheService.getDraftReport(reportId);
-    //         wasteWaterDataMapper.updateEntityFromDTO(draftData, existing);
-    //     } else {
-    //         // 4. Nếu chưa có → tạo mới
-    //         log.info("Creating new wastewater data");
-    //         WasteWaterData wasteWaterData = wasteWaterDataMapper.toEntity(draftData);
-    //         wasteWaterData.setReport(report);
-    //         report.setWasteWaterData(wasteWaterData);
-    //     }
-        
-    //     // 5. Cập nhật completion percentage
-    //     // Integer completionPercentage = reportCacheService.calculateCompletionPercentage(reportId);
-    //     // report.setCompletionPercentage(BigDecimal.valueOf(completionPercentage));
-        
-    //     // 6. Lưu vào DB
-    //     ReportA05 saved = reportA05Repository.save(report);
-        
-    //     // 7. CẬP NHẬT cache (không xóa) - để user có thể edit tiếp
-    //     // Nếu muốn xóa, gọi: reportCacheService.deleteDraftReport(reportId);
-        
-    //     log.info("Saved wastewater data to database");
-        
-    //     BusinessDetail bd = saved.getBusinessDetail();
-    //     return ReportA05DTO.builder()
-    //         .reportId(saved.getReportId())
-    //         .reportCode(saved.getReportCode())
-    //         .businessDetailId(bd != null ? bd.getBusinessDetailId() : null)
-    //         .companyName(bd != null ? bd.getCompanyName() : null)
-    //         .reportYear(saved.getReportYear())
-    //         .reportingPeriod(saved.getReportingPeriod())
-    //         .completionPercentage(saved.getCompletionPercentage())
-    //         .createdAt(saved.getCreatedAt())
-    //         .build();
-    // }
+    // Saves complete draft data from cache to database
+    @Override
+    @Transactional
+    public ReportA05DTO saveWasteWaterDataToDatabase(UUID reportId) {
+        ReportA05DraftDTO draftData = getDraftData(reportId);
+        if (draftData == null) {
+            throw exceptionFactory.createCustomException(ReportError.DRAFT_NOT_FOUND);
+        }
+
+        if (!isDraftComplete(draftData)) {
+            throw exceptionFactory.createValidationException("ReportA05Draft", "completionPercentage",
+                    (draftData.getCompletionPercentage() != null ? draftData.getCompletionPercentage() : 0),
+                    ReportError.DRAFT_INCOMPLETE);
+        }
+
+        ReportA05 report = reportA05Repository.findById(reportId)
+                .orElseThrow(() -> exceptionFactory.createNotFoundException("ReportA05", reportId, ReportError.REPORT_NOT_FOUND));
+
+        saveOrUpdateWasteWaterData(report, draftData);
+
+        saveOrUpdateWasteManagementData(report, draftData);
+
+        // TODO: Thêm logic cho các phần khác nếu có (e.g., AirEmissionData, SolidWasteData)
+
+        // 6. Cập nhật completion percentage cho report (dựa trên draft)
+        if (draftData.getCompletionPercentage() != null) {
+            report.setCompletionPercentage(BigDecimal.valueOf(draftData.getCompletionPercentage()));
+        }
+
+        // 7. Lưu toàn bộ vào DB
+        ReportA05 saved = reportA05Repository.save(report);
+
+        // 8. Sau khi lưu đầy đủ, cập nhật draft metadata và xóa cache (hoặc set isDraft = false)
+        draftData.setIsDraft(false); // Đánh dấu không còn là draft
+        draftData.setLastModified(LocalDateTime.now());
+        // Không update cache nữa, thay vào đó xóa draft vì đã submit đầy đủ
+        // reportCacheService.deleteDraftReport(reportId);
+
+        BusinessDetail bd = saved.getBusinessDetail();
+        return ReportA05DTO.builder()
+                .reportId(saved.getReportId())
+                .reportCode(saved.getReportCode())
+                .businessDetailId(bd != null ? bd.getBusinessDetailId() : null)
+                .companyName(bd != null ? bd.getCompanyName() : null)
+                .reportYear(saved.getReportYear())
+                .reportingPeriod(saved.getReportingPeriod())
+                .completionPercentage(saved.getCompletionPercentage())
+                .createdAt(saved.getCreatedAt())
+                .build();
+    }
+
+    // Helper method: Kiểm tra draft có đầy đủ không (dựa trên các field chính và completionPercentage)
+    private boolean isDraftComplete(ReportA05DraftDTO draftData) {
+        // Kiểm tra các field chính không null
+        boolean allFieldsFilled = draftData.getWasteWaterData() != null
+                && draftData.getWasteManagementData() != null
+                // Thêm các field khác nếu có: && draftData.getAirEmissionData() != null && ...
+                ;
+
+        // Kiểm tra completionPercentage == 100 nếu có
+        boolean completionComplete = draftData.getCompletionPercentage() != null && draftData.getCompletionPercentage() == 100;
+
+        // Hoặc kiểm tra isDraft == false, nhưng dùng completion để linh hoạt
+        return allFieldsFilled && completionComplete;
+    }
+
+    // Helper method: Lưu hoặc update WasteWaterData
+    private void saveOrUpdateWasteWaterData(ReportA05 report, ReportA05DraftDTO draftData) {
+        WasteWaterDataDTO dto = draftData.getWasteWaterData();
+        if (dto == null) {
+            return; // Không nên xảy ra vì đã kiểm tra complete
+        }
+
+        // Vì đây là lần đầu lưu từ draft đầy đủ vào DB, luôn tạo mới (DB chưa có entity con)
+        WasteWaterData entity = wasteWaterDataMapper.toEntity(dto);
+        entity.setReport(report);
+        report.setWasteWaterData(entity);
+    }
+
+    // Helper method: Lưu hoặc update WasteManagementData (tương tự)
+    private void saveOrUpdateWasteManagementData(ReportA05 report, ReportA05DraftDTO draftData) {
+        WasteManagementDataDTO dto = draftData.getWasteManagementData();
+        if (dto == null) {
+            return;
+        }
+
+        WasteManagementData entity = wasteManagementDataMapper.dtoToEntity(dto);
+        entity.setReport(report);
+        report.setWasteManagementData(entity);
+    }
 
     // @Override
     // public void deleteDraftWasteWaterData(UUID reportId) {
@@ -218,4 +221,3 @@ public class ReportA05ServiceImpl implements ReportA05Service {
     // }
 
 }
-    

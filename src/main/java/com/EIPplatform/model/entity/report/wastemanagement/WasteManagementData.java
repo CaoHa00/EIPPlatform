@@ -31,105 +31,85 @@ public class WasteManagementData {
     @Column(name = "wm_id", updatable = false, nullable = false)
     Long wmId;
 
-    // ============= QUAN HỆ ONE-TO-ONE VỚI REPORT =============
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "report_id", nullable = false, unique = true)
     @JsonBackReference(value = "report-waste-management")
     ReportA05 report;
 
-    // ============= QUAN HỆ CHUNG CHO CHẤT THẢI RẮN THÔNG THƯỜNG =============
     @Column(name = "sw_general_note", columnDefinition = "TEXT")
-    String swGeneralNote; // Ghi chú thống kê chất thải phát sinh (không bắt buộc)
+    String swGeneralNote;
 
-    // ============= BẢNG 3.1: THỐNG KÊ CTRSH (SINH HOẠT) - DYNAMIC LIST =============
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "wasteManagementData")
-    List<DomesticSolidWasteStat> domesticSolidWasteStats; // Dynamic: Mỗi item là một dòng
+    List<DomesticSolidWasteStat> domesticSolidWasteStats;
 
-    // ============= BẢNG 3.2: THỐNG KÊ CTRCNTT (CÔNG NGHIỆP) - DYNAMIC LIST =============
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "wasteManagementData")
-    List<IndustrialSolidWasteStat> industrialSolidWasteStats; // Dynamic: Mỗi item là một dòng
+    List<IndustrialSolidWasteStat> industrialSolidWasteStats;
 
-    // ============= BẢNG 3.3: THỐNG KÊ TÁI SỬ DỤNG CTRCNTT - DYNAMIC LIST =============
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "wasteManagementData")
-    List<RecycleIndustrialWasteStat> recycleIndustrialWasteStats; // Dynamic: Mỗi item là một dòng
+    List<RecycleIndustrialWasteStat> recycleIndustrialWasteStats;
 
-    // ============= BẢNG 3.4: THỐNG KÊ CTRTT KHÁC - DYNAMIC LIST =============
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "wasteManagementData")
-    List<OtherSolidWasteStat> otherSolidWasteStats; // Dynamic: Mỗi item là một dòng
+    List<OtherSolidWasteStat> otherSolidWasteStats;
 
-    // ============= BẢNG 4.1: THỐNG KÊ CTNH (THƯỜNG XUYÊN/ĐỘT XUẤT) - DYNAMIC LIST =============
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "wasteManagementData")
-    List<HazardousWasteStat> hazardousWasteStats; // Dynamic: Mỗi item là một dòng
+    List<HazardousWasteStat> hazardousWasteStats;
 
-    // ============= BẢNG 4.2: THỐNG KÊ CTNH XUẤT KHẨU - DYNAMIC LIST =============
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "wasteManagementData")
-    List<ExportedHwStat> exportedHwStats; // Dynamic: Mỗi item là một dòng
+    List<ExportedHwStat> exportedHwStats;
 
-    // ============= BẢNG 4.3: THỐNG KÊ CTNH TỰ XỬ LÝ - DYNAMIC LIST =============
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "wasteManagementData")
-    List<SelfTreatedHwStat> selfTreatedHwStats; // Dynamic: Mỗi item là một dòng
+    List<SelfTreatedHwStat> selfTreatedHwStats;
 
-    // ============= PHÒNG NGỪA, ỨNG PHÓ SỰ CỐ MÔI TRƯỜNG =============
     @Column(name = "incident_plan_development", columnDefinition = "TEXT", nullable = false)
-    String incidentPlanDevelopment; // 6.1. Kế hoạch phòng ngừa, ứng phó (bắt buộc)
+    String incidentPlanDevelopment;
 
     @Column(name = "incident_prevention_measures", columnDefinition = "TEXT", nullable = false)
-    String incidentPreventionMeasures; // 6.2. Giải pháp phòng ngừa (bắt buộc)
+    String incidentPreventionMeasures;
 
     @Column(name = "incident_response_report", columnDefinition = "TEXT", nullable = false)
-    String incidentResponseReport; // 6.2. Ứng phó và khắc phục sự cố (bắt buộc)
+    String incidentResponseReport;
 
-    // ============= BẢNG 7.1: POP INVENTORY - DYNAMIC LIST =============
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "wasteManagementData")
-    List<PopInventoryStat> popInventoryStats; // Dynamic: Mỗi item là một dòng
+    List<PopInventoryStat> popInventoryStats;
 
-    // ============= BẢNG 7.2: POP EMISSION - FIXED ROWS (8 CATEGORIES) - FIELDS RIÊNG =============
-    // Category 1: Water
     @Column(name = "water_total_volume_kg", nullable = false, precision = 10, scale = 2)
-    BigDecimal waterTotalVolumeKg; // Phát thải vào nước (≥0)
+    BigDecimal waterTotalVolumeKg;
 
     @Column(name = "water_estimation_method", columnDefinition = "TEXT", nullable = false)
-    String waterEstimationMethod; // Phương pháp ước tính cho nước
+    String waterEstimationMethod;
 
-    // Category 2: Air
     @Column(name = "air_total_volume_kg", nullable = false, precision = 10, scale = 2)
-    BigDecimal airTotalVolumeKg; // Phát thải vào không khí (≥0)
+    BigDecimal airTotalVolumeKg;
 
     @Column(name = "air_estimation_method", columnDefinition = "TEXT", nullable = false)
-    String airEstimationMethod; // Phương pháp cho không khí
+    String airEstimationMethod;
 
-    // Category 3: Soil
     @Column(name = "soil_total_volume_kg", nullable = false, precision = 10, scale = 2)
-    BigDecimal soilTotalVolumeKg; // Phát thải vào đất (≥0)
-
+    BigDecimal soilTotalVolumeKg;
     @Column(name = "soil_estimation_method", columnDefinition = "TEXT", nullable = false)
-    String soilEstimationMethod; // Phương pháp cho đất
+    String soilEstimationMethod;
 
-    // Category 4: Sewage Sludge
     @Column(name = "sewage_sludge_total_volume_kg", nullable = false, precision = 10, scale = 2)
-    BigDecimal sewageSludgeTotalVolumeKg; // Chuyển giao vào bùn thải (≥0)
+    BigDecimal sewageSludgeTotalVolumeKg;
 
     @Column(name = "sewage_sludge_estimation_method", columnDefinition = "TEXT", nullable = false)
-    String sewageSludgeEstimationMethod; // Phương pháp cho bùn thải
+    String sewageSludgeEstimationMethod;
 
-    // Category 5.1: HW Onsite
     @Column(name = "hw_onsite_total_volume_kg", nullable = false, precision = 10, scale = 2)
-    BigDecimal hwOnsiteTotalVolumeKg; // Chuyển giao CTNH trong cơ sở (≥0)
+    BigDecimal hwOnsiteTotalVolumeKg;
 
     @Column(name = "hw_onsite_estimation_method", columnDefinition = "TEXT", nullable = false)
-    String hwOnsiteEstimationMethod; // Phương pháp cho HW onsite
+    String hwOnsiteEstimationMethod;
 
-    // Category 5.2: HW Recycle
     @Column(name = "hw_recycle_total_volume_kg", nullable = false, precision = 10, scale = 2)
-    BigDecimal hwRecycleTotalVolumeKg; // Chuyển giao CTNH tái chế (≥0)
+    BigDecimal hwRecycleTotalVolumeKg;
 
     @Column(name = "hw_recycle_estimation_method", columnDefinition = "TEXT", nullable = false)
-    String hwRecycleEstimationMethod; // Phương pháp cho HW recycle
+    String hwRecycleEstimationMethod;
 
-    // Category 5.3: HW Disposal
     @Column(name = "hw_disposal_total_volume_kg", nullable = false, precision = 10, scale = 2)
-    BigDecimal hwDisposalTotalVolumeKg; // Chuyển giao CTNH thải bỏ (≥0)
+    BigDecimal hwDisposalTotalVolumeKg;
 
     @Column(name = "hw_disposal_estimation_method", columnDefinition = "TEXT", nullable = false)
-    String hwDisposalEstimationMethod; // Phương pháp cho HW disposal
+    String hwDisposalEstimationMethod;
 }

@@ -27,7 +27,7 @@ public interface ReportA05Service {
     /**
      * Lưu từ CACHE xuống DATABASE
      */
-    // ReportA05DraftDTO saveWasteWaterDataToDatabase(UUID reportId);
+    ReportA05DTO saveWasteWaterDataToDatabase(UUID reportId);
     
     /**
      * Xóa draft trong cache
