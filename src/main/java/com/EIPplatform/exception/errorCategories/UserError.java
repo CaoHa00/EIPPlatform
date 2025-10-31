@@ -13,7 +13,10 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public enum UserError implements ErrorCodeInterface {
     // 1100 -> 1199
-    NOT_FOUND(1100, "User not found", HttpStatus.NOT_FOUND);
+    NOT_FOUND(1100, "User not found", HttpStatus.NOT_FOUND),
+    ID_GENERATION_FAILED(1101, "Failed to generate entity ID", HttpStatus.INTERNAL_SERVER_ERROR),
+    // hoặc
+    SAVE_FAILED(1102, "Failed to save entity to database", HttpStatus.INTERNAL_SERVER_ERROR);
 
     private final int code;
     private final String message;

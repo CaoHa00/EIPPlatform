@@ -72,6 +72,7 @@ public class WasteWaterData {
     String connectionStatusDesc;
     
     @Column(name = "connection_diagram")
+
     String connectionDiagram;
 
     // ============= KẾT QUẢ QUAN TRẮC NƯỚC THẢI ĐẦU RA =============
@@ -183,4 +184,5 @@ public class WasteWaterData {
     
     @Column(name = "auto_exceed_summary", columnDefinition = "NVARCHAR(MAX)", nullable = false)
     String autoExceedSummary;
+
 }

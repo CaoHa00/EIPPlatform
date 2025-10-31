@@ -11,6 +11,7 @@ import com.EIPplatform.repository.authentication.UserAccountRepository;
 import com.EIPplatform.util.BusinessDetailUtils;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,6 +24,7 @@ import com.EIPplatform.repository.user.BusinessDetailRepository;
 
 import lombok.RequiredArgsConstructor;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 @Transactional
@@ -82,12 +84,22 @@ public class BusinessDetailImplementation implements BusinessDetailInterface {
         entity = businessDetailRepository.saveAndFlush(entity);
 
         if (entity.getBusinessDetailId() == null) {
-            throw new IllegalStateException("Failed to generate BusinessDetail ID");
+            throw exceptionFactory.createCustomException(
+                    "BusinessDetail",
+                    List.of("operation", "companyName"),
+                    List.of("save", dto.getCompanyName()),
+                    UserError.ID_GENERATION_FAILED
+            );
         }
 
         userAccountRepository.flush();
 
-        return businessDetailMapper.toResponse(entity);
+        BusinessDetailResponse response = businessDetailMapper.toResponse(entity);
+
+        log.info("Created BusinessDetail - ID: {}, Company: {}, TaxCode: {}",
+                entity.getBusinessDetailId(), entity.getCompanyName(), entity.getTaxCode());
+
+        return response;
     }
 
     @Override
@@ -117,7 +129,13 @@ public class BusinessDetailImplementation implements BusinessDetailInterface {
         entity.setSeasonalDescription(dto.getSeasonalDescription());
 
         entity = businessDetailRepository.save(entity);
-        return businessDetailMapper.toResponse(entity);
+
+        BusinessDetailResponse response = businessDetailMapper.toResponse(entity);
+
+        log.info("Updated BusinessDetail - ID: {}, Company: {}, TaxCode: {}",
+                id, entity.getCompanyName(), entity.getTaxCode());
+
+        return response;
     }
 
     @Override
