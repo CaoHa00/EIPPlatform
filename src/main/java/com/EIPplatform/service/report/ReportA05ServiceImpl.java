@@ -40,11 +40,11 @@ public class ReportA05ServiceImpl implements ReportA05Service {
         log.info("Creating report for business: {}, year: {}", 
             request.getBusinessDetailId(), request.getReportYear());
         
-        // // 1. Kiểm tra business có tồn tại
-        // BusinessDetail businessDetail = businessDetailRepository
-        //     .findById(request.getBusinessDetailId())
-        //     .orElseThrow(() -> new RuntimeException(
-        //         "Business not found: " + request.getBusinessDetailId()));
+        // 1. Kiểm tra business có tồn tại
+        BusinessDetail businessDetail = businessDetailRepository
+            .findById(request.getBusinessDetailId())
+            .orElseThrow(() -> new RuntimeException(
+                "Business not found: " + request.getBusinessDetailId()));
         
         // // 2. Generate report code đơn giản (UUID)
         // String reportCode = "RPT-" + java.util.UUID.randomUUID().toString().substring(0, 8).toUpperCase();
@@ -76,13 +76,13 @@ public class ReportA05ServiceImpl implements ReportA05Service {
         //     .createdAt(saved.getCreatedAt())
         //     .build();
         // 1. Kiểm tra business (CHỈ KHI CÓ businessDetailId)
-    BusinessDetail businessDetail = null;
-    if (request.getBusinessDetailId() != null) {
-        businessDetail = businessDetailRepository
-            .findById(request.getBusinessDetailId())
-            .orElseThrow(() -> new RuntimeException(
-                "Business not found: " + request.getBusinessDetailId()));
-    }
+    // BusinessDetail businessDetail = null;
+    // if (request.getBusinessDetailId() != null) {
+    //     businessDetail = businessDetailRepository
+    //         .findById(request.getBusinessDetailId())
+    //         .orElseThrow(() -> new RuntimeException(
+    //             "Business not found: " + request.getBusinessDetailId()));
+    // }
     
 
     

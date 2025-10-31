@@ -5,7 +5,14 @@ import jakarta.validation.constraints.PositiveOrZero;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
+
+import com.EIPplatform.model.dto.report.report.wastewatermanagerDTO.AutoWWMonitoringIncidentsDTO;
+import com.EIPplatform.model.dto.report.report.wastewatermanagerDTO.AutoWWMonitoringStatsDTO;
+import com.EIPplatform.model.dto.report.report.wastewatermanagerDTO.AutoWWQcvnExceedancesDTO;
+import com.EIPplatform.model.dto.report.report.wastewatermanagerDTO.WasteWaterMonitoringExceedancesDTO;
 
 @Getter
 @Setter
@@ -17,49 +24,77 @@ public class WasteWaterDataDTO {
     
     Long wwId;
     
-   
-    
-    // ============= NƯỚC THẢI SINH HOẠT =============
+    // Nước thải sinh hoạt
     String treatmentWwDesc;
-    
-    @NotNull(message = "Domestic wastewater current year is required")
-    @PositiveOrZero(message = "Domestic wastewater current year must be >= 0")
     Double domWwCy;
-    
-    @NotNull(message = "Domestic wastewater previous year is required")
-    @PositiveOrZero(message = "Domestic wastewater previous year must be >= 0")
     Double domWwPy;
-    
-    @NotNull(message = "Domestic wastewater design is required")
-    @PositiveOrZero(message = "Domestic wastewater design must be >= 0")
     Double domWwDesign;
     
-    // ============= NƯỚC THẢI CÔNG NGHIỆP =============
-    @NotNull(message = "Industrial wastewater current year is required")
-    @PositiveOrZero(message = "Industrial wastewater current year must be >= 0")
+    // Nước thải công nghiệp
     Double industrialWwCy;
-    
-    @NotNull(message = "Industrial wastewater previous year is required")
-    @PositiveOrZero(message = "Industrial wastewater previous year must be >= 0")
     Double industrialWwPy;
-    
-    @NotNull(message = "Industrial wastewater design is required")
-    @PositiveOrZero(message = "Industrial wastewater design must be >= 0")
     Double industrialWwDesign;
     
-    // ============= NƯỚC LÀM MÁT =============
-    @PositiveOrZero(message = "Cooling water current year must be >= 0")
+    // Nước làm mát
     Double coolingWaterCy;
-    
-    @PositiveOrZero(message = "Cooling water previous year must be >= 0")
     Double coolingWaterPy;
-    
-    @PositiveOrZero(message = "Cooling water design must be >= 0")
     Double coolingWaterDesign;
     
-    // ============= TÌNH HÌNH ĐẤU NỐI =============
-    @NotNull(message = "Connection status description is required")
+    // Kết nối hệ thống xử lý tập trung
     String connectionStatusDesc;
-    
     String connectionDiagram;
+    
+    // Kết quả quan trắc - Nước thải sinh hoạt
+    String domMonitorPeriod;
+    String domMonitorFreq;
+    String domMonitorLocations;
+    Integer domSampleCount;
+    String domQcvnStandard;
+    String domAgencyName;
+    String domAgencyVimcerts;
+    
+    // Kết quả quan trắc - Nước thải công nghiệp
+    String indMonitorPeriod;
+    String indMonitorFreq;
+    String indMonitorLocations;
+    Integer indSampleCount;
+    String indQcvnStandard;
+    String indAgencyName;
+    String indAgencyVimcerts;
+    
+    // Bảng 1.1, 1.2
+    @Builder.Default
+    List<WasteWaterMonitoringExceedancesDTO> monitoringExceedances = new ArrayList<>();
+    
+    // Quan trắc tự động - Thông tin chung
+    String autoStationLocation;
+    String autoStationGps;
+    String autoStationMap;
+    String autoSourceDesc;
+    String autoDataFrequency;
+    String autoCalibrationInfo;
+    
+    // Tình trạng hoạt động
+    String autoIncidentSummary;
+    String autoDowntimeDesc;
+    
+    // Bảng 1.3
+    @Builder.Default
+    List<AutoWWMonitoringStatsDTO> monitoringStats = new ArrayList<>();
+    
+    // Bảng 1.4
+    @Builder.Default
+    List<AutoWWMonitoringIncidentsDTO> monitoringIncidents = new ArrayList<>();
+    
+    // Nhận xét
+    String autoExceedDaysSummary;
+    String autoAbnormalReason;
+    
+    // Bảng 1.5
+    @Builder.Default
+    List<AutoWWQcvnExceedancesDTO> qcvnExceedances = new ArrayList<>();
+    
+    // Kết luận
+    String autoCompletenessReview;
+    String autoExceedSummary;
 }

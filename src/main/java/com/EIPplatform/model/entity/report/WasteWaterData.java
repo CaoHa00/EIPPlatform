@@ -1,24 +1,15 @@
 package com.EIPplatform.model.entity.report;
 
+import com.EIPplatform.model.entity.report.wastewatermanager.*;
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Index;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.OneToOne;
-import jakarta.persistence.Table;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import jakarta.persistence.*;
+import lombok.*;
 import lombok.experimental.FieldDefaults;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "waste_water_data", indexes = {
@@ -45,41 +36,153 @@ public class WasteWaterData {
     
     // ============= NƯỚC THẢI SINH HOẠT =============
     @Column(name = "treatment_ww_desc", columnDefinition = "NVARCHAR(MAX)")
-    String treatmentWwDesc; // Mô tả hệ thống xử lý nước thải
+    String treatmentWwDesc;
     
     @Column(name = "dom_ww_cy", nullable = false)
-    Double domWwCy; // Lượng nước thải sinh hoạt phát sinh - năm báo cáo (m3)
+    Double domWwCy;
     
     @Column(name = "dom_ww_py", nullable = false)
-    Double domWwPy; // Lượng nước thải sinh hoạt phát sinh - năm trước (m3)
+    Double domWwPy;
     
     @Column(name = "dom_ww_design", nullable = false)
-    Double domWwDesign; // Tổng lưu lượng nước thải sinh hoạt theo thiết kế (m3)
+    Double domWwDesign;
     
     // ============= NƯỚC THẢI CÔNG NGHIỆP =============
     @Column(name = "industrial_ww_cy", nullable = false)
-    Double industrialWwCy; // Lượng nước thải công nghiệp - năm báo cáo (m3)
+    Double industrialWwCy;
     
     @Column(name = "industrial_ww_py", nullable = false)
-    Double industrialWwPy; // Lượng nước thải công nghiệp - năm trước (m3)
+    Double industrialWwPy;
     
     @Column(name = "industrial_ww_design", nullable = false)
-    Double industrialWwDesign; // Tổng lưu lượng nước thải công nghiệp theo thiết kế (m3)
+    Double industrialWwDesign;
     
     // ============= NƯỚC LÀM MÁT =============
     @Column(name = "cooling_water_cy")
-    Double coolingWaterCy; // Lượng nước làm mát - năm báo cáo (m3)
+    Double coolingWaterCy;
     
     @Column(name = "cooling_water_py")
-    Double coolingWaterPy; // Lượng nước làm mát - năm trước (m3)
+    Double coolingWaterPy;
     
     @Column(name = "cooling_water_design")
-    Double coolingWaterDesign; // Tổng lưu lượng nước làm mát theo thiết kế (m3)
+    Double coolingWaterDesign;
     
     // ============= TÌNH HÌNH ĐẤU NỐI HỆ THỐNG XLNT TẬP TRUNG =============
     @Column(name = "connection_status_desc", nullable = false, columnDefinition = "NVARCHAR(MAX)")
-    String connectionStatusDesc; // Mô tả tình hình đấu nối
+    String connectionStatusDesc;
     
     @Column(name = "connection_diagram")
-    String connectionDiagram; // Đường dẫn file sơ đồ đấu nối (URL hoặc path)
+
+    String connectionDiagram;
+
+    // ============= KẾT QUẢ QUAN TRẮC NƯỚC THẢI ĐẦU RA =============
+    // Nước thải sinh hoạt
+    @Column(name = "dom_monitor_period", columnDefinition = "NVARCHAR(100)", nullable = false)
+    String domMonitorPeriod;
+    
+    @Column(name = "dom_monitor_freq", columnDefinition = "NVARCHAR(100)", nullable = false)
+    String domMonitorFreq;
+    
+    @Column(name = "dom_monitor_locations", columnDefinition = "NVARCHAR(MAX)", nullable = false)
+    String domMonitorLocations;
+    
+    @Column(name = "dom_sample_count", nullable = false)
+    Integer domSampleCount;
+    
+    @Column(name = "dom_qcvn_standard", columnDefinition = "NVARCHAR(100)", nullable = false)
+    String domQcvnStandard;
+    
+    @Column(name = "dom_agency_name", columnDefinition = "NVARCHAR(MAX)", nullable = false)
+    String domAgencyName;
+    
+    @Column(name = "dom_agency_vimcerts", columnDefinition = "NVARCHAR(MAX)", nullable = false)
+    String domAgencyVimcerts;
+
+    // Nước thải công nghiệp
+    @Column(name = "ind_monitor_period", columnDefinition = "NVARCHAR(100)", nullable = false)
+    String indMonitorPeriod;
+    
+    @Column(name = "ind_monitor_freq", columnDefinition = "NVARCHAR(100)", nullable = false)
+    String indMonitorFreq;
+    
+    @Column(name = "ind_monitor_locations", columnDefinition = "NVARCHAR(MAX)", nullable = false)
+    String indMonitorLocations;
+    
+    @Column(name = "ind_sample_count", nullable = false)
+    Integer indSampleCount;
+    
+    @Column(name = "ind_qcvn_standard", columnDefinition = "NVARCHAR(100)", nullable = false)
+    String indQcvnStandard;
+    
+    @Column(name = "ind_agency_name", columnDefinition = "NVARCHAR(MAX)", nullable = false)
+    String indAgencyName;
+    
+    @Column(name = "ind_agency_vimcerts", columnDefinition = "NVARCHAR(MAX)", nullable = false)
+    String indAgencyVimcerts;
+    
+    // ============= BẢNG 1.1, 1.2: THỐNG KÊ VỊ TRÍ & KẾT QUẢ VƯỢT QCVN =============
+    @OneToMany(mappedBy = "wasteWaterData", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
+    @Builder.Default
+    List<WasteWaterMonitoringExceedances> monitoringExceedances = new ArrayList<>();
+    
+    // ============= QUAN TRẮC NƯỚC THẢI LIÊN TỤC TỰ ĐỘNG =============
+    // a) Thông tin chung về hệ thống
+    @Column(name = "auto_station_location", columnDefinition = "NVARCHAR(500)", nullable = false)
+    String autoStationLocation;
+    
+    @Column(name = "auto_station_gps", length = 30, nullable = true)
+    String autoStationGps;
+    
+    @Column(name = "auto_station_map", columnDefinition = "NVARCHAR(255)", nullable = true)
+    String autoStationMap; // File path/URL
+    
+    @Column(name = "auto_source_desc", columnDefinition = "NVARCHAR(MAX)", nullable = false)
+    String autoSourceDesc;
+    
+    @Column(name = "auto_data_frequency", columnDefinition = "NVARCHAR(100)", nullable = false)
+    String autoDataFrequency;
+    
+    @Column(name = "auto_calibration_info", columnDefinition = "NVARCHAR(MAX)", nullable = false)
+    String autoCalibrationInfo;
+    
+    // b) Tình trạng hoạt động của trạm
+    @Column(name = "auto_incident_summary", columnDefinition = "NVARCHAR(MAX)", nullable = true)
+    String autoIncidentSummary;
+    
+    @Column(name = "auto_downtime_desc", columnDefinition = "NVARCHAR(MAX)", nullable = true)
+    String autoDowntimeDesc;
+    
+    // ============= BẢNG 1.3: THỐNG KÊ SỐ LIỆU QUAN TRẮC =============
+    @OneToMany(mappedBy = "wasteWaterData", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
+    @Builder.Default
+    List<AutoWWMonitoringStats> monitoringStats = new ArrayList<>();
+    
+    // ============= BẢNG 1.4: THỐNG KÊ CÁC SỰ CỐ TẠI TRẠM =============
+    @OneToMany(mappedBy = "wasteWaterData", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
+    @Builder.Default
+    List<AutoWWMonitoringIncidents> monitoringIncidents = new ArrayList<>();
+    
+    // c) Nhận xét kết quả quan trắc
+    @Column(name = "auto_exceed_days_summary", columnDefinition = "NVARCHAR(MAX)", nullable = true)
+    String autoExceedDaysSummary;
+
+    @Column(name = "auto_abnormal_reason", columnDefinition = "NVARCHAR(MAX)", nullable = true)
+    String autoAbnormalReason;
+    
+    // ============= BẢNG 1.5: THỐNG KÊ VƯỢT QCVN =============
+    @OneToMany(mappedBy = "wasteWaterData", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
+    @Builder.Default
+    List<AutoWWQcvnExceedances> qcvnExceedances = new ArrayList<>();
+    
+    // d) Kết luận
+    @Column(name = "auto_completeness_review", columnDefinition = "NVARCHAR(MAX)", nullable = false)
+    String autoCompletenessReview;
+    
+    @Column(name = "auto_exceed_summary", columnDefinition = "NVARCHAR(MAX)", nullable = false)
+    String autoExceedSummary;
+
 }
