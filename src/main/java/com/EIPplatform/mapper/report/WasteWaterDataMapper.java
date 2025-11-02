@@ -12,8 +12,8 @@ import com.EIPplatform.model.entity.report.WasteWaterData;
 public interface WasteWaterDataMapper {
     
     
-    // @Mapping(source = "report.reportId", target = "reportId")
-    // WasteWaterDataDTO toDTO(WasteWaterData entity);
+     @Mapping(source = "report.reportId", target = "reportId")
+     WasteWaterDataDTO toDTO(WasteWaterData entity);
     
     
     @Mapping(target = "report", ignore = true)
