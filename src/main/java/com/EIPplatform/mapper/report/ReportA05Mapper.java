@@ -6,7 +6,7 @@ import org.mapstruct.Mapping;
 import com.EIPplatform.model.dto.report.report.ReportA05DTO;
 import com.EIPplatform.model.entity.report.ReportA05;
 
-@Mapper(componentModel = "spring", uses = {WasteWaterDataMapper.class})
+@Mapper(componentModel = "spring")
 public interface ReportA05Mapper {
     
     @Mapping(source = "businessDetail.businessDetailId", target = "businessDetailId")
