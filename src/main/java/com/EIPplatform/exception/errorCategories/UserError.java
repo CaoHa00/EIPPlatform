@@ -15,8 +15,9 @@ public enum UserError implements ErrorCodeInterface {
     // 1100 -> 1199
     NOT_FOUND(1100, "User not found", HttpStatus.NOT_FOUND),
     ID_GENERATION_FAILED(1101, "Failed to generate entity ID", HttpStatus.INTERNAL_SERVER_ERROR),
-    // hoặc
-    SAVE_FAILED(1102, "Failed to save entity to database", HttpStatus.INTERNAL_SERVER_ERROR);
+    SAVE_FAILED(1102, "Failed to save entity to database", HttpStatus.INTERNAL_SERVER_ERROR),
+    MISSING_REQUIRED_FIELD(1103, "Missing required field", HttpStatus.BAD_REQUEST),
+    FILE_NOT_FOUND(1104, "File not found", HttpStatus.NOT_FOUND);
 
     private final int code;
     private final String message;

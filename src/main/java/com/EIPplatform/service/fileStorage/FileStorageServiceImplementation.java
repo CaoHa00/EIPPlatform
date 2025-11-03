@@ -124,6 +124,72 @@ public class FileStorageServiceImplementation implements FileStorageService {
     }
 
     /**
+     * Store file to a specific directory with given filename (new method for explicit control)
+     * @param directory thư mục đích (relative to root)
+     * @param fileName tên file (đã unique hoặc custom)
+     * @param file MultipartFile cần store
+     * @return đường dẫn file đã store (relative path)
+     */
+    @Override
+    public String storeFile(String directory, String fileName, MultipartFile file) {
+        log.info("Storing file to directory: {}, filename: {}", directory, fileName);
+
+        try {
+            // Validate file
+            if (file.isEmpty()) {
+                throw exceptionFactory.createValidationException(
+                        "File", "empty", true, ValidationError.EMPTY_FILE
+                );
+            }
+
+            // Validate directory and filename
+            validateFolderPath(directory);
+            validateFileName(fileName);
+
+            initStorage();
+
+            // Tạo directory nếu chưa tồn tại
+            Path dirPath = rootLocation.resolve(directory);
+            if (!Files.exists(dirPath)) {
+                Files.createDirectories(dirPath);
+            }
+
+            // Build destination path
+            Path destinationFile = dirPath.resolve(fileName).normalize().toAbsolutePath();
+
+            // Security checks
+            if (!destinationFile.getParent().equals(dirPath.toAbsolutePath())) {
+                throw exceptionFactory.createCustomException(
+                        "File",
+                        Arrays.asList("storagePath"),
+                        Arrays.asList("Cannot store file outside current directory"),
+                        ForbiddenError.FORBIDDEN
+                );
+            }
+
+            if (!destinationFile.startsWith(rootLocation.toAbsolutePath())) {
+                throw exceptionFactory.createCustomException(
+                        "File",
+                        Arrays.asList("storagePath"),
+                        Arrays.asList("Cannot store file outside root directory"),
+                        ForbiddenError.FORBIDDEN
+                );
+            }
+
+            // Copy file
+            Files.copy(file.getInputStream(), destinationFile, StandardCopyOption.REPLACE_EXISTING);
+
+            String filePath = directory + "/" + fileName;
+            log.info("File stored successfully: {}", filePath);
+            return filePath;
+
+        } catch (IOException e) {
+            log.error("Failed to store file", e);
+            throw new RuntimeException("Failed to store file: " + e.getMessage(), e);
+        }
+    }
+
+    /**
      * Upload nhiều files với metadata
      */
     @Override

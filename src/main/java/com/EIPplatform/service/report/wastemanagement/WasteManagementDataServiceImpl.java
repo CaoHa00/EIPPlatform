@@ -16,8 +16,7 @@ import com.EIPplatform.model.dto.report.wastemanagement.WasteManagementDataUpdat
 import com.EIPplatform.model.entity.report.ReportA05;
 import com.EIPplatform.model.entity.report.wastemanagement.WasteManagementData;
 import com.EIPplatform.repository.report.ReportA05Repository;
-import com.EIPplatform.repository.report.wastemanagement.WasteManagementDataRepository;
-import com.EIPplatform.service.report.ReportCacheService;
+import com.EIPplatform.service.report.reportcache.ReportCacheService;
 
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -30,7 +29,6 @@ import lombok.AccessLevel;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class WasteManagementDataServiceImpl implements WasteManagementDataService {
 
-    WasteManagementDataRepository wasteManagementDataRepository;
     ReportA05Repository reportA05Repository;
     WasteManagementDataMapper wasteManagementDataMapper;
     ReportCacheService reportCacheService;
@@ -48,13 +46,9 @@ public class WasteManagementDataServiceImpl implements WasteManagementDataServic
                         WasteManagementError.REPORT_NOT_FOUND
                 ));
 
-        if (wasteManagementDataRepository.existsByReportId(reportId)) {
-            throw exceptionFactory.createAlreadyExistsException(
-                    "WasteManagementData",
-                    "reportId",
-                    reportId,
-                    WasteManagementError.DUPLICATE_ENTRY
-            );
+        ReportA05DraftDTO draft = reportCacheService.getDraftReport(reportId);
+        if (draft != null && draft.getWasteManagementData() != null) {
+            log.info("Overwriting existing WasteManagementData in cache for reportId: {}", reportId);
         }
 
         WasteManagementData entity = wasteManagementDataMapper.toEntity(request);
@@ -63,34 +57,11 @@ public class WasteManagementDataServiceImpl implements WasteManagementDataServic
         WasteManagementDataDTO responseDto = wasteManagementDataMapper.toDto(entity);
         saveToCache(reportId, responseDto);
 
-        log.info("Created WasteManagementData for reportId: {}", reportId);
+        log.info("Created (or replaced) WasteManagementData in cache for reportId: {}", reportId);
         return responseDto;
     }
 
-    @Override
-    @Transactional
-    public WasteManagementDataDTO updateWasteManagementData(UUID reportId, WasteManagementDataUpdateDTO request) {
 
-        WasteManagementDataDTO currentData = getWasteManagementData(reportId);
-        if (currentData == null) {
-            throw exceptionFactory.createNotFoundException(
-                    "WasteManagementData",
-                    "reportId",
-                    reportId,
-                    WasteManagementError.NOT_FOUND
-            );
-        }
-
-        WasteManagementData entity = wasteManagementDataMapper.dtoToEntity(currentData);
-
-        wasteManagementDataMapper.updateEntityFromDto(request, entity);
-
-        WasteManagementDataDTO responseDto = wasteManagementDataMapper.toDto(entity);
-        saveToCache(reportId, responseDto);
-
-        log.info("Updated WasteManagementData for reportId: {}", reportId);
-        return responseDto;
-    }
 
     @Override
     @Transactional(readOnly = true)
@@ -102,25 +73,14 @@ public class WasteManagementDataServiceImpl implements WasteManagementDataServic
             return draft.getWasteManagementData();
         }
 
-        WasteManagementData entity = wasteManagementDataRepository.findByReportId(reportId)
-                .orElse(null);
-
-        if (entity == null) {
-            log.warn("WasteManagementData not found for reportId: {}", reportId);
-            return null;
-        }
-
-        log.info("Found WasteManagementData in DB for reportId: {}", reportId);
-        WasteManagementDataDTO dto = wasteManagementDataMapper.toDto(entity);
-
-        saveToCache(reportId, dto);
-
-        return dto;
+        log.warn("WasteManagementData not found in cache for reportId: {}", reportId);
+        return null;
     }
 
     @Override
     @Transactional
     public void deleteWasteManagementData(UUID reportId) {
+
         ReportA05DraftDTO draft = reportCacheService.getDraftReport(reportId);
         if (draft != null) {
             draft.setWasteManagementData(null);
@@ -144,5 +104,4 @@ public class WasteManagementDataServiceImpl implements WasteManagementDataServic
         draft.setWasteManagementData(data);
         reportCacheService.saveDraftReport(draft);
     }
-
 }

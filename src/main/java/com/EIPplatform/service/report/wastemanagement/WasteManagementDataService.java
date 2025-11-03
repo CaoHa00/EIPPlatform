@@ -13,11 +13,6 @@ public interface WasteManagementDataService {
     WasteManagementDataDTO createWasteManagementData(UUID reportId, WasteManagementDataCreateDTO request);
 
     /**
-     * Cập nhật WasteManagementData từ request và lưu vào draft cache
-     */
-    WasteManagementDataDTO updateWasteManagementData(UUID reportId, WasteManagementDataUpdateDTO request);
-
-    /**
      * Lấy WasteManagementData từ draft cache
      */
     WasteManagementDataDTO getWasteManagementData(UUID reportId);

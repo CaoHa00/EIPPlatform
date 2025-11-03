@@ -4,8 +4,10 @@ import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+import com.EIPplatform.model.dto.report.airemmissionmanagement.airemissiondata.AirEmissionDataDTO;
 import com.EIPplatform.model.dto.report.wastemanagement.WasteManagementDataDTO;
 
+import com.EIPplatform.model.dto.report.wastewatermanager.wastewatermanagement.WasteWaterDataDTO;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -31,6 +33,8 @@ public class ReportA05DraftDTO implements Serializable {
     // Các phần dữ liệu (từng bước form)
     WasteWaterDataDTO wasteWaterData;
     WasteManagementDataDTO wasteManagementData;
+    AirEmissionDataDTO airEmissionData;
+
 
     // AirEmissionDataDTO airEmissionData;  // Bước tiếp theo
     // SolidWasteDataDTO solidWasteData;    // Bước tiếp theo (có thể hợp nhất với WasteManagementData nếu cần)

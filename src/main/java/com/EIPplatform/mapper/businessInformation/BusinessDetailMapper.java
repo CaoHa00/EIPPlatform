@@ -17,6 +17,8 @@ import java.util.stream.Collectors;
 public interface BusinessDetailMapper {
 
     @Mapping(target = "userAccounts", source = "userAccounts")
+    @Mapping(source = "ISO_certificate_14001", target = "ISO_certificate_14001")
+    @Mapping(source = "isoCertificateFilePath", target = "isoCertificateFilePath")
     BusinessDetailResponse toResponse(BusinessDetail entity);
 
     List<BusinessDetailResponse> toResponseList(List<BusinessDetail> entities);
@@ -29,6 +31,8 @@ public interface BusinessDetailMapper {
     @Mapping(target = "envPermits", ignore = true)
     @Mapping(target = "envComponentPermits", ignore = true)
     @Mapping(target = "userAccounts", ignore = true)
+    @Mapping(source = "ISO_certificate_14001", target = "ISO_certificate_14001")
+    @Mapping(target = "isoCertificateFilePath", ignore = true)
     BusinessDetail toEntity(BusinessDetailDTO dto);
 
     List<BusinessDetail> toEntityList(List<BusinessDetailDTO> dtos);

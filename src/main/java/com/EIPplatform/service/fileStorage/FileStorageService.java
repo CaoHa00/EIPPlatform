@@ -7,7 +7,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.EIPplatform.model.dto.fileStorage.FileStorageRequest;
 public interface FileStorageService {
-    
+
     /**
      * Upload file với metadata (BusinessName, Sector)
      * @param file file cần upload
@@ -15,7 +15,7 @@ public interface FileStorageService {
      * @return đường dẫn file đã upload (relative path)
      */
     String uploadFile(MultipartFile file, FileStorageRequest request);
-    
+
     /**
      * Upload file lên storage (legacy - backward compatible)
      * @param file file cần upload
@@ -25,10 +25,19 @@ public interface FileStorageService {
     String uploadFile(MultipartFile file, String folder);
 
     /**
+     * Store file to a specific directory with given filename (explicit control)
+     * @param directory thư mục đích (relative to root)
+     * @param fileName tên file (đã unique hoặc custom)
+     * @param file MultipartFile cần store
+     * @return đường dẫn file đã store (relative path)
+     */
+    String storeFile(String directory, String fileName, MultipartFile file);
+
+    /**
      * Upload nhiều files với metadata
      */
     List<String> uploadFiles(List<MultipartFile> files, FileStorageRequest request);
-    
+
     /**
      * Upload nhiều files (legacy)
      */
@@ -41,7 +50,7 @@ public interface FileStorageService {
      * @return Resource để download
      */
     Resource downloadFile(FileStorageRequest request, String fileName);
-    
+
     /**
      * Download file từ storage (legacy)
      */
@@ -76,7 +85,7 @@ public interface FileStorageService {
      * Lấy file extension
      */
     String getFileExtension(String filename);
-    
+
     /**
      * Liệt kê tất cả files trong một business/sector
      */

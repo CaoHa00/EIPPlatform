@@ -10,8 +10,8 @@
 // import org.springframework.web.bind.annotation.RestController;
 
 // import com.EIPplatform.model.dto.report.report.WasteWaterDataDTO;
-// import com.EIPplatform.service.report.ReportCacheService;
-// import com.EIPplatform.service.report.WasteWaterDataService;
+// import com.EIPplatform.service.report.reportcache.ReportCacheService;
+// import com.EIPplatform.service.report.wastewaterdata.WasteWaterDataService;
 
 // import jakarta.validation.Valid;
 // import lombok.AccessLevel;

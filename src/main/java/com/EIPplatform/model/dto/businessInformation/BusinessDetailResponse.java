@@ -24,6 +24,7 @@ public class BusinessDetailResponse {
     String industrySector;
     String scaleCapacity;
     String ISO_certificate_14001;
+    String isoCertificateFilePath;
     String businessRegistrationNumber;
     String taxCode;
     OperationType operationType;
