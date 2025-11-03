@@ -1,12 +1,9 @@
 package com.EIPplatform.controller.report;
 
-import com.EIPplatform.model.dto.api.ApiResponse;
 import com.EIPplatform.model.dto.report.report.CreateReportRequest;
 import com.EIPplatform.model.dto.report.report.ReportA05DTO;
 import com.EIPplatform.model.dto.report.report.ReportA05DraftDTO;
-import com.EIPplatform.model.dto.report.report.WasteWaterDataDTO;
-import com.EIPplatform.model.entity.report.ReportA05;
-import com.EIPplatform.service.report.ReportA05Service;
+import com.EIPplatform.service.report.reporta05.ReportA05Service;
 
 import jakarta.validation.Valid;
 import lombok.AccessLevel;
@@ -26,51 +23,56 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 @Slf4j
 public class ReportA05Controller {
-    
+
     ReportA05Service reportA05Service;
-    
+
     /**
      * Tạo report mới
      */
     @PostMapping
     public ResponseEntity<ReportA05DTO> createReport(
             @Valid @RequestBody CreateReportRequest request) {
-        
+
         log.info("POST /api/v1/reports - Creating report");
         ReportA05DTO created = reportA05Service.createReport(request);
         return ResponseEntity.status(HttpStatus.SC_CREATED).body(created);
     }
+
     /**
      * Lấy report theo ID
      */
     @GetMapping("/{reportId}")
     public ResponseEntity<ReportA05DTO> getReportById(
             @PathVariable("reportId") java.util.UUID reportId) {
-        
+
         log.info("GET /api/v1/reports/{} - Getting report by ID", reportId);
         ReportA05DTO report = reportA05Service.getReportById(reportId);
         return ResponseEntity.ok(report);
     }
 
-    // 3. Lưu waste water vào CACHE
-    @PutMapping("/{reportId}/wastewater/draft")
-    public ResponseEntity<ReportA05DraftDTO> saveDraftWasteWaterData(
-            @PathVariable UUID reportId,
-            @Valid @RequestBody ReportA05DraftDTO data) {
-        log.info("PUT /api/v1/reports/{}/wastewater/draft", reportId);
-        ReportA05DraftDTO saved = reportA05Service.saveDraftWasteWaterData(reportId, data);
-        return ResponseEntity.ok(saved);
-    }
-    // 4. Lấy waste water từ CACHE
-    @GetMapping("/{reportId}/wastewater/draft")
-    public ResponseEntity<ReportA05DraftDTO> getDraftWasteWaterData(
+    /**
+     * Lấy draft data từ CACHE
+     */
+    @GetMapping("/{reportId}/draft")
+    public ResponseEntity<ReportA05DraftDTO> getDraftData(
             @PathVariable UUID reportId) {
-        log.info("GET /api/v1/reports/{}/wastewater/draft", reportId);
+        log.info("GET /api/v1/reports/{}/draft", reportId);
         ReportA05DraftDTO data = reportA05Service.getDraftData(reportId);
 
         if (data == null) {
             return ResponseEntity.noContent().build();
         }
         return ResponseEntity.ok(data);
+    }
+
+    /**
+     * Submit draft từ CACHE xuống DATABASE
+     */
+    @PostMapping("/{reportId}/draft/submit")
+    public ResponseEntity<ReportA05DTO> submitDraftToDatabase(
+            @PathVariable UUID reportId) {
+        log.info("POST /api/v1/reports/{}/draft/submit", reportId);
+        ReportA05DTO submitted = reportA05Service.submitDraftToDatabase(reportId);
+        return ResponseEntity.ok(submitted);
     }
 }

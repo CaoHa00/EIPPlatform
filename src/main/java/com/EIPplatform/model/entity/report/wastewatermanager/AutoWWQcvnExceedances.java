@@ -1,8 +1,5 @@
 package com.EIPplatform.model.entity.report.wastewatermanager;
 
-import java.math.BigDecimal;
-
-import com.EIPplatform.model.entity.report.WasteWaterData;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.*;

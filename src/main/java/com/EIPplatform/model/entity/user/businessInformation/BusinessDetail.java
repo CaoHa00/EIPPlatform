@@ -43,7 +43,7 @@ public class BusinessDetail {
 
     @Column(nullable = false, unique = true)
     String companyName;
-    
+
     @Column(nullable = false)
     String legalRepresentative;
 
@@ -59,8 +59,11 @@ public class BusinessDetail {
     @Column(nullable = false)
     String scaleCapacity;
 
-    @Column
+    @Column(length = 100)
     String ISO_certificate_14001;
+
+    @Column(name = "iso_certificate_file_path", length = 255)
+    String isoCertificateFilePath;
 
     @Column(nullable = false)
     String businessRegistrationNumber;
@@ -101,7 +104,7 @@ public class BusinessDetail {
     @JsonBackReference(value = "businessDetail-componentPermits")
     List<EnvComponentPermit> envComponentPermits = new ArrayList<>();
 
-     public LocalDateTime getCreatedAt() {
+    public LocalDateTime getCreatedAt() {
         return auditMetaData.getCreatedAt();
     }
 

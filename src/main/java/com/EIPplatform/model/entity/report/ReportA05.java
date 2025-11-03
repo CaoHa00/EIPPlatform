@@ -1,6 +1,7 @@
 package com.EIPplatform.model.entity.report;
 
 import com.EIPplatform.model.entity.report.wastemanagement.WasteManagementData;
+import com.EIPplatform.model.entity.report.wastewatermanager.WasteWaterData;
 import com.EIPplatform.model.entity.user.authentication.UserAccount;
 import com.EIPplatform.model.entity.user.businessInformation.BusinessDetail;
 import com.fasterxml.jackson.annotation.JsonBackReference;

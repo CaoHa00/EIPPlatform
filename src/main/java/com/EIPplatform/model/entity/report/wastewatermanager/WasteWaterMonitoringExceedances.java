@@ -1,9 +1,5 @@
 package com.EIPplatform.model.entity.report.wastewatermanager;
 
-import java.math.BigDecimal;
-import java.time.LocalDate;
-
-import com.EIPplatform.model.entity.report.WasteWaterData;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 
 import jakarta.persistence.Column;
@@ -46,7 +42,7 @@ public class WasteWaterMonitoringExceedances {
     
     @Column(name = "point_name", columnDefinition = "NVARCHAR(255)", nullable = false)
     String pointName; // Tên điểm quan trắc
-    
+
     @Column(name = "point_symbol", length = 50, nullable = false)
     String pointSymbol; // Ký hiệu điểm
     
