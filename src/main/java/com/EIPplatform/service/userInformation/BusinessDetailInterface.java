@@ -9,7 +9,7 @@ import com.EIPplatform.model.dto.businessInformation.BusinessDetailResponse;
 import com.EIPplatform.model.dto.businessInformation.BusinessDetailWithHistoryConsumptionDTO;
 
 public interface BusinessDetailInterface {
-    BusinessDetailResponse findByBusinessDetailId(UUID id);
+    BusinessDetailResponse findByUserAccountId(UUID id);
     void deleteByBusinessDetailId(UUID id);
     BusinessDetailResponse createBusinessDetail(UUID userAccountId, BusinessDetailDTO dto, MultipartFile isoFile);
     BusinessDetailResponse updateBusinessDetail(UUID id, BusinessDetailDTO dto, MultipartFile isoFile);

@@ -27,11 +27,11 @@ public class PermitController {
 
     // ==================== ENV PERMITS ENDPOINTS ====================
 
-    @PostMapping(value = "/envpermits", consumes = {"multipart/form-data"})
+    @PostMapping(value = "/envpermits", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ApiResponse<EnvPermitDTO> createEnvPermit(
             @RequestParam UUID userAccountId,
-            @RequestBody CreateMainPermitRequest request,
-            @RequestParam(value = "file", required = false) MultipartFile file) {
+            @RequestPart("data") CreateMainPermitRequest request,
+            @RequestPart(value = "file", required = false) MultipartFile file) {
         var result = permitService.createEnvPermit(userAccountId, request, file);
         return ApiResponse.<EnvPermitDTO>builder()
                 .result(result)
@@ -54,11 +54,11 @@ public class PermitController {
                 .build();
     }
 
-    @PutMapping(value = "/envpermits", consumes = {"multipart/form-data"})
+    @PutMapping(value = "/envpermits", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ApiResponse<EnvPermitDTO> updateEnvPermit(
             @RequestParam UUID userAccountId,
-            @RequestBody UpdateEnvPermitRequest request,
-            @RequestParam(value = "file", required = false) MultipartFile file) {
+            @RequestPart("data") UpdateEnvPermitRequest request,
+            @RequestPart(value = "file", required = false) MultipartFile file) {
         var result = permitService.updateEnvPermit(userAccountId, request, file);
         return ApiResponse.<EnvPermitDTO>builder()
                 .result(result)
@@ -86,10 +86,10 @@ public class PermitController {
                 .build();
     }
 
-    @PostMapping(value = "/envpermits/file", consumes = {"multipart/form-data"})
+    @PostMapping(value = "/envpermits/file", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ApiResponse<EnvPermitDTO> uploadEnvPermitFile(
             @RequestParam UUID userAccountId,
-            @RequestParam("file") MultipartFile file) {
+            @RequestPart("file") MultipartFile file) {
         var result = permitService.uploadEnvPermitFile(userAccountId, file);
         return ApiResponse.<EnvPermitDTO>builder()
                 .result(result)
@@ -123,18 +123,18 @@ public class PermitController {
 
     // ==================== COMPONENT PERMIT ENDPOINTS ====================
 
-    @PostMapping(value = "/component", consumes = {"multipart/form-data"})
+    @PostMapping(value = "/component", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ApiResponse<EnvComponentPermitDTO> createComponentPermit(
             @RequestParam UUID userAccountId,
-            @RequestBody CreateComponentPermitRequest request,
-            @RequestParam(value = "file", required = false) MultipartFile file) {
+            @RequestPart("data") CreateComponentPermitRequest request,
+            @RequestPart(value = "file", required = false) MultipartFile file) {
         var result = permitService.createComponentPermit(userAccountId, request, file);
         return ApiResponse.<EnvComponentPermitDTO>builder()
                 .result(result)
                 .build();
     }
 
-    @PostMapping("/component/bulk")
+    @PostMapping(value = "/component/bulk", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ApiResponse<List<EnvComponentPermitDTO>> createMultipleComponentPermits(
             @RequestParam UUID userAccountId,
             @RequestBody @Valid List<CreateComponentPermitRequest> requests) {
@@ -201,12 +201,12 @@ public class PermitController {
                 .build();
     }
 
-    @PutMapping(value = "/component/{permitId}", consumes = {"multipart/form-data"})
+    @PutMapping(value = "/component/{permitId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ApiResponse<EnvComponentPermitDTO> updateComponentPermit(
             @RequestParam UUID userAccountId,
             @PathVariable Long permitId,
-            @RequestBody UpdateComponentPermitRequest request,
-            @RequestParam(value = "file", required = false) MultipartFile file) {
+            @RequestPart("data") UpdateComponentPermitRequest request,
+            @RequestPart(value = "file", required = false) MultipartFile file) {
         var result = permitService.updateComponentPermit(userAccountId, permitId, request, file);
         return ApiResponse.<EnvComponentPermitDTO>builder()
                 .result(result)
@@ -240,7 +240,7 @@ public class PermitController {
                 .build();
     }
 
-    @PostMapping("/component/activate/bulk")
+    @PostMapping(value = "/component/activate/bulk", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ApiResponse<Void> activateMultipleComponentPermits(
             @RequestParam UUID userAccountId,
             @RequestBody List<Long> permitIds) {
@@ -249,7 +249,7 @@ public class PermitController {
                 .build();
     }
 
-    @PostMapping("/component/deactivate/bulk")
+    @PostMapping(value = "/component/deactivate/bulk", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ApiResponse<Void> deactivateMultipleComponentPermits(
             @RequestParam UUID userAccountId,
             @RequestBody List<Long> permitIds) {
@@ -267,7 +267,7 @@ public class PermitController {
                 .build();
     }
 
-    @DeleteMapping("/component/bulk")
+    @DeleteMapping(value = "/component/bulk", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ApiResponse<Void> deleteMultipleComponentPermits(
             @RequestParam UUID userAccountId,
             @RequestBody List<Long> permitIds) {
@@ -290,11 +290,11 @@ public class PermitController {
                 .build();
     }
 
-    @PostMapping(value = "/component/{permitId}/file", consumes = {"multipart/form-data"})
+    @PostMapping(value = "/component/{permitId}/file", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ApiResponse<EnvComponentPermitDTO> uploadComponentPermitFile(
             @RequestParam UUID userAccountId,
             @PathVariable Long permitId,
-            @RequestParam("file") MultipartFile file) {
+            @RequestPart("file") MultipartFile file) {
         var result = permitService.uploadComponentPermitFile(userAccountId, permitId, file);
         return ApiResponse.<EnvComponentPermitDTO>builder()
                 .result(result)

@@ -27,12 +27,12 @@ public class WasteWaterDataController {
 
     // ==================== WASTE WATER DATA ENDPOINTS ====================
 
-    @PostMapping(value = "/{reportId}/draft/waste-water", consumes = {"multipart/form-data"})
+    @PostMapping(value = "/{reportId}/draft/waste-water", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ApiResponse<WasteWaterDataDTO> createWasteWaterData(
             @PathVariable UUID reportId,
-            @RequestBody WasteWaterDataCreateDTO request,
-            @RequestParam(value = "connectionFile", required = false) MultipartFile connectionFile,
-            @RequestParam(value = "mapFile", required = false) MultipartFile mapFile) {
+            @RequestPart("data") WasteWaterDataCreateDTO request,
+            @RequestPart(value = "connectionFile", required = false) MultipartFile connectionFile,
+            @RequestPart(value = "mapFile", required = false) MultipartFile mapFile) {
         var result = wasteWaterDataService.createWasteWaterData(reportId, request, connectionFile, mapFile);
         return ApiResponse.<WasteWaterDataDTO>builder()
                 .result(result)

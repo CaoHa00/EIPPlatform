@@ -41,13 +41,13 @@ public class BusinessDetailImplementation implements BusinessDetailInterface {
     BusinessDetailUtils businessDetailUtils;
 
     @Override
-    public BusinessDetailResponse findByBusinessDetailId(UUID businessDetailId) {
-        return businessDetailRepository.findById(businessDetailId)
+    public BusinessDetailResponse findByUserAccountId(UUID userAccountId) {
+        return businessDetailRepository.findByUserAccountId(userAccountId)
                 .map(businessDetailMapper::toResponse)
                 .orElseThrow(() -> exceptionFactory.createNotFoundException(
                         "BusinessDetail",
-                        "businessDetailId",
-                        businessDetailId,
+                        "userAccountId",
+                        userAccountId,
                         UserError.NOT_FOUND
                 ));
     }
