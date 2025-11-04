@@ -27,11 +27,11 @@ public class AirEmissionDataController {
 
     // ==================== AIR EMISSION DATA ENDPOINTS ====================
 
-    @PostMapping(value = "/{reportId}/draft/air-emission", consumes = {"multipart/form-data"})
+    @PostMapping(value = "/{reportId}/draft/air-emission", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ApiResponse<AirEmissionDataDTO> createAirEmissionData(
             @PathVariable UUID reportId,
-            @RequestBody AirEmissionDataCreateDTO request,
-            @RequestParam(value = "file", required = false) MultipartFile file) {
+            @RequestPart("data") AirEmissionDataCreateDTO request,
+            @RequestPart(value = "file", required = false) MultipartFile file) {
         var result = airEmissionDataService.createAirEmissionData(reportId, request, file);
         return ApiResponse.<AirEmissionDataDTO>builder()
                 .result(result)

@@ -8,6 +8,7 @@ import com.EIPplatform.service.userInformation.BusinessDetailInterface;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -24,94 +25,86 @@ public class BusinessDetailController {
 
     // ==================== BUSINESS DETAIL ENDPOINTS ====================
 
-    @GetMapping
-    public ApiResponse<List<BusinessDetailResponse>> getAllBusinessDetails(
-            @RequestParam UUID userAccountId) {
+    @GetMapping("/all")
+    public ApiResponse<List<BusinessDetailResponse>> getAllBusinessDetails() {
         var result = businessDetailService.findAll();
         return ApiResponse.<List<BusinessDetailResponse>>builder()
                 .result(result)
                 .build();
     }
 
-    @GetMapping("/{id}")
+    @GetMapping
     public ApiResponse<BusinessDetailResponse> getBusinessDetailById(
-            @RequestParam UUID userAccountId,
-            @PathVariable UUID id) {
-        var result = businessDetailService.findByBusinessDetailId(id);
+            @RequestParam UUID userAccountId) {
+        var result = businessDetailService.findByUserAccountId(userAccountId);
         return ApiResponse.<BusinessDetailResponse>builder()
                 .result(result)
                 .build();
     }
 
-    @GetMapping("/{id}/with-history")
+    @GetMapping("/with-history")
     public ApiResponse<BusinessDetailWithHistoryConsumptionDTO> getBusinessDetailWithHistory(
-            @RequestParam UUID userAccountId,
-            @PathVariable UUID id) {
-        var result = businessDetailService.getBusinessDetailWithHistoryConsumption(id);
+            @RequestParam UUID userAccountId) {
+        var result = businessDetailService.getBusinessDetailWithHistoryConsumption(userAccountId);
         return ApiResponse.<BusinessDetailWithHistoryConsumptionDTO>builder()
                 .result(result)
                 .build();
     }
 
-    @PostMapping(consumes = {"multipart/form-data"})
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ApiResponse<BusinessDetailResponse> createBusinessDetail(
             @RequestParam UUID userAccountId,
-            @RequestBody BusinessDetailDTO dto,
-            @RequestParam(value = "isoFile", required = false) MultipartFile isoFile) {
+            @RequestPart("data") BusinessDetailDTO dto,
+            @RequestPart(value = "isoFile", required = false) MultipartFile isoFile) {
         var result = businessDetailService.createBusinessDetail(userAccountId, dto, isoFile);
         return ApiResponse.<BusinessDetailResponse>builder()
                 .result(result)
                 .build();
     }
 
-    @PutMapping("/{id}")
+    @PutMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ApiResponse<BusinessDetailResponse> updateBusinessDetail(
             @RequestParam UUID userAccountId,
-            @PathVariable UUID id,
-            @RequestBody BusinessDetailDTO dto,
-            @RequestParam(value = "isoFile", required = false) MultipartFile isoFile) {
-        var result = businessDetailService.updateBusinessDetail(id, dto, isoFile);
+            @RequestPart("data") BusinessDetailDTO dto,
+            @RequestPart(value = "isoFile", required = false) MultipartFile isoFile) {
+        var result = businessDetailService.updateBusinessDetail(userAccountId, dto, isoFile);
         return ApiResponse.<BusinessDetailResponse>builder()
                 .result(result)
                 .build();
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping
     public ApiResponse<Void> deleteBusinessDetail(
-            @RequestParam UUID userAccountId,
-            @PathVariable UUID id) {
-        businessDetailService.deleteByBusinessDetailId(id);
+            @RequestParam UUID userAccountId) {
+        businessDetailService.deleteByBusinessDetailId(userAccountId);
         return ApiResponse.<Void>builder()
                 .build();
     }
 
     // ==================== ISO CERTIFICATE FILE ENDPOINTS ====================
 
-    @PostMapping(value = "/{id}/iso-file", consumes = {"multipart/form-data"})
+    @PostMapping(value = "/iso-file", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ApiResponse<BusinessDetailResponse> uploadIsoCertificateFile(
             @RequestParam UUID userAccountId,
-            @PathVariable UUID id,
-            @RequestParam("file") MultipartFile file) {
-        var result = businessDetailService.uploadIsoCertificateFile(id, file);
+            @RequestPart("file") MultipartFile file) {
+        var result = businessDetailService.uploadIsoCertificateFile(userAccountId, file);
         return ApiResponse.<BusinessDetailResponse>builder()
                 .result(result)
                 .build();
     }
 
-    @DeleteMapping("/{id}/iso-file")
+    @DeleteMapping("/iso-file")
     public ApiResponse<Void> deleteIsoCertificateFile(
-            @RequestParam UUID userAccountId,
-            @PathVariable UUID id) {
-        businessDetailService.deleteIsoCertificateFile(id);
+            @RequestParam UUID userAccountId) {
+        businessDetailService.deleteIsoCertificateFile(userAccountId);
         return ApiResponse.<Void>builder()
                 .build();
     }
 
-    @GetMapping("/{id}/iso-file/exists")
+    @GetMapping("/iso-file/exists")
     public ApiResponse<Boolean> hasIsoCertificateFile(
-            @RequestParam UUID userAccountId,
-            @PathVariable UUID id) {
-        var result = businessDetailService.hasIsoCertificateFile(id);
+            @RequestParam UUID userAccountId) {
+        var result = businessDetailService.hasIsoCertificateFile(userAccountId);
         return ApiResponse.<Boolean>builder()
                 .result(result)
                 .build();

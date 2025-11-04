@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+import com.EIPplatform.model.dto.businessInformation.BusinessDetailResponse;
 import com.EIPplatform.model.entity.user.authentication.UserAccount;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -15,6 +16,9 @@ import com.EIPplatform.model.entity.user.businessInformation.BusinessHistoryCons
 
 @Repository
 public interface BusinessDetailRepository extends JpaRepository<BusinessDetail, UUID> {
+
+    @Query("SELECT bd FROM BusinessDetail bd JOIN bd.userAccounts ua WHERE ua.userAccountId = :userAccountId")
+    Optional<BusinessDetail> findByUserAccountId(@Param("userAccountId") UUID userAccountId);
 
     Optional<BusinessDetail> findByUserAccountsContaining(UserAccount userAccount);
 
