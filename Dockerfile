@@ -1,16 +1,13 @@
-# Use OpenJDK base image
-FROM eclipse-temurin:17-jdk-alpine
-
-# Install tzdata and speedtest CLI
+# Stage 1: Build
+FROM maven:3.9.9-eclipse-temurin-17 AS builder
 WORKDIR /app
+COPY . .
+RUN mvn clean package -DskipTests
 
-# Copy your JAR file into the image
-COPY target/EIPplatform-0.0.1-SNAPSHOT.jar app.jar
+# Stage 2: Runtime
+FROM eclipse-temurin:17-jdk-alpine
+WORKDIR /app
+COPY --from=builder /app/target/EIPplatform-0.0.1-SNAPSHOT.jar app.jar
 
 EXPOSE 7000
-
-# Set the container OS timezone
-ENV TZ=Asia/Ho_Chi_Minh
-
-# Force JVM timezone
-ENTRYPOINT ["sh", "-c", "java -Duser.timezone=Asia/Ho_Chi_Minh $JAVA_OPTS -jar /app.jar"]
+ENTRYPOINT ["java","-jar","app.jar"]
