@@ -2,13 +2,19 @@ package com.EIPplatform.service.report.reporta05;
 
 import com.EIPplatform.exception.ExceptionFactory;
 import com.EIPplatform.exception.errorCategories.ReportError;
+import com.EIPplatform.mapper.report.airemmissionmanagement.AirEmissionDataMapper;
 import com.EIPplatform.mapper.report.wastemanagement.WasteManagementDataMapper;
+import com.EIPplatform.mapper.report.wastewatermanager.WasteWaterDataMapper;
 import com.EIPplatform.model.dto.report.report.CreateReportRequest;
 import com.EIPplatform.model.dto.report.report.ReportA05DTO;
 import com.EIPplatform.model.dto.report.report.ReportA05DraftDTO;
+import com.EIPplatform.model.dto.report.airemmissionmanagement.airemissiondata.AirEmissionDataDTO;
 import com.EIPplatform.model.dto.report.wastemanagement.WasteManagementDataDTO;
+import com.EIPplatform.model.dto.report.wastewatermanager.wastewatermanagement.WasteWaterDataDTO;
 import com.EIPplatform.model.entity.report.ReportA05;
+import com.EIPplatform.model.entity.report.airemmissionmanagement.AirEmissionData;
 import com.EIPplatform.model.entity.report.wastemanagement.WasteManagementData;
+import com.EIPplatform.model.entity.report.wastewatermanager.WasteWaterData;
 import com.EIPplatform.model.entity.user.businessInformation.BusinessDetail;
 import com.EIPplatform.repository.report.ReportA05Repository;
 import com.EIPplatform.repository.user.BusinessDetailRepository;
@@ -35,9 +41,10 @@ public class ReportA05ServiceImpl implements ReportA05Service {
     BusinessDetailRepository businessDetailRepository;
     ReportCacheService reportCacheService;
     WasteManagementDataMapper wasteManagementDataMapper;
+    AirEmissionDataMapper airEmissionDataMapper;
+    WasteWaterDataMapper wasteWaterDataMapper;
     ExceptionFactory exceptionFactory;
 
-    // Creates a new report with basic metadata and saves it to the database
     @Override
     @Transactional
     public ReportA05DTO createReport(CreateReportRequest request) {
@@ -49,13 +56,11 @@ public class ReportA05ServiceImpl implements ReportA05Service {
                     .orElseThrow(() -> exceptionFactory.createNotFoundException("BusinessDetail", request.getBusinessDetailId(), ReportError.BUSINESS_NOT_FOUND));
         }
 
-        // 2. Generate report code đơn giản
         String reportCode = "RPT-" + java.util.UUID.randomUUID().toString().substring(0, 8).toUpperCase();
 
-        // 3. Tạo report (businessDetail có thể null)
         ReportA05 report = ReportA05.builder()
                 .reportCode(reportCode)
-                .businessDetail(businessDetail) // CÓ THỂ NULL
+                .businessDetail(businessDetail)
                 .reportYear(request.getReportYear())
                 .reportingPeriod(request.getReportingPeriod())
                 .version(1)
@@ -63,10 +68,8 @@ public class ReportA05ServiceImpl implements ReportA05Service {
                 .completionPercentage(BigDecimal.ZERO)
                 .build();
 
-        // 4. Lưu vào DB
         ReportA05 saved = reportA05Repository.save(report);
 
-        // 5. Trả về DTO
         return ReportA05DTO.builder()
                 .reportId(saved.getReportId())
                 .reportCode(saved.getReportCode())
@@ -79,7 +82,6 @@ public class ReportA05ServiceImpl implements ReportA05Service {
                 .build();
     }
 
-    // Retrieves report details by ID
     @Override
     public ReportA05DTO getReportById(UUID reportId) {
         ReportA05 report = reportA05Repository.findById(reportId)
@@ -96,7 +98,6 @@ public class ReportA05ServiceImpl implements ReportA05Service {
                 .build();
     }
 
-    // Retrieves draft data from cache
     @Override
     public ReportA05DraftDTO getDraftData(UUID reportId) {
         ReportA05DraftDTO draft = reportCacheService.getDraftReport(reportId);
@@ -106,13 +107,36 @@ public class ReportA05ServiceImpl implements ReportA05Service {
         return draft;
     }
 
-    // Saves complete draft data from cache to database
+    /**
+     * Cập nhật completion percentage cho draft dựa trên dữ liệu hiện tại
+     * (Gọi sau mỗi step để tự động tính % và lưu lại cache)
+     */
+    @Override
+    @Transactional
+    public ReportA05DraftDTO updateDraftCompletion(UUID reportId) {
+        ReportA05DraftDTO draft = getDraftData(reportId);
+        if (draft == null) {
+            throw exceptionFactory.createCustomException(ReportError.DRAFT_NOT_FOUND);
+        }
+        int percentage = calculateCompletionPercentage(draft);
+        draft.setCompletionPercentage(percentage);
+        draft.setLastModified(LocalDateTime.now());
+        reportCacheService.saveDraftReport(draft);
+        log.info("Updated completion for report {}: {}%", reportId, percentage);
+        return draft;
+    }
+
     @Override
     @Transactional
     public ReportA05DTO submitDraftToDatabase(UUID reportId) {
         ReportA05DraftDTO draftData = getDraftData(reportId);
         if (draftData == null) {
             throw exceptionFactory.createCustomException(ReportError.DRAFT_NOT_FOUND);
+        }
+
+        if (draftData.getCompletionPercentage() == null) {
+            int percentage = calculateCompletionPercentage(draftData);
+            draftData.setCompletionPercentage(percentage);
         }
 
         if (!isDraftComplete(draftData)) {
@@ -124,23 +148,19 @@ public class ReportA05ServiceImpl implements ReportA05Service {
         ReportA05 report = reportA05Repository.findById(reportId)
                 .orElseThrow(() -> exceptionFactory.createNotFoundException("ReportA05", reportId, ReportError.REPORT_NOT_FOUND));
 
+        saveOrUpdateWasteWaterData(report, draftData);
         saveOrUpdateWasteManagementData(report, draftData);
+        saveOrUpdateAirEmissionData(report, draftData);
 
-        // TODO: Thêm logic cho các phần khác nếu có (e.g., AirEmissionData, SolidWasteData, WasteWaterData - delegated to sub-services)
-
-        // 6. Cập nhật completion percentage cho report (dựa trên draft)
         if (draftData.getCompletionPercentage() != null) {
             report.setCompletionPercentage(BigDecimal.valueOf(draftData.getCompletionPercentage()));
         }
 
-        // 7. Lưu toàn bộ vào DB
         ReportA05 saved = reportA05Repository.save(report);
 
-        // 8. Sau khi lưu đầy đủ, cập nhật draft metadata và xóa cache (hoặc set isDraft = false)
-        draftData.setIsDraft(false); // Đánh dấu không còn là draft
+        draftData.setIsDraft(false);
         draftData.setLastModified(LocalDateTime.now());
-        // Không update cache nữa, thay vào đó xóa draft vì đã submit đầy đủ
-        // reportCacheService.deleteDraftReport(reportId);
+        reportCacheService.deleteDraftReport(reportId);
 
         BusinessDetail bd = saved.getBusinessDetail();
         return ReportA05DTO.builder()
@@ -155,36 +175,86 @@ public class ReportA05ServiceImpl implements ReportA05Service {
                 .build();
     }
 
-    // Helper method: Kiểm tra draft có đầy đủ không (dựa trên các field chính và completionPercentage)
+    private int calculateCompletionPercentage(ReportA05DraftDTO draft) {
+        int score = 0;
+        if (isSectionComplete(draft.getWasteWaterData())) score += 33;
+        if (isSectionComplete(draft.getWasteManagementData())) score += 33;
+        if (isSectionComplete(draft.getAirEmissionData())) score += 34;
+        return score;
+    }
+
+    private boolean isSectionComplete(Object sectionDto) {
+        if (sectionDto == null) return false;
+
+        return true;
+    }
+
     private boolean isDraftComplete(ReportA05DraftDTO draftData) {
-        // Kiểm tra các field chính không null
-        boolean allFieldsFilled = draftData.getWasteManagementData() != null
-                // Thêm các field khác nếu có: && draftData.getAirEmissionData() != null && ...
-                ;
-
-        // Kiểm tra completionPercentage == 100 nếu có
-        boolean completionComplete = draftData.getCompletionPercentage() != null && draftData.getCompletionPercentage() == 100;
-
-        // Hoặc kiểm tra isDraft == false, nhưng dùng completion để linh hoạt
+        // Tính % nếu null
+        if (draftData.getCompletionPercentage() == null) {
+            draftData.setCompletionPercentage(calculateCompletionPercentage(draftData));
+        }
+        boolean allFieldsFilled = draftData.getWasteWaterData() != null
+                && draftData.getWasteManagementData() != null
+                && draftData.getAirEmissionData() != null;
+        boolean completionComplete = draftData.getCompletionPercentage() == 100;
         return allFieldsFilled && completionComplete;
     }
 
-    // Helper method: Lưu hoặc update WasteManagementData (tương tự)
-    private void saveOrUpdateWasteManagementData(ReportA05 report, ReportA05DraftDTO draftData) {
-        WasteManagementDataDTO dto = draftData.getWasteManagementData();
-        if (dto == null) {
-            return;
-        }
+    private void saveOrUpdateWasteWaterData(ReportA05 report, ReportA05DraftDTO draftData) {
+        WasteWaterDataDTO dto = draftData.getWasteWaterData();  // Response DTO từ draft
+        if (dto == null) return;
 
-        WasteManagementData entity = wasteManagementDataMapper.dtoToEntity(dto);
-        entity.setReport(report);
-        report.setWasteManagementData(entity);
+        WasteWaterData entity;
+        if (report.getWasteWaterData() != null && report.getWasteWaterData().getWwId() != null) {
+            // Update: Merge partial từ DTO vào entity hiện có
+            entity = report.getWasteWaterData();
+            wasteWaterDataMapper.updateEntityFromDto(dto, entity);  // ✅ Method cho WasteWaterDataDTO
+        } else {
+            // Create: Chuyển từ response DTO sang entity mới
+            entity = wasteWaterDataMapper.dtoToEntity(dto);  // ✅ Đúng method: DTO → entity
+            entity.setReport(report);
+            // @AfterMapping trong mapper sẽ handle null lists và parent references
+        }
+        report.setWasteWaterData(entity);
+        // Sau đó save entity qua repo nếu cần
     }
 
-    // @Override
-    // public void deleteDraftWasteWaterData(UUID reportId) {
-    //     // TODO Auto-generated method stub
-    //     throw new UnsupportedOperationException("Unimplemented method 'deleteDraftWasteWaterData'");
-    // }
+    private void saveOrUpdateWasteManagementData(ReportA05 report, ReportA05DraftDTO draftData) {
+        WasteManagementDataDTO dto = draftData.getWasteManagementData();  // Response DTO từ draft
+        if (dto == null) return;
 
+        WasteManagementData entity;
+        if (report.getWasteManagementData() != null && report.getWasteManagementData().getWmId() != null) {
+            // Update: Merge partial từ DTO vào entity hiện có
+            entity = report.getWasteManagementData();
+            wasteManagementDataMapper.updateEntityFromDto(dto, entity);  // ✅ Method cho WasteManagementDataDTO
+        } else {
+            // Create: Chuyển từ response DTO sang entity mới
+            entity = wasteManagementDataMapper.dtoToEntity(dto);  // ✅ Đúng method: DTO → entity
+            entity.setReport(report);
+            // @AfterMapping trong mapper sẽ handle null lists và parent references
+        }
+        report.setWasteManagementData(entity);
+        // Sau đó save entity qua repo nếu cần (ví dụ: wasteManagementDataRepository.save(entity))
+    }
+
+    private void saveOrUpdateAirEmissionData(ReportA05 report, ReportA05DraftDTO draftData) {
+        AirEmissionDataDTO dto = draftData.getAirEmissionData();  // Đây là response DTO từ draft
+        if (dto == null) return;
+
+        AirEmissionData entity;
+        if (report.getAirEmissionData() != null && report.getAirEmissionData().getAirEmissionDataId() != null) {
+            // Update: Merge partial từ DTO vào entity hiện có
+            entity = report.getAirEmissionData();
+            airEmissionDataMapper.updateEntityFromDto(dto, entity);  // Method mới cho partial update từ DTO
+        } else {
+            // Create: Chuyển từ response DTO sang entity mới (KHÔNG dùng toDto!)
+            entity = airEmissionDataMapper.dtoToEntity(dto);  // ✅ Đúng method: DTO → entity
+            entity.setReport(report);
+            // @AfterMapping trong mapper sẽ handle null lists nếu cần
+        }
+        report.setAirEmissionData(entity);
+        // Sau đó save entity qua repo nếu chưa (ví dụ: airEmissionDataRepository.save(entity))
+    }
 }

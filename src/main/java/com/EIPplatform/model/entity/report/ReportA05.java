@@ -1,5 +1,6 @@
 package com.EIPplatform.model.entity.report;
 
+import com.EIPplatform.model.entity.report.airemmissionmanagement.AirEmissionData;
 import com.EIPplatform.model.entity.report.wastemanagement.WasteManagementData;
 import com.EIPplatform.model.entity.report.wastewatermanager.WasteWaterData;
 import com.EIPplatform.model.entity.user.authentication.UserAccount;
@@ -99,6 +100,11 @@ public class ReportA05 {
             fetch = FetchType.LAZY, orphanRemoval = true)
     @JsonManagedReference(value = "report-waste-management")
     WasteManagementData wasteManagementData;
+
+    @OneToOne(mappedBy = "report", cascade = CascadeType.ALL,
+            fetch = FetchType.LAZY, orphanRemoval = true)
+    @JsonManagedReference(value = "report-air-emission")
+    AirEmissionData airEmissionData;
 
     @PrePersist
     protected void onCreate() {

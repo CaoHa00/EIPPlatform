@@ -1,9 +1,12 @@
 package com.EIPplatform.model.entity.report.airemmissionmanagement;
 
 import com.EIPplatform.model.entity.report.ReportA05;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -65,6 +68,7 @@ public class AirEmissionData {
 
     @OneToMany(mappedBy = "airEmissionData", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
+    @JsonManagedReference
     List<AirMonitoringExceedance> airMonitoringExceedances = new ArrayList<>();
 
     // 2.2.2: Quan trắc khí thải tự động - a) Thông tin chung
@@ -92,7 +96,6 @@ public class AirEmissionData {
     @Column(name = "air_auto_calibration_info", nullable = false)
     String airAutoCalibrationInfo;
 
-    // b) Tình hình hoạt động
     @Lob
     @Column(name = "air_auto_incident_summary")
     String airAutoIncidentSummary;
@@ -103,10 +106,12 @@ public class AirEmissionData {
 
     @OneToMany(mappedBy = "airEmissionData", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
+    @JsonManagedReference
     List<AirAutoMonitoringStat> airAutoMonitoringStats = new ArrayList<>();
 
     @OneToMany(mappedBy = "airEmissionData", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
+    @JsonManagedReference
     List<AirAutoMonitoringIncident> airAutoMonitoringIncidents = new ArrayList<>();
 
     // c) Nhận xét kết quả quan trắc
@@ -128,6 +133,7 @@ public class AirEmissionData {
 
     @OneToMany(mappedBy = "airEmissionData", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
+    @JsonManagedReference
     List<AirAutoQcvnExceedance> airAutoQcvnExceedances = new ArrayList<>();
 
     // d) Kết luận
@@ -139,9 +145,11 @@ public class AirEmissionData {
     @Column(name = "air_auto_exceed_conclusion", nullable = false)
     String airAutoExceedConclusion;
 
+    @CreationTimestamp
     @Column(name = "created_at")
     LocalDateTime createdAt;
 
+    @UpdateTimestamp
     @Column(name = "updated_at")
     LocalDateTime updatedAt;
 }

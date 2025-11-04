@@ -1,74 +1,117 @@
 package com.EIPplatform.mapper.report.wastewatermanager;
 
-
 import com.EIPplatform.model.dto.report.wastewatermanager.wastewatermanagement.WasteWaterDataCreateDTO;
 import com.EIPplatform.model.dto.report.wastewatermanager.wastewatermanagement.WasteWaterDataDTO;
-import com.EIPplatform.model.dto.report.wastewatermanager.wastewatermanagement.WasteWaterDataUpdateDTO;
 import com.EIPplatform.model.entity.report.wastewatermanager.WasteWaterData;
-import org.mapstruct.AfterMapping;
-import org.mapstruct.BeanMapping;
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
-import org.mapstruct.MappingTarget;
-import org.mapstruct.NullValuePropertyMappingStrategy;
-
+import org.mapstruct.*;
+import java.util.ArrayList;
 import java.util.List;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", uses = {
+        WasteWaterMonitoringExceedancesMapper.class,
+        AutoWWMonitoringStatsMapper.class,
+        AutoWWMonitoringIncidentsMapper.class,
+        AutoWWQcvnExceedancesMapper.class
+})
 public interface WasteWaterDataMapper {
 
-    // Create DTO to Entity
-    @Mapping(target = "wwId", ignore = true) // Auto-generate
-    @Mapping(target = "report", ignore = true) // Set in service
-    @Mapping(target = "connectionDiagram", ignore = true) // File path set in service
-    @Mapping(target = "autoStationMap", ignore = true) // File path set in service
-    @Mapping(target = "autoExceedSummary", ignore = true) // File path set in service
-    @Mapping(target = "monitoringExceedances", ignore = true)
-    @Mapping(target = "monitoringStats", ignore = true)
-    @Mapping(target = "monitoringIncidents", ignore = true)
-    @Mapping(target = "qcvnExceedances", ignore = true)
+    @Mapping(target = "wwId", ignore = true)
+    @Mapping(target = "report", ignore = true)
+    @Mapping(target = "connectionDiagram", ignore = true)
+    @Mapping(target = "autoStationMap", ignore = true)
+    @Mapping(target = "monitoringExceedances", source = "monitoringExceedances")
+    @Mapping(target = "monitoringStats", source = "monitoringStats")
+    @Mapping(target = "monitoringIncidents", source = "monitoringIncidents")
+    @Mapping(target = "qcvnExceedances", source = "qcvnExceedances")
     WasteWaterData toEntity(WasteWaterDataCreateDTO dto);
 
-    // Update DTO to Entity (partial - ignore null)
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     @Mapping(target = "wwId", ignore = true)
     @Mapping(target = "report", ignore = true)
-    @Mapping(target = "connectionDiagram", ignore = true) // File path set in service
-    @Mapping(target = "autoStationMap", ignore = true) // File path set in service
-    @Mapping(target = "autoExceedSummary", ignore = true) // File path set in service
-    @Mapping(target = "monitoringExceedances", ignore = true)
-    @Mapping(target = "monitoringStats", ignore = true)
-    @Mapping(target = "monitoringIncidents", ignore = true)
-    @Mapping(target = "qcvnExceedances", ignore = true)
-    void updateEntityFromDto(WasteWaterDataUpdateDTO dto, @MappingTarget WasteWaterData entity);
+    @Mapping(target = "connectionDiagram", ignore = true)
+    @Mapping(target = "autoStationMap", ignore = true)
+    @Mapping(target = "monitoringExceedances", source = "monitoringExceedances")
+    @Mapping(target = "monitoringStats", source = "monitoringStats")
+    @Mapping(target = "monitoringIncidents", source = "monitoringIncidents")
+    @Mapping(target = "qcvnExceedances", source = "qcvnExceedances")
+    void updateEntityFromDto(WasteWaterDataCreateDTO dto, @MappingTarget WasteWaterData entity);
 
-    // Entity to Response DTO
-    @Mapping(source = "wwId", target = "wwId")
-    @Mapping(source = "connectionDiagram", target = "connectionDiagram") // Include file path in response
-    @Mapping(source = "autoStationMap", target = "autoStationMap") // Include file path in response
-    @Mapping(source = "autoExceedSummary", target = "autoExceedSummary") // Include file path in response
+    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+    @Mapping(target = "wwId", ignore = true)
+    @Mapping(target = "report", ignore = true)
+    @Mapping(target = "connectionDiagram", ignore = true)
+    @Mapping(target = "autoStationMap", ignore = true)
+    @Mapping(target = "monitoringExceedances", source = "monitoringExceedances")
+    @Mapping(target = "monitoringStats", source = "monitoringStats")
+    @Mapping(target = "monitoringIncidents", source = "monitoringIncidents")
+    @Mapping(target = "qcvnExceedances", source = "qcvnExceedances")
+    void updateEntityFromDto(WasteWaterDataDTO dto, @MappingTarget WasteWaterData entity);
+
+    @Mapping(source = "connectionDiagram", target = "connectionDiagram")
+    @Mapping(source = "autoStationMap", target = "autoStationMap")
+    @Mapping(target = "monitoringExceedances", source = "monitoringExceedances")
+    @Mapping(target = "monitoringStats", source = "monitoringStats")
+    @Mapping(target = "monitoringIncidents", source = "monitoringIncidents")
+    @Mapping(target = "qcvnExceedances", source = "qcvnExceedances")
     WasteWaterDataDTO toDto(WasteWaterData entity);
 
-    // List to DTO list
     List<WasteWaterDataDTO> toDtoList(List<WasteWaterData> entities);
 
-    @Mapping(target = "report", ignore = true) // Will be set separately
+    @Mapping(target = "wwId", ignore = true)
+    @Mapping(target = "report", ignore = true)
+    @Mapping(target = "connectionDiagram", ignore = true)
+    @Mapping(target = "autoStationMap", ignore = true)
+    @Mapping(target = "monitoringExceedances", source = "monitoringExceedances")
+    @Mapping(target = "monitoringStats", source = "monitoringStats")
+    @Mapping(target = "monitoringIncidents", source = "monitoringIncidents")
+    @Mapping(target = "qcvnExceedances", source = "qcvnExceedances")
     WasteWaterData dtoToEntity(WasteWaterDataDTO dto);
 
     @AfterMapping
     default void handleNullLists(@MappingTarget WasteWaterData entity, WasteWaterDataCreateDTO dto) {
-        // Init empty lists if null (avoid NPE)
-        if (dto.getMonitoringExceedances() == null) {
-            entity.setMonitoringExceedances(List.of());
+        initializeLists(entity);
+        setParentReferences(entity);
+    }
+
+    @AfterMapping
+    default void handleNullListsFromDto(@MappingTarget WasteWaterData entity, WasteWaterDataDTO dto) {
+        initializeLists(entity);
+        setParentReferences(entity);
+    }
+
+    @AfterMapping
+    default void handleNullListsOnUpdateFromDto(@MappingTarget WasteWaterData entity, WasteWaterDataDTO dto) {
+        initializeLists(entity);
+        setParentReferences(entity);
+    }
+
+    default void initializeLists(WasteWaterData entity) {
+        if (entity.getMonitoringExceedances() == null) {
+            entity.setMonitoringExceedances(new ArrayList<>());
         }
-        if (dto.getMonitoringStats() == null) {
-            entity.setMonitoringStats(List.of());
+        if (entity.getMonitoringStats() == null) {
+            entity.setMonitoringStats(new ArrayList<>());
         }
-        if (dto.getMonitoringIncidents() == null) {
-            entity.setMonitoringIncidents(List.of());
+        if (entity.getMonitoringIncidents() == null) {
+            entity.setMonitoringIncidents(new ArrayList<>());
         }
-        if (dto.getQcvnExceedances() == null) {
-            entity.setQcvnExceedances(List.of());
+        if (entity.getQcvnExceedances() == null) {
+            entity.setQcvnExceedances(new ArrayList<>());
+        }
+    }
+
+    default void setParentReferences(WasteWaterData entity) {
+        if (entity.getMonitoringExceedances() != null) {
+            entity.getMonitoringExceedances().forEach(child -> child.setWasteWaterData(entity));
+        }
+        if (entity.getMonitoringStats() != null) {
+            entity.getMonitoringStats().forEach(child -> child.setWasteWaterData(entity));
+        }
+        if (entity.getMonitoringIncidents() != null) {
+            entity.getMonitoringIncidents().forEach(child -> child.setWasteWaterData(entity));
+        }
+        if (entity.getQcvnExceedances() != null) {
+            entity.getQcvnExceedances().forEach(child -> child.setWasteWaterData(entity));
         }
     }
 }

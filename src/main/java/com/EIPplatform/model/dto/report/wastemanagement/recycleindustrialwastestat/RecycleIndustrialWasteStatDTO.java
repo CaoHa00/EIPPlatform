@@ -17,5 +17,4 @@ public class RecycleIndustrialWasteStatDTO {
     BigDecimal volumeCy;
     String wasteTypeDesc;
     BigDecimal volumePy;
-    LocalDateTime createdAt;
 }

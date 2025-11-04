@@ -5,8 +5,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
-
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -19,6 +17,4 @@ public class AutoWWMonitoringStatsDTO {
     Integer valError;
     Double ratioReceivedDesign;
     Double ratioErrorReceived;
-    LocalDateTime createdAt;
-    LocalDateTime updatedAt;
 }

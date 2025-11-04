@@ -22,5 +22,4 @@ public class PopInventoryStatDTO {
     BigDecimal volumeUsed;
     BigDecimal volumeStocked;
     String complianceResult;
-    LocalDateTime createdAt;
 }

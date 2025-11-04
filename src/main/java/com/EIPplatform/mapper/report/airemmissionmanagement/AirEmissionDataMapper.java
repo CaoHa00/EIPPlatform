@@ -5,59 +5,113 @@ import com.EIPplatform.model.dto.report.airemmissionmanagement.airemissiondata.A
 import com.EIPplatform.model.dto.report.airemmissionmanagement.airemissiondata.AirEmissionDataUpdateDTO;
 import com.EIPplatform.model.entity.report.airemmissionmanagement.AirEmissionData;
 import org.mapstruct.*;
-
 import java.util.List;
+import java.util.ArrayList;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", uses = {
+        AirMonitoringExceedanceMapper.class,
+        AirAutoMonitoringStatMapper.class,
+        AirAutoMonitoringIncidentMapper.class,
+        AirAutoQcvnExceedanceMapper.class
+})
 public interface AirEmissionDataMapper {
 
-    // Create DTO to Entity
-    @Mapping(target = "airEmissionDataId", ignore = true) // ✅ Sửa: Auto-generate (was "id")
-    @Mapping(target = "report", ignore = true) // Set in service
-    @Mapping(target = "airAutoStationMapFilePath", ignore = true) // ✅ Ignore file path (set in service)
-    @Mapping(target = "airMonitoringExceedances", ignore = true)
-    @Mapping(target = "airAutoMonitoringStats", ignore = true)
-    @Mapping(target = "airAutoMonitoringIncidents", ignore = true)
-    @Mapping(target = "airAutoQcvnExceedances", ignore = true)
+    @Mapping(target = "airEmissionDataId", ignore = true)
+    @Mapping(target = "report", ignore = true)
+    @Mapping(target = "airAutoStationMapFilePath", ignore = true)
+    @Mapping(target = "createdAt", ignore = true)
+    @Mapping(target = "updatedAt", ignore = true)
+    @Mapping(target = "airMonitoringExceedances", source = "airMonitoringExceedances")
+    @Mapping(target = "airAutoMonitoringStats", source = "airAutoMonitoringStats")
+    @Mapping(target = "airAutoMonitoringIncidents", source = "airAutoMonitoringIncidents")
+    @Mapping(target = "airAutoQcvnExceedances", source = "airAutoQcvnExceedances")
     AirEmissionData toEntity(AirEmissionDataCreateDTO dto);
 
-    // Update DTO to Entity (partial - ignore null)
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
-    @Mapping(target = "airEmissionDataId", ignore = true) // ✅ Sửa: Ignore ID (was "id")
+    @Mapping(target = "airEmissionDataId", ignore = true)
     @Mapping(target = "report", ignore = true)
-    @Mapping(target = "airAutoStationMapFilePath", ignore = true) // ✅ Ignore file path (set in service)
-    @Mapping(target = "airMonitoringExceedances", ignore = true)
-    @Mapping(target = "airAutoMonitoringStats", ignore = true)
-    @Mapping(target = "airAutoMonitoringIncidents", ignore = true)
-    @Mapping(target = "airAutoQcvnExceedances", ignore = true)
+    @Mapping(target = "airAutoStationMapFilePath", ignore = true)
+    @Mapping(target = "createdAt", ignore = true)
+    @Mapping(target = "updatedAt", ignore = true)
+    @Mapping(target = "airMonitoringExceedances", source = "airMonitoringExceedances")
+    @Mapping(target = "airAutoMonitoringStats", source = "airAutoMonitoringStats")
+    @Mapping(target = "airAutoMonitoringIncidents", source = "airAutoMonitoringIncidents")
+    @Mapping(target = "airAutoQcvnExceedances", source = "airAutoQcvnExceedances")
     void updateEntityFromDto(AirEmissionDataUpdateDTO dto, @MappingTarget AirEmissionData entity);
 
-    // Entity to Response DTO
-    @Mapping(source = "airEmissionDataId", target = "id") // ✅ Map ID từ entity sang DTO's id
-    @Mapping(source = "airAutoStationMapFilePath", target = "airAutoStationMap") // ✅ Map file path (giả sử DTO có field tương ứng)
+    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+    @Mapping(target = "airEmissionDataId", ignore = true)
+    @Mapping(target = "report", ignore = true)
+    @Mapping(target = "airAutoStationMapFilePath", ignore = true)
+    @Mapping(target = "createdAt", ignore = true)
+    @Mapping(target = "updatedAt", ignore = true)
+    @Mapping(target = "airMonitoringExceedances", source = "airMonitoringExceedances")
+    @Mapping(target = "airAutoMonitoringStats", source = "airAutoMonitoringStats")
+    @Mapping(target = "airAutoMonitoringIncidents", source = "airAutoMonitoringIncidents")
+    @Mapping(target = "airAutoQcvnExceedances", source = "airAutoQcvnExceedances")
+    void updateEntityFromDto(AirEmissionDataDTO dto, @MappingTarget AirEmissionData entity);
+
+    @Mapping(source = "airAutoStationMapFilePath", target = "airAutoStationMap")
+    @Mapping(target = "airMonitoringExceedances", source = "airMonitoringExceedances")
+    @Mapping(target = "airAutoMonitoringStats", source = "airAutoMonitoringStats")
+    @Mapping(target = "airAutoMonitoringIncidents", source = "airAutoMonitoringIncidents")
+    @Mapping(target = "airAutoQcvnExceedances", source = "airAutoQcvnExceedances")
     AirEmissionDataDTO toDto(AirEmissionData entity);
 
-    // List to DTO list (if bulk needed)
     List<AirEmissionDataDTO> toDtoList(List<AirEmissionData> entities);
 
-    @Mapping(source = "id", target = "airEmissionDataId") // ✅ Map DTO's id → entity ID
-    @Mapping(target = "report", ignore = true) // Will be set separately
+    @Mapping(target = "airEmissionDataId", ignore = true)
+    @Mapping(target = "report", ignore = true)
+    @Mapping(target = "airAutoStationMapFilePath", ignore = true)
+    @Mapping(target = "createdAt", ignore = true)
+    @Mapping(target = "updatedAt", ignore = true)
     AirEmissionData dtoToEntity(AirEmissionDataDTO dto);
 
     @AfterMapping
     default void handleNullLists(@MappingTarget AirEmissionData entity, AirEmissionDataCreateDTO dto) {
-        // Init empty lists if null (avoid NPE)
-        if (dto.getAirMonitoringExceedances() == null) {
-            entity.setAirMonitoringExceedances(List.of());
+        initializeLists(entity);
+        setParentReferences(entity);
+    }
+
+    @AfterMapping
+    default void handleNullListsFromDto(@MappingTarget AirEmissionData entity, AirEmissionDataDTO dto) {
+        initializeLists(entity);
+        setParentReferences(entity);
+    }
+
+    @AfterMapping
+    default void handleNullListsOnUpdateFromDto(@MappingTarget AirEmissionData entity, AirEmissionDataDTO dto) {
+        initializeLists(entity);
+        setParentReferences(entity);
+    }
+
+    default void initializeLists(AirEmissionData entity) {
+        if (entity.getAirMonitoringExceedances() == null) {
+            entity.setAirMonitoringExceedances(new ArrayList<>());
         }
-        if (dto.getAirAutoMonitoringStats() == null) {
-            entity.setAirAutoMonitoringStats(List.of());
+        if (entity.getAirAutoMonitoringStats() == null) {
+            entity.setAirAutoMonitoringStats(new ArrayList<>());
         }
-        if (dto.getAirAutoMonitoringIncidents() == null) {
-            entity.setAirAutoMonitoringIncidents(List.of());
+        if (entity.getAirAutoMonitoringIncidents() == null) {
+            entity.setAirAutoMonitoringIncidents(new ArrayList<>());
         }
-        if (dto.getAirAutoQcvnExceedances() == null) {
-            entity.setAirAutoQcvnExceedances(List.of());
+        if (entity.getAirAutoQcvnExceedances() == null) {
+            entity.setAirAutoQcvnExceedances(new ArrayList<>());
+        }
+    }
+
+    default void setParentReferences(AirEmissionData entity) {
+        if (entity.getAirMonitoringExceedances() != null) {
+            entity.getAirMonitoringExceedances().forEach(child -> child.setAirEmissionData(entity));
+        }
+        if (entity.getAirAutoMonitoringStats() != null) {
+            entity.getAirAutoMonitoringStats().forEach(child -> child.setAirEmissionData(entity));
+        }
+        if (entity.getAirAutoMonitoringIncidents() != null) {
+            entity.getAirAutoMonitoringIncidents().forEach(child -> child.setAirEmissionData(entity));
+        }
+        if (entity.getAirAutoQcvnExceedances() != null) {
+            entity.getAirAutoQcvnExceedances().forEach(child -> child.setAirEmissionData(entity));
         }
     }
 }

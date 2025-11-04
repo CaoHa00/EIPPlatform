@@ -22,8 +22,4 @@ public class AirAutoQcvnExceedanceDTO {
     Integer qcvnLimitValue;
 
     BigDecimal exceedRatioPercent;
-
-    LocalDateTime createdAt;
-
-    LocalDateTime updatedAt;
 }

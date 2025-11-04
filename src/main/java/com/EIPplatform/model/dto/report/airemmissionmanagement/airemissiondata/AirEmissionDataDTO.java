@@ -18,7 +18,7 @@ import java.util.List;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class AirEmissionDataDTO {
 
-    Long id;
+    Long airEmissionDataId;
 
     String airTreatmentDesc;
 
