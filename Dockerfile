@@ -1,18 +1,13 @@
 # Use OpenJDK base image
-FROM openjdk:17-jdk-slim
+FROM eclipse-temurin:17-jdk-alpine
 
 # Install tzdata and speedtest CLI
-RUN apt-get update && \
-    apt-get install -y --no-install-recommends tzdata curl gnupg && \
-    curl -s https://packagecloud.io/install/repositories/ookla/speedtest-cli/script.deb.sh | bash && \
-    apt-get install -y speedtest && \
-    apt-get clean && \
-    rm -rf /var/lib/apt/lists/*
+WORKDIR /app
 
 # Copy your JAR file into the image
-COPY target/SmartBuildingBackend-0.0.1-SNAPSHOT.jar app.jar
+COPY target/EIPplatform-0.0.1-SNAPSHOT.jar app.jar
 
-EXPOSE 9094
+EXPOSE 7000
 
 # Set the container OS timezone
 ENV TZ=Asia/Ho_Chi_Minh
