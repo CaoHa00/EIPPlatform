@@ -20,7 +20,4 @@ public class AirAutoMonitoringIncidentDTO {
 
     String incidentRemedy;
 
-    LocalDateTime createdAt;
-
-    LocalDateTime updatedAt;
 }

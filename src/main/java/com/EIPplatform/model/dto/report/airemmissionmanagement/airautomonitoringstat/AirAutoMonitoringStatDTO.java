@@ -27,7 +27,4 @@ public class AirAutoMonitoringStatDTO {
 
     BigDecimal ratioErrorReceived;
 
-    LocalDateTime createdAt;
-
-    LocalDateTime updatedAt;
 }

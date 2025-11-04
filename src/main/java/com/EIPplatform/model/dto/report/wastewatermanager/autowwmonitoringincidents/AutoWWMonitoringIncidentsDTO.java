@@ -6,8 +6,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
-
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -17,6 +15,4 @@ public class AutoWWMonitoringIncidentsDTO {
     String incidentName;
     String incidentTime;
     String incidentRemedy;
-    LocalDateTime createdAt;
-    LocalDateTime updatedAt;
 }

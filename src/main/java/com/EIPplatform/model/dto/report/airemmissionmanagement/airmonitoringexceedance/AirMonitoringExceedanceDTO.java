@@ -32,7 +32,4 @@ public class AirMonitoringExceedanceDTO {
 
     BigDecimal qcvnLimit;
 
-    LocalDateTime createdAt;
-
-    LocalDateTime updatedAt;
 }

@@ -2,16 +2,13 @@ package com.EIPplatform.model.entity.report.wastemanagement;
 
 import com.EIPplatform.model.entity.report.ReportA05;
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -40,25 +37,39 @@ public class WasteManagementData {
     String swGeneralNote;
 
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "wasteManagementData")
-    List<DomesticSolidWasteStat> domesticSolidWasteStats;
+    @JsonManagedReference
+    @Builder.Default
+    List<DomesticSolidWasteStat> domesticSolidWasteStats = new ArrayList<>();
 
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "wasteManagementData")
-    List<IndustrialSolidWasteStat> industrialSolidWasteStats;
+    @JsonManagedReference
+    @Builder.Default
+    List<IndustrialSolidWasteStat> industrialSolidWasteStats = new ArrayList<>();
 
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "wasteManagementData")
-    List<RecycleIndustrialWasteStat> recycleIndustrialWasteStats;
+    @JsonManagedReference
+    @Builder.Default
+    List<RecycleIndustrialWasteStat> recycleIndustrialWasteStats = new ArrayList<>();
 
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "wasteManagementData")
-    List<OtherSolidWasteStat> otherSolidWasteStats;
+    @JsonManagedReference
+    @Builder.Default
+    List<OtherSolidWasteStat> otherSolidWasteStats = new ArrayList<>();
 
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "wasteManagementData")
-    List<HazardousWasteStat> hazardousWasteStats;
+    @JsonManagedReference
+    @Builder.Default
+    List<HazardousWasteStat> hazardousWasteStats = new ArrayList<>();
 
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "wasteManagementData")
-    List<ExportedHwStat> exportedHwStats;
+    @JsonManagedReference
+    @Builder.Default
+    List<ExportedHwStat> exportedHwStats = new ArrayList<>();
 
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "wasteManagementData")
-    List<SelfTreatedHwStat> selfTreatedHwStats;
+    @JsonManagedReference
+    @Builder.Default
+    List<SelfTreatedHwStat> selfTreatedHwStats = new ArrayList<>();
 
     @Column(name = "incident_plan_development", columnDefinition = "TEXT", nullable = false)
     String incidentPlanDevelopment;
@@ -70,7 +81,9 @@ public class WasteManagementData {
     String incidentResponseReport;
 
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "wasteManagementData")
-    List<PopInventoryStat> popInventoryStats;
+    @JsonManagedReference
+    @Builder.Default
+    List<PopInventoryStat> popInventoryStats = new ArrayList<>();
 
     @Column(name = "water_total_volume_kg", nullable = false, precision = 10, scale = 2)
     BigDecimal waterTotalVolumeKg;
@@ -86,6 +99,7 @@ public class WasteManagementData {
 
     @Column(name = "soil_total_volume_kg", nullable = false, precision = 10, scale = 2)
     BigDecimal soilTotalVolumeKg;
+
     @Column(name = "soil_estimation_method", columnDefinition = "TEXT", nullable = false)
     String soilEstimationMethod;
 

@@ -184,5 +184,4 @@ public class WasteWaterData {
     
     @Column(name = "auto_exceed_summary", columnDefinition = "NVARCHAR(MAX)", nullable = false)
     String autoExceedSummary;
-
 }

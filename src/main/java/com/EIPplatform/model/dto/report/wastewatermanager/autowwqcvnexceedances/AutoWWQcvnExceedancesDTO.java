@@ -5,8 +5,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
-
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -17,6 +15,4 @@ public class AutoWWQcvnExceedancesDTO {
     Integer exceedDaysCount;
     Double qcvnLimitValue;
     Double exceedRatioPercent;
-    LocalDateTime createdAt;
-    LocalDateTime updatedAt;
 }

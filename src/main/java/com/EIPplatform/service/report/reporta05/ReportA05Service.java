@@ -22,4 +22,14 @@ public interface ReportA05Service {
      */
     ReportA05DTO submitDraftToDatabase(UUID reportId);
 
+    /**
+     * Cập nhật completion percentage cho draft dựa trên dữ liệu hiện tại
+     * (Gọi sau mỗi step để tự động tính % và lưu lại cache)
+     */
+    ReportA05DraftDTO updateDraftCompletion(UUID reportId);
+
+    // TODO: Thêm các method delete section nếu cần (ví dụ: xóa draft data của một phần cụ thể)
+    // void deleteDraftWasteWaterData(UUID reportId);
+    // void deleteDraftWasteManagementData(UUID reportId);
+    // void deleteDraftAirEmissionData(UUID reportId);
 }

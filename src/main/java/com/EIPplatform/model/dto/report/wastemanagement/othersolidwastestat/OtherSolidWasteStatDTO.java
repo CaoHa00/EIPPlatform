@@ -18,5 +18,4 @@ public class OtherSolidWasteStatDTO {
     String selfTreatmentMethod;
     String receiverOrg;
     BigDecimal volumePy;
-    LocalDateTime createdAt;
 }

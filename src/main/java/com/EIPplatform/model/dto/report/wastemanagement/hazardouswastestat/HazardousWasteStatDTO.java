@@ -19,5 +19,4 @@ public class HazardousWasteStatDTO {
     String treatmentMethod;
     String receiverOrg;
     BigDecimal volumePy;
-    LocalDateTime createdAt;
 }

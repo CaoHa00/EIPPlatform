@@ -1,84 +1,156 @@
 package com.EIPplatform.mapper.report.wastemanagement;
 
-import java.util.List;
-
-import org.mapstruct.AfterMapping;
-import org.mapstruct.BeanMapping;
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
-import org.mapstruct.MappingTarget;
-import org.mapstruct.NullValuePropertyMappingStrategy;
-
 import com.EIPplatform.model.dto.report.wastemanagement.WasteManagementDataCreateDTO;
 import com.EIPplatform.model.dto.report.wastemanagement.WasteManagementDataDTO;
-import com.EIPplatform.model.dto.report.wastemanagement.WasteManagementDataUpdateDTO;
 import com.EIPplatform.model.entity.report.wastemanagement.WasteManagementData;
+import org.mapstruct.*;
+import java.util.ArrayList;
+import java.util.List;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", uses = {
+        DomesticSolidWasteStatMapper.class,
+        IndustrialSolidWasteStatMapper.class,
+        RecycleIndustrialWasteStatMapper.class,
+        OtherSolidWasteStatMapper.class,
+        HazardousWasteStatMapper.class,
+        ExportedHwStatMapper.class,
+        SelfTreatedHwStatMapper.class,
+        PopInventoryStatMapper.class
+})
 public interface WasteManagementDataMapper {
 
-    // Create DTO to Entity
-    @Mapping(target = "wmId", ignore = true) // Auto-generate
-    @Mapping(target = "report", ignore = true) // Set in service
-    @Mapping(target = "domesticSolidWasteStats", ignore = true)
-    @Mapping(target = "industrialSolidWasteStats", ignore = true)
-    @Mapping(target = "recycleIndustrialWasteStats", ignore = true)
-    @Mapping(target = "otherSolidWasteStats", ignore = true)
-    @Mapping(target = "hazardousWasteStats", ignore = true)
-    @Mapping(target = "exportedHwStats", ignore = true)
-    @Mapping(target = "selfTreatedHwStats", ignore = true)
-    @Mapping(target = "popInventoryStats", ignore = true)
+    @Mapping(target = "wmId", ignore = true)
+    @Mapping(target = "report", ignore = true)
+    @Mapping(target = "domesticSolidWasteStats", source = "domesticSolidWasteStats")
+    @Mapping(target = "industrialSolidWasteStats", source = "industrialSolidWasteStats")
+    @Mapping(target = "recycleIndustrialWasteStats", source = "recycleIndustrialWasteStats")
+    @Mapping(target = "otherSolidWasteStats", source = "otherSolidWasteStats")
+    @Mapping(target = "hazardousWasteStats", source = "hazardousWasteStats")
+    @Mapping(target = "exportedHwStats", source = "exportedHwStats")
+    @Mapping(target = "selfTreatedHwStats", source = "selfTreatedHwStats")
+    @Mapping(target = "popInventoryStats", source = "popInventoryStats")
     WasteManagementData toEntity(WasteManagementDataCreateDTO dto);
 
-    // Update DTO to Entity (partial - ignore null)
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     @Mapping(target = "wmId", ignore = true)
     @Mapping(target = "report", ignore = true)
-    @Mapping(target = "domesticSolidWasteStats", ignore = true)
-    @Mapping(target = "industrialSolidWasteStats", ignore = true)
-    @Mapping(target = "recycleIndustrialWasteStats", ignore = true)
-    @Mapping(target = "otherSolidWasteStats", ignore = true)
-    @Mapping(target = "hazardousWasteStats", ignore = true)
-    @Mapping(target = "exportedHwStats", ignore = true)
-    @Mapping(target = "selfTreatedHwStats", ignore = true)
-    @Mapping(target = "popInventoryStats", ignore = true)
-    void updateEntityFromDto(WasteManagementDataUpdateDTO dto, @MappingTarget WasteManagementData entity);
+    @Mapping(target = "domesticSolidWasteStats", source = "domesticSolidWasteStats")
+    @Mapping(target = "industrialSolidWasteStats", source = "industrialSolidWasteStats")
+    @Mapping(target = "recycleIndustrialWasteStats", source = "recycleIndustrialWasteStats")
+    @Mapping(target = "otherSolidWasteStats", source = "otherSolidWasteStats")
+    @Mapping(target = "hazardousWasteStats", source = "hazardousWasteStats")
+    @Mapping(target = "exportedHwStats", source = "exportedHwStats")
+    @Mapping(target = "selfTreatedHwStats", source = "selfTreatedHwStats")
+    @Mapping(target = "popInventoryStats", source = "popInventoryStats")
+    void updateEntityFromDto(WasteManagementDataCreateDTO dto, @MappingTarget WasteManagementData entity);
 
-    // Entity to Response DTO
+    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+    @Mapping(target = "wmId", ignore = true)
+    @Mapping(target = "report", ignore = true)
+    @Mapping(target = "domesticSolidWasteStats", source = "domesticSolidWasteStats")
+    @Mapping(target = "industrialSolidWasteStats", source = "industrialSolidWasteStats")
+    @Mapping(target = "recycleIndustrialWasteStats", source = "recycleIndustrialWasteStats")
+    @Mapping(target = "otherSolidWasteStats", source = "otherSolidWasteStats")
+    @Mapping(target = "hazardousWasteStats", source = "hazardousWasteStats")
+    @Mapping(target = "exportedHwStats", source = "exportedHwStats")
+    @Mapping(target = "selfTreatedHwStats", source = "selfTreatedHwStats")
+    @Mapping(target = "popInventoryStats", source = "popInventoryStats")
+    void updateEntityFromDto(WasteManagementDataDTO dto, @MappingTarget WasteManagementData entity);
+
+    @Mapping(source = "wmId", target = "wmId")
+    @Mapping(target = "domesticSolidWasteStats", source = "domesticSolidWasteStats")
+    @Mapping(target = "industrialSolidWasteStats", source = "industrialSolidWasteStats")
+    @Mapping(target = "recycleIndustrialWasteStats", source = "recycleIndustrialWasteStats")
+    @Mapping(target = "otherSolidWasteStats", source = "otherSolidWasteStats")
+    @Mapping(target = "hazardousWasteStats", source = "hazardousWasteStats")
+    @Mapping(target = "exportedHwStats", source = "exportedHwStats")
+    @Mapping(target = "selfTreatedHwStats", source = "selfTreatedHwStats")
+    @Mapping(target = "popInventoryStats", source = "popInventoryStats")
     WasteManagementDataDTO toDto(WasteManagementData entity);
 
-    // List to DTO list (if bulk needed)
     List<WasteManagementDataDTO> toDtoList(List<WasteManagementData> entities);
 
-    @Mapping(target = "report", ignore = true) // Will be set separately
+    @Mapping(target = "wmId", ignore = true)
+    @Mapping(target = "report", ignore = true)
+    @Mapping(target = "domesticSolidWasteStats", source = "domesticSolidWasteStats")
+    @Mapping(target = "industrialSolidWasteStats", source = "industrialSolidWasteStats")
+    @Mapping(target = "recycleIndustrialWasteStats", source = "recycleIndustrialWasteStats")
+    @Mapping(target = "otherSolidWasteStats", source = "otherSolidWasteStats")
+    @Mapping(target = "hazardousWasteStats", source = "hazardousWasteStats")
+    @Mapping(target = "exportedHwStats", source = "exportedHwStats")
+    @Mapping(target = "selfTreatedHwStats", source = "selfTreatedHwStats")
+    @Mapping(target = "popInventoryStats", source = "popInventoryStats")
     WasteManagementData dtoToEntity(WasteManagementDataDTO dto);
 
     @AfterMapping
     default void handleNullLists(@MappingTarget WasteManagementData entity, WasteManagementDataCreateDTO dto) {
-        // Init empty lists if null (avoid NPE)
-        if (dto.getDomesticSolidWasteStats() == null) {
-            entity.setDomesticSolidWasteStats(List.of());
+        initializeLists(entity);
+        setParentReferences(entity);
+    }
+
+    @AfterMapping
+    default void handleNullListsFromDto(@MappingTarget WasteManagementData entity, WasteManagementDataDTO dto) {
+        initializeLists(entity);
+        setParentReferences(entity);
+    }
+
+    @AfterMapping
+    default void handleNullListsOnUpdateFromDto(@MappingTarget WasteManagementData entity, WasteManagementDataDTO dto) {
+        initializeLists(entity);
+        setParentReferences(entity);
+    }
+
+    default void initializeLists(WasteManagementData entity) {
+        if (entity.getDomesticSolidWasteStats() == null) {
+            entity.setDomesticSolidWasteStats(new ArrayList<>());
         }
-        if (dto.getIndustrialSolidWasteStats() == null) {
-            entity.setIndustrialSolidWasteStats(List.of());
+        if (entity.getIndustrialSolidWasteStats() == null) {
+            entity.setIndustrialSolidWasteStats(new ArrayList<>());
         }
-        if (dto.getRecycleIndustrialWasteStats() == null) {
-            entity.setRecycleIndustrialWasteStats(List.of());
+        if (entity.getRecycleIndustrialWasteStats() == null) {
+            entity.setRecycleIndustrialWasteStats(new ArrayList<>());
         }
-        if (dto.getOtherSolidWasteStats() == null) {
-            entity.setOtherSolidWasteStats(List.of());
+        if (entity.getOtherSolidWasteStats() == null) {
+            entity.setOtherSolidWasteStats(new ArrayList<>());
         }
-        if (dto.getHazardousWasteStats() == null) {
-            entity.setHazardousWasteStats(List.of());
+        if (entity.getHazardousWasteStats() == null) {
+            entity.setHazardousWasteStats(new ArrayList<>());
         }
-        if (dto.getExportedHwStats() == null) {
-            entity.setExportedHwStats(List.of());
+        if (entity.getExportedHwStats() == null) {
+            entity.setExportedHwStats(new ArrayList<>());
         }
-        if (dto.getSelfTreatedHwStats() == null) {
-            entity.setSelfTreatedHwStats(List.of());
+        if (entity.getSelfTreatedHwStats() == null) {
+            entity.setSelfTreatedHwStats(new ArrayList<>());
         }
-        if (dto.getPopInventoryStats() == null) {
-            entity.setPopInventoryStats(List.of());
+        if (entity.getPopInventoryStats() == null) {
+            entity.setPopInventoryStats(new ArrayList<>());
+        }
+    }
+
+    default void setParentReferences(WasteManagementData entity) {
+        if (entity.getDomesticSolidWasteStats() != null) {
+            entity.getDomesticSolidWasteStats().forEach(child -> child.setWasteManagementData(entity));
+        }
+        if (entity.getIndustrialSolidWasteStats() != null) {
+            entity.getIndustrialSolidWasteStats().forEach(child -> child.setWasteManagementData(entity));
+        }
+        if (entity.getRecycleIndustrialWasteStats() != null) {
+            entity.getRecycleIndustrialWasteStats().forEach(child -> child.setWasteManagementData(entity));
+        }
+        if (entity.getOtherSolidWasteStats() != null) {
+            entity.getOtherSolidWasteStats().forEach(child -> child.setWasteManagementData(entity));
+        }
+        if (entity.getHazardousWasteStats() != null) {
+            entity.getHazardousWasteStats().forEach(child -> child.setWasteManagementData(entity));
+        }
+        if (entity.getExportedHwStats() != null) {
+            entity.getExportedHwStats().forEach(child -> child.setWasteManagementData(entity));
+        }
+        if (entity.getSelfTreatedHwStats() != null) {
+            entity.getSelfTreatedHwStats().forEach(child -> child.setWasteManagementData(entity));
+        }
+        if (entity.getPopInventoryStats() != null) {
+            entity.getPopInventoryStats().forEach(child -> child.setWasteManagementData(entity));
         }
     }
 }

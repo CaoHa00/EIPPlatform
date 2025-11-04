@@ -19,5 +19,4 @@ public class ExportedHwStatDTO {
     BigDecimal volumeKg;
     String transporterOrg;
     String overseasProcessorOrg;
-    LocalDateTime createdAt;
 }

@@ -17,5 +17,4 @@ public class DomesticSolidWasteStatDTO {
     BigDecimal volumeCy;
     String receiverOrg;
     BigDecimal volumePy;
-    LocalDateTime createdAt;
 }

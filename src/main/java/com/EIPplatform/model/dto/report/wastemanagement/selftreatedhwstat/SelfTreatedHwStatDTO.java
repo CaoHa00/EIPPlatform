@@ -20,5 +20,4 @@ public class SelfTreatedHwStatDTO {
     String hwCode;
     BigDecimal volumeKg;
     String selfTreatmentMethod;
-    LocalDateTime createdAt;
 }
