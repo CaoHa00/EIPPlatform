@@ -1,10 +1,8 @@
 package com.EIPplatform.service.report.reporta05;
 
-import java.util.UUID;
+import com.EIPplatform.model.dto.report.report.*;
 
-import com.EIPplatform.model.dto.report.report.CreateReportRequest;
-import com.EIPplatform.model.dto.report.report.ReportA05DTO;
-import com.EIPplatform.model.dto.report.report.ReportA05DraftDTO;
+import java.util.UUID;
 
 public interface ReportA05Service {
 
@@ -27,6 +25,11 @@ public interface ReportA05Service {
      * (Gọi sau mỗi step để tự động tính % và lưu lại cache)
      */
     ReportA05DraftDTO updateDraftCompletion(UUID reportId);
+
+    /**
+     * Cập nhật inspection remedy report cho report (trực tiếp vào database)
+     */
+    InspectionRemedyResponse updateInspectionRemedyReport(UUID reportId, UpdateInspectionRemedyReportRequest request);
 
     // TODO: Thêm các method delete section nếu cần (ví dụ: xóa draft data của một phần cụ thể)
     // void deleteDraftWasteWaterData(UUID reportId);

@@ -1,8 +1,6 @@
 package com.EIPplatform.controller.report;
 
-import com.EIPplatform.model.dto.report.report.CreateReportRequest;
-import com.EIPplatform.model.dto.report.report.ReportA05DTO;
-import com.EIPplatform.model.dto.report.report.ReportA05DraftDTO;
+import com.EIPplatform.model.dto.report.report.*;
 import com.EIPplatform.service.report.reporta05.ReportA05Service;
 
 import jakarta.validation.Valid;
@@ -74,5 +72,17 @@ public class ReportA05Controller {
         log.info("POST /api/v1/reports/{}/draft/submit", reportId);
         ReportA05DTO submitted = reportA05Service.submitDraftToDatabase(reportId);
         return ResponseEntity.ok(submitted);
+    }
+
+    /**
+     * Cập nhật inspection remedy report cho report
+     */
+    @PatchMapping("/{reportId}/inspection-remedy-report")
+    public ResponseEntity<InspectionRemedyResponse> updateInspectionRemedyReport(
+            @PathVariable UUID reportId,
+            @Valid @RequestBody UpdateInspectionRemedyReportRequest request) {
+        log.info("PATCH /api/v1/reports/{}/inspection-remedy-report - Updating inspection remedy report", reportId);
+        InspectionRemedyResponse updated = reportA05Service.updateInspectionRemedyReport(reportId, request);
+        return ResponseEntity.ok(updated);
     }
 }

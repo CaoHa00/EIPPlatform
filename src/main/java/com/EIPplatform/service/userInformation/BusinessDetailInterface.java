@@ -9,15 +9,15 @@ import com.EIPplatform.model.dto.businessInformation.BusinessDetailResponse;
 import com.EIPplatform.model.dto.businessInformation.BusinessDetailWithHistoryConsumptionDTO;
 
 public interface BusinessDetailInterface {
-    BusinessDetailResponse findByUserAccountId(UUID id);
-    void deleteByBusinessDetailId(UUID id);
+    BusinessDetailResponse findByUserAccountId(UUID userAccountId);
+    void deleteByUserAccountId(UUID userAccountId);
     BusinessDetailResponse createBusinessDetail(UUID userAccountId, BusinessDetailDTO dto, MultipartFile isoFile);
-    BusinessDetailResponse updateBusinessDetail(UUID id, BusinessDetailDTO dto, MultipartFile isoFile);
+    BusinessDetailResponse updateBusinessDetail(UUID userAccountId, BusinessDetailDTO dto, MultipartFile isoFile);
     List<BusinessDetailResponse> findAll();
-    BusinessDetailWithHistoryConsumptionDTO getBusinessDetailWithHistoryConsumption(UUID id);
+    BusinessDetailWithHistoryConsumptionDTO getBusinessDetailWithHistoryConsumption(UUID businessDetailId);
 
     // File-specific methods
-    BusinessDetailResponse uploadIsoCertificateFile(UUID businessDetailId, MultipartFile file);
-    void deleteIsoCertificateFile(UUID businessDetailId);
-    boolean hasIsoCertificateFile(UUID businessDetailId);
+    BusinessDetailResponse uploadIsoCertificateFile(UUID userAccountId, MultipartFile file);
+    void deleteIsoCertificateFile(UUID userAccountId);
+    boolean hasIsoCertificateFile(UUID userAccountId);
 }

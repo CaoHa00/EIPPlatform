@@ -5,9 +5,7 @@ import com.EIPplatform.exception.errorCategories.ReportError;
 import com.EIPplatform.mapper.report.airemmissionmanagement.AirEmissionDataMapper;
 import com.EIPplatform.mapper.report.wastemanagement.WasteManagementDataMapper;
 import com.EIPplatform.mapper.report.wastewatermanager.WasteWaterDataMapper;
-import com.EIPplatform.model.dto.report.report.CreateReportRequest;
-import com.EIPplatform.model.dto.report.report.ReportA05DTO;
-import com.EIPplatform.model.dto.report.report.ReportA05DraftDTO;
+import com.EIPplatform.model.dto.report.report.*;
 import com.EIPplatform.model.dto.report.airemmissionmanagement.airemissiondata.AirEmissionDataDTO;
 import com.EIPplatform.model.dto.report.wastemanagement.WasteManagementDataDTO;
 import com.EIPplatform.model.dto.report.wastewatermanager.wastewatermanagement.WasteWaterDataDTO;
@@ -20,6 +18,7 @@ import com.EIPplatform.repository.report.ReportA05Repository;
 import com.EIPplatform.repository.user.BusinessDetailRepository;
 import com.EIPplatform.service.report.reportcache.ReportCacheService;
 import jakarta.transaction.Transactional;
+import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -27,14 +26,17 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.Objects;
 import java.util.UUID;
 
 import org.springframework.stereotype.Service;
+import org.springframework.validation.annotation.Validated;
 
 @Service
 @Slf4j
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+@Validated // Để enable method-level validation nếu cần
 public class ReportA05ServiceImpl implements ReportA05Service {
 
     ReportA05Repository reportA05Repository;
@@ -93,6 +95,8 @@ public class ReportA05ServiceImpl implements ReportA05Service {
                 .companyName(report.getBusinessDetail() != null ? report.getBusinessDetail().getCompanyName() : null)
                 .reportYear(report.getReportYear())
                 .reportingPeriod(report.getReportingPeriod())
+                .reviewNotes(report.getReviewNotes())
+                .inspectionRemedyReport(report.getInspectionRemedyReport())
                 .completionPercentage(report.getCompletionPercentage())
                 .createdAt(report.getCreatedAt())
                 .build();
@@ -164,14 +168,47 @@ public class ReportA05ServiceImpl implements ReportA05Service {
 
         BusinessDetail bd = saved.getBusinessDetail();
         return ReportA05DTO.builder()
-                .reportId(saved.getReportId())
                 .reportCode(saved.getReportCode())
                 .businessDetailId(bd != null ? bd.getBusinessDetailId() : null)
                 .companyName(bd != null ? bd.getCompanyName() : null)
                 .reportYear(saved.getReportYear())
                 .reportingPeriod(saved.getReportingPeriod())
+                .reviewNotes(saved.getReviewNotes())
+                .inspectionRemedyReport(saved.getInspectionRemedyReport())
                 .completionPercentage(saved.getCompletionPercentage())
                 .createdAt(saved.getCreatedAt())
+                .build();
+    }
+
+    @Override
+    @Transactional
+    public InspectionRemedyResponse updateInspectionRemedyReport(UUID reportId, @Valid UpdateInspectionRemedyReportRequest request) {
+        // Validate report tồn tại
+        ReportA05 report = reportA05Repository.findById(reportId)
+                .orElseThrow(() -> exceptionFactory.createNotFoundException("ReportA05", reportId, ReportError.REPORT_NOT_FOUND));
+
+        // Validate request không null và trường chính không null (nếu cần, nhưng @Size đã handle length)
+        if (request == null) {
+            throw exceptionFactory.createValidationException("UpdateInspectionRemedyReportRequest", "request", null, ReportError.INVALID_REQUEST);
+        }
+        if (Objects.isNull(request.getInspectionRemedyReport())) {
+            throw exceptionFactory.createValidationException("UpdateInspectionRemedyReportRequest", "inspectionRemedyReport", null, ReportError.FIELD_REQUIRED);
+        }
+
+        // Update trường
+        report.setInspectionRemedyReport(request.getInspectionRemedyReport());
+        report.setUpdatedAt(LocalDateTime.now()); // Cập nhật timestamp nếu cần
+
+        ReportA05 saved = reportA05Repository.save(report);
+
+        // Log
+        log.info("Updated inspection remedy report for reportId: {}", reportId);
+
+        // Build và return response mới đơn giản
+        return InspectionRemedyResponse.builder()
+                .reportId(saved.getReportId())
+                .inspectionRemedyReport(saved.getInspectionRemedyReport())
+                .updatedAt(saved.getUpdatedAt())
                 .build();
     }
 

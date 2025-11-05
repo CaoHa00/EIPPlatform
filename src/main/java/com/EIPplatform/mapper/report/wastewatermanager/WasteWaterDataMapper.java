@@ -19,6 +19,7 @@ public interface WasteWaterDataMapper {
     @Mapping(target = "report", ignore = true)
     @Mapping(target = "connectionDiagram", ignore = true)
     @Mapping(target = "autoStationMap", ignore = true)
+    @Mapping(target = "autoExceedSummary", ignore = true)
     @Mapping(target = "monitoringExceedances", source = "monitoringExceedances")
     @Mapping(target = "monitoringStats", source = "monitoringStats")
     @Mapping(target = "monitoringIncidents", source = "monitoringIncidents")
