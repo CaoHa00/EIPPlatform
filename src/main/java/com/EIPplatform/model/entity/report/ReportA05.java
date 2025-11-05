@@ -70,6 +70,9 @@ public class ReportA05 {
     @Column(name = "review_notes", columnDefinition = "NVARCHAR(MAX)")
     String reviewNotes;
 
+    @Column(name = "inspection_remedy_report", columnDefinition = "NVARCHAR(MAX)")
+    String inspectionRemedyReport;
+
     @Column(name = "completion_percentage", precision = 5, scale = 2)
     BigDecimal completionPercentage;
 

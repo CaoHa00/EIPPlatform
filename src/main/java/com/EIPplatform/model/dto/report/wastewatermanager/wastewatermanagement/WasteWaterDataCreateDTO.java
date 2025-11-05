@@ -143,6 +143,8 @@ public class WasteWaterDataCreateDTO {
     @NotBlank(message = "IS_REQUIRED")
     String autoCompletenessReview;
 
+    String autoExceedSummary;
+
     @NotBlank(message = "IS_REQUIRED")
     String autoExceedConclusion;
 }

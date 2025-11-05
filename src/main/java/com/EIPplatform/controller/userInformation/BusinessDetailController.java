@@ -76,7 +76,7 @@ public class BusinessDetailController {
     @DeleteMapping
     public ApiResponse<Void> deleteBusinessDetail(
             @RequestParam UUID userAccountId) {
-        businessDetailService.deleteByBusinessDetailId(userAccountId);
+        businessDetailService.deleteByUserAccountId(userAccountId);
         return ApiResponse.<Void>builder()
                 .build();
     }
@@ -85,9 +85,9 @@ public class BusinessDetailController {
 
     @PostMapping(value = "/iso-file", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ApiResponse<BusinessDetailResponse> uploadIsoCertificateFile(
-            @RequestParam UUID userAccountId,
+            @RequestParam UUID businessDetailId,
             @RequestPart("file") MultipartFile file) {
-        var result = businessDetailService.uploadIsoCertificateFile(userAccountId, file);
+        var result = businessDetailService.uploadIsoCertificateFile(businessDetailId, file);
         return ApiResponse.<BusinessDetailResponse>builder()
                 .result(result)
                 .build();
