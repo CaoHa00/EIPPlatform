@@ -17,6 +17,8 @@ public enum ReportError implements ErrorCodeInterface {
     REPORT_NOT_FOUND(1001, "Report not found", HttpStatus.NOT_FOUND),
     DRAFT_NOT_FOUND(1002, "Draft data not found in cache", HttpStatus.NOT_FOUND),
     DRAFT_INCOMPLETE(1003, "Report draft is not complete yet. All sections must be filled before saving to database. Current completion: {0}%", HttpStatus.BAD_REQUEST),
+    INVALID_REQUEST(1004, "Invalid request provided", HttpStatus.BAD_REQUEST),
+    FIELD_REQUIRED(1005, "Required field is missing or null", HttpStatus.BAD_REQUEST),
 
     OPERATION_FAILED(1010, "Report operation failed", HttpStatus.INTERNAL_SERVER_ERROR),
     SAVE_TO_DATABASE_FAILED(1011, "Failed to save report data to database", HttpStatus.INTERNAL_SERVER_ERROR),
