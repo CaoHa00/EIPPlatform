@@ -23,4 +23,27 @@ public interface ReportA05Repository extends JpaRepository<ReportA05, UUID> {
 //         @Param("businessDetailId") UUID businessDetailId,
 //         @Param("reportYear") Integer reportYear
 //     );
+@Query("SELECT r FROM ReportA05 r " +
+        "LEFT JOIN FETCH r.businessDetail " +
+        "LEFT JOIN FETCH r.wasteWaterData wwd " +
+        "LEFT JOIN FETCH wwd.monitoringExceedances " +
+        "LEFT JOIN FETCH wwd.monitoringStats " +
+        "LEFT JOIN FETCH wwd.monitoringIncidents " +
+        "LEFT JOIN FETCH wwd.qcvnExceedances " +
+        "LEFT JOIN FETCH r.wasteManagementData wmd " +
+        "LEFT JOIN FETCH wmd.domesticSolidWasteStats " +
+        "LEFT JOIN FETCH wmd.industrialSolidWasteStats " +
+        "LEFT JOIN FETCH wmd.recycleIndustrialWasteStats " +
+        "LEFT JOIN FETCH wmd.otherSolidWasteStats " +
+        "LEFT JOIN FETCH wmd.hazardousWasteStats " +
+        "LEFT JOIN FETCH wmd.exportedHwStats " +
+        "LEFT JOIN FETCH wmd.selfTreatedHwStats " +
+        "LEFT JOIN FETCH wmd.popInventoryStats " +
+        "LEFT JOIN FETCH r.airEmissionData aed " +
+        "LEFT JOIN FETCH aed.airMonitoringExceedances " +
+        "LEFT JOIN FETCH aed.airAutoMonitoringStats " +
+        "LEFT JOIN FETCH aed.airAutoMonitoringIncidents " +
+        "LEFT JOIN FETCH aed.airAutoQcvnExceedances " +
+        "WHERE r.reportId = :reportId")
+Optional<ReportA05> findByReportIdWithFullDetails(@Param("reportId") UUID reportId);
 }

@@ -15,7 +15,7 @@ public interface ExportedHwStatMapper {
 
     @Mapping(target = "exportedId", ignore = true)
     @Mapping(target = "wasteManagementData", ignore = true)
-    @Mapping(target = "baselCode", ignore = true) // Optional, set if provided elsewhere
+    @Mapping(source = "baselCode", target = "baselCode")
     ExportedHwStat toEntity(ExportedHwStatCreateDTO dto);
 
     @Mapping(source = "exportedId", target = "exportedId")

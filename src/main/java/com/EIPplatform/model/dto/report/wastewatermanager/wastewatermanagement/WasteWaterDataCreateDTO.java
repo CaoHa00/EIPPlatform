@@ -114,9 +114,6 @@ public class WasteWaterDataCreateDTO {
     String autoDataFrequency;
 
     @NotBlank(message = "IS_REQUIRED")
-    String autoParamList;
-
-    @NotBlank(message = "IS_REQUIRED")
     String autoCalibrationInfo;
 
     String autoIncidentSummary;
@@ -127,12 +124,6 @@ public class WasteWaterDataCreateDTO {
     List<AutoWWMonitoringStatsCreateDTO> monitoringStats;
 
     List<AutoWWMonitoringIncidentsCreateDTO> monitoringIncidents;
-
-    @NotBlank(message = "IS_REQUIRED")
-    String autoAvgCalcDesc;
-
-    @NotBlank(message = "IS_REQUIRED")
-    String autoAvgCompareDesc;
 
     String autoExceedDaysSummary;
 
@@ -145,6 +136,4 @@ public class WasteWaterDataCreateDTO {
 
     String autoExceedSummary;
 
-    @NotBlank(message = "IS_REQUIRED")
-    String autoExceedConclusion;
 }

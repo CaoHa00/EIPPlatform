@@ -10,6 +10,6 @@ import com.EIPplatform.model.entity.report.ReportA05;
 public interface ReportA05Mapper {
     
     @Mapping(source = "businessDetail.businessDetailId", target = "businessDetailId")
-    @Mapping(source = "businessDetail.companyName", target = "companyName")
+    @Mapping(source = "businessDetail.facilityName", target = "facilityName")
     ReportA05DTO toDTO(ReportA05 entity);
 }

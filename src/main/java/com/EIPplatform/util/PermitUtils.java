@@ -64,7 +64,7 @@ public class PermitUtils {
         validatePermitFile(file, exceptionFactory);
 
         FileStorageRequest storageRequest = FileStorageRequest.builder()
-                .businessName(businessDetail.getCompanyName())
+                .businessName(businessDetail.getFacilityName())
                 .sector("permits/" + subFolder)
                 .year(year)
                 .build();
