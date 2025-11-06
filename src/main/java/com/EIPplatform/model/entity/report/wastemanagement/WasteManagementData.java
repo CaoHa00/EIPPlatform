@@ -6,6 +6,8 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -38,36 +40,43 @@ public class WasteManagementData {
 
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "wasteManagementData")
     @JsonManagedReference
+    @Fetch(FetchMode.SUBSELECT)
     @Builder.Default
     List<DomesticSolidWasteStat> domesticSolidWasteStats = new ArrayList<>();
 
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "wasteManagementData")
     @JsonManagedReference
+    @Fetch(FetchMode.SUBSELECT)
     @Builder.Default
     List<IndustrialSolidWasteStat> industrialSolidWasteStats = new ArrayList<>();
 
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "wasteManagementData")
     @JsonManagedReference
+    @Fetch(FetchMode.SUBSELECT)
     @Builder.Default
     List<RecycleIndustrialWasteStat> recycleIndustrialWasteStats = new ArrayList<>();
 
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "wasteManagementData")
     @JsonManagedReference
+    @Fetch(FetchMode.SUBSELECT)
     @Builder.Default
     List<OtherSolidWasteStat> otherSolidWasteStats = new ArrayList<>();
 
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "wasteManagementData")
     @JsonManagedReference
+    @Fetch(FetchMode.SUBSELECT)
     @Builder.Default
     List<HazardousWasteStat> hazardousWasteStats = new ArrayList<>();
 
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "wasteManagementData")
     @JsonManagedReference
+    @Fetch(FetchMode.SUBSELECT)
     @Builder.Default
     List<ExportedHwStat> exportedHwStats = new ArrayList<>();
 
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "wasteManagementData")
     @JsonManagedReference
+    @Fetch(FetchMode.SUBSELECT)
     @Builder.Default
     List<SelfTreatedHwStat> selfTreatedHwStats = new ArrayList<>();
 
@@ -82,6 +91,7 @@ public class WasteManagementData {
 
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "wasteManagementData")
     @JsonManagedReference
+    @Fetch(FetchMode.SUBSELECT)
     @Builder.Default
     List<PopInventoryStat> popInventoryStats = new ArrayList<>();
 

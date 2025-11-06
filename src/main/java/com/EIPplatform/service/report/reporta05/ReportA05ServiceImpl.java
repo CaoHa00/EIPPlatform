@@ -15,6 +15,9 @@ import com.EIPplatform.model.entity.report.wastemanagement.WasteManagementData;
 import com.EIPplatform.model.entity.report.wastewatermanager.WasteWaterData;
 import com.EIPplatform.model.entity.user.businessInformation.BusinessDetail;
 import com.EIPplatform.repository.report.ReportA05Repository;
+import com.EIPplatform.repository.report.airemmissionmanagement.AirEmissionDataRepository;
+import com.EIPplatform.repository.report.wastemanagement.WasteManagementDataRepository;
+import com.EIPplatform.repository.report.wastewatermanager.WasteWaterRepository;
 import com.EIPplatform.repository.user.BusinessDetailRepository;
 import com.EIPplatform.service.report.reportcache.ReportCacheService;
 import jakarta.transaction.Transactional;
@@ -27,6 +30,7 @@ import lombok.extern.slf4j.Slf4j;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.stereotype.Service;
@@ -46,6 +50,9 @@ public class ReportA05ServiceImpl implements ReportA05Service {
     AirEmissionDataMapper airEmissionDataMapper;
     WasteWaterDataMapper wasteWaterDataMapper;
     ExceptionFactory exceptionFactory;
+    WasteManagementDataRepository wasteManagementDataRepository;
+    AirEmissionDataRepository airEmissionDataRepository;
+    WasteWaterRepository wasteWaterDataRepository;
 
     @Override
     @Transactional
@@ -85,27 +92,39 @@ public class ReportA05ServiceImpl implements ReportA05Service {
     }
 
     @Override
+    @Transactional
     public ReportA05DTO getReportById(UUID reportId) {
-        ReportA05 report = reportA05Repository.findByReportIdWithFullDetails(reportId)
-                .orElseThrow(() -> exceptionFactory.createNotFoundException("ReportA05", reportId, ReportError.REPORT_NOT_FOUND));
+        // 1. Fetch basic report
+        ReportA05 report = reportA05Repository.findByReportIdWithBasic(reportId)
+                .orElseThrow(() -> exceptionFactory.createNotFoundException(
+                        "ReportA05", reportId, ReportError.REPORT_NOT_FOUND));
 
-        WasteWaterDataDTO wasteWaterDataDTO = report.getWasteWaterData() != null
-                ? wasteWaterDataMapper.toDto(report.getWasteWaterData())
-                : null;
+        // 2. Fetch WasteWaterData với collections
+        WasteWaterDataDTO wasteWaterDataDTO = wasteWaterDataRepository
+                .findByReportIdWithCollections(reportId)
+                .map(wasteWaterDataMapper::toDto)
+                .orElse(null);
 
-        WasteManagementDataDTO wasteManagementDataDTO = report.getWasteManagementData() != null
-                ? wasteManagementDataMapper.toDto(report.getWasteManagementData())
-                : null;
+        // 3. Fetch WasteManagementData với collections
+        WasteManagementDataDTO wasteManagementDataDTO = wasteManagementDataRepository
+                .findByReportIdWithCollections(reportId)
+                .map(wasteManagementDataMapper::toDto)
+                .orElse(null);
 
-        AirEmissionDataDTO airEmissionDataDTO = report.getAirEmissionData() != null
-                ? airEmissionDataMapper.toDto(report.getAirEmissionData())
-                : null;
+        // 4. Fetch AirEmissionData với collections
+        AirEmissionDataDTO airEmissionDataDTO = airEmissionDataRepository
+                .findByReportIdWithCollections(reportId)
+                .map(airEmissionDataMapper::toDto)
+                .orElse(null);
 
+        // 5. Build DTO
         return ReportA05DTO.builder()
                 .reportId(report.getReportId())
                 .reportCode(report.getReportCode())
-                .businessDetailId(report.getBusinessDetail() != null ? report.getBusinessDetail().getBusinessDetailId() : null)
-                .facilityName(report.getBusinessDetail() != null ? report.getBusinessDetail().getFacilityName() : null)
+                .businessDetailId(report.getBusinessDetail() != null ?
+                        report.getBusinessDetail().getBusinessDetailId() : null)
+                .facilityName(report.getBusinessDetail() != null ?
+                        report.getBusinessDetail().getFacilityName() : null)
                 .reportYear(report.getReportYear())
                 .reportingPeriod(report.getReportingPeriod())
                 .wasteWaterData(wasteWaterDataDTO)
