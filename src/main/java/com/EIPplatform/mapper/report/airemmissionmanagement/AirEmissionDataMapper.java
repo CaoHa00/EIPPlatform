@@ -18,7 +18,7 @@ public interface AirEmissionDataMapper {
 
     @Mapping(target = "airEmissionDataId", ignore = true)
     @Mapping(target = "report", ignore = true)
-    @Mapping(target = "airAutoStationMapFilePath", ignore = true)
+    @Mapping(source = "airAutoStationMap", target = "airAutoStationMapFilePath")
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "updatedAt", ignore = true)
     @Mapping(target = "airMonitoringExceedances", source = "airMonitoringExceedances")

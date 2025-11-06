@@ -97,7 +97,7 @@ public class ReportA05ServiceImpl implements ReportA05Service {
                 .reportId(saved.getReportId())
                 .reportCode(saved.getReportCode())
                 .businessDetailId(businessDetail != null ? businessDetail.getBusinessDetailId() : null)
-                .companyName(businessDetail != null ? businessDetail.getCompanyName() : null)
+                .facilityName(businessDetail != null ? businessDetail.getFacilityName() : null)
                 .reportYear(saved.getReportYear())
                 .reportingPeriod(saved.getReportingPeriod())
                 .completionPercentage(saved.getCompletionPercentage())
@@ -107,17 +107,33 @@ public class ReportA05ServiceImpl implements ReportA05Service {
 
     @Override
     public ReportA05DTO getReportById(UUID reportId) {
-        ReportA05 report = reportA05Repository.findById(reportId)
+        ReportA05 report = reportA05Repository.findByReportIdWithFullDetails(reportId)
                 .orElseThrow(() -> exceptionFactory.createNotFoundException("ReportA05", reportId,
                         ReportError.REPORT_NOT_FOUND));
+
+        WasteWaterDataDTO wasteWaterDataDTO = report.getWasteWaterData() != null
+                ? wasteWaterDataMapper.toDto(report.getWasteWaterData())
+                : null;
+
+        WasteManagementDataDTO wasteManagementDataDTO = report.getWasteManagementData() != null
+                ? wasteManagementDataMapper.toDto(report.getWasteManagementData())
+                : null;
+
+        AirEmissionDataDTO airEmissionDataDTO = report.getAirEmissionData() != null
+                ? airEmissionDataMapper.toDto(report.getAirEmissionData())
+                : null;
+
         return ReportA05DTO.builder()
                 .reportId(report.getReportId())
                 .reportCode(report.getReportCode())
                 .businessDetailId(
                         report.getBusinessDetail() != null ? report.getBusinessDetail().getBusinessDetailId() : null)
-                .companyName(report.getBusinessDetail() != null ? report.getBusinessDetail().getCompanyName() : null)
+                .facilityName(report.getBusinessDetail() != null ? report.getBusinessDetail().getFacilityName() : null)
                 .reportYear(report.getReportYear())
                 .reportingPeriod(report.getReportingPeriod())
+                .wasteWaterData(wasteWaterDataDTO)
+                .wasteManagementData(wasteManagementDataDTO)
+                .airEmissionData(airEmissionDataDTO)
                 .reviewNotes(report.getReviewNotes())
                 .inspectionRemedyReport(report.getInspectionRemedyReport())
                 .completionPercentage(report.getCompletionPercentage())
@@ -194,7 +210,7 @@ public class ReportA05ServiceImpl implements ReportA05Service {
         return ReportA05DTO.builder()
                 .reportCode(saved.getReportCode())
                 .businessDetailId(bd != null ? bd.getBusinessDetailId() : null)
-                .companyName(bd != null ? bd.getCompanyName() : null)
+                .facilityName(bd != null ? bd.getFacilityName() : null)
                 .reportYear(saved.getReportYear())
                 .reportingPeriod(saved.getReportingPeriod())
                 .reviewNotes(saved.getReviewNotes())
@@ -207,7 +223,7 @@ public class ReportA05ServiceImpl implements ReportA05Service {
     @Override
     @Transactional
     public InspectionRemedyResponse updateInspectionRemedyReport(UUID reportId,
-            UpdateInspectionRemedyReportRequest request) {
+            @Valid UpdateInspectionRemedyReportRequest request) {
         // Validate report tồn tại
         ReportA05 report = reportA05Repository.findById(reportId)
                 .orElseThrow(() -> exceptionFactory.createNotFoundException("ReportA05", reportId,
