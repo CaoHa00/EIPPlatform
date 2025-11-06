@@ -8,6 +8,7 @@ import com.EIPplatform.exception.ErrorCodeInterface;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.experimental.FieldDefaults;
+
 @Getter
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public enum SystemError implements ErrorCodeInterface {
@@ -27,6 +28,15 @@ public enum SystemError implements ErrorCodeInterface {
     EMPTY_DATA_FILE(10016, "No data found in file", HttpStatus.BAD_REQUEST),
     FILE_PROCESSING_ERROR(10017, "Error processing file", HttpStatus.INTERNAL_SERVER_ERROR),
     INVALID_EXCEL_FILE(10018, "Invalid Excel file format", HttpStatus.BAD_REQUEST),
+
+    // Database constraint errors
+    SQL_CONSTRAINT_VIOLATION(10019, "Database constraint violation: %s", HttpStatus.BAD_REQUEST),
+    NULL_VALUE_NOT_ALLOWED(10020, "Field '%s' cannot be null", HttpStatus.BAD_REQUEST),
+    FOREIGN_KEY_VIOLATION(10021, "Foreign key constraint violated: %s", HttpStatus.BAD_REQUEST),
+    UNIQUE_CONSTRAINT_VIOLATION(10022, "Duplicate value found: %s", HttpStatus.BAD_REQUEST),
+    PRIMARY_KEY_VIOLATION(10023, "Primary key constraint violated: %s", HttpStatus.BAD_REQUEST),
+    DATABASE_OPERATION_FAILED(10024, "Database operation failed: %s", HttpStatus.INTERNAL_SERVER_ERROR),
+
     BATCH_SAVE_FAILED(10601, "Failed to save batch", HttpStatus.INTERNAL_SERVER_ERROR),
     FAILED_TO_SEND_EMAIL(10602, "Failed to send email", HttpStatus.INTERNAL_SERVER_ERROR);
 
@@ -40,4 +50,8 @@ public enum SystemError implements ErrorCodeInterface {
         this.statusCode = statusCode;
     }
 
+    // Method to format message with parameters
+    public String getFormattedMessage(Object... params) {
+        return String.format(this.message, params);
+    }
 }

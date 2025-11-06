@@ -17,11 +17,11 @@ import lombok.NoArgsConstructor;
 public class BusinessDetailResponse {
 
     UUID businessDetailId;
-    String companyName;
+    String facilityName;
     String legalRepresentative;
     String phoneNumber;
-    String location;
-    String industrySector;
+    String address;
+    String activityType;
     String scaleCapacity;
     String ISO_certificate_14001;
     String isoCertificateFilePath;
