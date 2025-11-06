@@ -31,8 +31,13 @@ public interface ReportA05Service {
      */
     InspectionRemedyResponse updateInspectionRemedyReport(UUID reportId, UpdateInspectionRemedyReportRequest request);
 
-    // TODO: Thêm các method delete section nếu cần (ví dụ: xóa draft data của một phần cụ thể)
+    // TODO: Thêm các method delete section nếu cần (ví dụ: xóa draft data của một
+    // phần cụ thể)
     // void deleteDraftWasteWaterData(UUID reportId);
     // void deleteDraftWasteManagementData(UUID reportId);
     // void deleteDraftAirEmissionData(UUID reportId);
+
+    // Generate report file
+    byte[] generateReportFile(UUID reportId) throws Exception;
+
 }

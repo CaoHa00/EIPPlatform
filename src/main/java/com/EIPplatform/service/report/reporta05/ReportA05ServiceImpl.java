@@ -24,11 +24,31 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStream;
 import java.math.BigDecimal;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
 
+import org.apache.poi.xwpf.usermodel.XWPFDocument;
+import org.apache.poi.xwpf.usermodel.XWPFParagraph;
+import org.apache.poi.xwpf.usermodel.XWPFRun;
+import org.apache.poi.xwpf.usermodel.XWPFTable;
+import org.apache.poi.xwpf.usermodel.XWPFTableCell;
+import org.apache.poi.xwpf.usermodel.XWPFTableRow;
+import org.docx4j.model.datastorage.migration.VariablePrepare;
+import org.docx4j.model.fields.merge.MailMerger;
+import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
@@ -55,7 +75,8 @@ public class ReportA05ServiceImpl implements ReportA05Service {
         if (request.getBusinessDetailId() != null) {
             businessDetail = businessDetailRepository
                     .findById(request.getBusinessDetailId())
-                    .orElseThrow(() -> exceptionFactory.createNotFoundException("BusinessDetail", request.getBusinessDetailId(), ReportError.BUSINESS_NOT_FOUND));
+                    .orElseThrow(() -> exceptionFactory.createNotFoundException("BusinessDetail",
+                            request.getBusinessDetailId(), ReportError.BUSINESS_NOT_FOUND));
         }
 
         String reportCode = "RPT-" + java.util.UUID.randomUUID().toString().substring(0, 8).toUpperCase();
@@ -87,11 +108,13 @@ public class ReportA05ServiceImpl implements ReportA05Service {
     @Override
     public ReportA05DTO getReportById(UUID reportId) {
         ReportA05 report = reportA05Repository.findById(reportId)
-                .orElseThrow(() -> exceptionFactory.createNotFoundException("ReportA05", reportId, ReportError.REPORT_NOT_FOUND));
+                .orElseThrow(() -> exceptionFactory.createNotFoundException("ReportA05", reportId,
+                        ReportError.REPORT_NOT_FOUND));
         return ReportA05DTO.builder()
                 .reportId(report.getReportId())
                 .reportCode(report.getReportCode())
-                .businessDetailId(report.getBusinessDetail() != null ? report.getBusinessDetail().getBusinessDetailId() : null)
+                .businessDetailId(
+                        report.getBusinessDetail() != null ? report.getBusinessDetail().getBusinessDetailId() : null)
                 .companyName(report.getBusinessDetail() != null ? report.getBusinessDetail().getCompanyName() : null)
                 .reportYear(report.getReportYear())
                 .reportingPeriod(report.getReportingPeriod())
@@ -150,7 +173,8 @@ public class ReportA05ServiceImpl implements ReportA05Service {
         }
 
         ReportA05 report = reportA05Repository.findById(reportId)
-                .orElseThrow(() -> exceptionFactory.createNotFoundException("ReportA05", reportId, ReportError.REPORT_NOT_FOUND));
+                .orElseThrow(() -> exceptionFactory.createNotFoundException("ReportA05", reportId,
+                        ReportError.REPORT_NOT_FOUND));
 
         saveOrUpdateWasteWaterData(report, draftData);
         saveOrUpdateWasteManagementData(report, draftData);
@@ -182,17 +206,22 @@ public class ReportA05ServiceImpl implements ReportA05Service {
 
     @Override
     @Transactional
-    public InspectionRemedyResponse updateInspectionRemedyReport(UUID reportId, @Valid UpdateInspectionRemedyReportRequest request) {
+    public InspectionRemedyResponse updateInspectionRemedyReport(UUID reportId,
+            UpdateInspectionRemedyReportRequest request) {
         // Validate report tồn tại
         ReportA05 report = reportA05Repository.findById(reportId)
-                .orElseThrow(() -> exceptionFactory.createNotFoundException("ReportA05", reportId, ReportError.REPORT_NOT_FOUND));
+                .orElseThrow(() -> exceptionFactory.createNotFoundException("ReportA05", reportId,
+                        ReportError.REPORT_NOT_FOUND));
 
-        // Validate request không null và trường chính không null (nếu cần, nhưng @Size đã handle length)
+        // Validate request không null và trường chính không null (nếu cần, nhưng @Size
+        // đã handle length)
         if (request == null) {
-            throw exceptionFactory.createValidationException("UpdateInspectionRemedyReportRequest", "request", null, ReportError.INVALID_REQUEST);
+            throw exceptionFactory.createValidationException("UpdateInspectionRemedyReportRequest", "request", null,
+                    ReportError.INVALID_REQUEST);
         }
         if (Objects.isNull(request.getInspectionRemedyReport())) {
-            throw exceptionFactory.createValidationException("UpdateInspectionRemedyReportRequest", "inspectionRemedyReport", null, ReportError.FIELD_REQUIRED);
+            throw exceptionFactory.createValidationException("UpdateInspectionRemedyReportRequest",
+                    "inspectionRemedyReport", null, ReportError.FIELD_REQUIRED);
         }
 
         // Update trường
@@ -214,14 +243,18 @@ public class ReportA05ServiceImpl implements ReportA05Service {
 
     private int calculateCompletionPercentage(ReportA05DraftDTO draft) {
         int score = 0;
-        if (isSectionComplete(draft.getWasteWaterData())) score += 33;
-        if (isSectionComplete(draft.getWasteManagementData())) score += 33;
-        if (isSectionComplete(draft.getAirEmissionData())) score += 34;
+        if (isSectionComplete(draft.getWasteWaterData()))
+            score += 33;
+        if (isSectionComplete(draft.getWasteManagementData()))
+            score += 33;
+        if (isSectionComplete(draft.getAirEmissionData()))
+            score += 34;
         return score;
     }
 
     private boolean isSectionComplete(Object sectionDto) {
-        if (sectionDto == null) return false;
+        if (sectionDto == null)
+            return false;
 
         return true;
     }
@@ -239,17 +272,18 @@ public class ReportA05ServiceImpl implements ReportA05Service {
     }
 
     private void saveOrUpdateWasteWaterData(ReportA05 report, ReportA05DraftDTO draftData) {
-        WasteWaterDataDTO dto = draftData.getWasteWaterData();  // Response DTO từ draft
-        if (dto == null) return;
+        WasteWaterDataDTO dto = draftData.getWasteWaterData(); // Response DTO từ draft
+        if (dto == null)
+            return;
 
         WasteWaterData entity;
         if (report.getWasteWaterData() != null && report.getWasteWaterData().getWwId() != null) {
             // Update: Merge partial từ DTO vào entity hiện có
             entity = report.getWasteWaterData();
-            wasteWaterDataMapper.updateEntityFromDto(dto, entity);  // ✅ Method cho WasteWaterDataDTO
+            wasteWaterDataMapper.updateEntityFromDto(dto, entity); // ✅ Method cho WasteWaterDataDTO
         } else {
             // Create: Chuyển từ response DTO sang entity mới
-            entity = wasteWaterDataMapper.dtoToEntity(dto);  // ✅ Đúng method: DTO → entity
+            entity = wasteWaterDataMapper.dtoToEntity(dto); // ✅ Đúng method: DTO → entity
             entity.setReport(report);
             // @AfterMapping trong mapper sẽ handle null lists và parent references
         }
@@ -258,40 +292,129 @@ public class ReportA05ServiceImpl implements ReportA05Service {
     }
 
     private void saveOrUpdateWasteManagementData(ReportA05 report, ReportA05DraftDTO draftData) {
-        WasteManagementDataDTO dto = draftData.getWasteManagementData();  // Response DTO từ draft
-        if (dto == null) return;
+        WasteManagementDataDTO dto = draftData.getWasteManagementData(); // Response DTO từ draft
+        if (dto == null)
+            return;
 
         WasteManagementData entity;
         if (report.getWasteManagementData() != null && report.getWasteManagementData().getWmId() != null) {
             // Update: Merge partial từ DTO vào entity hiện có
             entity = report.getWasteManagementData();
-            wasteManagementDataMapper.updateEntityFromDto(dto, entity);  // ✅ Method cho WasteManagementDataDTO
+            wasteManagementDataMapper.updateEntityFromDto(dto, entity); // ✅ Method cho WasteManagementDataDTO
         } else {
             // Create: Chuyển từ response DTO sang entity mới
-            entity = wasteManagementDataMapper.dtoToEntity(dto);  // ✅ Đúng method: DTO → entity
+            entity = wasteManagementDataMapper.dtoToEntity(dto); // ✅ Đúng method: DTO → entity
             entity.setReport(report);
             // @AfterMapping trong mapper sẽ handle null lists và parent references
         }
         report.setWasteManagementData(entity);
-        // Sau đó save entity qua repo nếu cần (ví dụ: wasteManagementDataRepository.save(entity))
+        // Sau đó save entity qua repo nếu cần (ví dụ:
+        // wasteManagementDataRepository.save(entity))
     }
 
     private void saveOrUpdateAirEmissionData(ReportA05 report, ReportA05DraftDTO draftData) {
-        AirEmissionDataDTO dto = draftData.getAirEmissionData();  // Đây là response DTO từ draft
-        if (dto == null) return;
+        AirEmissionDataDTO dto = draftData.getAirEmissionData(); // Đây là response DTO từ draft
+        if (dto == null)
+            return;
 
         AirEmissionData entity;
         if (report.getAirEmissionData() != null && report.getAirEmissionData().getAirEmissionDataId() != null) {
             // Update: Merge partial từ DTO vào entity hiện có
             entity = report.getAirEmissionData();
-            airEmissionDataMapper.updateEntityFromDto(dto, entity);  // Method mới cho partial update từ DTO
+            airEmissionDataMapper.updateEntityFromDto(dto, entity); // Method mới cho partial update từ DTO
         } else {
             // Create: Chuyển từ response DTO sang entity mới (KHÔNG dùng toDto!)
-            entity = airEmissionDataMapper.dtoToEntity(dto);  // ✅ Đúng method: DTO → entity
+            entity = airEmissionDataMapper.dtoToEntity(dto); // ✅ Đúng method: DTO → entity
             entity.setReport(report);
             // @AfterMapping trong mapper sẽ handle null lists nếu cần
         }
         report.setAirEmissionData(entity);
-        // Sau đó save entity qua repo nếu chưa (ví dụ: airEmissionDataRepository.save(entity))
+        // Sau đó save entity qua repo nếu chưa (ví dụ:
+        // airEmissionDataRepository.save(entity))
     }
+
+    @Override
+    public byte[] generateReportFile(UUID reportId) throws Exception {
+        ReportA05 report = reportA05Repository.findById(reportId)
+                .orElseThrow(() -> exceptionFactory.createNotFoundException("ReportA05",
+                        reportId,
+                        ReportError.REPORT_NOT_FOUND));
+        BusinessDetail business = report.getBusinessDetail();
+        if (business == null) {
+            throw exceptionFactory.createCustomException(ReportError.BUSINESS_NOT_FOUND);
+        }
+        // 3️⃣ Map dữ liệu doanh nghiệp sang map key-value cho template
+        Map<String, String> data = new HashMap<>();
+        data.put("companyName", business.getCompanyName());
+        data.put("address", business.getLocation());
+        data.put("phoneNumber", business.getPhoneNumber());
+        data.put("legalPresentative", business.getLegalRepresentative());
+        data.put("industrySector", business.getIndustrySector());
+        data.put("scaleCapacity", business.getScaleCapacity());
+        data.put("ISO_certificate_14001",
+                business.getISO_certificate_14001() != null ? business.getISO_certificate_14001() : "");
+        data.put("businessRegistrationNumber",
+                business.getBusinessRegistrationNumber());
+        data.put("taxCode", business.getTaxCode());
+        data.put("operationType", business.getOperationType().name());
+        data.put("seasonalDescription",
+                business.getSeasonalDescription() != null ? business.getSeasonalDescription()
+                        : "");
+
+        Resource resource = new ClassPathResource("templates/reportA05/ReportA05_template.docx");
+        System.out.println("File exists? " + resource.exists());
+        try (InputStream fis = resource.getInputStream();
+                XWPFDocument doc = new XWPFDocument(fis);
+                ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
+
+            for (XWPFParagraph paragraph : doc.getParagraphs()) {
+                replacePlaceholders(paragraph, data);
+            }
+            for (XWPFTable table : doc.getTables()) {
+                for (XWPFTableRow row : table.getRows()) {
+                    for (XWPFTableCell cell : row.getTableCells()) {
+                        for (XWPFParagraph p : cell.getParagraphs()) {
+                            replacePlaceholders(p, data);
+                        }
+                    }
+                }
+            }
+
+            // ✅ Ghi ra byte array
+            doc.write(baos);
+            byte[] result = baos.toByteArray();
+
+            // ✅ Ghi ra file vật lý để kiểm tra
+            String outputDir = "D:\\Cao Ha\\eipFolder\\generated\\reports"; // có thể
+            // config trong
+            // application.properties
+            Files.createDirectories(Paths.get(outputDir)); // tự tạo nếu chưa có
+
+            String fileName = String.format("%s/ReportA05_%s_%s.docx",
+                    outputDir,
+                    business.getCompanyName().replaceAll("[^a-zA-Z0-9]", "_"),
+                    reportId);
+
+            Files.write(Paths.get(fileName), result);
+
+            System.out.println("✅ File generated: " + fileName);
+            return result;
+        }
+    }
+
+    private void replacePlaceholders(XWPFParagraph paragraph, Map<String, String> data) {
+        for (XWPFRun run : paragraph.getRuns()) {
+            String text = run.getText(0);
+            if (text != null) {
+                for (Map.Entry<String, String> entry : data.entrySet()) {
+                    String placeholder = "{{" + entry.getKey() + "}}";
+                    if (text.contains(placeholder)) {
+                        text = text.replace(placeholder, entry.getValue());
+                    }
+                }
+                run.setText(text, 0);
+            }
+        }
+    }
+
 }
