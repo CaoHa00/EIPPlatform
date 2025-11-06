@@ -1,6 +1,7 @@
 package com.EIPplatform.repository.report.airemmissionmanagement;
 
 import com.EIPplatform.model.entity.report.airemmissionmanagement.AirEmissionData;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -21,4 +22,7 @@ public interface AirEmissionDataRepository extends JpaRepository<AirEmissionData
 
     @Query("SELECT CASE WHEN COUNT(a) > 0 THEN true ELSE false END FROM AirEmissionData a JOIN a.report r WHERE r.reportId = :reportId")
     boolean existsByReportId(@Param("reportId") UUID reportId);
+
+    @Query("SELECT a FROM AirEmissionData a WHERE a.report.reportId = :reportId")
+    Optional<AirEmissionData> findByReportIdWithCollections(@Param("reportId") UUID reportId);
 }
