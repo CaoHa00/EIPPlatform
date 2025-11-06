@@ -3,6 +3,7 @@ package com.EIPplatform.repository.report.wastemanagement;
 import java.util.Optional;
 import java.util.UUID;
 
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -22,4 +23,7 @@ public interface WasteManagementDataRepository extends JpaRepository<WasteManage
 
     @Query("SELECT CASE WHEN COUNT(w) > 0 THEN true ELSE false END FROM WasteManagementData w JOIN w.report r WHERE r.reportId = :reportId")
     boolean existsByReportId(@Param("reportId") UUID reportId);
+
+    @Query("SELECT w FROM WasteManagementData w WHERE w.report.reportId = :reportId")
+    Optional<WasteManagementData> findByReportIdWithCollections(@Param("reportId") UUID reportId);
 }

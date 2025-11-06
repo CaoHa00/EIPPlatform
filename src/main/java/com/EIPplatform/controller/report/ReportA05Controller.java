@@ -77,11 +77,11 @@ public class ReportA05Controller {
     /**
      * Cập nhật inspection remedy report cho report
      */
-    @PatchMapping("/{reportId}/inspection-remedy-report")
+    @PutMapping("/{reportId}/inspection-remedy-report")
     public ResponseEntity<InspectionRemedyResponse> updateInspectionRemedyReport(
             @PathVariable UUID reportId,
             @Valid @RequestBody UpdateInspectionRemedyReportRequest request) {
-        log.info("PATCH /api/v1/reports/{}/inspection-remedy-report - Updating inspection remedy report", reportId);
+        log.info("PUT /api/v1/reports/{}/inspection-remedy-report - Updating inspection remedy report", reportId);
         InspectionRemedyResponse updated = reportA05Service.updateInspectionRemedyReport(reportId, request);
         return ResponseEntity.ok(updated);
     }

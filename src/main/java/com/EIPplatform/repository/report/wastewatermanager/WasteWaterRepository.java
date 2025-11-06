@@ -1,5 +1,6 @@
 package com.EIPplatform.repository.report.wastewatermanager;
 
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -25,4 +26,7 @@ public interface WasteWaterRepository extends JpaRepository<WasteWaterData, Long
 
     @Query("SELECT ww FROM WasteWaterData ww LEFT JOIN FETCH ww.report r ORDER BY r.reportYear DESC")
     List<WasteWaterData> findAllWithReport();
+
+    @Query("SELECT w FROM WasteWaterData w WHERE w.report.reportId = :reportId")
+    Optional<WasteWaterData> findByReportIdWithCollections(@Param("reportId") UUID reportId);
 }

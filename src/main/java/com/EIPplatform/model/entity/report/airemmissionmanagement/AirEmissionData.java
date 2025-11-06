@@ -6,6 +6,8 @@ import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.math.BigDecimal;
@@ -68,6 +70,7 @@ public class AirEmissionData {
 
     @OneToMany(mappedBy = "airEmissionData", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
+    @Fetch(FetchMode.SUBSELECT)
     @JsonManagedReference
     List<AirMonitoringExceedance> airMonitoringExceedances = new ArrayList<>();
 
@@ -106,11 +109,13 @@ public class AirEmissionData {
 
     @OneToMany(mappedBy = "airEmissionData", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
+    @Fetch(FetchMode.SUBSELECT)
     @JsonManagedReference
     List<AirAutoMonitoringStat> airAutoMonitoringStats = new ArrayList<>();
 
     @OneToMany(mappedBy = "airEmissionData", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
+    @Fetch(FetchMode.SUBSELECT)
     @JsonManagedReference
     List<AirAutoMonitoringIncident> airAutoMonitoringIncidents = new ArrayList<>();
 
@@ -133,6 +138,7 @@ public class AirEmissionData {
 
     @OneToMany(mappedBy = "airEmissionData", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
+    @Fetch(FetchMode.SUBSELECT)
     @JsonManagedReference
     List<AirAutoQcvnExceedance> airAutoQcvnExceedances = new ArrayList<>();
 
