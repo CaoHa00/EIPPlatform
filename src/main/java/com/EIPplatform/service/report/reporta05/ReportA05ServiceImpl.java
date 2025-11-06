@@ -361,11 +361,11 @@ public class ReportA05ServiceImpl implements ReportA05Service {
         }
         // 3️⃣ Map dữ liệu doanh nghiệp sang map key-value cho template
         Map<String, String> data = new HashMap<>();
-        data.put("companyName", business.getCompanyName());
-        data.put("address", business.getLocation());
+        data.put("companyName", business.getFacilityName());
+        data.put("address", business.getAddress());
         data.put("phoneNumber", business.getPhoneNumber());
         data.put("legalPresentative", business.getLegalRepresentative());
-        data.put("industrySector", business.getIndustrySector());
+        data.put("activityType", business.getActivityType());
         data.put("scaleCapacity", business.getScaleCapacity());
         data.put("ISO_certificate_14001",
                 business.getISO_certificate_14001() != null ? business.getISO_certificate_14001() : "");
@@ -408,7 +408,7 @@ public class ReportA05ServiceImpl implements ReportA05Service {
 
             String fileName = String.format("%s/ReportA05_%s_%s.docx",
                     outputDir,
-                    business.getCompanyName().replaceAll("[^a-zA-Z0-9]", "_"),
+                    business.getFacilityName().replaceAll("[^a-zA-Z0-9]", "_"),
                     reportId);
 
             Files.write(Paths.get(fileName), result);
