@@ -1,10 +1,13 @@
 package com.EIPplatform.exception;
 
+import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.EIPplatform.exception.handlers.SqlExceptionHandler;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
@@ -39,6 +42,29 @@ public class GlobalExceptionHandler {
         }
 
         return handleGenericException(exception);
+    }
+
+    @ExceptionHandler(SQLException.class)
+    public ResponseEntity<ApiResponse<?>> handleSqlException(SQLException exception) {
+        return new SqlExceptionHandler().handle(exception);
+    }
+
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ResponseEntity<ApiResponse<?>> handleDataIntegrityViolation(
+            DataIntegrityViolationException exception) {
+
+        // Extract root cause (usually SQLException)
+        Throwable rootCause = exception.getRootCause();
+        if (rootCause instanceof SQLException) {
+            return new SqlExceptionHandler().handle((SQLException) rootCause);
+        }
+
+        ApiResponse<?> apiResponse = ApiResponse.builder()
+                .code(SystemError.SQL_CONSTRAINT_VIOLATION.getCode())
+                .message("Data integrity violation: " + exception.getMessage())
+                .build();
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(apiResponse);
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)

@@ -12,19 +12,19 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class BusinessDetailDTO {
     @NotBlank(message = "FIELD_REQUIRED")
-    String companyName;
+    String facilityName;
 
     @NotBlank(message = "FIELD_REQUIRED")
-    String legalPresentative;
+    String legalRepresentative;
 
     @NotBlank(message = "FIELD_REQUIRED")
     String phoneNumber;
 
     @NotBlank(message = "FIELD_REQUIRED")
-    String location;
+    String address;
 
     @NotBlank(message = "FIELD_REQUIRED")
-    String industrySector;
+    String activityType;
 
     @NotBlank(message = "FIELD_REQUIRED")
     String scaleCapacity;

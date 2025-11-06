@@ -15,10 +15,10 @@ public interface PopInventoryStatMapper {
 
     @Mapping(target = "popInventoryId", ignore = true)
     @Mapping(target = "wasteManagementData", ignore = true)
-    @Mapping(target = "casCode", ignore = true) // Optional
-    @Mapping(target = "importDate", ignore = true) // Optional
-    @Mapping(target = "concentration", ignore = true) // Optional
-    @Mapping(target = "complianceResult", ignore = true) // Optional
+    @Mapping(source = "casCode", target = "casCode")
+    @Mapping(source = "importDate", target = "importDate")
+    @Mapping(source = "concentration", target = "concentration")
+    @Mapping(source = "complianceResult", target = "complianceResult")
     PopInventoryStat toEntity(PopInventoryStatCreateDTO dto);
 
     @Mapping(source = "popInventoryId", target = "popInventoryId")
@@ -28,8 +28,12 @@ public interface PopInventoryStatMapper {
 
     default void updateFromDto(PopInventoryStatCreateDTO dto, @org.mapstruct.MappingTarget PopInventoryStat entity) {
         entity.setPopName(dto.getPopName());
+        entity.setCasCode(dto.getCasCode());
+        entity.setImportDate(dto.getImportDate());
+        entity.setConcentration(dto.getConcentration());
         entity.setImportVolume(dto.getImportVolume());
         entity.setVolumeUsed(dto.getVolumeUsed());
         entity.setVolumeStocked(dto.getVolumeStocked());
+        entity.setComplianceResult(dto.getComplianceResult());
     }
 }

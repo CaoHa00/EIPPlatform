@@ -20,7 +20,7 @@ public class ReportA05DTO {
     UUID reportId;
     String reportCode;
     UUID businessDetailId;
-    String companyName;
+    String facilityName;
     Integer reportYear;
     String reportingPeriod;
     String reviewNotes;

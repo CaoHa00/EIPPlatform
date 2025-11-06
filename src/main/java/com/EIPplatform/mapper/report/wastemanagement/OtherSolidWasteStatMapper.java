@@ -15,8 +15,8 @@ public interface OtherSolidWasteStatMapper {
 
     @Mapping(target = "otherId", ignore = true)
     @Mapping(target = "wasteManagementData", ignore = true)
-    @Mapping(target = "selfTreatmentMethod", ignore = true) // Optional
-    @Mapping(target = "receiverOrg", ignore = true) // Optional
+    @Mapping(source = "selfTreatmentMethod", target = "selfTreatmentMethod")
+    @Mapping(source = "receiverOrg", target = "receiverOrg")
     OtherSolidWasteStat toEntity(OtherSolidWasteStatCreateDTO dto);
 
     @Mapping(source = "otherId", target = "otherId")

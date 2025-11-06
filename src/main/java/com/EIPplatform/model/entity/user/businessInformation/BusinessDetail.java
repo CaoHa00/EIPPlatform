@@ -42,7 +42,7 @@ public class BusinessDetail {
     UUID businessDetailId;
 
     @Column(nullable = false, unique = true)
-    String companyName;
+    String facilityName;
 
     @Column(nullable = false)
     String legalRepresentative;
@@ -51,10 +51,10 @@ public class BusinessDetail {
     String phoneNumber;
 
     @Column(nullable = false)
-    String location;
+    String address;
 
     @Column(nullable = false)
-    String industrySector;
+    String activityType;
 
     @Column(nullable = false)
     String scaleCapacity;

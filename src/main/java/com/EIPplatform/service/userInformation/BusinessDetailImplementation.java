@@ -117,14 +117,14 @@ public class BusinessDetailImplementation implements BusinessDetailInterface {
             throw exceptionFactory.createCustomException(
                     "BusinessDetail",
                     List.of("operation", "companyName"),
-                    List.of("save", dto.getCompanyName()),
+                    List.of("save", dto.getFacilityName()),
                     UserError.ID_GENERATION_FAILED
             );
         }
         userAccountRepository.flush();
         BusinessDetailResponse response = businessDetailMapper.toResponse(entity);
         log.info("Created BusinessDetail - ID: {}, Company: {}, TaxCode: {}",
-                entity.getBusinessDetailId(), entity.getCompanyName(), entity.getTaxCode());
+                entity.getBusinessDetailId(), entity.getFacilityName(), entity.getTaxCode());
         return response;
     }
 
@@ -139,11 +139,11 @@ public class BusinessDetailImplementation implements BusinessDetailInterface {
                 ));
         businessDetailUtils.validateOperationDetails(dto.getOperationType(), dto.getSeasonalDescription());
         businessDetailUtils.validateUniqueFields(dto, entity.getBusinessDetailId());
-        entity.setCompanyName(dto.getCompanyName());
-        entity.setLegalRepresentative(dto.getLegalPresentative());
+        entity.setFacilityName(dto.getFacilityName());
+        entity.setLegalRepresentative(dto.getLegalRepresentative());
         entity.setPhoneNumber(dto.getPhoneNumber());
-        entity.setLocation(dto.getLocation());
-        entity.setIndustrySector(dto.getIndustrySector());
+        entity.setAddress(dto.getAddress());
+        entity.setActivityType(dto.getActivityType());
         entity.setScaleCapacity(dto.getScaleCapacity());
         entity.setISO_certificate_14001(dto.getISO_certificate_14001());
         entity.setBusinessRegistrationNumber(dto.getBusinessRegistrationNumber());
@@ -165,7 +165,7 @@ public class BusinessDetailImplementation implements BusinessDetailInterface {
         entity = businessDetailRepository.save(entity);
         BusinessDetailResponse response = businessDetailMapper.toResponse(entity);
         log.info("Updated BusinessDetail - ID: {}, Company: {}, TaxCode: {}",
-                entity.getBusinessDetailId(), entity.getCompanyName(), entity.getTaxCode());
+                entity.getBusinessDetailId(), entity.getFacilityName(), entity.getTaxCode());
         return response;
     }
 

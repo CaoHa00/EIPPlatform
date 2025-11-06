@@ -3,6 +3,7 @@ package com.EIPplatform.model.dto.report.wastemanagement.exportedhwstat;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -29,4 +30,7 @@ public class ExportedHwStatCreateDTO {
 
     @NotBlank(message = "IS_REQUIRED")
     String overseasProcessorOrg;
+
+    @Size(max = 50)
+    String baselCode;
 }

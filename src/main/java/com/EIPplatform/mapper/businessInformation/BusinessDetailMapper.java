@@ -23,7 +23,7 @@ public interface BusinessDetailMapper {
 
     List<BusinessDetailResponse> toResponseList(List<BusinessDetail> entities);
 
-    @Mapping(source = "legalPresentative", target = "legalRepresentative")
+    @Mapping(source = "legalRepresentative", target = "legalRepresentative")
     @Mapping(target = "businessDetailId", ignore = true)
     @Mapping(target = "businessHistoryConsumptions", ignore = true)
     @Mapping(target = "auditMetaData", ignore = true)

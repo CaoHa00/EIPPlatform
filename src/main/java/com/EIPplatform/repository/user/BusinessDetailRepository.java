@@ -29,13 +29,13 @@ public interface BusinessDetailRepository extends JpaRepository<BusinessDetail, 
     Optional<BusinessDetail> findByTaxCode(String taxCode);
 
     @Query("SELECT ud FROM BusinessDetail ud WHERE "
-            + "LOWER(ud.companyName) LIKE LOWER(CONCAT('%', :keyword, '%')) "
+            + "LOWER(ud.facilityName) LIKE LOWER(CONCAT('%', :keyword, '%')) "
             + "OR LOWER(ud.taxCode) LIKE LOWER(CONCAT('%', :keyword, '%'))")
     List<BusinessDetail> searchByKeyword(@Param("keyword") String keyword);
 
-    @Query("SELECT ud.industrySector, COUNT(ud) FROM BusinessDetail ud "
-            + "WHERE ud.industrySector IS NOT NULL "
-            + "GROUP BY ud.industrySector")
+    @Query("SELECT ud.activityType, COUNT(ud) FROM BusinessDetail ud "
+            + "WHERE ud.activityType IS NOT NULL "
+            + "GROUP BY ud.activityType")
     List<Object[]> countByIndustrySector();
 
     boolean existsByBusinessRegistrationNumber(String businessRegistrationNumber); //service
