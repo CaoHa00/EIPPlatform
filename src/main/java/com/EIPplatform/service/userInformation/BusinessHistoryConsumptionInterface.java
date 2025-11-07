@@ -3,13 +3,17 @@ package com.EIPplatform.service.userInformation;
 import java.util.List;
 import java.util.UUID;
 
+import com.EIPplatform.model.dto.businessInformation.BusinessHistoryConsumptionCreateDTO;
 import com.EIPplatform.model.dto.businessInformation.BusinessHistoryConsumptionDTO;
+import com.EIPplatform.model.dto.businessInformation.BusinessHistoryConsumptionUpdateDTO;
 
 public interface BusinessHistoryConsumptionInterface {
-    
-    List<BusinessHistoryConsumptionDTO> findByBusinessDetailId(UUID businessDetailId);
 
-    BusinessHistoryConsumptionDTO create(BusinessHistoryConsumptionDTO dto);
+    List<BusinessHistoryConsumptionDTO> findByBusinessDetailId(UUID businessDetailId, UUID userAccountId);
 
-    void deleteByBusinessDetailId(UUID businessDetailId);
+    BusinessHistoryConsumptionDTO createBusinessHistoryConsumption(UUID userAccountId, BusinessHistoryConsumptionCreateDTO dto);
+
+    BusinessHistoryConsumptionDTO updateBusinessHistoryConsumption(UUID userAccountId, UUID businessHistoryConsumptionId, BusinessHistoryConsumptionUpdateDTO dto);
+
+//    void deleteByBusinessDetailId(UUID businessDetailId, UUID userAccountId);
 }

@@ -58,7 +58,7 @@ public class UserAccount {
     @Column(nullable = false)
     String password;
 
-    @Column(nullable = false)
+    @Column(nullable = false, columnDefinition = "NVARCHAR(255)")
     String fullName;
 
     @Builder.Default

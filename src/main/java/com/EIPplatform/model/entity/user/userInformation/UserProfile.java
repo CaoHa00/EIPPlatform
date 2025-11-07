@@ -48,7 +48,7 @@ public class UserProfile {
     @Column(nullable = true)
     String identificationNumber;
 
-    @Column(nullable = true)
+    @Column(nullable = true, columnDefinition = "NVARCHAR(255)")
     String address;
 
     // Other information fields can be added here

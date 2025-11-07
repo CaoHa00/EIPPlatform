@@ -19,8 +19,6 @@ import java.util.UUID;
 
 public class PermitUtils {
 
-    static FileStorageService fileStorageService;
-
     public static void validateUserExists(UserAccountRepository userAccountRepository, UUID userAccountId, ExceptionFactory exceptionFactory) {
         userAccountRepository.findByUserAccountId(userAccountId)
                 .orElseThrow(() -> exceptionFactory.createNotFoundException(
@@ -60,16 +58,25 @@ public class PermitUtils {
         return permit;
     }
 
-    public static String uploadPermitFile(BusinessDetail businessDetail, MultipartFile file, String subFolder, int year, FileStorageService fileStorageService, ExceptionFactory exceptionFactory) {
+    /**
+     * Upload permit file - FIXED VERSION
+     * Sử dụng folder path trực tiếp thay vì FileStorageRequest
+     */
+    public static String uploadPermitFile(BusinessDetail businessDetail, MultipartFile file,
+                                          String subFolder, int year,
+                                          FileStorageService fileStorageService,
+                                          ExceptionFactory exceptionFactory) {
         validatePermitFile(file, exceptionFactory);
 
-        FileStorageRequest storageRequest = FileStorageRequest.builder()
-                .businessName(businessDetail.getFacilityName())
-                .sector("permits/" + subFolder)
-                .year(year)
-                .build();
+        // Tạo folder path: permits/subFolder/businessName/year
+        // Ví dụ: permits/env-permit/ABC-Company/2024
+        String folderPath = String.format("permits/%s/%s/%d",
+                subFolder,
+                businessDetail.getFacilityName(),
+                year);
 
-        return fileStorageService.uploadFile(file, storageRequest);
+        // Sử dụng uploadFile method với folder path
+        return fileStorageService.uploadFile(file, folderPath);
     }
 
     public static void validatePermitFile(MultipartFile file, ExceptionFactory exceptionFactory) {
@@ -97,10 +104,10 @@ public class PermitUtils {
 
         String filename = file.getOriginalFilename();
         if (filename != null) {
-            String extension = fileStorageService.getFileExtension(filename).toLowerCase();
+            String extension = filename.substring(filename.lastIndexOf('.') + 1).toLowerCase();
             java.util.List<String> allowedExtensions = Arrays.asList(".pdf", ".jpg", ".jpeg", ".png");
 
-            if (!allowedExtensions.contains(extension)) {
+            if (!allowedExtensions.contains("." + extension)) {
                 throw exceptionFactory.createValidationException(
                         "File", "extension", extension, ValidationError.INVALID_TYPE
                 );
