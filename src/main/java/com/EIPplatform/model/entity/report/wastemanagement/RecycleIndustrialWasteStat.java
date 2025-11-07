@@ -27,15 +27,15 @@ public class RecycleIndustrialWasteStat {
     @JoinColumn(name = "wm_id", nullable = false)
     WasteManagementData wasteManagementData;
 
-    @Column(name = "transfer_org", length = 255, nullable = false)
+    @Column(name = "transfer_org", columnDefinition = "NVARCHAR(255)", nullable = false)
     String transferOrg;
 
     @Column(name = "volume_cy", precision = 10, scale = 2, nullable = false)
-    BigDecimal volumeCy; // ≥0
+    BigDecimal volumeCy;
 
-    @Column(name = "waste_type_desc", length = 255, nullable = false)
+    @Column(name = "waste_type_desc", columnDefinition = "NVARCHAR(255)", nullable = false)
     String wasteTypeDesc;
 
     @Column(name = "volume_py", precision = 10, scale = 2, nullable = false)
-    BigDecimal volumePy; // ≥0
+    BigDecimal volumePy;
 }

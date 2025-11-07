@@ -1,6 +1,5 @@
 package com.EIPplatform.model.entity.report.wastemanagement;
 
-import com.EIPplatform.model.entity.report.wastemanagement.WasteManagementData;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -27,13 +26,13 @@ public class DomesticSolidWasteStat {
     @JoinColumn(name = "wm_id", nullable = false)
     WasteManagementData wasteManagementData;
 
-    @Column(name = "waste_type_name", length = 255, nullable = false)
+    @Column(name = "waste_type_name", columnDefinition = "NVARCHAR(255)", nullable = false)
     String wasteTypeName;
 
     @Column(name = "volume_cy", precision = 10, scale = 2, nullable = false)
     BigDecimal volumeCy;
 
-    @Column(name = "receiver_org", length = 255, nullable = false)
+    @Column(name = "receiver_org", columnDefinition = "NVARCHAR(255)", nullable = false)
     String receiverOrg;
 
     @Column(name = "volume_py", precision = 10, scale = 2, nullable = false)

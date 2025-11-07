@@ -6,22 +6,8 @@ import java.time.LocalDateTime;
 import com.EIPplatform.model.entity.user.businessInformation.BusinessDetail;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Index;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.OneToOne;
-import jakarta.persistence.Table;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import jakarta.persistence.*;
+import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 @Builder
@@ -44,22 +30,21 @@ public class EnvPermits {
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "business_detail_id", unique = true)
     @JsonBackReference(value = "businessDetail-mainPermit")
-
     BusinessDetail businessDetail;
 
-    @Column(name = "permit_number", nullable = false)
-            String permitNumber;
+    @Column(name = "permit_number", nullable = false, columnDefinition = "VARCHAR(255)")
+    String permitNumber;
 
     @Column(name = "issue_date", nullable = false)
     LocalDate issueDate;
 
-    @Column(name = "issuer_org", nullable = false)
+    @Column(name = "issuer_org", nullable = false, columnDefinition = "NVARCHAR(255)")
     String issuerOrg;
 
-    @Column(name = "project_name")
+    @Column(name = "project_name", columnDefinition = "NVARCHAR(255)")
     String projectName;
 
-    @Column(name = "permit_file_path")
+    @Column(name = "permit_file_path", columnDefinition = "VARCHAR(500)")
     String permitFilePath;
 
     @Column(name = "is_active", columnDefinition = "BIT DEFAULT 1")

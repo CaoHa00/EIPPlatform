@@ -3,7 +3,6 @@ package com.EIPplatform.model.entity.report.wastewatermanager;
 import com.EIPplatform.model.entity.report.ReportA05;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
-
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -30,13 +29,11 @@ public class WasteWaterData {
     @Column(name = "ww_id", updatable = false, nullable = false)
     Long wwId;
 
-    // ============= QUAN HỆ ONE-TO-ONE VỚI REPORT_A05 =============
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "report_id", nullable = false, unique = true)
     @JsonBackReference(value = "report-wastewater")
     ReportA05 report;
 
-    // ============= NƯỚC THẢI SINH HOẠT =============
     @Column(name = "treatment_ww_desc", columnDefinition = "NVARCHAR(MAX)")
     String treatmentWwDesc;
 
@@ -49,7 +46,6 @@ public class WasteWaterData {
     @Column(name = "dom_ww_design", nullable = false)
     Double domWwDesign;
 
-    // ============= NƯỚC THẢI CÔNG NGHIỆP =============
     @Column(name = "industrial_ww_cy", nullable = false)
     Double industrialWwCy;
 
@@ -59,7 +55,6 @@ public class WasteWaterData {
     @Column(name = "industrial_ww_design", nullable = false)
     Double industrialWwDesign;
 
-    // ============= NƯỚC LÀM MÁT =============
     @Column(name = "cooling_water_cy")
     Double coolingWaterCy;
 
@@ -69,16 +64,12 @@ public class WasteWaterData {
     @Column(name = "cooling_water_design")
     Double coolingWaterDesign;
 
-    // ============= TÌNH HÌNH ĐẤU NỐI HỆ THỐNG XLNT TẬP TRUNG =============
     @Column(name = "connection_status_desc", nullable = false, columnDefinition = "NVARCHAR(MAX)")
     String connectionStatusDesc;
 
-    @Column(name = "connection_diagram")
+    @Column(name = "connection_diagram", columnDefinition = "NVARCHAR(255)")
+    String connectionDiagram;
 
-    String connectionDiagram;// file
-
-    // ============= KẾT QUẢ QUAN TRẮC NƯỚC THẢI ĐẦU RA =============
-    // Nước thải sinh hoạt
     @Column(name = "dom_monitor_period", columnDefinition = "NVARCHAR(100)", nullable = false)
     String domMonitorPeriod;
 
@@ -100,7 +91,6 @@ public class WasteWaterData {
     @Column(name = "dom_agency_vimcerts", columnDefinition = "NVARCHAR(MAX)", nullable = false)
     String domAgencyVimcerts;
 
-    // Nước thải công nghiệp
     @Column(name = "ind_monitor_period", columnDefinition = "NVARCHAR(100)", nullable = false)
     String indMonitorPeriod;
 
@@ -122,23 +112,20 @@ public class WasteWaterData {
     @Column(name = "ind_agency_vimcerts", columnDefinition = "NVARCHAR(MAX)", nullable = false)
     String indAgencyVimcerts;
 
-    // ============= BẢNG 1.1, 1.2: THỐNG KÊ VỊ TRÍ & KẾT QUẢ VƯỢT QCVN =============
     @OneToMany(mappedBy = "wasteWaterData", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference
     @Fetch(FetchMode.SUBSELECT)
     @Builder.Default
     List<WasteWaterMonitoringExceedances> monitoringExceedances = new ArrayList<>();
 
-    // ============= QUAN TRẮC NƯỚC THẢI LIÊN TỤC TỰ ĐỘNG =============
-    // a) Thông tin chung về hệ thống
     @Column(name = "auto_station_location", columnDefinition = "NVARCHAR(500)", nullable = false)
     String autoStationLocation;
 
-    @Column(name = "auto_station_gps", length = 30, nullable = true)
+    @Column(name = "auto_station_gps", columnDefinition = "NVARCHAR(30)")
     String autoStationGps;
 
-    @Column(name = "auto_station_map", columnDefinition = "NVARCHAR(255)", nullable = true)
-    String autoStationMap; // File path/URL
+    @Column(name = "auto_station_map", columnDefinition = "NVARCHAR(255)")
+    String autoStationMap;
 
     @Column(name = "auto_source_desc", columnDefinition = "NVARCHAR(MAX)", nullable = false)
     String autoSourceDesc;
@@ -149,42 +136,36 @@ public class WasteWaterData {
     @Column(name = "auto_calibration_info", columnDefinition = "NVARCHAR(MAX)", nullable = false)
     String autoCalibrationInfo;
 
-    // b) Tình trạng hoạt động của trạm
-    @Column(name = "auto_incident_summary", columnDefinition = "NVARCHAR(MAX)", nullable = true)
+    @Column(name = "auto_incident_summary", columnDefinition = "NVARCHAR(MAX)")
     String autoIncidentSummary;
 
-    @Column(name = "auto_downtime_desc", columnDefinition = "NVARCHAR(MAX)", nullable = true)
+    @Column(name = "auto_downtime_desc", columnDefinition = "NVARCHAR(MAX)")
     String autoDowntimeDesc;
 
-    // ============= BẢNG 1.3: THỐNG KÊ SỐ LIỆU QUAN TRẮC =============
     @OneToMany(mappedBy = "wasteWaterData", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference
     @Fetch(FetchMode.SUBSELECT)
     @Builder.Default
     List<AutoWWMonitoringStats> monitoringStats = new ArrayList<>();
 
-    // ============= BẢNG 1.4: THỐNG KÊ CÁC SỰ CỐ TẠI TRẠM =============
     @OneToMany(mappedBy = "wasteWaterData", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference
     @Fetch(FetchMode.SUBSELECT)
     @Builder.Default
     List<AutoWWMonitoringIncidents> monitoringIncidents = new ArrayList<>();
 
-    // c) Nhận xét kết quả quan trắc
-    @Column(name = "auto_exceed_days_summary", columnDefinition = "NVARCHAR(MAX)", nullable = true)
+    @Column(name = "auto_exceed_days_summary", columnDefinition = "NVARCHAR(MAX)")
     String autoExceedDaysSummary;
 
-    @Column(name = "auto_abnormal_reason", columnDefinition = "NVARCHAR(MAX)", nullable = true)
+    @Column(name = "auto_abnormal_reason", columnDefinition = "NVARCHAR(MAX)")
     String autoAbnormalReason;
 
-    // ============= BẢNG 1.5: THỐNG KÊ VƯỢT QCVN =============
     @OneToMany(mappedBy = "wasteWaterData", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference
     @Fetch(FetchMode.SUBSELECT)
     @Builder.Default
     List<AutoWWQcvnExceedances> qcvnExceedances = new ArrayList<>();
 
-    // d) Kết luận
     @Column(name = "auto_completeness_review", columnDefinition = "NVARCHAR(MAX)", nullable = false)
     String autoCompletenessReview;
 

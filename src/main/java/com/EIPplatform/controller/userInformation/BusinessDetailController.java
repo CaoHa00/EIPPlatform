@@ -3,7 +3,6 @@ package com.EIPplatform.controller.userInformation;
 import com.EIPplatform.model.dto.api.ApiResponse;
 import com.EIPplatform.model.dto.businessInformation.BusinessDetailDTO;
 import com.EIPplatform.model.dto.businessInformation.BusinessDetailResponse;
-import com.EIPplatform.model.dto.businessInformation.BusinessDetailWithHistoryConsumptionDTO;
 import com.EIPplatform.service.userInformation.BusinessDetailInterface;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -42,14 +41,21 @@ public class BusinessDetailController {
                 .build();
     }
 
-    @GetMapping("/with-history")
-    public ApiResponse<BusinessDetailWithHistoryConsumptionDTO> getBusinessDetailWithHistory(
-            @RequestParam UUID userAccountId) {
-        var result = businessDetailService.getBusinessDetailWithHistoryConsumption(userAccountId);
-        return ApiResponse.<BusinessDetailWithHistoryConsumptionDTO>builder()
-                .result(result)
+    @GetMapping("/{userAccountId}")
+    public ApiResponse<UUID> getBusinessDetailByUserAccountId(@PathVariable UUID userAccountId) {
+        return ApiResponse.<UUID>builder()
+                .result(businessDetailService.findByBusinessDetailId(userAccountId))
                 .build();
     }
+
+//    @GetMapping("/with-history")
+//    public ApiResponse<BusinessDetailWithHistoryConsumptionDTO> getBusinessDetailWithHistory(
+//            @RequestParam UUID userAccountId) {
+//        var result = businessDetailService.getBusinessDetailWithHistoryConsumption(userAccountId);
+//        return ApiResponse.<BusinessDetailWithHistoryConsumptionDTO>builder()
+//                .result(result)
+//                .build();
+//    }
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ApiResponse<BusinessDetailResponse> createBusinessDetail(

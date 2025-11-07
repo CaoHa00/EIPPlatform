@@ -26,7 +26,7 @@ public class AirMonitoringExceedance {
     @JoinColumn(name = "air_emission_data_id", nullable = false)
     AirEmissionData airEmissionData;
 
-    @Column(name = "point_name", length = 255, nullable = false)
+    @Column(name = "point_name", columnDefinition = "NVARCHAR(255)", nullable = false)
     String pointName;
 
     @Column(name = "point_symbol", length = 50, nullable = false)
@@ -41,7 +41,7 @@ public class AirMonitoringExceedance {
     @Column(name = "latitude", length = 20)
     String latitude;
 
-    @Column(name = "exceeded_param", length = 100, nullable = false)
+    @Column(name = "exceeded_param", columnDefinition = "NVARCHAR(100)", nullable = false)
     String exceededParam;
 
     @Column(name = "result_value", precision = 15, scale = 5, nullable = false)

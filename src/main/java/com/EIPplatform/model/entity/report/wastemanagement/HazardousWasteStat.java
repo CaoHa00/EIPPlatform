@@ -1,6 +1,5 @@
 package com.EIPplatform.model.entity.report.wastemanagement;
 
-import com.EIPplatform.model.entity.report.wastemanagement.WasteManagementData;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -27,21 +26,21 @@ public class HazardousWasteStat {
     @JoinColumn(name = "wm_id", nullable = false)
     WasteManagementData wasteManagementData;
 
-    @Column(name = "waste_name", length = 255, nullable = false)
+    @Column(name = "waste_name", columnDefinition = "NVARCHAR(255)", nullable = false)
     String wasteName;
 
-    @Column(name = "hw_code", length = 50, nullable = false)
+    @Column(name = "hw_code", columnDefinition = "NVARCHAR(50)", nullable = false)
     String hwCode;
 
     @Column(name = "volume_cy", precision = 10, scale = 2, nullable = false)
-    BigDecimal volumeCy; // ≥0
+    BigDecimal volumeCy;
 
-    @Column(name = "treatment_method", length = 255, nullable = false)
-    String treatmentMethod; // Multi-select as comma-separated
+    @Column(name = "treatment_method", columnDefinition = "NVARCHAR(255)", nullable = false)
+    String treatmentMethod;
 
-    @Column(name = "receiver_org", columnDefinition = "TEXT", nullable = false)
+    @Column(name = "receiver_org", columnDefinition = "NVARCHAR(MAX)", nullable = false)
     String receiverOrg;
 
     @Column(name = "volume_py", precision = 10, scale = 2, nullable = false)
-    BigDecimal volumePy; // ≥0
+    BigDecimal volumePy;
 }

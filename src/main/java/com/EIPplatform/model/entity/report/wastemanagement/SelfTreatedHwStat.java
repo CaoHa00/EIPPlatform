@@ -27,15 +27,15 @@ public class SelfTreatedHwStat {
     @JoinColumn(name = "wm_id", nullable = false)
     WasteManagementData wasteManagementData;
 
-    @Column(name = "waste_name", length = 255, nullable = false)
+    @Column(name = "waste_name", columnDefinition = "NVARCHAR(255)", nullable = false)
     String wasteName;
 
     @Column(name = "hw_code", length = 50, nullable = false)
     String hwCode;
 
     @Column(name = "volume_kg", precision = 10, scale = 2, nullable = false)
-    BigDecimal volumeKg; // ≥0
+    BigDecimal volumeKg;
 
-    @Column(name = "self_treatment_method", length = 255, nullable = false)
+    @Column(name = "self_treatment_method", columnDefinition = "NVARCHAR(255)", nullable = false)
     String selfTreatmentMethod;
 }

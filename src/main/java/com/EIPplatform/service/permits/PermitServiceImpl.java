@@ -80,18 +80,10 @@ public class PermitServiceImpl implements PermitService {
 
         if (envPermitsRepository.existsByBusinessDetail_BusinessDetailId(businessDetail.getBusinessDetailId())) {
             throw exceptionFactory.createValidationException(
-                    "EnvPermit", "already exists", "", ValidationError.DUPLICATE_VALUE
-            );
-        }
-
-        long componentCount = componentPermitRepository.countByBusinessDetail_BusinessDetailId(
-                businessDetail.getBusinessDetailId());
-        if (componentCount > 0) {
-            throw exceptionFactory.createValidationException(
                     "EnvPermit",
-                    "cannot create EnvPermit when component permits exist",
+                    "Business '" + businessDetail.getFacilityName() + "' already has an environmental permit",
                     "",
-                    ValidationError.INVALID_STATE
+                    PermitError.INVALID_OPERATION
             );
         }
 
@@ -242,15 +234,6 @@ public class PermitServiceImpl implements PermitService {
     public EnvComponentPermitDTO createComponentPermit(UUID userAccountId, CreateComponentPermitRequest request,
                                                        MultipartFile file) {
         BusinessDetail businessDetail = PermitUtils.getBusinessDetailByUserAccountId(businessDetailRepository, userAccountId, exceptionFactory);
-
-        if (hasEnvPermit(userAccountId)) {
-            throw exceptionFactory.createValidationException(
-                    "ComponentPermit",
-                    "cannot create component permit when EnvPermit exists",
-                    "",
-                    ValidationError.INVALID_STATE
-            );
-        }
 
         PermitUtils.checkDuplicateComponentPermitNumber(componentPermitRepository, businessDetail.getBusinessDetailId(), request.getPermitNumber(), exceptionFactory);
 

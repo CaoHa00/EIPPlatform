@@ -7,7 +7,7 @@ import lombok.experimental.FieldDefaults;
 
 @Entity
 @Table(name = "auto_ww_qcvn_exceedances", indexes = {
-    @Index(name = "idx_auto_qcvn_ww_id", columnList = "ww_id")
+        @Index(name = "idx_auto_qcvn_ww_id", columnList = "ww_id")
 })
 @Getter
 @Setter
@@ -20,21 +20,21 @@ public class AutoWWQcvnExceedances {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "qcvn_exceed_id")
     Long qcvnExceedId;
-    
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "ww_id", nullable = false)
     @JsonBackReference
     WasteWaterData wasteWaterData;
-    
-    @Column(name = "param_name", length = 100, nullable = false)
+
+    @Column(name = "param_name", columnDefinition = "NVARCHAR(100)", nullable = false)
     String paramName; // Tên thông số
-    
+
     @Column(name = "exceed_days_count", nullable = false)
     Integer exceedDaysCount; // Số ngày có giá trị TB 1 giờ vượt QCVN
-    
-    @Column(name = "qcvn_limit_value",  nullable = false)
+
+    @Column(name = "qcvn_limit_value", nullable = false)
     Double qcvnLimitValue; // Giá trị QCVN
-    
-    @Column(name = "exceed_ratio_percent",nullable = false)
+
+    @Column(name = "exceed_ratio_percent", nullable = false)
     Double exceedRatioPercent; // Tỷ lệ giá trị TB 1 giờ vượt QCVN (%)
 }

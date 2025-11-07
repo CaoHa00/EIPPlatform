@@ -10,8 +10,8 @@ import org.springframework.stereotype.Repository;
 import com.EIPplatform.model.entity.user.businessInformation.BusinessHistoryConsumption;
 
 @Repository
-public interface BusinessHistoryConsumptionRepository extends JpaRepository<BusinessHistoryConsumption, Long> {
-    Optional<BusinessHistoryConsumption> findByBusinessHistoryConsumptionId(Long id);
+public interface BusinessHistoryConsumptionRepository extends JpaRepository<BusinessHistoryConsumption, UUID> {
+    Optional<BusinessHistoryConsumption> findByBusinessHistoryConsumptionId(UUID id);
     void deleteByBusinessDetail_BusinessDetailId(UUID id);
     List<BusinessHistoryConsumption> findByBusinessDetail_BusinessDetailId(UUID businessDetailId);
 }
