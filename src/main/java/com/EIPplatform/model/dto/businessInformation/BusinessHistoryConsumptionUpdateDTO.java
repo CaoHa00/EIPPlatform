@@ -3,7 +3,6 @@ package com.EIPplatform.model.dto.businessInformation;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
-import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Data
@@ -11,9 +10,7 @@ import java.util.UUID;
 @AllArgsConstructor
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class BusinessHistoryConsumptionDTO {
-
-    UUID businessHistoryConsumptionId;
+public class BusinessHistoryConsumptionUpdateDTO {
 
     Integer productVolumeCy;
 
@@ -39,13 +36,7 @@ public class BusinessHistoryConsumptionDTO {
 
     Integer waterConsumptionPy;
 
+    String yearUpdated;
+
     UUID businessDetailId;
-
-    LocalDateTime createdAt;
-
-    String createdBy;
-
-    LocalDateTime updatedAt;
-
-    String updatedBy;
 }

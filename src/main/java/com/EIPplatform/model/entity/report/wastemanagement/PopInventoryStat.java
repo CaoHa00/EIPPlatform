@@ -1,6 +1,5 @@
 package com.EIPplatform.model.entity.report.wastemanagement;
 
-import com.EIPplatform.model.entity.report.wastemanagement.WasteManagementData;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -28,27 +27,27 @@ public class PopInventoryStat {
     @JoinColumn(name = "wm_id", nullable = false)
     WasteManagementData wasteManagementData;
 
-    @Column(name = "pop_name", length = 500, nullable = false)
+    @Column(name = "pop_name", columnDefinition = "NVARCHAR(500)", nullable = false)
     String popName;
 
-    @Column(name = "cas_code", length = 50)
+    @Column(name = "cas_code", columnDefinition = "NVARCHAR(50)")
     String casCode;
 
     @Column(name = "import_date")
     LocalDate importDate;
 
     @Column(name = "import_volume", precision = 10, scale = 2)
-    BigDecimal importVolume; // ≥0
+    BigDecimal importVolume;
 
-    @Column(name = "concentration", length = 100)
+    @Column(name = "concentration", columnDefinition = "NVARCHAR(100)")
     String concentration;
 
     @Column(name = "volume_used", precision = 10, scale = 2)
-    BigDecimal volumeUsed; // ≥0
+    BigDecimal volumeUsed;
 
     @Column(name = "volume_stocked", precision = 10, scale = 2)
-    BigDecimal volumeStocked; // ≥0
+    BigDecimal volumeStocked;
 
-    @Column(name = "compliance_result", length = 255)
+    @Column(name = "compliance_result", columnDefinition = "NVARCHAR(255)")
     String complianceResult;
 }

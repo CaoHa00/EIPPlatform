@@ -50,20 +50,16 @@ public class WasteWaterDataDTO {
     String autoStationMap; // File path
     String autoSourceDesc;
     String autoDataFrequency;
-    String autoParamList;
     String autoCalibrationInfo;
     String autoIncidentSummary;
     String autoDowntimeDesc;
     List<AutoWWMonitoringStatsDTO> monitoringStats;
     List<AutoWWMonitoringIncidentsDTO> monitoringIncidents;
-    String autoAvgCalcDesc;
-    String autoAvgCompareDesc;
     String autoExceedDaysSummary;
     String autoAbnormalReason;
     List<AutoWWQcvnExceedancesDTO> qcvnExceedances;
     String autoCompletenessReview;
     String autoExceedSummary;
-    String autoExceedConclusion;
     LocalDateTime createdAt;
     LocalDateTime updatedAt;
 }

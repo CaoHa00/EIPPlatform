@@ -25,13 +25,13 @@ public class AirAutoMonitoringIncident {
     @JoinColumn(name = "air_emission_data_id", nullable = false)
     AirEmissionData airEmissionData;
 
-    @Column(name = "incident_name", length = 255, nullable = false)
+    @Column(name = "incident_name", nullable = false, columnDefinition = "NVARCHAR(255)")
     String incidentName;
 
     @Column(name = "incident_time", nullable = false)
     LocalDateTime incidentTime;
 
     @Lob
-    @Column(name = "incident_remedy", nullable = false)
+    @Column(name = "incident_remedy", nullable = false, columnDefinition = "NVARCHAR(MAX)")
     String incidentRemedy;
 }

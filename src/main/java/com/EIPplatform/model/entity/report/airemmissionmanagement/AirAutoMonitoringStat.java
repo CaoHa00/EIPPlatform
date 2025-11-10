@@ -25,7 +25,7 @@ public class AirAutoMonitoringStat {
     @JoinColumn(name = "air_emission_data_id", nullable = false)
     AirEmissionData airEmissionData;
 
-    @Column(name = "param_name", length = 100, nullable = false)
+    @Column(name = "param_name", nullable = false, columnDefinition = "NVARCHAR(100)")
     String paramName;
 
     @Column(name = "val_design", nullable = false)
