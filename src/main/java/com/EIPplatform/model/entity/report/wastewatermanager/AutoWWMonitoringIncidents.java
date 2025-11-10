@@ -1,5 +1,7 @@
 package com.EIPplatform.model.entity.report.wastewatermanager;
 
+import org.hibernate.annotations.Nationalized;
+
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.*;
@@ -26,7 +28,7 @@ public class AutoWWMonitoringIncidents {
     @JoinColumn(name = "ww_id", nullable = false)
     @JsonBackReference
     WasteWaterData wasteWaterData;
-
+    @Nationalized
     @Column(name = "incident_name", columnDefinition = "NVARCHAR(200)", nullable = false)
     String incidentName;
 
