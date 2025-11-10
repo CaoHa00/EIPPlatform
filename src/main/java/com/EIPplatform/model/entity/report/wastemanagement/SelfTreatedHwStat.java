@@ -7,6 +7,8 @@ import lombok.experimental.FieldDefaults;
 
 import java.math.BigDecimal;
 
+import org.hibernate.annotations.Nationalized;
+
 @Entity
 @Table(name = "self_treated_hw_stats", indexes = {
         @Index(name = "idx_wm_id", columnList = "wm_id")
@@ -26,7 +28,7 @@ public class SelfTreatedHwStat {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "wm_id", nullable = false)
     WasteManagementData wasteManagementData;
-
+    @Nationalized
     @Column(name = "waste_name", columnDefinition = "NVARCHAR(255)", nullable = false)
     String wasteName;
 
@@ -35,7 +37,7 @@ public class SelfTreatedHwStat {
 
     @Column(name = "volume_kg", precision = 10, scale = 2, nullable = false)
     BigDecimal volumeKg;
-
+    @Nationalized
     @Column(name = "self_treatment_method", columnDefinition = "NVARCHAR(255)", nullable = false)
     String selfTreatmentMethod;
 }

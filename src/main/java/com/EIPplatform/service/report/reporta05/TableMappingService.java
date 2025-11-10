@@ -99,7 +99,6 @@ public class TableMappingService {
             setCellText(newRow.getCell(0), String.valueOf(i + 1)); // TT
             setCellText(newRow.getCell(1), item.getParamName()); // Thông số
             setCellText(newRow.getCell(2), formatInteger(item.getValDesign()));
-
             setCellText(newRow.getCell(3), formatInteger(item.getValReceived()));
             setCellText(newRow.getCell(4), formatInteger(item.getValError()));
             setCellText(newRow.getCell(5), formatDouble(item.getRatioReceivedDesign()));

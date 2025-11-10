@@ -10,6 +10,8 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+
+import org.hibernate.annotations.Nationalized;
 import org.hibernate.annotations.UuidGenerator;
 
 import java.math.BigDecimal;
@@ -66,10 +68,10 @@ public class ReportA05 {
 
     @Column(name = "reviewed_at")
     LocalDateTime reviewedAt;
-
+    @Nationalized
     @Column(name = "review_notes", columnDefinition = "NVARCHAR(MAX)")
     String reviewNotes;
-
+    @Nationalized
     @Column(name = "inspection_remedy_report", columnDefinition = "NVARCHAR(MAX)")
     String inspectionRemedyReport;
 
@@ -85,8 +87,7 @@ public class ReportA05 {
     @Column(name = "deleted_at")
     LocalDateTime deletedAt;
 
-    @Column(name = "created_at", nullable = false, updatable = false,
-            columnDefinition = "DATETIME2 DEFAULT GETDATE()")
+    @Column(name = "created_at", nullable = false, updatable = false, columnDefinition = "DATETIME2 DEFAULT GETDATE()")
     LocalDateTime createdAt;
 
     @Column(name = "updated_at", columnDefinition = "DATETIME2 DEFAULT GETDATE()")
@@ -94,18 +95,15 @@ public class ReportA05 {
 
     // ============= RELATIONSHIPS =============
 
-    @OneToOne(mappedBy = "report", cascade = CascadeType.ALL,
-            fetch = FetchType.LAZY, orphanRemoval = true)
+    @OneToOne(mappedBy = "report", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     @JsonManagedReference(value = "report-wastewater")
     WasteWaterData wasteWaterData;
 
-    @OneToOne(mappedBy = "report", cascade = CascadeType.ALL,
-            fetch = FetchType.LAZY, orphanRemoval = true)
+    @OneToOne(mappedBy = "report", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     @JsonManagedReference(value = "report-waste-management")
     WasteManagementData wasteManagementData;
 
-    @OneToOne(mappedBy = "report", cascade = CascadeType.ALL,
-            fetch = FetchType.LAZY, orphanRemoval = true)
+    @OneToOne(mappedBy = "report", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     @JsonManagedReference(value = "report-air-emission")
     AirEmissionData airEmissionData;
 

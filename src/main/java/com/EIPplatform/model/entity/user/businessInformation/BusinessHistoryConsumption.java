@@ -4,6 +4,8 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 import lombok.experimental.FieldDefaults;
+
+import org.hibernate.annotations.Nationalized;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import com.EIPplatform.configuration.AuditMetaData;
 import com.fasterxml.jackson.annotation.JsonBackReference;
@@ -31,10 +33,10 @@ public class BusinessHistoryConsumption {
 
     @Column(nullable = false)
     Integer productVolumePy;
-
+    @Nationalized
     @Column(nullable = false, columnDefinition = "NVARCHAR(50)")
     String productUnitCy;
-
+    @Nationalized
     @Column(nullable = false, columnDefinition = "NVARCHAR(50)")
     String productUnitPy;
 
@@ -43,10 +45,10 @@ public class BusinessHistoryConsumption {
 
     @Column(nullable = false)
     Integer fuelConsumptionPy;
-
+    @Nationalized
     @Column(nullable = false, columnDefinition = "NVARCHAR(50)")
     String fuelUnitCy;
-
+    @Nationalized
     @Column(nullable = false, columnDefinition = "NVARCHAR(50)")
     String fuelUnitPy;
 
