@@ -9,6 +9,11 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.UUID;
 
 import org.apache.hc.core5.http.HttpStatus;
@@ -88,15 +93,104 @@ public class ReportA05Controller {
         return ResponseEntity.ok(updated);
     }
 
-
     @GetMapping("/export/{reportId}")
-    public ResponseEntity<byte[]> exportReport(@PathVariable UUID reportId) throws Exception {
-        byte[] fileBytes = reportA05Service.generateReportFile(reportId);
+    public ResponseEntity<byte[]> exportReport(@PathVariable UUID reportId) {
+        try {
+            log.info(" Starting report export for reportId: {}", reportId);
 
-        return ResponseEntity.ok()
-                .contentType(MediaType.APPLICATION_OCTET_STREAM)
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"ReportA05.docx\"")
-                .body(fileBytes);
+            // 1. Generate report file
+            byte[] fileBytes = reportA05Service.generateReportFile(reportId);
+
+            if (fileBytes == null || fileBytes.length == 0) {
+                log.error(" Generated file is empty for reportId: {}", reportId);
+                return ResponseEntity.noContent().build();
+            }
+
+            // 2. Get report info để tạo tên file
+            String fileName = generateFileName(reportId);
+
+            // 3. Encode tên file để hỗ trợ tiếng Việt
+            String encodedFileName = encodeFileName(fileName);
+
+            log.info(" Report exported successfully: {} ({} bytes)", fileName, fileBytes.length);
+
+            // 4. Return response với headers chuẩn
+            return ResponseEntity.ok()
+                    .contentType(MediaType.APPLICATION_OCTET_STREAM)
+                    .header(HttpHeaders.CONTENT_DISPOSITION,
+                            "attachment; filename=\"" + encodedFileName + "\"; filename*=UTF-8''" + encodedFileName)
+                    .header(HttpHeaders.CONTENT_LENGTH, String.valueOf(fileBytes.length))
+                    .header(HttpHeaders.CACHE_CONTROL, "no-cache, no-store, must-revalidate")
+                    .header(HttpHeaders.PRAGMA, "no-cache")
+                    .header(HttpHeaders.EXPIRES, "0")
+                    .body(fileBytes);
+
+        } catch (Exception e) {
+            log.error(" Error exporting report for reportId: {}", reportId, e);
+            return ResponseEntity.internalServerError()
+                    .body(("Error exporting report: " + e.getMessage()).getBytes(StandardCharsets.UTF_8));
+        }
+    }
+
+    private String generateFileName(UUID reportId) {
+        try {
+            // Lấy thông tin report
+            var report = reportA05Service.getReportById(reportId);
+
+            // Timestamp
+            String timestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss"));
+
+            // Tên doanh nghiệp (sanitize - loại bỏ ký tự đặc biệt)
+            String facilityName = report.getFacilityName() != null
+                    ? sanitizeFileName(report.getFacilityName())
+                    : "Unknown";
+
+            // Năm báo cáo
+            String year = report.getReportYear() != null
+                    ? report.getReportYear().toString()
+                    : "0000";
+
+            // Build tên file
+            return String.format("BaoCaoA05_%s_%s_%s.docx",
+                    facilityName,
+                    year,
+                    timestamp);
+
+        } catch (Exception e) {
+            log.warn(" Could not generate dynamic filename, using default: {}", e.getMessage());
+            // Fallback: Tên file đơn giản với timestamp
+            String timestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss"));
+            return String.format("BaoCaoA05_%s_%s.docx", reportId.toString().substring(0, 8), timestamp);
+        }
+    }
+
+    private String sanitizeFileName(String input) {
+        if (input == null || input.isEmpty()) {
+            return "Unknown";
+        }
+
+        // Giữ chữ cái, số, tiếng Việt, dấu cách và gạch ngang
+        // Loại bỏ: / \ : * ? " < > |
+        String sanitized = input
+                .replaceAll("[/\\\\:*?\"<>|]", "") // Loại bỏ ký tự không hợp lệ
+                .replaceAll("\\s+", "_") // Thay khoảng trắng = underscore
+                .trim();
+
+        // Giới hạn độ dài (max 50 ký tự để tránh tên file quá dài)
+        if (sanitized.length() > 50) {
+            sanitized = sanitized.substring(0, 50);
+        }
+
+        return sanitized;
+    }
+
+    private String encodeFileName(String fileName) {
+        try {
+            return URLEncoder.encode(fileName, StandardCharsets.UTF_8.toString())
+                    .replaceAll("\\+", "%20"); // Space = %20 thay vì +
+        } catch (UnsupportedEncodingException e) {
+            log.warn(" Could not encode filename, using original: {}", fileName);
+            return fileName;
+        }
     }
 }
-

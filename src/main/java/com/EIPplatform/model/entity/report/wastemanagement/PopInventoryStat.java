@@ -7,6 +7,8 @@ import lombok.experimental.FieldDefaults;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
+import org.hibernate.annotations.Nationalized;
+
 @Entity
 @Table(name = "pop_inventory_stats", indexes = {
         @Index(name = "idx_wm_id", columnList = "wm_id")
@@ -26,10 +28,10 @@ public class PopInventoryStat {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "wm_id", nullable = false)
     WasteManagementData wasteManagementData;
-
+    @Nationalized
     @Column(name = "pop_name", columnDefinition = "NVARCHAR(500)", nullable = false)
     String popName;
-
+    @Nationalized
     @Column(name = "cas_code", columnDefinition = "NVARCHAR(50)")
     String casCode;
 
@@ -38,7 +40,7 @@ public class PopInventoryStat {
 
     @Column(name = "import_volume", precision = 10, scale = 2)
     BigDecimal importVolume;
-
+    @Nationalized
     @Column(name = "concentration", columnDefinition = "NVARCHAR(100)")
     String concentration;
 
@@ -47,7 +49,7 @@ public class PopInventoryStat {
 
     @Column(name = "volume_stocked", precision = 10, scale = 2)
     BigDecimal volumeStocked;
-
+    @Nationalized
     @Column(name = "compliance_result", columnDefinition = "NVARCHAR(255)")
     String complianceResult;
 }

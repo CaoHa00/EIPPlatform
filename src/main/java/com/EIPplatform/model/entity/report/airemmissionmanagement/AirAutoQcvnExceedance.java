@@ -6,6 +6,8 @@ import lombok.experimental.FieldDefaults;
 
 import java.math.BigDecimal;
 
+import org.hibernate.annotations.Nationalized;
+
 @Entity
 @Table(name = "air_auto_qcvn_exceedance")
 @Getter
@@ -24,7 +26,7 @@ public class AirAutoQcvnExceedance {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "air_emission_data_id", nullable = false)
     AirEmissionData airEmissionData;
-
+    @Nationalized
     @Column(name = "param_name", nullable = false, columnDefinition = "NVARCHAR(100)")
     String paramName;
 

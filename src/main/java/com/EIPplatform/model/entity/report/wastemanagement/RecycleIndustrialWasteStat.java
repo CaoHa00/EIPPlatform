@@ -7,6 +7,8 @@ import lombok.experimental.FieldDefaults;
 
 import java.math.BigDecimal;
 
+import org.hibernate.annotations.Nationalized;
+
 @Entity
 @Table(name = "recycle_industrial_waste_stats", indexes = {
         @Index(name = "idx_wm_id", columnList = "wm_id")
@@ -26,13 +28,13 @@ public class RecycleIndustrialWasteStat {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "wm_id", nullable = false)
     WasteManagementData wasteManagementData;
-
+    @Nationalized
     @Column(name = "transfer_org", columnDefinition = "NVARCHAR(255)", nullable = false)
     String transferOrg;
 
     @Column(name = "volume_cy", precision = 10, scale = 2, nullable = false)
     BigDecimal volumeCy;
-
+    @Nationalized
     @Column(name = "waste_type_desc", columnDefinition = "NVARCHAR(255)", nullable = false)
     String wasteTypeDesc;
 
