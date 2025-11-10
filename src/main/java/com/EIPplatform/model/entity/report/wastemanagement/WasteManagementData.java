@@ -35,7 +35,7 @@ public class WasteManagementData {
     @JsonBackReference(value = "report-waste-management")
     ReportA05 report;
 
-    @Column(name = "sw_general_note", columnDefinition = "TEXT")
+    @Column(name = "sw_general_note", columnDefinition = "NVARCHAR(MAX)")
     String swGeneralNote;
 
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "wasteManagementData")
@@ -80,13 +80,13 @@ public class WasteManagementData {
     @Builder.Default
     List<SelfTreatedHwStat> selfTreatedHwStats = new ArrayList<>();
 
-    @Column(name = "incident_plan_development", columnDefinition = "TEXT", nullable = false)
+    @Column(name = "incident_plan_development", columnDefinition = "NVARCHAR(MAX)", nullable = false)
     String incidentPlanDevelopment;
 
-    @Column(name = "incident_prevention_measures", columnDefinition = "TEXT", nullable = false)
+    @Column(name = "incident_prevention_measures", columnDefinition = "NVARCHAR(MAX)", nullable = false)
     String incidentPreventionMeasures;
 
-    @Column(name = "incident_response_report", columnDefinition = "TEXT", nullable = false)
+    @Column(name = "incident_response_report", columnDefinition = "NVARCHAR(MAX)", nullable = false)
     String incidentResponseReport;
 
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "wasteManagementData")
@@ -98,42 +98,42 @@ public class WasteManagementData {
     @Column(name = "water_total_volume_kg", nullable = false, precision = 10, scale = 2)
     BigDecimal waterTotalVolumeKg;
 
-    @Column(name = "water_estimation_method", columnDefinition = "TEXT", nullable = false)
+    @Column(name = "water_estimation_method", columnDefinition = "NVARCHAR(MAX)", nullable = false)
     String waterEstimationMethod;
 
     @Column(name = "air_total_volume_kg", nullable = false, precision = 10, scale = 2)
     BigDecimal airTotalVolumeKg;
 
-    @Column(name = "air_estimation_method", columnDefinition = "TEXT", nullable = false)
+    @Column(name = "air_estimation_method", columnDefinition = "NVARCHAR(MAX)", nullable = false)
     String airEstimationMethod;
 
     @Column(name = "soil_total_volume_kg", nullable = false, precision = 10, scale = 2)
     BigDecimal soilTotalVolumeKg;
 
-    @Column(name = "soil_estimation_method", columnDefinition = "TEXT", nullable = false)
+    @Column(name = "soil_estimation_method", columnDefinition = "NVARCHAR(MAX)", nullable = false)
     String soilEstimationMethod;
 
     @Column(name = "sewage_sludge_total_volume_kg", nullable = false, precision = 10, scale = 2)
     BigDecimal sewageSludgeTotalVolumeKg;
 
-    @Column(name = "sewage_sludge_estimation_method", columnDefinition = "TEXT", nullable = false)
+    @Column(name = "sewage_sludge_estimation_method", columnDefinition = "NVARCHAR(MAX)", nullable = false)
     String sewageSludgeEstimationMethod;
 
     @Column(name = "hw_onsite_total_volume_kg", nullable = false, precision = 10, scale = 2)
     BigDecimal hwOnsiteTotalVolumeKg;
 
-    @Column(name = "hw_onsite_estimation_method", columnDefinition = "TEXT", nullable = false)
+    @Column(name = "hw_onsite_estimation_method", columnDefinition = "NVARCHAR(MAX)", nullable = false)
     String hwOnsiteEstimationMethod;
 
     @Column(name = "hw_recycle_total_volume_kg", nullable = false, precision = 10, scale = 2)
     BigDecimal hwRecycleTotalVolumeKg;
 
-    @Column(name = "hw_recycle_estimation_method", columnDefinition = "TEXT", nullable = false)
+    @Column(name = "hw_recycle_estimation_method", columnDefinition = "NVARCHAR(MAX)", nullable = false)
     String hwRecycleEstimationMethod;
 
     @Column(name = "hw_disposal_total_volume_kg", nullable = false, precision = 10, scale = 2)
     BigDecimal hwDisposalTotalVolumeKg;
 
-    @Column(name = "hw_disposal_estimation_method", columnDefinition = "TEXT", nullable = false)
+    @Column(name = "hw_disposal_estimation_method", columnDefinition = "NVARCHAR(MAX)", nullable = false)
     String hwDisposalEstimationMethod;
 }

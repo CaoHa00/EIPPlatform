@@ -1,6 +1,5 @@
 package com.EIPplatform.model.entity.report.wastemanagement;
 
-import com.EIPplatform.model.entity.report.wastemanagement.WasteManagementData;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -27,21 +26,21 @@ public class ExportedHwStat {
     @JoinColumn(name = "wm_id", nullable = false)
     WasteManagementData wasteManagementData;
 
-    @Column(name = "waste_name", length = 255, nullable = false)
+    @Column(name = "waste_name", columnDefinition = "NVARCHAR(255)", nullable = false)
     String wasteName;
 
-    @Column(name = "hw_code", length = 50, nullable = false)
+    @Column(name = "hw_code", columnDefinition = "NVARCHAR(50)", nullable = false)
     String hwCode;
 
-    @Column(name = "basel_code", length = 50)
+    @Column(name = "basel_code", columnDefinition = "NVARCHAR(50)")
     String baselCode;
 
     @Column(name = "volume_kg", precision = 10, scale = 2, nullable = false)
-    BigDecimal volumeKg; // ≥0
+    BigDecimal volumeKg;
 
-    @Column(name = "transporter_org", columnDefinition = "TEXT", nullable = false)
+    @Column(name = "transporter_org", columnDefinition = "NVARCHAR(MAX)", nullable = false)
     String transporterOrg;
 
-    @Column(name = "overseas_processor_org", columnDefinition = "TEXT", nullable = false)
+    @Column(name = "overseas_processor_org", columnDefinition = "NVARCHAR(MAX)", nullable = false)
     String overseasProcessorOrg;
 }

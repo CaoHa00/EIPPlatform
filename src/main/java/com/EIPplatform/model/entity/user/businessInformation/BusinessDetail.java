@@ -41,22 +41,22 @@ public class BusinessDetail {
     @Column(name = "business_detail_id", columnDefinition = "uniqueidentifier")
     UUID businessDetailId;
 
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false, unique = true, columnDefinition = "NVARCHAR(255)")
     String facilityName;
 
-    @Column(nullable = false)
+    @Column(nullable = false, columnDefinition = "NVARCHAR(255)")
     String legalRepresentative;
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 20)
     String phoneNumber;
 
-    @Column(nullable = false)
+    @Column(nullable = false, columnDefinition = "NVARCHAR(500)")
     String address;
 
-    @Column(nullable = false)
+    @Column(nullable = false, columnDefinition = "NVARCHAR(255)")
     String activityType;
 
-    @Column(nullable = false)
+    @Column(nullable = false, columnDefinition = "NVARCHAR(255)")
     String scaleCapacity;
 
     @Column(length = 100)
@@ -65,17 +65,17 @@ public class BusinessDetail {
     @Column(name = "iso_certificate_file_path", length = 255)
     String isoCertificateFilePath;
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 50)
     String businessRegistrationNumber;
 
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false, unique = true, length = 50)
     String taxCode;
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     OperationType operationType = OperationType.REGULAR;
 
-    @Column(length = 500)
+    @Column(length = 500, columnDefinition = "NVARCHAR(500)")
     String seasonalDescription;
 
     @OneToMany(mappedBy = "businessDetail", fetch = FetchType.LAZY)

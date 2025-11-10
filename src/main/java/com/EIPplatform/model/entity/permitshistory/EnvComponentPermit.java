@@ -5,23 +5,8 @@ import java.time.LocalDateTime;
 
 import com.EIPplatform.model.entity.user.businessInformation.BusinessDetail;
 import com.fasterxml.jackson.annotation.JsonBackReference;
-
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Index;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import jakarta.persistence.*;
+import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 @Builder
@@ -36,6 +21,7 @@ import lombok.experimental.FieldDefaults;
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class EnvComponentPermit {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "permit_id", updatable = false, nullable = false)
@@ -46,22 +32,22 @@ public class EnvComponentPermit {
     @JsonBackReference(value = "businessDetail-componentPermits")
     BusinessDetail businessDetail;
 
-    @Column(name = "permit_type", nullable = false)
+    @Column(name = "permit_type", nullable = false, columnDefinition = "NVARCHAR(255)")
     String permitType;
 
-    @Column(name = "project_name", nullable = false)
+    @Column(name = "project_name", nullable = false, columnDefinition = "NVARCHAR(255)")
     String projectName;
 
-    @Column(name = "permit_number", nullable = false)
+    @Column(name = "permit_number", nullable = false, columnDefinition = "VARCHAR(255)")
     String permitNumber;
 
     @Column(name = "issue_date", nullable = false)
     LocalDate issueDate;
 
-    @Column(name = "issuer_org", nullable = false)
+    @Column(name = "issuer_org", nullable = false, columnDefinition = "NVARCHAR(255)")
     String issuerOrg;
 
-    @Column(name = "permit_file_path")
+    @Column(name = "permit_file_path", columnDefinition = "VARCHAR(500)")
     String permitFilePath;
 
     @Column(name = "is_active", columnDefinition = "BIT DEFAULT 1")

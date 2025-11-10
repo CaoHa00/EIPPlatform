@@ -6,15 +6,15 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.EIPplatform.model.dto.businessInformation.BusinessDetailDTO;
 import com.EIPplatform.model.dto.businessInformation.BusinessDetailResponse;
-import com.EIPplatform.model.dto.businessInformation.BusinessDetailWithHistoryConsumptionDTO;
 
 public interface BusinessDetailInterface {
     BusinessDetailResponse findByUserAccountId(UUID userAccountId);
     void deleteByUserAccountId(UUID userAccountId);
     BusinessDetailResponse createBusinessDetail(UUID userAccountId, BusinessDetailDTO dto, MultipartFile isoFile);
     BusinessDetailResponse updateBusinessDetail(UUID userAccountId, BusinessDetailDTO dto, MultipartFile isoFile);
+    UUID findByBusinessDetailId(UUID userAccountId);
     List<BusinessDetailResponse> findAll();
-    BusinessDetailWithHistoryConsumptionDTO getBusinessDetailWithHistoryConsumption(UUID businessDetailId);
+//    BusinessDetailWithHistoryConsumptionDTO getBusinessDetailWithHistoryConsumption(UUID businessDetailId);
 
     // File-specific methods
     BusinessDetailResponse uploadIsoCertificateFile(UUID userAccountId, MultipartFile file);

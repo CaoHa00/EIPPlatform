@@ -8,10 +8,8 @@ import com.EIPplatform.exception.ExceptionFactory;
 import com.EIPplatform.exception.errorCategories.BusinessDetailError;
 import com.EIPplatform.exception.errorCategories.UserError;
 import com.EIPplatform.mapper.businessInformation.BusinessDetailMapper;
-import com.EIPplatform.mapper.businessInformation.BusinessDetailWithHistoryConsumptionMapper;
 import com.EIPplatform.model.dto.businessInformation.BusinessDetailDTO;
 import com.EIPplatform.model.dto.businessInformation.BusinessDetailResponse;
-import com.EIPplatform.model.dto.businessInformation.BusinessDetailWithHistoryConsumptionDTO;
 import com.EIPplatform.model.entity.user.authentication.UserAccount;
 import com.EIPplatform.model.entity.user.businessInformation.BusinessDetail;
 import com.EIPplatform.repository.authentication.UserAccountRepository;
@@ -36,7 +34,6 @@ public class BusinessDetailImplementation implements BusinessDetailInterface {
 
     BusinessDetailRepository businessDetailRepository;
     BusinessDetailMapper businessDetailMapper;
-    BusinessDetailWithHistoryConsumptionMapper businessDetailWithHistoryConsumptionMapper;
     UserAccountRepository userAccountRepository;
     FileStorageService fileStorageService;
     ExceptionFactory exceptionFactory;
@@ -170,21 +167,33 @@ public class BusinessDetailImplementation implements BusinessDetailInterface {
     }
 
     @Override
+    public UUID findByBusinessDetailId(UUID userAccountId) {
+        BusinessDetail entity = businessDetailRepository.findByUserAccountId(userAccountId)
+                .orElseThrow(() -> exceptionFactory.createNotFoundException(
+                        "BusinessDetail",
+                        "userAccountId",
+                        userAccountId,
+                        BusinessDetailError.NOT_FOUND
+                ));
+        return entity.getBusinessDetailId();
+    }
+
+    @Override
     public List<BusinessDetailResponse> findAll() {
         return businessDetailMapper.toResponseList(businessDetailRepository.findAll());
     }
 
-    @Override
-    public BusinessDetailWithHistoryConsumptionDTO getBusinessDetailWithHistoryConsumption(UUID id) {
-        var entity = businessDetailRepository.findById(id)
-                .orElseThrow(() -> exceptionFactory.createNotFoundException(
-                        "BusinessDetail",
-                        "id",
-                        id,
-                        BusinessDetailError.BUSINESS_DETAIL_ID_NOT_FOUND
-                ));
-        return businessDetailWithHistoryConsumptionMapper.toDTO(entity);
-    }
+//    @Override
+//    public BusinessDetailWithHistoryConsumptionDTO getBusinessDetailWithHistoryConsumption(UUID id) {
+//        var entity = businessDetailRepository.findById(id)
+//                .orElseThrow(() -> exceptionFactory.createNotFoundException(
+//                        "BusinessDetail",
+//                        "id",
+//                        id,
+//                        BusinessDetailError.BUSINESS_DETAIL_ID_NOT_FOUND
+//                ));
+//        return businessDetailWithHistoryConsumptionMapper.toDTO(entity);
+//    }
 
     // ==================== FILE-SPECIFIC METHODS ====================
 

@@ -12,6 +12,8 @@ import lombok.extern.slf4j.Slf4j;
 import java.util.UUID;
 
 import org.apache.hc.core5.http.HttpStatus;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -85,4 +87,16 @@ public class ReportA05Controller {
         InspectionRemedyResponse updated = reportA05Service.updateInspectionRemedyReport(reportId, request);
         return ResponseEntity.ok(updated);
     }
+
+
+    @GetMapping("/export/{reportId}")
+    public ResponseEntity<byte[]> exportReport(@PathVariable UUID reportId) throws Exception {
+        byte[] fileBytes = reportA05Service.generateReportFile(reportId);
+
+        return ResponseEntity.ok()
+                .contentType(MediaType.APPLICATION_OCTET_STREAM)
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"ReportA05.docx\"")
+                .body(fileBytes);
+    }
 }
+
