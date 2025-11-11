@@ -25,8 +25,8 @@ public class BusinessHistoryConsumptionController {
     @GetMapping("/business/{businessDetailId}")
     public ResponseEntity<ApiResponse<List<BusinessHistoryConsumptionDTO>>> getByBusinessDetailId(
             @PathVariable UUID businessDetailId,
-            @AuthenticationPrincipal UserAccount currentUser) {
-        var result = businessHistoryConsumptionService.findByBusinessDetailId(businessDetailId, currentUser.getUserAccountId());
+            @RequestParam UUID userAccountId) {
+        var result = businessHistoryConsumptionService.findByBusinessDetailId(businessDetailId,userAccountId);
         return ResponseEntity.ok(ApiResponse.<List<BusinessHistoryConsumptionDTO>>builder()
                 .result(result)
                 .build());
