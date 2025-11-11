@@ -72,17 +72,17 @@ public class Report06 {
 
     @OneToOne(fetch = FetchType.LAZY)
 
-    @JoinColumn(name = "part_1_06_id", nullable = false)
+    @JoinColumn(name = "business_information_id", nullable = false)
     @JsonManagedReference(value = "report06-business-info")
     BusinessInformation businessInformation; // Renamed back to BusinessInformation
 
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "part_2_06_id", nullable = false)
+    @JoinColumn(name = "operational_activity_data_id", nullable = false)
     @JsonManagedReference(value = "report06-operational-data")
     OperationalActivityData operationalActivityData; // Renamed back to OperationalActivityData
 
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "part_3_06_id", nullable = false)
+    @JoinColumn(name = "inventory_result_data_id", nullable = false)
     @JsonManagedReference(value = "report06-inventory-result")
     InventoryResultData inventoryResultData; // Renamed back to InventoryResultData
 

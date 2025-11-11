@@ -29,7 +29,7 @@ public class EmissionData {
     @GeneratedValue
     @UuidGenerator
     @Column(name = "emission_data_id", updatable = false, nullable = false)
-    UUID emissionDataID; // ID chính của bảng emission_data
+    UUID emissionDataId; // ID chính của bảng emission_data
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "inventory_result_data_id", nullable = false)
