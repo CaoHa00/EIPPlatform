@@ -2,11 +2,17 @@ package com.EIPplatform.model.entity.permitshistory;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-
+import org.hibernate.annotations.Nationalized;
+//import com.EIPplatform.model.entity.report.report06.part01.BusinessInformation;
 import com.EIPplatform.model.entity.user.businessInformation.BusinessDetail;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.experimental.FieldDefaults;
 
 @Builder
@@ -31,22 +37,22 @@ public class EnvComponentPermit {
     @JoinColumn(name = "business_detail_id")
     @JsonBackReference(value = "businessDetail-componentPermits")
     BusinessDetail businessDetail;
-
+    @Nationalized
     @Column(name = "permit_type", nullable = false, columnDefinition = "NVARCHAR(255)")
     String permitType;
-
+    @Nationalized
     @Column(name = "project_name", nullable = false, columnDefinition = "NVARCHAR(255)")
     String projectName;
-
+    @Nationalized
     @Column(name = "permit_number", nullable = false, columnDefinition = "VARCHAR(255)")
     String permitNumber;
 
     @Column(name = "issue_date", nullable = false)
     LocalDate issueDate;
-
+    @Nationalized
     @Column(name = "issuer_org", nullable = false, columnDefinition = "NVARCHAR(255)")
     String issuerOrg;
-
+    @Nationalized
     @Column(name = "permit_file_path", columnDefinition = "VARCHAR(500)")
     String permitFilePath;
 
@@ -55,4 +61,8 @@ public class EnvComponentPermit {
 
     @Column(name = "created_at", nullable = false, updatable = false, columnDefinition = "DATETIME2 DEFAULT GETDATE()")
     LocalDateTime createdAt;
+//
+//    @ManyToOne(fetch = FetchType.LAZY)
+//    @JoinColumn(name = "business_information_id", nullable = false)
+//    BusinessInformation businessInformation;
 }

@@ -1,9 +1,9 @@
 package com.EIPplatform.service.report.reporta05;
 
-import com.EIPplatform.model.dto.report.wastewatermanager.autowwmonitoringincidents.AutoWWMonitoringIncidentsDTO;
-import com.EIPplatform.model.dto.report.wastewatermanager.autowwmonitoringstats.AutoWWMonitoringStatsDTO;
-import com.EIPplatform.model.dto.report.wastewatermanager.autowwqcvnexceedances.AutoWWQcvnExceedancesDTO;
-import com.EIPplatform.model.dto.report.wastewatermanager.wastewatermonitoringexceedances.WasteWaterMonitoringExceedancesDTO;
+import com.EIPplatform.model.dto.report.report05.wastewatermanager.autowwmonitoringincidents.AutoWWMonitoringIncidentsDTO;
+import com.EIPplatform.model.dto.report.report05.wastewatermanager.autowwmonitoringstats.AutoWWMonitoringStatsDTO;
+import com.EIPplatform.model.dto.report.report05.wastewatermanager.autowwqcvnexceedances.AutoWWQcvnExceedancesDTO;
+import com.EIPplatform.model.dto.report.report05.wastewatermanager.wastewatermonitoringexceedances.WasteWaterMonitoringExceedancesDTO;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.xwpf.usermodel.*;
 
@@ -99,7 +99,6 @@ public class TableMappingService {
             setCellText(newRow.getCell(0), String.valueOf(i + 1)); // TT
             setCellText(newRow.getCell(1), item.getParamName()); // Thông số
             setCellText(newRow.getCell(2), formatInteger(item.getValDesign()));
-
             setCellText(newRow.getCell(3), formatInteger(item.getValReceived()));
             setCellText(newRow.getCell(4), formatInteger(item.getValError()));
             setCellText(newRow.getCell(5), formatDouble(item.getRatioReceivedDesign()));

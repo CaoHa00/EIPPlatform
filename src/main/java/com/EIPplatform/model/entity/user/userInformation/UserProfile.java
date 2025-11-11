@@ -3,6 +3,7 @@ package com.EIPplatform.model.entity.user.userInformation;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+import org.hibernate.annotations.Nationalized;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import com.EIPplatform.configuration.AuditMetaData;
@@ -47,7 +48,7 @@ public class UserProfile {
 
     @Column(nullable = true)
     String identificationNumber;
-
+    @Nationalized
     @Column(nullable = true, columnDefinition = "NVARCHAR(255)")
     String address;
 
@@ -62,7 +63,7 @@ public class UserProfile {
     @Builder.Default
     AuditMetaData auditMetaData = new AuditMetaData();
 
-     public LocalDateTime getCreatedAt() {
+    public LocalDateTime getCreatedAt() {
         return auditMetaData.getCreatedAt();
     }
 

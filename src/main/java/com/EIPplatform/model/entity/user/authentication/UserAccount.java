@@ -4,6 +4,7 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
+import org.hibernate.annotations.Nationalized;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import com.EIPplatform.configuration.AuditMetaData;
@@ -57,14 +58,14 @@ public class UserAccount {
 
     @Column(nullable = false)
     String password;
-
+    @Nationalized
     @Column(nullable = false, columnDefinition = "NVARCHAR(255)")
     String fullName;
 
     @Builder.Default
     @Column(nullable = false)
     boolean enable = true;
-
+    @Nationalized
     @Column(nullable = false, columnDefinition = "NVARCHAR(10)")
     String phoneNumber;
 
@@ -72,12 +73,8 @@ public class UserAccount {
     @JoinColumn(name = "file_storage_id")
     private FileStorage fileStorage;
 
-
     @ManyToMany
-    @JoinTable(name = "user_role",
-            joinColumns = @JoinColumn(name = "user_account_id"),
-            inverseJoinColumns = @JoinColumn(name = "role_id")
-    )
+    @JoinTable(name = "user_role", joinColumns = @JoinColumn(name = "user_account_id"), inverseJoinColumns = @JoinColumn(name = "role_id"))
     @Builder.Default
     Set<Role> roles = new HashSet<>();
 

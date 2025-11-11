@@ -7,12 +7,15 @@ import java.util.UUID;
 
 import com.EIPplatform.model.enums.OperationType;
 import jakarta.persistence.*;
+
+import org.checkerframework.checker.units.qual.N;
+import org.hibernate.annotations.Nationalized;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import com.EIPplatform.configuration.AuditMetaData;
 import com.EIPplatform.model.entity.permitshistory.EnvComponentPermit;
 import com.EIPplatform.model.entity.permitshistory.EnvPermits;
-import com.EIPplatform.model.entity.report.ReportA05;
+import com.EIPplatform.model.entity.report.report05.ReportA05;
 import com.EIPplatform.model.entity.user.authentication.UserAccount;
 import com.EIPplatform.model.entity.user.investors.Investor;
 import com.EIPplatform.model.entity.user.legalRepresentative.LegalRepresentative;
@@ -42,23 +45,23 @@ public class BusinessDetail {
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "business_detail_id", columnDefinition = "uniqueidentifier")
     UUID businessDetailId;
-
+    @Nationalized
     @Column(nullable = false, unique = true, columnDefinition = "NVARCHAR(255)")
     String facilityName;
-
+  
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     @JoinColumn(name = "legal_representative_id", referencedColumnName = "legal_representative_id", nullable = false, foreignKey = @ForeignKey(name = "fk_business_detail_legal_representative"))
     LegalRepresentative legalRepresentative;
 
     @Column(nullable = false, length = 20)
     String phoneNumber;
-
+    @Nationalized
     @Column(nullable = false, columnDefinition = "NVARCHAR(500)")
     String address;
-
+    @Nationalized
     @Column(nullable = false, columnDefinition = "NVARCHAR(255)")
     String activityType;
-
+    @Nationalized
     @Column(nullable = false, columnDefinition = "NVARCHAR(255)")
     String scaleCapacity;
 
@@ -77,7 +80,7 @@ public class BusinessDetail {
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     OperationType operationType = OperationType.REGULAR;
-
+    @Nationalized
     @Column(length = 500, columnDefinition = "NVARCHAR(500)")
     String seasonalDescription;
 
