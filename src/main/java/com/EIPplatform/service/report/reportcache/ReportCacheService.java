@@ -2,8 +2,8 @@ package com.EIPplatform.service.report.reportcache;
 
 import java.util.UUID;
 
-import com.EIPplatform.model.dto.report.report.ReportA05DraftDTO;
-import com.EIPplatform.model.dto.report.wastewatermanager.wastewatermanagement.WasteWaterDataDTO;
+import com.EIPplatform.model.dto.report.report05.ReportA05DraftDTO;
+import com.EIPplatform.model.dto.report.report05.wastewatermanager.wastewatermanagement.WasteWaterDataDTO;
 
 public interface ReportCacheService {
     /**
