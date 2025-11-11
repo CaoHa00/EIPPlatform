@@ -63,9 +63,6 @@ public class ReportA05ServiceImpl implements ReportA05Service {
         AirEmissionDataMapper airEmissionDataMapper;
         WasteWaterDataMapper wasteWaterDataMapper;
         ExceptionFactory exceptionFactory;
-        WasteManagementDataRepository wasteManagementDataRepository;
-        AirEmissionDataRepository airEmissionDataRepository;
-        WasteWaterRepository wasteWaterDataRepository;
 
         @Override
         @Transactional
@@ -106,39 +103,30 @@ public class ReportA05ServiceImpl implements ReportA05Service {
         }
 
         @Override
-        @Transactional
         public ReportA05DTO getReportById(UUID reportId) {
+                ReportA05 report = reportA05Repository.findByReportIdWithFullDetails(reportId)
+                                .orElseThrow(() -> exceptionFactory.createNotFoundException("ReportA05", reportId,
+                                                ReportError.REPORT_NOT_FOUND));
 
-                // 1. Fetch basic report
-                ReportA05 report = reportA05Repository.findByReportIdWithBasic(reportId)
-                                .orElseThrow(() -> exceptionFactory.createNotFoundException(
-                                                "ReportA05", reportId, ReportError.REPORT_NOT_FOUND));
+                WasteWaterDataDTO wasteWaterDataDTO = report.getWasteWaterData() != null
+                                ? wasteWaterDataMapper.toDto(report.getWasteWaterData())
+                                : null;
 
-                // 2. Fetch WasteWaterData với collections
-                WasteWaterDataDTO wasteWaterDataDTO = wasteWaterDataRepository
-                                .findByReportIdWithCollections(reportId)
-                                .map(wasteWaterDataMapper::toDto)
-                                .orElse(null);
+                WasteManagementDataDTO wasteManagementDataDTO = report.getWasteManagementData() != null
+                                ? wasteManagementDataMapper.toDto(report.getWasteManagementData())
+                                : null;
 
-                // 3. Fetch WasteManagementData với collections
-                WasteManagementDataDTO wasteManagementDataDTO = wasteManagementDataRepository
-                                .findByReportIdWithCollections(reportId)
-                                .map(wasteManagementDataMapper::toDto)
-                                .orElse(null);
+                AirEmissionDataDTO airEmissionDataDTO = report.getAirEmissionData() != null
+                                ? airEmissionDataMapper.toDto(report.getAirEmissionData())
+                                : null;
 
-                // 4. Fetch AirEmissionData với collections
-                AirEmissionDataDTO airEmissionDataDTO = airEmissionDataRepository
-                                .findByReportIdWithCollections(reportId)
-                                .map(airEmissionDataMapper::toDto)
-                                .orElse(null);
-
-                // 5. Build DTO
                 return ReportA05DTO.builder()
                                 .reportId(report.getReportId())
                                 .reportCode(report.getReportCode())
-                                .businessDetailId(report.getBusinessDetail() != null
-                                                ? report.getBusinessDetail().getBusinessDetailId()
-                                                : null)
+                                .businessDetailId(
+                                                report.getBusinessDetail() != null
+                                                                ? report.getBusinessDetail().getBusinessDetailId()
+                                                                : null)
                                 .facilityName(report.getBusinessDetail() != null
                                                 ? report.getBusinessDetail().getFacilityName()
                                                 : null)
@@ -356,7 +344,9 @@ public class ReportA05ServiceImpl implements ReportA05Service {
                         airEmissionDataMapper.updateEntityFromDto(dto, entity); // Method mới cho partial update từ DTO
                 } else {
                         // Create: Chuyển từ response DTO sang entity mới (KHÔNG dùng toDto!)
-                        entity = airEmissionDataMapper.dtoToEntity(dto); // ✅ Đúng method: DTO → entity
+
+                        entity = airEmissionDataMapper.dtoToEntity(dto); // Đúng method: DTO → entity
+
                         entity.setReport(report);
                         // @AfterMapping trong mapper sẽ handle null lists nếu cần
                 }
@@ -380,7 +370,9 @@ public class ReportA05ServiceImpl implements ReportA05Service {
                 ReportA05DraftDTO draftData = getDraftData(reportId);
                 WasteWaterDataDTO wasteWaterDataDTO = draftData != null ? draftData.getWasteWaterData() : null;
 
-                // Map dữ liệu với key chính xác
+                WasteManagementDataDTO wasteManagementDataDTO = draftData != null ? draftData.getWasteManagementData()
+                                : null;
+                // FIX: Map dữ liệu với key chính xác
                 Map<String, String> data = new HashMap<>();
                 data.put("facilityName", business.getFacilityName());
                 data.put("address", business.getAddress());
@@ -554,6 +546,7 @@ public class ReportA05ServiceImpl implements ReportA05Service {
                                         wasteWaterDataDTO.getAutoExceedSummary() != null
                                                         ? wasteWaterDataDTO.getAutoExceedSummary()
                                                         : "");
+
                 }
 
                 Resource resource = new ClassPathResource("templates/reportA05/ReportA05_template.docx");

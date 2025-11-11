@@ -28,8 +28,8 @@ public class AirMonitoringExceedanceDTO {
 
     String exceededParam;
 
-    BigDecimal resultValue;
+    Double resultValue;
 
-    BigDecimal qcvnLimit;
+    Double qcvnLimit;
 
 }
