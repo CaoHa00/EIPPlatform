@@ -1,4 +1,4 @@
-package com.EIPplatform.model.entity.report.reportB04;
+package com.EIPplatform.model.entity.report.reportB04.part04;
 
 import jakarta.persistence.*;
 import lombok.*;
@@ -11,11 +11,11 @@ import lombok.experimental.FieldDefaults;
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class b4_part_4 {
+public class SymbiosisIndustry {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "b4_part_4_id")
-    Long b4Part4Id;
+    @Column(name = "si_id")
+    Long siId;
 
     //------------------------Indus------------------------------
     @Column(name = "indus_sym_count", columnDefinition = "NVARCHAR(255)")
@@ -84,7 +84,6 @@ public class b4_part_4 {
     @Column(name = "sym_fuel_other_benefits", nullable = false, columnDefinition = "NVARCHAR(255)")
     String symFuelOtherBenefits;
 
-
     //---------------------Total---------------------
     @Column(name = "sym_total_co2_reduction", nullable = false, columnDefinition = "NVARCHAR(255)")
     String symTotalCo2Reduction;
@@ -99,8 +98,6 @@ public class b4_part_4 {
 
     @Column(name = "sym_water_saving_cost", columnDefinition = "NVARCHAR(255)")
     String symWaterSavingCost;
-
-
 
     //---------------------sym_wastewater---------------------
     @Column(name = "sym_wastewater_reduction", columnDefinition = "NVARCHAR(255)")

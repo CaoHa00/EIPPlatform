@@ -1,4 +1,4 @@
-package com.EIPplatform.model.entity.report.reportB04;
+package com.EIPplatform.model.entity.report.reportB04.part03;
 
 import jakarta.persistence.*;
 import lombok.*;
@@ -11,11 +11,11 @@ import lombok.experimental.FieldDefaults;
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class b4_part_3 {
+public class ResourcesSavingAndReduction {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "b4_part_3_id")
-    Long b4Part3Id;
+    @Column(name = "rsar_id")
+    Long rsarId;
 
     @Column(name = "applied_energy_saving_models", nullable = false, columnDefinition = "NVARCHAR(255)")
     String appliedEnergySavingModels;
