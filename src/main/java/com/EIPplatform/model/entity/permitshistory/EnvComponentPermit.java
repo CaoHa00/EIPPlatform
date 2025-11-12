@@ -2,13 +2,17 @@ package com.EIPplatform.model.entity.permitshistory;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-
 import org.hibernate.annotations.Nationalized;
-
+//import com.EIPplatform.model.entity.report.report06.part01.BusinessInformation;
 import com.EIPplatform.model.entity.user.businessInformation.BusinessDetail;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.experimental.FieldDefaults;
 
 @Builder
@@ -57,4 +61,8 @@ public class EnvComponentPermit {
 
     @Column(name = "created_at", nullable = false, updatable = false, columnDefinition = "DATETIME2 DEFAULT GETDATE()")
     LocalDateTime createdAt;
+//
+//    @ManyToOne(fetch = FetchType.LAZY)
+//    @JoinColumn(name = "business_information_id", nullable = false)
+//    BusinessInformation businessInformation;
 }

@@ -1,6 +1,6 @@
 package com.EIPplatform.repository.report;
 
-import com.EIPplatform.model.entity.report.ReportA05;
+import com.EIPplatform.model.entity.report.report05.ReportA05;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;

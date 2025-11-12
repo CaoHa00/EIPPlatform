@@ -15,8 +15,10 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import com.EIPplatform.configuration.AuditMetaData;
 import com.EIPplatform.model.entity.permitshistory.EnvComponentPermit;
 import com.EIPplatform.model.entity.permitshistory.EnvPermits;
-import com.EIPplatform.model.entity.report.ReportA05;
+import com.EIPplatform.model.entity.report.report05.ReportA05;
 import com.EIPplatform.model.entity.user.authentication.UserAccount;
+import com.EIPplatform.model.entity.user.investors.Investor;
+import com.EIPplatform.model.entity.user.legalRepresentative.LegalRepresentative;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
@@ -46,9 +48,10 @@ public class BusinessDetail {
     @Nationalized
     @Column(nullable = false, unique = true, columnDefinition = "NVARCHAR(255)")
     String facilityName;
-    @Nationalized
-    @Column(nullable = false, columnDefinition = "NVARCHAR(255)")
-    String legalRepresentative;
+  
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @JoinColumn(name = "legal_representative_id", referencedColumnName = "legal_representative_id", nullable = false, foreignKey = @ForeignKey(name = "fk_business_detail_legal_representative"))
+    LegalRepresentative legalRepresentative;
 
     @Column(nullable = false, length = 20, columnDefinition = "NVARCHAR(255)")
     String phoneNumber;
@@ -80,6 +83,10 @@ public class BusinessDetail {
     @Nationalized
     @Column(length = 500, columnDefinition = "NVARCHAR(500)")
     String seasonalDescription;
+
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @JoinColumn(name = "investor_id", referencedColumnName = "investor_id", foreignKey = @ForeignKey(name = "fk_business_detail_investor"))
+    Investor investor;
 
     @OneToMany(mappedBy = "businessDetail", fetch = FetchType.LAZY)
     @JsonManagedReference(value = "businessDetail-historyConsumption-ref")

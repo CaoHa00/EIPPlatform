@@ -1,0 +1,27 @@
+package com.EIPplatform.model.dto.products;
+
+import lombok.*;
+import lombok.experimental.FieldDefaults;
+
+import java.util.UUID;
+
+import com.EIPplatform.configuration.AuditMetaData;
+
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+@FieldDefaults(level = AccessLevel.PRIVATE)
+public class ProductResponse {
+
+    UUID productId;
+    String productName;
+    String productUnit;
+    String productDesignedCapacity;
+    String productActualOutput;
+    String productEnergyConsumedSources;
+    String productImage;
+
+    AuditMetaData auditMetaData;
+}

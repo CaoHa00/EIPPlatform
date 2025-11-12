@@ -42,14 +42,12 @@ public class BusinessHistoryConsumptionImplementation implements BusinessHistory
         userAccountRepository.findByUserAccountId(userAccountId)
                 .orElseThrow(() -> exceptionFactory.createNotFoundException(
                         "UserAccount",
-                        "userAccountId",
                         userAccountId,
                         UserError.NOT_FOUND
                 ));
         BusinessDetail businessDetail = businessDetailRepository.findByUserAccountId(userAccountId)
                 .orElseThrow(() -> exceptionFactory.createNotFoundException(
                         "BusinessDetail",
-                        "userAccountId",
                         userAccountId,
                         BusinessDetailError.NOT_FOUND
                 ));
@@ -67,15 +65,21 @@ public class BusinessHistoryConsumptionImplementation implements BusinessHistory
     }
 
     @Override
-    public BusinessHistoryConsumptionDTO createBusinessHistoryConsumption(UUID userAccountId, BusinessHistoryConsumptionCreateDTO dto) {
-        BusinessDetail businessDetail = businessDetailRepository.findByUserAccountId(userAccountId)
+    @Transactional
+    public BusinessHistoryConsumptionDTO createBusinessHistoryConsumption(
+            UUID userAccountId,
+            BusinessHistoryConsumptionCreateDTO dto) {
+
+        BusinessDetail businessDetail = businessDetailRepository
+                .findByUserAccounts_UserAccountId(userAccountId)
                 .orElseThrow(() -> exceptionFactory.createNotFoundException(
                         "BusinessDetail",
-                        "userAccountId",
                         userAccountId,
                         BusinessDetailError.NOT_FOUND
                 ));
-        UUID dtoBusinessDetailId = UUID.fromString(dto.getBusinessDetailId().toString());
+
+        UUID dtoBusinessDetailId = dto.getBusinessDetailId();
+
         if (!businessDetail.getBusinessDetailId().equals(dtoBusinessDetailId)) {
             throw exceptionFactory.createCustomException(
                     "BusinessHistoryConsumption",
@@ -84,12 +88,16 @@ public class BusinessHistoryConsumptionImplementation implements BusinessHistory
                     UserError.UNAUTHORIZED_ACCESS
             );
         }
+
         BusinessHistoryConsumption entity = businessHistoryConsumptionMapper.toEntity(dto);
         entity.setBusinessDetail(businessDetail);
         entity = businessHistoryConsumptionRepository.save(entity);
+
         BusinessHistoryConsumptionDTO response = businessHistoryConsumptionMapper.toDTO(entity);
+
         log.info("Created BusinessHistoryConsumption - ID: {} for BusinessDetail: {}",
-                entity.getBusinessHistoryConsumptionId(), dto.getBusinessDetailId());
+                entity.getBusinessHistoryConsumptionId(), businessDetail.getBusinessDetailId());
+
         return response;
     }
 
@@ -98,21 +106,18 @@ public class BusinessHistoryConsumptionImplementation implements BusinessHistory
         UserAccount userAccount = userAccountRepository.findByUserAccountId(userAccountId)
                 .orElseThrow(() -> exceptionFactory.createNotFoundException(
                         "UserAccount",
-                        "userAccountId",
                         userAccountId,
                         UserError.NOT_FOUND
                 ));
         BusinessDetail businessDetail = businessDetailRepository.findByUserAccountId(userAccountId)
                 .orElseThrow(() -> exceptionFactory.createNotFoundException(
                         "BusinessDetail",
-                        "userAccountId",
                         userAccountId,
                         BusinessDetailError.NOT_FOUND
                 ));
         BusinessHistoryConsumption entity = businessHistoryConsumptionRepository.findById(businessHistoryConsumptionId)
                 .orElseThrow(() -> exceptionFactory.createNotFoundException(
                         "BusinessHistoryConsumption",
-                        "businessHistoryConsumptionId",
                         businessHistoryConsumptionId,
                         BusinessDetailError.NOT_FOUND
                 ));

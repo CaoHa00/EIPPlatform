@@ -23,7 +23,9 @@ import com.EIPplatform.exception.handlers.AppExceptionHandler;
 import com.EIPplatform.exception.handlers.ExceptionHandlerInterface;
 import com.EIPplatform.exception.handlers.ValidationExceptionHandler;
 import com.EIPplatform.model.dto.api.ApiResponse;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+@RestControllerAdvice
 public class GlobalExceptionHandler {
         List<ExceptionHandlerInterface<? extends Exception>> exceptionHandlers;
 
@@ -53,7 +55,6 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ApiResponse<?>> handleDataIntegrityViolation(
             DataIntegrityViolationException exception) {
 
-        // Extract root cause (usually SQLException)
         Throwable rootCause = exception.getRootCause();
         if (rootCause instanceof SQLException) {
             return new SqlExceptionHandler().handle((SQLException) rootCause);

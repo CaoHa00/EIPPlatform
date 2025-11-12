@@ -1,6 +1,6 @@
 package com.EIPplatform.service.report.reporta05;
 
-import com.EIPplatform.model.dto.report.report.*;
+import com.EIPplatform.model.dto.report.report05.*;
 
 import java.util.UUID;
 
