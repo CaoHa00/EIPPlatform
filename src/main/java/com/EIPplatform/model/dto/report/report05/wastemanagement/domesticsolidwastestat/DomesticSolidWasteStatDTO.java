@@ -13,7 +13,7 @@ import java.math.BigDecimal;
 public class DomesticSolidWasteStatDTO {
     Long domesticId;
     String wasteTypeName;
-    BigDecimal volumeCy;
+    Double volumeCy;
     String receiverOrg;
-    BigDecimal volumePy;
+    Double volumePy;
 }

@@ -13,8 +13,8 @@ import java.math.BigDecimal;
 public class OtherSolidWasteStatDTO {
     Long otherId;
     String wasteGroupOther;
-    BigDecimal volumeCy;
+    Double volumeCy;
     String selfTreatmentMethod;
     String receiverOrg;
-    BigDecimal volumePy;
+    Double volumePy;
 }

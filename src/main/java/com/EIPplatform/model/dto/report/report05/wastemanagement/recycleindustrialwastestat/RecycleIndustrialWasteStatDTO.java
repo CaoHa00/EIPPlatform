@@ -13,7 +13,7 @@ import java.math.BigDecimal;
 public class RecycleIndustrialWasteStatDTO {
     Long recycleId;
     String transferOrg;
-    BigDecimal volumeCy;
+    Double volumeCy;
     String wasteTypeDesc;
-    BigDecimal volumePy;
+    Double volumePy;
 }

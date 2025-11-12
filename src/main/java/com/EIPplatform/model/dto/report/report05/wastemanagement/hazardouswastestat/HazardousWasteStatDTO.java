@@ -14,8 +14,8 @@ public class HazardousWasteStatDTO {
     Long hazardousId;
     String wasteName;
     String hwCode;
-    BigDecimal volumeCy;
+    Double volumeCy;
     String treatmentMethod;
     String receiverOrg;
-    BigDecimal volumePy;
+    Double volumePy;
 }

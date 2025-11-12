@@ -15,7 +15,7 @@ public class ExportedHwStatDTO {
     String wasteName;
     String hwCode;
     String baselCode;
-    BigDecimal volumeKg;
+    Double volumeKg;
     String transporterOrg;
     String overseasProcessorOrg;
 }

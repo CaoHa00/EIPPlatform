@@ -20,5 +20,5 @@ public class AirAutoQcvnExceedanceDTO {
 
     Integer qcvnLimitValue;
 
-    BigDecimal exceedRatioPercent;
+    Double exceedRatioPercent;
 }

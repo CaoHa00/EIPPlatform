@@ -16,7 +16,7 @@ public class AirAutoMonitoringIncidentDTO {
 
     String incidentName;
 
-    LocalDateTime incidentTime;
+    String incidentTime;
 
     String incidentRemedy;
 

@@ -22,8 +22,8 @@ public class AirAutoMonitoringStatDTO {
 
     Integer valError;
 
-    BigDecimal ratioReceivedDesign;
+    Double ratioReceivedDesign;
 
-    BigDecimal ratioErrorReceived;
+    Double ratioErrorReceived;
 
 }
