@@ -31,6 +31,7 @@ import java.io.InputStream;
 import java.lang.Double;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
@@ -196,15 +197,15 @@ public class ReportA05ServiceImpl implements ReportA05Service {
 
                 if (!isDraftComplete(draftData)) {
                         throw exceptionFactory.createValidationException("ReportA05Draft", "completionPercentage",
-                                (draftData.getCompletionPercentage() != null
-                                        ? draftData.getCompletionPercentage()
-                                        : 0),
-                                ReportError.DRAFT_INCOMPLETE);
+                                        (draftData.getCompletionPercentage() != null
+                                                        ? draftData.getCompletionPercentage()
+                                                        : 0),
+                                        ReportError.DRAFT_INCOMPLETE);
                 }
 
                 ReportA05 report = reportA05Repository.findById(reportId)
-                        .orElseThrow(() -> exceptionFactory.createNotFoundException("ReportA05", reportId,
-                                ReportError.REPORT_NOT_FOUND));
+                                .orElseThrow(() -> exceptionFactory.createNotFoundException("ReportA05", reportId,
+                                                ReportError.REPORT_NOT_FOUND));
 
                 saveOrUpdateWasteWaterData(report, draftData);
                 saveOrUpdateWasteManagementData(report, draftData);
@@ -222,16 +223,16 @@ public class ReportA05ServiceImpl implements ReportA05Service {
 
                 BusinessDetail bd = saved.getBusinessDetail();
                 return ReportA05DTO.builder()
-                        .reportCode(saved.getReportCode())
-                        .businessDetailId(bd != null ? bd.getBusinessDetailId() : null)
-                        .facilityName(bd != null ? bd.getFacilityName() : null)
-                        .reportYear(saved.getReportYear())
-                        .reportingPeriod(saved.getReportingPeriod())
-                        .reviewNotes(saved.getReviewNotes())
-                        .inspectionRemedyReport(saved.getInspectionRemedyReport())
-                        .completionPercentage(saved.getCompletionPercentage())
-                        .createdAt(saved.getCreatedAt())
-                        .build();
+                                .reportCode(saved.getReportCode())
+                                .businessDetailId(bd != null ? bd.getBusinessDetailId() : null)
+                                .facilityName(bd != null ? bd.getFacilityName() : null)
+                                .reportYear(saved.getReportYear())
+                                .reportingPeriod(saved.getReportingPeriod())
+                                .reviewNotes(saved.getReviewNotes())
+                                .inspectionRemedyReport(saved.getInspectionRemedyReport())
+                                .completionPercentage(saved.getCompletionPercentage())
+                                .createdAt(saved.getCreatedAt())
+                                .build();
         }
 
         @Override
@@ -274,8 +275,8 @@ public class ReportA05ServiceImpl implements ReportA05Service {
 
         private int calculateCompletionPercentage(ReportA05DraftDTO draft) {
                 if (draft.getWasteWaterData() != null
-                        && draft.getWasteManagementData() != null
-                        && draft.getAirEmissionData() != null) {
+                                && draft.getWasteManagementData() != null
+                                && draft.getAirEmissionData() != null) {
                         return 100;
                 }
                 return 0;
@@ -290,8 +291,8 @@ public class ReportA05ServiceImpl implements ReportA05Service {
 
         private boolean isDraftComplete(ReportA05DraftDTO draftData) {
                 return draftData.getWasteWaterData() != null
-                        && draftData.getWasteManagementData() != null
-                        && draftData.getAirEmissionData() != null;
+                                && draftData.getWasteManagementData() != null
+                                && draftData.getAirEmissionData() != null;
         }
 
         private void saveOrUpdateWasteWaterData(ReportA05 report, ReportA05DraftDTO draftData) {
@@ -347,7 +348,9 @@ public class ReportA05ServiceImpl implements ReportA05Service {
                         airEmissionDataMapper.updateEntityFromDto(dto, entity); // Method mới cho partial update từ DTO
                 } else {
                         // Create: Chuyển từ response DTO sang entity mới (KHÔNG dùng toDto!)
-                        entity = airEmissionDataMapper.dtoToEntity(dto); // ✅ Đúng method: DTO → entity
+
+                        entity = airEmissionDataMapper.dtoToEntity(dto); // Đúng method: DTO → entity
+
                         entity.setReport(report);
                         // @AfterMapping trong mapper sẽ handle null lists nếu cần
                 }
@@ -370,22 +373,33 @@ public class ReportA05ServiceImpl implements ReportA05Service {
 
                 ReportA05DraftDTO draftData = getDraftData(reportId, userAccountId);
                 WasteWaterDataDTO wasteWaterDataDTO = draftData != null ? draftData.getWasteWaterData() : null;
+                AirEmissionDataDTO airEmissionDataDTO = draftData != null ? draftData.getAirEmissionData() : null;
+                WasteManagementDataDTO wasteManagementDataDTO = draftData != null ? draftData.getWasteManagementData()
+                                : null;
 
-                // Map dữ liệu với key chính xác
+                String dateStr = LocalDate.now().toString();
+                String monthStr = LocalDate.now().getMonth().toString();
+                String yearStr = String.valueOf(LocalDate.now().getYear());
+                // FIX: Map dữ liệu với key chính xác
                 Map<String, String> data = new HashMap<>();
-                data.put("facilityName", business.getFacilityName());
+                data.put("facility_name", business.getFacilityName());
                 data.put("address", business.getAddress());
-                data.put("phoneNumber", business.getPhoneNumber());
-                data.put("legalRepresentative", business.getLegalRepresentative());
-                data.put("activityType", business.getActivityType());
-                data.put("scaleCapacity", business.getScaleCapacity());
-                data.put("ISO_certificate_14001",
+                data.put("phone_number", business.getPhoneNumber());
+                data.put("legal_representative", business.getLegalRepresentative());
+                data.put("activity_type", business.getActivityType());
+                data.put("scale_capacity", business.getScaleCapacity());
+                data.put("iso_14001_certificate",
                                 business.getISO_certificate_14001() != null ? business.getISO_certificate_14001() : "");
-                data.put("businessRegistrationNumber", business.getBusinessRegistrationNumber());
-                data.put("taxCode", business.getTaxCode());
-                data.put("operationType", business.getOperationType().name());
-                data.put("seasonalDescription",
-                                business.getSeasonalDescription() != null ? business.getSeasonalDescription() : "");
+                data.put("business_license_number", business.getBusinessRegistrationNumber());
+                data.put("tax_code", business.getTaxCode());
+                data.put("seasonal_period", business.getOperationType().name());
+                // data.put("product_volume_cy",
+                // business.getProductVolumeCy() != null
+                // ? business.getProductVolumeCy().toString()
+                // : "");
+                data.put("dateStr", dateStr);
+                data.put("monthYearStr", monthStr);
+                data.put("yearStr", yearStr);
 
                 if (wasteWaterDataDTO != null) {
                         data.put("ww_treatment_desc",
@@ -545,8 +559,127 @@ public class ReportA05ServiceImpl implements ReportA05Service {
                                         wasteWaterDataDTO.getAutoExceedSummary() != null
                                                         ? wasteWaterDataDTO.getAutoExceedSummary()
                                                         : "");
-                }
 
+                }
+                if (airEmissionDataDTO != null) {
+                        data.put("air_treatment_desc",
+                                        airEmissionDataDTO.getAirTreatmentDesc() != null
+                                                        ? airEmissionDataDTO.getAirTreatmentDesc()
+                                                        : "");
+                        data.put("air_emission_cy",
+                                        airEmissionDataDTO.getAirEmissionCy() != null
+                                                        ? airEmissionDataDTO.getAirEmissionCy().toString()
+                                                        : "");
+                        data.put("air_emission_py",
+                                        airEmissionDataDTO.getAirEmissionPy() != null
+                                                        ? airEmissionDataDTO.getAirEmissionPy().toString()
+                                                        : "");
+                        data.put("air_monitor_period",
+                                        airEmissionDataDTO.getAirMonitorPeriod() != null
+                                                        ? airEmissionDataDTO.getAirMonitorPeriod()
+                                                        : "");
+                        data.put("air_monitor_freq", airEmissionDataDTO.getAirMonitorFreq() != null
+                                        ? airEmissionDataDTO.getAirMonitorFreq()
+                                        : "");
+                        data.put("air_monitor_locations",
+                                        airEmissionDataDTO.getAirMonitorLocations() != null
+                                                        ? airEmissionDataDTO.getAirMonitorLocations()
+                                                        : "");
+                        data.put("air_sample_count", airEmissionDataDTO.getAirSampleCount() != null
+                                        ? airEmissionDataDTO.getAirSampleCount().toString()
+                                        : "");
+                        data.put("air_qcvn_standard",
+                                        airEmissionDataDTO.getAirQcvnStandard() != null
+                                                        ? airEmissionDataDTO.getAirQcvnStandard()
+                                                        : "");
+                        data.put("air_agency_name",
+                                        airEmissionDataDTO.getAirAgencyName() != null
+                                                        ? airEmissionDataDTO.getAirAgencyName()
+                                                        : "");
+                        data.put("air_agency_vimcerts",
+                                        airEmissionDataDTO.getAirAgencyVimcerts() != null
+                                                        ? airEmissionDataDTO.getAirAgencyVimcerts()
+                                                        : "");
+                        data.put("air_auto_station_location",
+                                        airEmissionDataDTO.getAirAutoStationLocation() != null
+                                                        ? airEmissionDataDTO.getAirAutoStationLocation()
+                                                        : "");
+                        data.put("air_auto_station_GPS",
+                                        airEmissionDataDTO.getAirAutoStationGps() != null
+                                                        ? airEmissionDataDTO.getAirAutoStationGps()
+                                                        : "");
+                        data.put("air_auto_station_map",
+                                        airEmissionDataDTO.getAirAutoStationMap() != null
+                                                        ? airEmissionDataDTO.getAirAutoStationMap()
+                                                        : "");
+                        data.put("air_auto_source_desc",
+                                        airEmissionDataDTO.getAirAutoSourceDesc() != null
+                                                        ? airEmissionDataDTO.getAirAutoSourceDesc()
+                                                        : "");
+                        data.put("air_auto_data_frequency",
+                                        airEmissionDataDTO.getAirAutoDataFrequency() != null
+                                                        ? airEmissionDataDTO.getAirAutoDataFrequency()
+                                                        : "");
+                        data.put("air_auto_param_list",
+                                        airEmissionDataDTO.getAirAutoParamList() != null
+                                                        ? airEmissionDataDTO.getAirAutoParamList()
+                                                        : "");
+                        data.put("air_auto_calibration_info",
+                                        airEmissionDataDTO.getAirAutoCalibrationInfo() != null
+                                                        ? airEmissionDataDTO.getAirAutoCalibrationInfo()
+                                                        : "");
+                        data.put("air_auto_incident_summary",
+                                        airEmissionDataDTO.getAirAutoIncidentSummary() != null
+                                                        ? airEmissionDataDTO.getAirAutoIncidentSummary()
+                                                        : "");
+                        data.put("air_auto_downtime_desc",
+                                        airEmissionDataDTO.getAirAutoDowntimeDesc() != null
+                                                        ? airEmissionDataDTO.getAirAutoDowntimeDesc()
+                                                        : "");
+                        data.put("air_auto_avg_calc_desc",
+                                        airEmissionDataDTO.getAirAutoAvgCalcDesc() != null
+                                                        ? airEmissionDataDTO.getAirAutoAvgCalcDesc()
+                                                        : "");
+                        data.put("air_auto_avg_compare_desc",
+                                        airEmissionDataDTO.getAirAutoAvgCompareDesc() != null
+                                                        ? airEmissionDataDTO.getAirAutoAvgCompareDesc()
+                                                        : "");
+                        data.put("air_auto_exceed_days_summary",
+                                        airEmissionDataDTO.getAirAutoExceedDaysSummary() != null
+                                                        ? airEmissionDataDTO.getAirAutoExceedDaysSummary()
+                                                        : "");
+                        data.put("air_auto_abnormal_reason",
+                                        airEmissionDataDTO.getAirAutoAbnormalReason() != null
+                                                        ? airEmissionDataDTO.getAirAutoAbnormalReason()
+                                                        : "");
+                        data.put("air_auto_completeness_review",
+                                        airEmissionDataDTO.getAirAutoCompletenessReview() != null
+                                                        ? airEmissionDataDTO.getAirAutoCompletenessReview()
+                                                        : "");
+                        data.put("air_auto_exceed_conclusion",
+                                        airEmissionDataDTO.getAirAutoExceedConclusion() != null
+                                                        ? airEmissionDataDTO.getAirAutoExceedConclusion()
+                                                        : "");
+                }
+                if (wasteManagementDataDTO != null) {
+                        data.put("sw_general_notes",
+                                        wasteManagementDataDTO.getSwGeneralNote() != null
+                                                        ? wasteManagementDataDTO.getSwGeneralNote()
+                                                        : "");
+                        data.put("incident_plan_development",
+                                        wasteManagementDataDTO.getIncidentPlanDevelopment() != null
+                                                        ? wasteManagementDataDTO.getIncidentPlanDevelopment()
+                                                        : "");
+                        data.put("incident_prevention_measures",
+                                        wasteManagementDataDTO.getIncidentPreventionMeasures() != null
+                                                        ? wasteManagementDataDTO.getIncidentPreventionMeasures()
+                                                        : "");
+                        data.put("incident_response_report",
+                                        wasteManagementDataDTO.getIncidentResponseReport() != null
+                                                        ? wasteManagementDataDTO.getIncidentResponseReport()
+                                                        : "");
+
+                }
                 Resource resource = new ClassPathResource("templates/reportA05/ReportA05_template.docx");
                 log.info("Loading template from: {}", resource.getFilename());
 
@@ -611,6 +744,135 @@ public class ReportA05ServiceImpl implements ReportA05Service {
                                         log.info("No QCVN Exceedances data to fill.");
                                 }
                         }
+                        // Bảng 2
+                        if (airEmissionDataDTO != null) {
+                                // Bảng 2.1
+                                if (airEmissionDataDTO.getAirMonitoringExceedances() != null
+                                                && !airEmissionDataDTO.getAirMonitoringExceedances().isEmpty()) {
+                                        log.info(" Filling Air Monitoring Exceedances table ({} records)",
+                                                        airEmissionDataDTO.getAirMonitoringExceedances().size());
+                                        TableMappingService.fillAirMonitoringTable(doc,
+                                                        airEmissionDataDTO.getAirMonitoringExceedances());
+                                } else {
+                                        log.info("No Air Monitoring Exceedances data to fill.");
+                                }
+                                // 2.2
+                                if (airEmissionDataDTO.getAirAutoMonitoringStats() != null
+                                                && !airEmissionDataDTO.getAirAutoMonitoringStats().isEmpty()) {
+                                        log.info(" Filling Air Auto Monitoring Stats table ({} records)",
+                                                        airEmissionDataDTO.getAirAutoMonitoringStats().size());
+                                        TableMappingService.fillAirAutoMonitoringTable(doc,
+                                                        airEmissionDataDTO.getAirAutoMonitoringStats());
+                                } else {
+                                        log.info("No Air Auto Monitoring Stats data to fill.");
+                                }
+                                // 2.3
+                                if (airEmissionDataDTO.getAirAutoMonitoringIncidents() != null
+                                                && !airEmissionDataDTO.getAirAutoMonitoringIncidents().isEmpty()) {
+                                        log.info(" Filling Air Auto Monitoring Incidents table ({} records)",
+                                                        airEmissionDataDTO.getAirAutoMonitoringIncidents().size());
+                                        TableMappingService.fillAirAutoMonitoringIncidentsTable(doc,
+                                                        airEmissionDataDTO.getAirAutoMonitoringIncidents());
+                                } else {
+                                        log.info("No Air Auto Monitoring Incidents data to fill.");
+                                }
+                                // 2.4
+                                if (airEmissionDataDTO.getAirAutoQcvnExceedances() != null
+                                                && !airEmissionDataDTO.getAirAutoQcvnExceedances().isEmpty()) {
+                                        log.info(" Filling Air QCVN Exceedances table ({} records)",
+                                                        airEmissionDataDTO.getAirAutoQcvnExceedances().size());
+                                        TableMappingService.fillAirQcvnExceedancesTable(doc,
+                                                        airEmissionDataDTO.getAirAutoQcvnExceedances());
+                                } else {
+                                        log.info("No Air QCVN Exceedances data to fill.");
+                                }
+                        }
+
+                        // Bảng 3,4
+                        if (wasteManagementDataDTO != null) {
+                                // 3.1
+                                if (wasteManagementDataDTO.getDomesticSolidWasteStats() != null
+                                                && !wasteManagementDataDTO.getDomesticSolidWasteStats().isEmpty()) {
+                                        log.info(" Filling Domestic Solid Waste Stats table ({} records)",
+                                                        wasteManagementDataDTO.getDomesticSolidWasteStats().size());
+                                        TableMappingService.fillDomesticSolidWasteStatsTable(doc,
+                                                        wasteManagementDataDTO.getDomesticSolidWasteStats());
+                                } else {
+                                        log.info("No Domestic Solid Waste Stats data to fill.");
+                                }
+
+                                // 3.2
+                                if (wasteManagementDataDTO.getIndustrialSolidWasteStats() != null
+                                                && !wasteManagementDataDTO.getIndustrialSolidWasteStats().isEmpty()) {
+                                        log.info(" Filling Industrial Solid Waste Stats table ({} records)",
+                                                        wasteManagementDataDTO.getIndustrialSolidWasteStats().size());
+                                        TableMappingService.fillIndustrialSolidWasteStatsTable(doc,
+                                                        wasteManagementDataDTO.getIndustrialSolidWasteStats());
+                                } else {
+                                        log.info("No Industrial Solid Waste Stats data to fill.");
+                                }
+                                // 3.3
+                                if (wasteManagementDataDTO.getRecycleIndustrialWasteStats() != null
+                                                && !wasteManagementDataDTO.getRecycleIndustrialWasteStats().isEmpty()) {
+                                        log.info(" Filling Recycle Industrial Waste Stats table ({} records)",
+                                                        wasteManagementDataDTO.getRecycleIndustrialWasteStats().size());
+                                        TableMappingService.fillRecycleIndustrialWasteTable(doc,
+                                                        wasteManagementDataDTO.getRecycleIndustrialWasteStats());
+                                } else {
+                                        log.info("No Recycle Industrial Waste Stats data to fill.");
+                                }
+                                // 3.4
+                                if (wasteManagementDataDTO.getOtherSolidWasteStats() != null
+                                                && !wasteManagementDataDTO.getOtherSolidWasteStats().isEmpty()) {
+                                        log.info(" Filling Other Solid Waste Stats table ({} records)",
+                                                        wasteManagementDataDTO.getOtherSolidWasteStats().size());
+                                        TableMappingService.fillOtherSolidWasteStatsTable(doc,
+                                                        wasteManagementDataDTO.getOtherSolidWasteStats());
+                                } else {
+                                        log.info("No Other Solid Waste Stats data to fill.");
+                                }
+                                // 4.1
+                                if (wasteManagementDataDTO.getHazardousWasteStats() != null
+                                                && !wasteManagementDataDTO.getHazardousWasteStats().isEmpty()) {
+                                        log.info(" Filling Hazardous Waste Stats table ({} records)",
+                                                        wasteManagementDataDTO.getHazardousWasteStats().size());
+                                        TableMappingService.fillHazardousWasteStatsTable(doc,
+                                                        wasteManagementDataDTO.getHazardousWasteStats());
+                                } else {
+                                        log.info("No Hazardous Waste Stats data to fill.");
+                                }
+                                // 4.2
+                                if (wasteManagementDataDTO.getExportedHwStats() != null
+                                                && !wasteManagementDataDTO.getExportedHwStats().isEmpty()) {
+                                        log.info(" Filling Exported HW Stats table ({} records)",
+                                                        wasteManagementDataDTO.getExportedHwStats().size());
+                                        TableMappingService.fillExportedHwStatsTable(doc,
+                                                        wasteManagementDataDTO.getExportedHwStats());
+                                } else {
+                                        log.info("No Exported HW Stats data to fill.");
+                                }
+                                // 4.3
+                                if (wasteManagementDataDTO.getSelfTreatedHwStats() != null
+                                                && !wasteManagementDataDTO.getSelfTreatedHwStats().isEmpty()) {
+                                        log.info(" Filling Self Treated HW Stats table ({} records)",
+                                                        wasteManagementDataDTO.getSelfTreatedHwStats().size());
+                                        TableMappingService.fillSeftTreatedHwStatsTable(doc,
+                                                        wasteManagementDataDTO.getSelfTreatedHwStats());
+                                } else {
+                                        log.info("No Self Treated HW Stats data to fill.");
+                                }
+                                // 7.1
+                                if (wasteManagementDataDTO.getPopInventoryStats() != null
+                                                && !wasteManagementDataDTO.getPopInventoryStats().isEmpty()) {
+                                        log.info(" Filling POP Inventory Stats table ({} records)",
+                                                        wasteManagementDataDTO.getPopInventoryStats().size());
+                                        TableMappingService.fillPopInventoryStatsTable(doc,
+                                                        wasteManagementDataDTO.getPopInventoryStats());
+                                } else {
+                                        log.info("No POP Inventory Stats data to fill.");
+                                }
+                        }
+
                         doc.write(baos);
                         byte[] result = baos.toByteArray();
 

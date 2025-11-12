@@ -43,10 +43,10 @@ public class UserProfile {
     @Column(columnDefinition = "uniqueidentifier")
     UUID userProfileId;
 
-    @Column(nullable = true)
+    @Column(nullable = true, columnDefinition = "NVARCHAR(255)")
     String avatarUrl;
 
-    @Column(nullable = true)
+    @Column(nullable = true, columnDefinition = "NVARCHAR(255)")
     String identificationNumber;
     
     @Column(nullable = true, columnDefinition = "NVARCHAR(255)")

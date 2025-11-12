@@ -44,36 +44,31 @@ public class BusinessDetail {
     @Column(name = "business_detail_id", columnDefinition = "uniqueidentifier")
     UUID businessDetailId;
 
-    
     @Column(nullable = false, unique = true, columnDefinition = "NVARCHAR(255)")
     String facilityName;
 
-    
     @Column(nullable = false, columnDefinition = "NVARCHAR(255)")
     String legalRepresentative;
 
-    @Column(nullable = false, length = 20)
+    @Column(nullable = false, length = 20, columnDefinition = "NVARCHAR(255)")
     String phoneNumber;
 
-    
     @Column(nullable = false, columnDefinition = "NVARCHAR(500)")
     String address;
 
-    
     @Column(nullable = false, columnDefinition = "NVARCHAR(255)")
     String activityType;
 
-    
     @Column(nullable = false, columnDefinition = "NVARCHAR(255)")
     String scaleCapacity;
-
-    @Column(length = 100)
+    @Nationalized
+    @Column(length = 100, columnDefinition = "NVARCHAR(255)")
     String ISO_certificate_14001;
-
-    @Column(name = "iso_certificate_file_path", length = 255)
+    @Nationalized
+    @Column(name = "iso_certificate_file_path", length = 255, columnDefinition = "NVARCHAR(255)")
     String isoCertificateFilePath;
-
-    @Column(nullable = false, length = 50)
+    @Nationalized
+    @Column(nullable = false, length = 50, columnDefinition = "NVARCHAR(255)")
     String businessRegistrationNumber;
 
     @Column(nullable = false, unique = true)
@@ -82,7 +77,7 @@ public class BusinessDetail {
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     OperationType operationType = OperationType.REGULAR;
-    
+
     @Column(length = 500, columnDefinition = "NVARCHAR(500)")
     String seasonalDescription;
 

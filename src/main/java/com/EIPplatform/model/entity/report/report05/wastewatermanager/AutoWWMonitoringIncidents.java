@@ -31,10 +31,10 @@ public class AutoWWMonitoringIncidents {
     
     @Column(name = "incident_name", columnDefinition = "NVARCHAR(200)", nullable = false)
     String incidentName;
-
-    @Column(name = "incident_time", nullable = false)
+    @Nationalized
+    @Column(name = "incident_time", nullable = false, columnDefinition = "NVARCHAR(255)")
     String incidentTime;
-
-    @Column(name = "incident_remedy", columnDefinition = "NTEXT", nullable = false)
+    @Nationalized
+    @Column(name = "incident_remedy", columnDefinition = "NVARCHAR(255)", nullable = false)
     String incidentRemedy;
 }
