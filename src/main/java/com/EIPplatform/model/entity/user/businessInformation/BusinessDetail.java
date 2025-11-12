@@ -67,9 +67,6 @@ public class BusinessDetail {
     @Column(nullable = false, columnDefinition = "NVARCHAR(255)")
     String scaleCapacity;
 
-    @Column(columnDefinition = "NVARCHAR(100)")
-    String operationFrequency;
-
     @Column(length = 100)
     String ISO_certificate_14001;
 
@@ -79,7 +76,7 @@ public class BusinessDetail {
     @Column(nullable = false, length = 50)
     String businessRegistrationNumber;
 
-    @Column(nullable = false, unique = true, length = 50)
+    @Column(nullable = false, unique = true)
     String taxCode;
 
     @Column(nullable = false)
