@@ -6,7 +6,7 @@ import com.EIPplatform.model.dto.report.report05.wastewatermanager.wastewaterman
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
-import java.math.BigDecimal;
+import java.lang.Double;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -25,7 +25,7 @@ public class ReportA05DTO {
     String reportingPeriod;
     String reviewNotes;
     String inspectionRemedyReport;
-    BigDecimal completionPercentage;
+    Double completionPercentage;
     LocalDateTime createdAt;
 
     WasteWaterDataDTO wasteWaterData;

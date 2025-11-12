@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
-import java.math.BigDecimal;
+import java.lang.Double;
 import java.time.LocalDate;
 
 import org.hibernate.annotations.Nationalized;
@@ -38,17 +38,17 @@ public class PopInventoryStat {
     @Column(name = "import_date")
     LocalDate importDate;
 
-    @Column(name = "import_volume", precision = 10, scale = 2)
-    BigDecimal importVolume;
+    @Column(name = "import_volume")
+    Double importVolume;
     @Nationalized
     @Column(name = "concentration", columnDefinition = "NVARCHAR(100)")
     String concentration;
 
-    @Column(name = "volume_used", precision = 10, scale = 2)
-    BigDecimal volumeUsed;
+    @Column(name = "volume_used")
+    Double volumeUsed;
 
-    @Column(name = "volume_stocked", precision = 10, scale = 2)
-    BigDecimal volumeStocked;
+    @Column(name = "volume_stocked")
+    Double volumeStocked;
     @Nationalized
     @Column(name = "compliance_result", columnDefinition = "NVARCHAR(255)")
     String complianceResult;

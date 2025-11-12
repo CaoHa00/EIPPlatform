@@ -4,7 +4,7 @@ import jakarta.validation.constraints.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
-import java.math.BigDecimal;
+import java.lang.Double;
 
 @Data
 @Builder
@@ -27,5 +27,5 @@ public class AirAutoQcvnExceedanceCreateDTO {
 
     @NotNull(message = "IS_REQUIRED")
     @DecimalMin(value = "0.0", inclusive = true)
-    BigDecimal exceedRatioPercent;
+    Double exceedRatioPercent;
 }

@@ -5,7 +5,7 @@
 //import lombok.*;
 //import lombok.experimental.FieldDefaults;
 //import org.hibernate.annotations.UuidGenerator;
-//import java.math.BigDecimal;
+//import java.lang.Double;
 //import java.util.UUID;
 //
 ///**
@@ -40,8 +40,8 @@
 //    @Column(name = "capture_technology", nullable = false, columnDefinition = "NVARCHAR(100)")
 //    String captureTechnology; // Mục 3.2, Bảng 3.2: Công nghệ thu hồi (e.g., Post-combustion, Pre-combustion, Oxy-fuel) (not_null)
 //
-//    @Column(name = "captured_co2_amount_tons", nullable = false, precision = 12, scale = 2)
-//    BigDecimal capturedCo2AmountTons; // Mục 3.2, Bảng 3.2: Lượng CO2 thu hồi (tấn CO2/năm) (not_null)
+//    @Column(name = "captured_co2_amount_tons", nullable = false, precision = 12)
+//    Double capturedCo2AmountTons; // Mục 3.2, Bảng 3.2: Lượng CO2 thu hồi (tấn CO2/năm) (not_null)
 //
 //    @Column(name = "storage_site_location", columnDefinition = "NVARCHAR(MAX)", nullable = false)
 //    String storageSiteLocation; // Mục 3.2, Bảng 3.2: Vị trí địa điểm lưu trữ (not_null)
@@ -49,6 +49,6 @@
 //    @Column(name = "monitoring_details", columnDefinition = "NVARCHAR(MAX)", nullable = false)
 //    String monitoringDetails; // Mục 3.2, Bảng 3.2: Chi tiết giám sát và xác minh (not_null)
 //
-//    @Column(name = "net_co2_sequestered_tons", nullable = false, precision = 12, scale = 2)
-//    BigDecimal netCo2SequesteredTons; // Mục 3.2, Bảng 3.2: Lượng CO2 lưu trữ ròng (tấn CO2/năm) (not_null)
+//    @Column(name = "net_co2_sequestered_tons", nullable = false, precision = 12)
+//    Double netCo2SequesteredTons; // Mục 3.2, Bảng 3.2: Lượng CO2 lưu trữ ròng (tấn CO2/năm) (not_null)
 //}

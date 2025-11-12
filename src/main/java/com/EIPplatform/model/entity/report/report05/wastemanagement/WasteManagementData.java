@@ -10,7 +10,7 @@ import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 import org.hibernate.annotations.Nationalized;
 
-import java.math.BigDecimal;
+import java.lang.Double;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -96,44 +96,45 @@ public class WasteManagementData {
     @Builder.Default
     List<PopInventoryStat> popInventoryStats = new ArrayList<>();
 
-    @Column(name = "water_total_volume_kg", nullable = false, precision = 10, scale = 2)
-    BigDecimal waterTotalVolumeKg;
+    @Column(name = "water_total_volume_kg")
+    Double waterTotalVolumeKg;
     @Nationalized
     @Column(name = "water_estimation_method", columnDefinition = "NVARCHAR(MAX)", nullable = false)
     String waterEstimationMethod;
 
-    @Column(name = "air_total_volume_kg", nullable = false, precision = 10, scale = 2)
-    BigDecimal airTotalVolumeKg;
+    @Column(name = "air_total_volume_kg")
+    Double airTotalVolumeKg;
     @Nationalized
     @Column(name = "air_estimation_method", columnDefinition = "NVARCHAR(MAX)", nullable = false)
     String airEstimationMethod;
 
-    @Column(name = "soil_total_volume_kg", nullable = false, precision = 10, scale = 2)
-    BigDecimal soilTotalVolumeKg;
+    @Column(name = "soil_total_volume_kg")
+    Double soilTotalVolumeKg;
     @Nationalized
     @Column(name = "soil_estimation_method", columnDefinition = "NVARCHAR(MAX)", nullable = false)
     String soilEstimationMethod;
 
-    @Column(name = "sewage_sludge_total_volume_kg", nullable = false, precision = 10, scale = 2)
-    BigDecimal sewageSludgeTotalVolumeKg;
+    @Column(name = "sewage_sludge_total_volume_kg")
+    Double sewageSludgeTotalVolumeKg;
     @Nationalized
     @Column(name = "sewage_sludge_estimation_method", columnDefinition = "NVARCHAR(MAX)", nullable = false)
     String sewageSludgeEstimationMethod;
 
-    @Column(name = "hw_onsite_total_volume_kg", nullable = false, precision = 10, scale = 2)
-    BigDecimal hwOnsiteTotalVolumeKg;
+    @Column(name = "hw_onsite_total_volume_kg")
+    Double hwOnsiteTotalVolumeKg;
     @Nationalized
     @Column(name = "hw_onsite_estimation_method", columnDefinition = "NVARCHAR(MAX)", nullable = false)
     String hwOnsiteEstimationMethod;
     @Nationalized
-    @Column(name = "hw_recycle_total_volume_kg", nullable = false, precision = 10, scale = 2)
-    BigDecimal hwRecycleTotalVolumeKg;
+    @Column(name = "hw_recycle_total_volume_kg")
+    Double hwRecycleTotalVolumeKg;
     @Nationalized
     @Column(name = "hw_recycle_estimation_method", columnDefinition = "NVARCHAR(MAX)", nullable = false)
     String hwRecycleEstimationMethod;
 
-    @Column(name = "hw_disposal_total_volume_kg", nullable = false, precision = 10, scale = 2)
-    BigDecimal hwDisposalTotalVolumeKg;
+    @Column(name = "hw_disposal_total_volume_kg")
+    Double hwDisposalTotalVolumeKg;
+    
     @Nationalized
     @Column(name = "hw_disposal_estimation_method", columnDefinition = "NVARCHAR(MAX)", nullable = false)
     String hwDisposalEstimationMethod;

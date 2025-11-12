@@ -13,7 +13,7 @@ import jakarta.validation.constraints.Size;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
-import java.math.BigDecimal;
+import java.lang.Double;
 import java.util.List;
 
 @Data
@@ -28,11 +28,11 @@ public class AirEmissionDataCreateDTO {
 
     @NotNull(message = "IS_REQUIRED")
     @DecimalMin(value = "0.0", inclusive = true)
-    BigDecimal airEmissionCy;
+    Double airEmissionCy;
 
     @NotNull(message = "IS_REQUIRED")
     @DecimalMin(value = "0.0", inclusive = true)
-    BigDecimal airEmissionPy;
+    Double airEmissionPy;
 
     @NotBlank(message = "IS_REQUIRED")
     @Size(max = 100)

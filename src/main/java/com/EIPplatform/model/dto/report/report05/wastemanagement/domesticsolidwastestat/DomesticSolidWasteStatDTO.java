@@ -3,7 +3,7 @@ package com.EIPplatform.model.dto.report.report05.wastemanagement.domesticsolidw
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
-import java.math.BigDecimal;
+import java.lang.Double;
 
 @Data
 @NoArgsConstructor
@@ -13,7 +13,7 @@ import java.math.BigDecimal;
 public class DomesticSolidWasteStatDTO {
     Long domesticId;
     String wasteTypeName;
-    BigDecimal volumeCy;
+    Double volumeCy;
     String receiverOrg;
-    BigDecimal volumePy;
+    Double volumePy;
 }

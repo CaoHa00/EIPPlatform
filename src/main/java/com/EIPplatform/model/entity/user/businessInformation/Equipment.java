@@ -6,7 +6,7 @@
 //import lombok.experimental.FieldDefaults;
 //import org.hibernate.annotations.UuidGenerator;
 //
-//import java.math.BigDecimal;
+//import java.lang.Double;
 //import java.time.LocalDateTime;
 //import java.util.UUID;
 ///**
@@ -44,8 +44,8 @@
 //    @Column(name = "equipment_purpose", nullable = false, columnDefinition = "NVARCHAR(255)")
 //    String equipmentPurpose; // equipment_purpose (not_null, mục đích sử dụng)
 //
-//    @Column(name = "equipment_condition", precision = 5, scale = 2) // equipment_condition (%) - Phần trăm tình trạng (e.g., 95.00%)
-//    BigDecimal equipmentCondition;
+//    @Column(name = "equipment_condition", precision = 5) // equipment_condition (%) - Phần trăm tình trạng (e.g., 95.00%)
+//    Double equipmentCondition;
 //
 //    @Column(name = "equipment_origin", columnDefinition = "NVARCHAR(255)")
 //    String equipmentOrigin; // equipment_origin (optional, nguồn gốc thiết bị)

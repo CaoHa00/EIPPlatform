@@ -60,9 +60,10 @@ public class ReportA05Controller {
      */
     @GetMapping("/{reportId}/draft")
     public ResponseEntity<ReportA05DraftDTO> getDraftData(
-            @PathVariable UUID reportId) {
-        log.info("GET /api/v1/reports/{}/draft", reportId);
-        ReportA05DraftDTO data = reportA05Service.getDraftData(reportId);
+            @PathVariable UUID reportId,
+            @RequestParam UUID userAccountId) {
+        log.info("GET /api/v1/reports/{}/draft - userAccountId: {}", reportId, userAccountId);
+        ReportA05DraftDTO data = reportA05Service.getDraftData(reportId, userAccountId);
 
         if (data == null) {
             return ResponseEntity.noContent().build();
@@ -71,13 +72,26 @@ public class ReportA05Controller {
     }
 
     /**
+     * Cập nhật completion percentage cho draft
+     */
+    @PostMapping("/{reportId}/draft/completion")
+    public ResponseEntity<ReportA05DraftDTO> updateDraftCompletion(
+            @PathVariable UUID reportId,
+            @RequestParam UUID userAccountId) {
+        log.info("POST /api/v1/reports/{}/draft/completion - userAccountId: {}", reportId, userAccountId);
+        ReportA05DraftDTO updated = reportA05Service.updateDraftCompletion(reportId, userAccountId);
+        return ResponseEntity.ok(updated);
+    }
+
+    /**
      * Submit draft từ CACHE xuống DATABASE
      */
     @PostMapping("/{reportId}/draft/submit")
     public ResponseEntity<ReportA05DTO> submitDraftToDatabase(
-            @PathVariable UUID reportId) {
-        log.info("POST /api/v1/reports/{}/draft/submit", reportId);
-        ReportA05DTO submitted = reportA05Service.submitDraftToDatabase(reportId);
+            @PathVariable UUID reportId,
+            @RequestParam UUID userAccountId) {
+        log.info("POST /api/v1/reports/{}/draft/submit - userAccountId: {}", reportId, userAccountId);
+        ReportA05DTO submitted = reportA05Service.submitDraftToDatabase(reportId, userAccountId);
         return ResponseEntity.ok(submitted);
     }
 
@@ -94,12 +108,14 @@ public class ReportA05Controller {
     }
 
     @GetMapping("/export/{reportId}")
-    public ResponseEntity<byte[]> exportReport(@PathVariable UUID reportId) {
+    public ResponseEntity<byte[]> exportReport(
+            @PathVariable UUID reportId,
+            @RequestParam UUID userAccountId) {
         try {
-            log.info(" Starting report export for reportId: {}", reportId);
+            log.info(" Starting report export for reportId: {} - userAccountId: {}", reportId, userAccountId);
 
             // 1. Generate report file
-            byte[] fileBytes = reportA05Service.generateReportFile(reportId);
+            byte[] fileBytes = reportA05Service.generateReportFile(reportId, userAccountId);
 
             if (fileBytes == null || fileBytes.length == 0) {
                 log.error(" Generated file is empty for reportId: {}", reportId);

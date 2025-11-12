@@ -39,7 +39,12 @@ public class WasteWaterDataServiceImpl implements WasteWaterDataService {
 
     @Override
     @Transactional
-    public WasteWaterDataDTO createWasteWaterData(UUID reportId, WasteWaterDataCreateDTO request, MultipartFile connectionFile, MultipartFile mapFile) {
+    public WasteWaterDataDTO createWasteWaterData(
+            UUID reportId,
+            UUID userAccountId,
+            WasteWaterDataCreateDTO request,
+            MultipartFile connectionFile,
+            MultipartFile mapFile) {
 
         ReportA05 report = reportA05Repository.findById(reportId)
                 .orElseThrow(() -> exceptionFactory.createNotFoundException(
@@ -49,26 +54,10 @@ public class WasteWaterDataServiceImpl implements WasteWaterDataService {
                         WasteWaterError.REPORT_NOT_FOUND
                 ));
 
-        ReportA05DraftDTO draft = reportCacheService.getDraftReport(reportId);
+        ReportA05DraftDTO draft = reportCacheService.getDraftReport(reportId, userAccountId);
         if (draft != null && draft.getWasteWaterData() != null) {
             WasteWaterDataDTO oldDto = draft.getWasteWaterData();
-            if (oldDto.getConnectionDiagram() != null && connectionFile!=null) {
-                try {
-                    fileStorageService.deleteFile(oldDto.getConnectionDiagram());
-                    log.info("Deleted old connection diagram file for WasteWaterData: {}", oldDto.getConnectionDiagram());
-                } catch (Exception e) {
-                    log.warn("Failed to delete old connection diagram file: {}", oldDto.getConnectionDiagram(), e);
-                }
-            }
-
-            if (oldDto.getAutoStationMap() != null && connectionFile!=null) {
-                try {
-                    fileStorageService.deleteFile(oldDto.getAutoStationMap());
-                    log.info("Deleted old auto station map file for WasteWaterData: {}", oldDto.getAutoStationMap());
-                } catch (Exception e) {
-                    log.warn("Failed to delete old auto station map file: {}", oldDto.getAutoStationMap(), e);
-                }
-            }
+            deleteOldFiles(oldDto, connectionFile, mapFile);
         }
 
         WasteWaterData entity = wasteWaterDataMapper.toEntity(request);
@@ -84,66 +73,47 @@ public class WasteWaterDataServiceImpl implements WasteWaterDataService {
         }
 
         WasteWaterDataDTO responseDto = wasteWaterDataMapper.toDto(entity);
-        saveToCache(reportId, responseDto);
+        saveToCache(reportId, userAccountId, responseDto);
 
-        log.info("Created (or replaced) WasteWaterData in cache for reportId: {}", reportId);
+        log.info("Created WasteWaterData in cache - reportId: {}, userAccountId: {}", reportId, userAccountId);
         return responseDto;
     }
 
-
     @Override
     @Transactional(readOnly = true)
-    public WasteWaterDataDTO getWasteWaterData(UUID reportId) {
-
-        ReportA05DraftDTO draft = reportCacheService.getDraftReport(reportId);
+    public WasteWaterDataDTO getWasteWaterData(UUID reportId, UUID userAccountId) {
+        ReportA05DraftDTO draft = reportCacheService.getDraftReport(reportId, userAccountId);
         if (draft != null && draft.getWasteWaterData() != null) {
-            log.info("Found WasteWaterData in cache for reportId: {}", reportId);
+            log.info("Found WasteWaterData in cache - reportId: {}, userAccountId: {}", reportId, userAccountId);
             return draft.getWasteWaterData();
         }
 
-        log.warn("WasteWaterData not found in cache for reportId: {}", reportId);
+        log.warn("WasteWaterData not found in cache - reportId: {}, userAccountId: {}", reportId, userAccountId);
         return null;
     }
 
     @Override
     @Transactional
-    public void deleteWasteWaterData(UUID reportId) {
-
-        ReportA05DraftDTO draft = reportCacheService.getDraftReport(reportId);
+    public void deleteWasteWaterData(UUID reportId, UUID userAccountId) {
+        ReportA05DraftDTO draft = reportCacheService.getDraftReport(reportId, userAccountId);
         if (draft != null && draft.getWasteWaterData() != null) {
             WasteWaterDataDTO dto = draft.getWasteWaterData();
-            if (dto.getConnectionDiagram() != null) {
-                try {
-                    fileStorageService.deleteFile(dto.getConnectionDiagram());
-                    log.info("Deleted connection diagram file for WasteWaterData: {}", dto.getConnectionDiagram());
-                } catch (Exception e) {
-                    log.warn("Failed to delete connection diagram file: {}", dto.getConnectionDiagram(), e);
-                }
-            }
-
-            if (dto.getAutoStationMap() != null) {
-                try {
-                    fileStorageService.deleteFile(dto.getAutoStationMap());
-                    log.info("Deleted auto station map file for WasteWaterData: {}", dto.getAutoStationMap());
-                } catch (Exception e) {
-                    log.warn("Failed to delete auto station map file: {}", dto.getAutoStationMap(), e);
-                }
-            }
+            deleteFiles(dto);
         }
 
         if (draft != null) {
             draft.setWasteWaterData(null);
-            reportCacheService.saveDraftReport(draft);
-            log.info("Deleted WasteWaterData from cache for reportId: {}", reportId);
+            reportCacheService.saveDraftReport(draft, userAccountId);
+            log.info("Deleted WasteWaterData from cache - reportId: {}, userAccountId: {}", reportId, userAccountId);
         } else {
-            log.warn("No draft found in cache for reportId: {}", reportId);
+            log.warn("No draft found in cache - reportId: {}, userAccountId: {}", reportId, userAccountId);
         }
     }
 
     @Override
     @Transactional
-    public void deleteWasteWaterDataConnectionFile(UUID reportId) {
-        ReportA05DraftDTO draft = reportCacheService.getDraftReport(reportId);
+    public void deleteWasteWaterDataConnectionFile(UUID reportId, UUID userAccountId) {
+        ReportA05DraftDTO draft = reportCacheService.getDraftReport(reportId, userAccountId);
         if (draft == null || draft.getWasteWaterData() == null) {
             throw exceptionFactory.createNotFoundException(
                     "WasteWaterData",
@@ -162,15 +132,15 @@ public class WasteWaterDataServiceImpl implements WasteWaterDataService {
 
         fileStorageService.deleteFile(dto.getConnectionDiagram());
         dto.setConnectionDiagram(null);
-        saveToCache(reportId, dto);
+        saveToCache(reportId, userAccountId, dto);
 
-        log.info("Deleted connection diagram file for WasteWaterData for reportId: {}", reportId);
+        log.info("Deleted connection diagram file - reportId: {}, userAccountId: {}", reportId, userAccountId);
     }
 
     @Override
     @Transactional
-    public void deleteWasteWaterDataMapFile(UUID reportId) {
-        ReportA05DraftDTO draft = reportCacheService.getDraftReport(reportId);
+    public void deleteWasteWaterDataMapFile(UUID reportId, UUID userAccountId) {
+        ReportA05DraftDTO draft = reportCacheService.getDraftReport(reportId, userAccountId);
         if (draft == null || draft.getWasteWaterData() == null) {
             throw exceptionFactory.createNotFoundException(
                     "WasteWaterData",
@@ -189,15 +159,15 @@ public class WasteWaterDataServiceImpl implements WasteWaterDataService {
 
         fileStorageService.deleteFile(dto.getAutoStationMap());
         dto.setAutoStationMap(null);
-        saveToCache(reportId, dto);
+        saveToCache(reportId, userAccountId, dto);
 
-        log.info("Deleted auto station map file for WasteWaterData for reportId: {}", reportId);
+        log.info("Deleted auto station map file - reportId: {}, userAccountId: {}", reportId, userAccountId);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public Resource downloadWasteWaterDataConnectionFile(UUID reportId) {
-        ReportA05DraftDTO draft = reportCacheService.getDraftReport(reportId);
+    public Resource downloadWasteWaterDataConnectionFile(UUID reportId, UUID userAccountId) {
+        ReportA05DraftDTO draft = reportCacheService.getDraftReport(reportId, userAccountId);
         if (draft == null || draft.getWasteWaterData() == null) {
             throw exceptionFactory.createNotFoundException(
                     "WasteWaterData",
@@ -219,8 +189,8 @@ public class WasteWaterDataServiceImpl implements WasteWaterDataService {
 
     @Override
     @Transactional(readOnly = true)
-    public Resource downloadWasteWaterDataMapFile(UUID reportId) {
-        ReportA05DraftDTO draft = reportCacheService.getDraftReport(reportId);
+    public Resource downloadWasteWaterDataMapFile(UUID reportId, UUID userAccountId) {
+        ReportA05DraftDTO draft = reportCacheService.getDraftReport(reportId, userAccountId);
         if (draft == null || draft.getWasteWaterData() == null) {
             throw exceptionFactory.createNotFoundException(
                     "WasteWaterData",
@@ -242,8 +212,8 @@ public class WasteWaterDataServiceImpl implements WasteWaterDataService {
 
     @Override
     @Transactional(readOnly = true)
-    public boolean hasWasteWaterDataConnectionFile(UUID reportId) {
-        ReportA05DraftDTO draft = reportCacheService.getDraftReport(reportId);
+    public boolean hasWasteWaterDataConnectionFile(UUID reportId, UUID userAccountId) {
+        ReportA05DraftDTO draft = reportCacheService.getDraftReport(reportId, userAccountId);
         if (draft == null || draft.getWasteWaterData() == null || draft.getWasteWaterData().getConnectionDiagram() == null) {
             return false;
         }
@@ -253,8 +223,8 @@ public class WasteWaterDataServiceImpl implements WasteWaterDataService {
 
     @Override
     @Transactional(readOnly = true)
-    public boolean hasWasteWaterDataMapFile(UUID reportId) {
-        ReportA05DraftDTO draft = reportCacheService.getDraftReport(reportId);
+    public boolean hasWasteWaterDataMapFile(UUID reportId, UUID userAccountId) {
+        ReportA05DraftDTO draft = reportCacheService.getDraftReport(reportId, userAccountId);
         if (draft == null || draft.getWasteWaterData() == null || draft.getWasteWaterData().getAutoStationMap() == null) {
             return false;
         }
@@ -265,8 +235,7 @@ public class WasteWaterDataServiceImpl implements WasteWaterDataService {
     // ==================== PRIVATE HELPERS ====================
 
     private String uploadConnectionDiagramFile(ReportA05 report, MultipartFile file) {
-        // Generate path: e.g., "reports/{reportId}/wastewater/connection-diagram/{year}/{filename}"
-        int year = LocalDateTime.now().getYear(); // Or from report date if available
+        int year = LocalDateTime.now().getYear();
         String fileName = "connection-diagram-" + System.currentTimeMillis() + "-" + file.getOriginalFilename();
         String directory = "reports/" + report.getReportId() + "/wastewater/connection-diagram/" + year;
         String filePath = fileStorageService.storeFile(directory, fileName, file);
@@ -276,8 +245,7 @@ public class WasteWaterDataServiceImpl implements WasteWaterDataService {
     }
 
     private String uploadAutoStationMapFile(ReportA05 report, MultipartFile file) {
-        // Generate path: e.g., "reports/{reportId}/wastewater/auto-station-map/{year}/{filename}"
-        int year = LocalDateTime.now().getYear(); // Or from report date if available
+        int year = LocalDateTime.now().getYear();
         String fileName = "auto-station-map-" + System.currentTimeMillis() + "-" + file.getOriginalFilename();
         String directory = "reports/" + report.getReportId() + "/wastewater/auto-station-map/" + year;
         String filePath = fileStorageService.storeFile(directory, fileName, file);
@@ -286,8 +254,8 @@ public class WasteWaterDataServiceImpl implements WasteWaterDataService {
         return filePath;
     }
 
-    private void saveToCache(UUID reportId, WasteWaterDataDTO data) {
-        ReportA05DraftDTO draft = reportCacheService.getDraftReport(reportId);
+    private void saveToCache(UUID reportId, UUID userAccountId, WasteWaterDataDTO data) {
+        ReportA05DraftDTO draft = reportCacheService.getDraftReport(reportId, userAccountId);
         if (draft == null) {
             draft = ReportA05DraftDTO.builder()
                     .reportId(reportId)
@@ -297,6 +265,46 @@ public class WasteWaterDataServiceImpl implements WasteWaterDataService {
         }
 
         draft.setWasteWaterData(data);
-        reportCacheService.saveDraftReport(draft);
+        reportCacheService.saveDraftReport(draft, userAccountId);
+    }
+
+    private void deleteOldFiles(WasteWaterDataDTO oldDto, MultipartFile connectionFile, MultipartFile mapFile) {
+        if (oldDto.getConnectionDiagram() != null && connectionFile != null) {
+            try {
+                fileStorageService.deleteFile(oldDto.getConnectionDiagram());
+                log.info("Deleted old connection diagram file: {}", oldDto.getConnectionDiagram());
+            } catch (Exception e) {
+                log.warn("Failed to delete old connection diagram file", e);
+            }
+        }
+
+        if (oldDto.getAutoStationMap() != null && mapFile != null) {
+            try {
+                fileStorageService.deleteFile(oldDto.getAutoStationMap());
+                log.info("Deleted old auto station map file: {}", oldDto.getAutoStationMap());
+            } catch (Exception e) {
+                log.warn("Failed to delete old auto station map file", e);
+            }
+        }
+    }
+
+    private void deleteFiles(WasteWaterDataDTO dto) {
+        if (dto.getConnectionDiagram() != null) {
+            try {
+                fileStorageService.deleteFile(dto.getConnectionDiagram());
+                log.info("Deleted connection diagram file: {}", dto.getConnectionDiagram());
+            } catch (Exception e) {
+                log.warn("Failed to delete connection diagram file", e);
+            }
+        }
+
+        if (dto.getAutoStationMap() != null) {
+            try {
+                fileStorageService.deleteFile(dto.getAutoStationMap());
+                log.info("Deleted auto station map file: {}", dto.getAutoStationMap());
+            } catch (Exception e) {
+                log.warn("Failed to delete auto station map file", e);
+            }
+        }
     }
 }

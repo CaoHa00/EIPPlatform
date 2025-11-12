@@ -6,7 +6,7 @@ import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
-import java.math.BigDecimal;
+import java.lang.Double;
 
 @Data
 @Builder
@@ -22,7 +22,7 @@ public class SelfTreatedHwStatCreateDTO {
 
     @NotNull(message = "IS_REQUIRED")
     @DecimalMin(value = "0.0", inclusive = true)
-    BigDecimal volumeKg;
+    Double volumeKg;
 
     @NotBlank(message = "IS_REQUIRED")
     String selfTreatmentMethod;

@@ -6,7 +6,7 @@ import jakarta.validation.constraints.Size;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
-import java.math.BigDecimal;
+import java.lang.Double;
 import java.time.LocalDate;
 
 @Data
@@ -19,13 +19,13 @@ public class PopInventoryStatCreateDTO {
     String popName;
 
     @DecimalMin(value = "0.0", inclusive = true)
-    BigDecimal importVolume;
+    Double importVolume;
 
     @DecimalMin(value = "0.0", inclusive = true)
-    BigDecimal volumeUsed;
+    Double volumeUsed;
 
     @DecimalMin(value = "0.0", inclusive = true)
-    BigDecimal volumeStocked;
+    Double volumeStocked;
 
     @Size(max = 50)
     String casCode;

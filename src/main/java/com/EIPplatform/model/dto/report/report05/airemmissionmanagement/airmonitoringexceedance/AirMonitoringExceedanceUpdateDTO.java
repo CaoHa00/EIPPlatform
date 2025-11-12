@@ -4,7 +4,7 @@ package com.EIPplatform.model.dto.report.report05.airemmissionmanagement.airmoni
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
-import java.math.BigDecimal;
+import java.lang.Double;
 
 @Data
 @Builder
@@ -25,7 +25,7 @@ public class AirMonitoringExceedanceUpdateDTO {
 
     String exceededParam;
 
-    BigDecimal resultValue;
+    Double resultValue;
 
-    BigDecimal qcvnLimit;
+    Double qcvnLimit;
 }

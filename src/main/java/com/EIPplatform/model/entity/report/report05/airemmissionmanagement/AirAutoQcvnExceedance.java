@@ -4,7 +4,6 @@ import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
-import java.math.BigDecimal;
 
 import org.hibernate.annotations.Nationalized;
 
@@ -36,6 +35,6 @@ public class AirAutoQcvnExceedance {
     @Column(name = "qcvn_limit_value", nullable = false)
     Integer qcvnLimitValue;
 
-    @Column(name = "exceed_ratio_percent", precision = 5, scale = 2, nullable = false)
-    BigDecimal exceedRatioPercent;
+    @Column(name = "exceed_ratio_percent", nullable = false)
+    Double exceedRatioPercent;
 }

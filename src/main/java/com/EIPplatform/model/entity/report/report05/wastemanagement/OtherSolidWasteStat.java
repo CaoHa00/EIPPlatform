@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
-import java.math.BigDecimal;
+import java.lang.Double;
 
 import org.hibernate.annotations.Nationalized;
 
@@ -31,8 +31,8 @@ public class OtherSolidWasteStat {
     @Column(name = "waste_group_other", columnDefinition = "NVARCHAR(255)", nullable = false)
     String wasteGroupOther;
 
-    @Column(name = "volume_cy", precision = 10, scale = 2, nullable = false)
-    BigDecimal volumeCy;
+    @Column(name = "volume_cy", nullable = false)
+    Double volumeCy;
     @Nationalized
     @Column(name = "self_treatment_method", columnDefinition = "NVARCHAR(255)")
     String selfTreatmentMethod;
@@ -40,6 +40,6 @@ public class OtherSolidWasteStat {
     @Column(name = "receiver_org", columnDefinition = "NVARCHAR(255)")
     String receiverOrg;
 
-    @Column(name = "volume_py", precision = 10, scale = 2, nullable = false)
-    BigDecimal volumePy;
+    @Column(name = "volume_py", nullable = false)
+    Double volumePy;
 }

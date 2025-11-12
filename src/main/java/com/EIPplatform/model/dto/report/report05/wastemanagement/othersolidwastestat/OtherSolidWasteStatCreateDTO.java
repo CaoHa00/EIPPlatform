@@ -7,7 +7,7 @@ import jakarta.validation.constraints.Size;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
-import java.math.BigDecimal;
+import java.lang.Double;
 
 @Data
 @Builder
@@ -20,11 +20,11 @@ public class OtherSolidWasteStatCreateDTO {
 
     @NotNull(message = "IS_REQUIRED")
     @DecimalMin(value = "0.0", inclusive = true)
-    BigDecimal volumeCy;
+    Double volumeCy;
 
     @NotNull(message = "IS_REQUIRED")
     @DecimalMin(value = "0.0", inclusive = true)
-    BigDecimal volumePy;
+    Double volumePy;
 
     @Size(max = 255)
     String selfTreatmentMethod;

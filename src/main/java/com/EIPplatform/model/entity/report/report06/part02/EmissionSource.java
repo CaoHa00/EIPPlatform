@@ -5,7 +5,7 @@
 //import lombok.*;
 //import lombok.experimental.FieldDefaults;
 //import org.hibernate.annotations.UuidGenerator;
-//import java.math.BigDecimal;
+//import java.lang.Double;
 //import java.util.UUID;
 //
 ///**
@@ -47,8 +47,8 @@
 //    @Column(name = "source_description", columnDefinition = "NVARCHAR(MAX)")
 //    String sourceDescription; // Mục 3, Bảng 3.1: Mô tả nguồn (optional)
 //
-//    @Column(name = "ghg_emitted", precision = 12, scale = 2)
-//    BigDecimal ghgEmitted; // Mục 3, Bảng 3.1: Khí nhà kính phát thải (tCO2e, optional, auto-calc sau)
+//    @Column(name = "ghg_emitted", precision = 12)
+//    Double ghgEmitted; // Mục 3, Bảng 3.1: Khí nhà kính phát thải (tCO2e, optional, auto-calc sau)
 //
 //    @Column(name = "data_input_source", nullable = false, columnDefinition = "NVARCHAR(255)")
 //    String dataInputSource; // Mục 3, Bảng 3.1: Nguồn dữ liệu đầu vào (not_null)

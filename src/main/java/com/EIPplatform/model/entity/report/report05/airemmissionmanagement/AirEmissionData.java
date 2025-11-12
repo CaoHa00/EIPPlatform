@@ -11,7 +11,7 @@ import org.hibernate.annotations.FetchMode;
 import org.hibernate.annotations.Nationalized;
 import org.hibernate.annotations.UpdateTimestamp;
 
-import java.math.BigDecimal;
+import java.lang.Double;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -39,11 +39,11 @@ public class AirEmissionData {
     @Column(name = "air_treatment_desc", nullable = false, columnDefinition = "NVARCHAR(MAX)")
     String airTreatmentDesc;
 
-    @Column(name = "air_emission_cy", precision = 15, scale = 2, nullable = false)
-    BigDecimal airEmissionCy;
+    @Column(name = "air_emission_cy", nullable = false)
+    Double airEmissionCy;
 
-    @Column(name = "air_emission_py", precision = 15, scale = 2, nullable = false)
-    BigDecimal airEmissionPy;
+    @Column(name = "air_emission_py", nullable = false)
+    Double airEmissionPy;
     @Nationalized
     @Column(name = "air_monitor_period", nullable = false, columnDefinition = "NVARCHAR(100)")
     String airMonitorPeriod;

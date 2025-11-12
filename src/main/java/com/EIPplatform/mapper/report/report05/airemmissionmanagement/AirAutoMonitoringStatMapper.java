@@ -11,22 +11,20 @@ import java.util.List;
 @Mapper(componentModel = "spring")
 public interface AirAutoMonitoringStatMapper {
 
-    // Create DTO to Entity
-    @Mapping(target = "airAutoMonitoringStatId", ignore = true) // Auto-generate ID
-    @Mapping(target = "airEmissionData", ignore = true) // Set in service
+    @Mapping(target = "airAutoMonitoringStatId", ignore = true)
+    @Mapping(target = "airEmissionData", ignore = true)
     @Mapping(source = "paramName", target = "paramName")
     @Mapping(source = "valDesign", target = "valDesign")
     @Mapping(source = "valReceived", target = "valReceived")
     @Mapping(source = "valError", target = "valError")
-    @Mapping(source = "ratioReceivedDesign", target = "ratioReceivedDesign") // BigDecimal tự handle
-    @Mapping(source = "ratioErrorReceived", target = "ratioErrorReceived") // BigDecimal tự handle
+    @Mapping(source = "ratioReceivedDesign", target = "ratioReceivedDesign")
+    @Mapping(source = "ratioErrorReceived", target = "ratioErrorReceived")
     AirAutoMonitoringStat toEntity(AirAutoMonitoringStatCreateDTO dto);
 
-    // List mapping
     List<AirAutoMonitoringStat> toEntityList(List<AirAutoMonitoringStatCreateDTO> dtos);
 
     // Entity to Response DTO
-    @Mapping(source = "airAutoMonitoringStatId", target = "id") // Map ID to DTO's id
+    @Mapping(source = "airAutoMonitoringStatId", target = "id")
     @Mapping(source = "paramName", target = "paramName")
     @Mapping(source = "valDesign", target = "valDesign")
     @Mapping(source = "valReceived", target = "valReceived")
@@ -35,7 +33,6 @@ public interface AirAutoMonitoringStatMapper {
     @Mapping(source = "ratioErrorReceived", target = "ratioErrorReceived")
     AirAutoMonitoringStatDTO toDto(AirAutoMonitoringStat entity);
 
-    // List to DTO list
     List<AirAutoMonitoringStatDTO> toDtoList(List<AirAutoMonitoringStat> entities);
 
     @AfterMapping

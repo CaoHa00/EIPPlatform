@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
-import java.math.BigDecimal;
+import java.lang.Double;
 
 import org.hibernate.annotations.Nationalized;
 
@@ -37,8 +37,8 @@ public class ExportedHwStat {
     @Column(name = "basel_code", columnDefinition = "NVARCHAR(50)")
     String baselCode;
 
-    @Column(name = "volume_kg", precision = 10, scale = 2, nullable = false)
-    BigDecimal volumeKg;
+    @Column(name = "volume_kg", nullable = false)
+    Double volumeKg;
     @Nationalized
     @Column(name = "transporter_org", columnDefinition = "NVARCHAR(MAX)", nullable = false)
     String transporterOrg;

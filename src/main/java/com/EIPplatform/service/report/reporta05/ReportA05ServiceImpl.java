@@ -28,7 +28,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
-import java.math.BigDecimal;
+import java.lang.Double;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
@@ -87,7 +87,7 @@ public class ReportA05ServiceImpl implements ReportA05Service {
                                 .reportingPeriod(request.getReportingPeriod())
                                 .version(1)
                                 .isDeleted(false)
-                                .completionPercentage(BigDecimal.ZERO)
+                                .completionPercentage(0.0)
                                 .build();
 
                 ReportA05 saved = reportA05Repository.save(report);
@@ -154,8 +154,8 @@ public class ReportA05ServiceImpl implements ReportA05Service {
         }
 
         @Override
-        public ReportA05DraftDTO getDraftData(UUID reportId) {
-                ReportA05DraftDTO draft = reportCacheService.getDraftReport(reportId);
+        public ReportA05DraftDTO getDraftData(UUID reportId, UUID userAccountId) {
+                ReportA05DraftDTO draft = reportCacheService.getDraftReport(reportId, userAccountId);
                 if (draft == null) {
                         return null;
                 }
@@ -168,23 +168,23 @@ public class ReportA05ServiceImpl implements ReportA05Service {
          */
         @Override
         @Transactional
-        public ReportA05DraftDTO updateDraftCompletion(UUID reportId) {
-                ReportA05DraftDTO draft = getDraftData(reportId);
+        public ReportA05DraftDTO updateDraftCompletion(UUID reportId, UUID userAccountId) {
+                ReportA05DraftDTO draft = getDraftData(reportId, userAccountId);
                 if (draft == null) {
                         throw exceptionFactory.createCustomException(ReportError.DRAFT_NOT_FOUND);
                 }
                 int percentage = calculateCompletionPercentage(draft);
                 draft.setCompletionPercentage(percentage);
                 draft.setLastModified(LocalDateTime.now());
-                reportCacheService.saveDraftReport(draft);
-                log.info("Updated completion for report {}: {}%", reportId, percentage);
+                reportCacheService.saveDraftReport(draft, userAccountId);
+                log.info("Updated completion for report {} (user {}): {}%", reportId, userAccountId, percentage);
                 return draft;
         }
 
         @Override
         @Transactional
-        public ReportA05DTO submitDraftToDatabase(UUID reportId) {
-                ReportA05DraftDTO draftData = getDraftData(reportId);
+        public ReportA05DTO submitDraftToDatabase(UUID reportId, UUID userAccountId) {
+                ReportA05DraftDTO draftData = getDraftData(reportId, userAccountId);
                 if (draftData == null) {
                         throw exceptionFactory.createCustomException(ReportError.DRAFT_NOT_FOUND);
                 }
@@ -196,42 +196,42 @@ public class ReportA05ServiceImpl implements ReportA05Service {
 
                 if (!isDraftComplete(draftData)) {
                         throw exceptionFactory.createValidationException("ReportA05Draft", "completionPercentage",
-                                        (draftData.getCompletionPercentage() != null
-                                                        ? draftData.getCompletionPercentage()
-                                                        : 0),
-                                        ReportError.DRAFT_INCOMPLETE);
+                                (draftData.getCompletionPercentage() != null
+                                        ? draftData.getCompletionPercentage()
+                                        : 0),
+                                ReportError.DRAFT_INCOMPLETE);
                 }
 
                 ReportA05 report = reportA05Repository.findById(reportId)
-                                .orElseThrow(() -> exceptionFactory.createNotFoundException("ReportA05", reportId,
-                                                ReportError.REPORT_NOT_FOUND));
+                        .orElseThrow(() -> exceptionFactory.createNotFoundException("ReportA05", reportId,
+                                ReportError.REPORT_NOT_FOUND));
 
                 saveOrUpdateWasteWaterData(report, draftData);
                 saveOrUpdateWasteManagementData(report, draftData);
                 saveOrUpdateAirEmissionData(report, draftData);
 
                 if (draftData.getCompletionPercentage() != null) {
-                        report.setCompletionPercentage(BigDecimal.valueOf(draftData.getCompletionPercentage()));
+                        report.setCompletionPercentage(Double.valueOf(draftData.getCompletionPercentage()));
                 }
 
                 ReportA05 saved = reportA05Repository.save(report);
 
                 draftData.setIsDraft(false);
                 draftData.setLastModified(LocalDateTime.now());
-                reportCacheService.deleteDraftReport(reportId);
+                reportCacheService.deleteDraftReport(reportId, userAccountId);
 
                 BusinessDetail bd = saved.getBusinessDetail();
                 return ReportA05DTO.builder()
-                                .reportCode(saved.getReportCode())
-                                .businessDetailId(bd != null ? bd.getBusinessDetailId() : null)
-                                .facilityName(bd != null ? bd.getFacilityName() : null)
-                                .reportYear(saved.getReportYear())
-                                .reportingPeriod(saved.getReportingPeriod())
-                                .reviewNotes(saved.getReviewNotes())
-                                .inspectionRemedyReport(saved.getInspectionRemedyReport())
-                                .completionPercentage(saved.getCompletionPercentage())
-                                .createdAt(saved.getCreatedAt())
-                                .build();
+                        .reportCode(saved.getReportCode())
+                        .businessDetailId(bd != null ? bd.getBusinessDetailId() : null)
+                        .facilityName(bd != null ? bd.getFacilityName() : null)
+                        .reportYear(saved.getReportYear())
+                        .reportingPeriod(saved.getReportingPeriod())
+                        .reviewNotes(saved.getReviewNotes())
+                        .inspectionRemedyReport(saved.getInspectionRemedyReport())
+                        .completionPercentage(saved.getCompletionPercentage())
+                        .createdAt(saved.getCreatedAt())
+                        .build();
         }
 
         @Override
@@ -273,14 +273,12 @@ public class ReportA05ServiceImpl implements ReportA05Service {
         }
 
         private int calculateCompletionPercentage(ReportA05DraftDTO draft) {
-                int score = 0;
-                if (isSectionComplete(draft.getWasteWaterData()))
-                        score += 33;
-                if (isSectionComplete(draft.getWasteManagementData()))
-                        score += 33;
-                if (isSectionComplete(draft.getAirEmissionData()))
-                        score += 34;
-                return score;
+                if (draft.getWasteWaterData() != null
+                        && draft.getWasteManagementData() != null
+                        && draft.getAirEmissionData() != null) {
+                        return 100;
+                }
+                return 0;
         }
 
         private boolean isSectionComplete(Object sectionDto) {
@@ -291,15 +289,9 @@ public class ReportA05ServiceImpl implements ReportA05Service {
         }
 
         private boolean isDraftComplete(ReportA05DraftDTO draftData) {
-                // Tính % nếu null
-                if (draftData.getCompletionPercentage() == null) {
-                        draftData.setCompletionPercentage(calculateCompletionPercentage(draftData));
-                }
-                boolean allFieldsFilled = draftData.getWasteWaterData() != null
-                                && draftData.getWasteManagementData() != null
-                                && draftData.getAirEmissionData() != null;
-                boolean completionComplete = draftData.getCompletionPercentage() == 100;
-                return allFieldsFilled && completionComplete;
+                return draftData.getWasteWaterData() != null
+                        && draftData.getWasteManagementData() != null
+                        && draftData.getAirEmissionData() != null;
         }
 
         private void saveOrUpdateWasteWaterData(ReportA05 report, ReportA05DraftDTO draftData) {
@@ -365,7 +357,7 @@ public class ReportA05ServiceImpl implements ReportA05Service {
         }
 
         @Override
-        public byte[] generateReportFile(UUID reportId) throws Exception {
+        public byte[] generateReportFile(UUID reportId, UUID userAccountId) throws Exception {
                 ReportA05 report = reportA05Repository.findById(reportId)
                                 .orElseThrow(() -> exceptionFactory.createNotFoundException("ReportA05",
                                                 reportId,
@@ -376,7 +368,7 @@ public class ReportA05ServiceImpl implements ReportA05Service {
                         throw exceptionFactory.createCustomException(ReportError.BUSINESS_NOT_FOUND);
                 }
 
-                ReportA05DraftDTO draftData = getDraftData(reportId);
+                ReportA05DraftDTO draftData = getDraftData(reportId, userAccountId);
                 WasteWaterDataDTO wasteWaterDataDTO = draftData != null ? draftData.getWasteWaterData() : null;
 
                 // Map dữ liệu với key chính xác

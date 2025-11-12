@@ -6,7 +6,7 @@ import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
-import java.math.BigDecimal;
+import java.lang.Double;
 @Data
 @Builder
 @AllArgsConstructor
@@ -18,12 +18,12 @@ public class IndustrialSolidWasteStatCreateDTO {
 
     @NotNull(message = "IS_REQUIRED")
     @DecimalMin(value = "0.0", inclusive = true)
-    BigDecimal volumeCy;
+    Double volumeCy;
 
     @NotBlank(message = "IS_REQUIRED")
     String receiverOrg;
 
     @NotNull(message = "IS_REQUIRED")
     @DecimalMin(value = "0.0", inclusive = true)
-    BigDecimal volumePy;
+    Double volumePy;
 }

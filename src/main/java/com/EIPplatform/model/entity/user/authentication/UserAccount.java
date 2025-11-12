@@ -42,7 +42,7 @@ import lombok.experimental.FieldDefaults;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "[user_account]")
+@Table(name = "user_account")
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @EntityListeners(AuditingEntityListener.class)

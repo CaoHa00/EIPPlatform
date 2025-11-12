@@ -29,6 +29,7 @@ public class BusinessDetailResponse {
     String taxCode;
     OperationType operationType;
     String seasonalDescription;
+    String operationFrequency;
 
     List<String> userAccounts;
 

@@ -5,7 +5,7 @@
 //import lombok.experimental.FieldDefaults;
 //import org.hibernate.annotations.UuidGenerator;
 //
-//import java.math.BigDecimal;
+//import java.lang.Double;
 //import java.time.LocalDateTime;
 //import java.util.UUID;
 //
@@ -29,8 +29,8 @@
 //    @Column(name = "scale_capacity_id", updatable = false, nullable = false)
 //    UUID scaleCapacityId; // scale_capacity_id (PK, not_null)
 //
-//    @Column(name = "total_area", nullable = false, precision = 12, scale = 2)
-//    BigDecimal totalArea; // total_area (not_null, diện tích tổng, e.g., m²)
+//    @Column(name = "total_area", nullable = false, precision = 12)
+//    Double totalArea; // total_area (not_null, diện tích tổng, e.g., m²)
 //
 //    @Column(name = "boundary_north", columnDefinition = "NVARCHAR(500)")
 //    String boundaryNorth; // boundary_north (optional, mô tả ranh giới phía Bắc)

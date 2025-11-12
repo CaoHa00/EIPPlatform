@@ -29,10 +29,11 @@ public class WasteWaterDataController {
     @PostMapping(value = "/{reportId}/draft/waste-water", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ApiResponse<WasteWaterDataDTO> createWasteWaterData(
             @PathVariable UUID reportId,
+            @RequestParam UUID userAccountId,
             @RequestPart("data") WasteWaterDataCreateDTO request,
             @RequestPart(value = "connectionFile", required = false) MultipartFile connectionFile,
             @RequestPart(value = "mapFile", required = false) MultipartFile mapFile) {
-        var result = wasteWaterDataService.createWasteWaterData(reportId, request, connectionFile, mapFile);
+        var result = wasteWaterDataService.createWasteWaterData(reportId, userAccountId, request, connectionFile, mapFile);
         return ApiResponse.<WasteWaterDataDTO>builder()
                 .result(result)
                 .build();
@@ -40,8 +41,9 @@ public class WasteWaterDataController {
 
     @GetMapping("/{reportId}/draft/waste-water")
     public ApiResponse<WasteWaterDataDTO> getWasteWaterData(
-            @PathVariable UUID reportId) {
-        var result = wasteWaterDataService.getWasteWaterData(reportId);
+            @PathVariable UUID reportId,
+            @RequestParam UUID userAccountId) {
+        var result = wasteWaterDataService.getWasteWaterData(reportId, userAccountId);
         return ApiResponse.<WasteWaterDataDTO>builder()
                 .result(result)
                 .build();
@@ -49,32 +51,36 @@ public class WasteWaterDataController {
 
     @DeleteMapping("/{reportId}/draft/waste-water")
     public ApiResponse<Void> deleteWasteWaterData(
-            @PathVariable UUID reportId) {
-        wasteWaterDataService.deleteWasteWaterData(reportId);
+            @PathVariable UUID reportId,
+            @RequestParam UUID userAccountId) {
+        wasteWaterDataService.deleteWasteWaterData(reportId, userAccountId);
         return ApiResponse.<Void>builder()
                 .build();
     }
 
     @DeleteMapping("/{reportId}/draft/waste-water/connection-file")
     public ApiResponse<Void> deleteWasteWaterDataConnectionFile(
-            @PathVariable UUID reportId) {
-        wasteWaterDataService.deleteWasteWaterDataConnectionFile(reportId);
+            @PathVariable UUID reportId,
+            @RequestParam UUID userAccountId) {
+        wasteWaterDataService.deleteWasteWaterDataConnectionFile(reportId, userAccountId);
         return ApiResponse.<Void>builder()
                 .build();
     }
 
     @DeleteMapping("/{reportId}/draft/waste-water/map-file")
     public ApiResponse<Void> deleteWasteWaterDataMapFile(
-            @PathVariable UUID reportId) {
-        wasteWaterDataService.deleteWasteWaterDataMapFile(reportId);
+            @PathVariable UUID reportId,
+            @RequestParam UUID userAccountId) {
+        wasteWaterDataService.deleteWasteWaterDataMapFile(reportId, userAccountId);
         return ApiResponse.<Void>builder()
                 .build();
     }
 
     @GetMapping("/{reportId}/draft/waste-water/connection-file/download")
     public ResponseEntity<Resource> downloadWasteWaterDataConnectionFile(
-            @PathVariable UUID reportId) {
-        Resource resource = wasteWaterDataService.downloadWasteWaterDataConnectionFile(reportId);
+            @PathVariable UUID reportId,
+            @RequestParam UUID userAccountId) {
+        Resource resource = wasteWaterDataService.downloadWasteWaterDataConnectionFile(reportId, userAccountId);
         return ResponseEntity.ok()
                 .contentType(MediaType.APPLICATION_OCTET_STREAM)
                 .header(HttpHeaders.CONTENT_DISPOSITION,
@@ -84,8 +90,9 @@ public class WasteWaterDataController {
 
     @GetMapping("/{reportId}/draft/waste-water/map-file/download")
     public ResponseEntity<Resource> downloadWasteWaterDataMapFile(
-            @PathVariable UUID reportId) {
-        Resource resource = wasteWaterDataService.downloadWasteWaterDataMapFile(reportId);
+            @PathVariable UUID reportId,
+            @RequestParam UUID userAccountId) {
+        Resource resource = wasteWaterDataService.downloadWasteWaterDataMapFile(reportId, userAccountId);
         return ResponseEntity.ok()
                 .contentType(MediaType.APPLICATION_OCTET_STREAM)
                 .header(HttpHeaders.CONTENT_DISPOSITION,
@@ -95,8 +102,9 @@ public class WasteWaterDataController {
 
     @GetMapping("/{reportId}/draft/waste-water/connection-file/exists")
     public ApiResponse<Boolean> hasWasteWaterDataConnectionFile(
-            @PathVariable UUID reportId) {
-        var result = wasteWaterDataService.hasWasteWaterDataConnectionFile(reportId);
+            @PathVariable UUID reportId,
+            @RequestParam UUID userAccountId) {
+        var result = wasteWaterDataService.hasWasteWaterDataConnectionFile(reportId, userAccountId);
         return ApiResponse.<Boolean>builder()
                 .result(result)
                 .build();
@@ -104,8 +112,9 @@ public class WasteWaterDataController {
 
     @GetMapping("/{reportId}/draft/waste-water/map-file/exists")
     public ApiResponse<Boolean> hasWasteWaterDataMapFile(
-            @PathVariable UUID reportId) {
-        var result = wasteWaterDataService.hasWasteWaterDataMapFile(reportId);
+            @PathVariable UUID reportId,
+            @RequestParam UUID userAccountId) {
+        var result = wasteWaterDataService.hasWasteWaterDataMapFile(reportId, userAccountId);
         return ApiResponse.<Boolean>builder()
                 .result(result)
                 .build();

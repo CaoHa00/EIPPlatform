@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
-import java.math.BigDecimal;
+import java.lang.Double;
 
 import org.hibernate.annotations.Nationalized;
 
@@ -39,9 +39,9 @@ public class AirAutoMonitoringStat {
     @Column(name = "val_error", nullable = false)
     Integer valError;
 
-    @Column(name = "ratio_received_design", precision = 5, scale = 2, nullable = false)
-    BigDecimal ratioReceivedDesign;
+    @Column(name = "ratio_received_design",  nullable = false)
+    Double ratioReceivedDesign;
 
-    @Column(name = "ratio_error_received", precision = 5, scale = 2, nullable = false)
-    BigDecimal ratioErrorReceived;
+    @Column(name = "ratio_error_received", nullable = false)
+    Double ratioErrorReceived;
 }

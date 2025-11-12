@@ -41,4 +41,8 @@ public class BusinessDetailDTO {
 
     @Size(max = 500, message = "Description too long")
     String seasonalDescription;
+
+    @NotBlank(message = "Operation frequency is required")
+    @Size(max = 100, message = "Operation frequency too long")
+    String operationFrequency;
 }

@@ -3,7 +3,7 @@ package com.EIPplatform.model.dto.report.report05.wastemanagement.exportedhwstat
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
-import java.math.BigDecimal;
+import java.lang.Double;
 
 @Data
 @NoArgsConstructor
@@ -15,7 +15,7 @@ public class ExportedHwStatDTO {
     String wasteName;
     String hwCode;
     String baselCode;
-    BigDecimal volumeKg;
+    Double volumeKg;
     String transporterOrg;
     String overseasProcessorOrg;
 }

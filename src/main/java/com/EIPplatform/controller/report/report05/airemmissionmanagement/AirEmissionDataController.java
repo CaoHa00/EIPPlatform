@@ -29,9 +29,10 @@ public class AirEmissionDataController {
     @PostMapping(value = "/{reportId}/draft/air-emission", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ApiResponse<AirEmissionDataDTO> createAirEmissionData(
             @PathVariable UUID reportId,
+            @RequestParam UUID userAccountId,
             @RequestPart("data") AirEmissionDataCreateDTO request,
             @RequestPart(value = "file", required = false) MultipartFile file) {
-        var result = airEmissionDataService.createAirEmissionData(reportId, request, file);
+        var result = airEmissionDataService.createAirEmissionData(reportId, userAccountId, request, file);
         return ApiResponse.<AirEmissionDataDTO>builder()
                 .result(result)
                 .build();
@@ -39,8 +40,9 @@ public class AirEmissionDataController {
 
     @GetMapping("/{reportId}/draft/air-emission")
     public ApiResponse<AirEmissionDataDTO> getAirEmissionData(
-            @PathVariable UUID reportId) {
-        var result = airEmissionDataService.getAirEmissionData(reportId);
+            @PathVariable UUID reportId,
+            @RequestParam UUID userAccountId) {
+        var result = airEmissionDataService.getAirEmissionData(reportId, userAccountId);
         return ApiResponse.<AirEmissionDataDTO>builder()
                 .result(result)
                 .build();
@@ -48,34 +50,27 @@ public class AirEmissionDataController {
 
     @DeleteMapping("/{reportId}/draft/air-emission")
     public ApiResponse<Void> deleteAirEmissionData(
-            @PathVariable UUID reportId) {
-        airEmissionDataService.deleteAirEmissionData(reportId);
+            @PathVariable UUID reportId,
+            @RequestParam UUID userAccountId) {
+        airEmissionDataService.deleteAirEmissionData(reportId, userAccountId);
         return ApiResponse.<Void>builder()
                 .build();
     }
 
-//    @PostMapping(value = "/{reportId}/draft/air-emission/file", consumes = {"multipart/form-data"})
-//    public ApiResponse<AirEmissionDataDTO> uploadAirEmissionDataFile(
-//            @PathVariable UUID reportId,
-//            @RequestParam("file") MultipartFile file) { // ✅ Changed to @RequestParam (only file)
-//        var result = airEmissionDataService.uploadAirEmissionDataFile(reportId, file);
-//        return ApiResponse.<AirEmissionDataDTO>builder()
-//                .result(result)
-//                .build();
-//    }
-
     @DeleteMapping("/{reportId}/draft/air-emission/file")
     public ApiResponse<Void> deleteAirEmissionDataFile(
-            @PathVariable UUID reportId) {
-        airEmissionDataService.deleteAirEmissionDataFile(reportId);
+            @PathVariable UUID reportId,
+            @RequestParam UUID userAccountId) {
+        airEmissionDataService.deleteAirEmissionDataFile(reportId, userAccountId);
         return ApiResponse.<Void>builder()
                 .build();
     }
 
     @GetMapping("/{reportId}/draft/air-emission/file/download")
     public ResponseEntity<Resource> downloadAirEmissionDataFile(
-            @PathVariable UUID reportId) {
-        Resource resource = airEmissionDataService.downloadAirEmissionDataFile(reportId);
+            @PathVariable UUID reportId,
+            @RequestParam UUID userAccountId) {
+        Resource resource = airEmissionDataService.downloadAirEmissionDataFile(reportId, userAccountId);
         return ResponseEntity.ok()
                 .contentType(MediaType.APPLICATION_OCTET_STREAM)
                 .header(HttpHeaders.CONTENT_DISPOSITION,
@@ -85,8 +80,9 @@ public class AirEmissionDataController {
 
     @GetMapping("/{reportId}/draft/air-emission/file/exists")
     public ApiResponse<Boolean> hasAirEmissionDataFile(
-            @PathVariable UUID reportId) {
-        var result = airEmissionDataService.hasAirEmissionDataFile(reportId);
+            @PathVariable UUID reportId,
+            @RequestParam UUID userAccountId) {
+        var result = airEmissionDataService.hasAirEmissionDataFile(reportId, userAccountId);
         return ApiResponse.<Boolean>builder()
                 .result(result)
                 .build();

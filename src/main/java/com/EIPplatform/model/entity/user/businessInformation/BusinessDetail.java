@@ -33,7 +33,7 @@ import lombok.experimental.FieldDefaults;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "[business_detail]")
+@Table(name = "business_detail")
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @EntityListeners(AuditingEntityListener.class)
@@ -43,24 +43,32 @@ public class BusinessDetail {
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "business_detail_id", columnDefinition = "uniqueidentifier")
     UUID businessDetailId;
+
     @Nationalized
     @Column(nullable = false, unique = true, columnDefinition = "NVARCHAR(255)")
     String facilityName;
+
     @Nationalized
     @Column(nullable = false, columnDefinition = "NVARCHAR(255)")
     String legalRepresentative;
 
     @Column(nullable = false, length = 20)
     String phoneNumber;
+
     @Nationalized
     @Column(nullable = false, columnDefinition = "NVARCHAR(500)")
     String address;
+
     @Nationalized
     @Column(nullable = false, columnDefinition = "NVARCHAR(255)")
     String activityType;
+
     @Nationalized
     @Column(nullable = false, columnDefinition = "NVARCHAR(255)")
     String scaleCapacity;
+
+    @Column(columnDefinition = "NVARCHAR(100)")
+    String operationFrequency;
 
     @Column(length = 100)
     String ISO_certificate_14001;

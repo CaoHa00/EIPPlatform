@@ -3,7 +3,7 @@ package com.EIPplatform.model.dto.report.report05.wastemanagement.industrialsoli
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
-import java.math.BigDecimal;
+import java.lang.Double;
 @Data
 @Builder
 @AllArgsConstructor
@@ -12,9 +12,9 @@ import java.math.BigDecimal;
 public class IndustrialSolidWasteStatUpdateDTO {
     String wasteGroup;
 
-    BigDecimal volumeCy;
+    Double volumeCy;
 
     String receiverOrg;
 
-    BigDecimal volumePy;
+    Double volumePy;
 }
