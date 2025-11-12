@@ -26,7 +26,7 @@ public class AirAutoMonitoringStat {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "air_emission_data_id", nullable = false)
     AirEmissionData airEmissionData;
-    @Nationalized
+    
     @Column(name = "param_name", nullable = false, columnDefinition = "NVARCHAR(100)")
     String paramName;
 

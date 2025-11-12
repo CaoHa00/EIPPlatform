@@ -37,22 +37,22 @@ public class EnvComponentPermit {
     @JoinColumn(name = "business_detail_id")
     @JsonBackReference(value = "businessDetail-componentPermits")
     BusinessDetail businessDetail;
-    @Nationalized
+    
     @Column(name = "permit_type", nullable = false, columnDefinition = "NVARCHAR(255)")
     String permitType;
-    @Nationalized
+    
     @Column(name = "project_name", nullable = false, columnDefinition = "NVARCHAR(255)")
     String projectName;
-    @Nationalized
+    
     @Column(name = "permit_number", nullable = false, columnDefinition = "VARCHAR(255)")
     String permitNumber;
 
     @Column(name = "issue_date", nullable = false)
     LocalDate issueDate;
-    @Nationalized
+    
     @Column(name = "issuer_org", nullable = false, columnDefinition = "NVARCHAR(255)")
     String issuerOrg;
-    @Nationalized
+    
     @Column(name = "permit_file_path", columnDefinition = "VARCHAR(500)")
     String permitFilePath;
 

@@ -27,7 +27,7 @@ public class SelfTreatedHwStat {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "wm_id", nullable = false)
     WasteManagementData wasteManagementData;
-    @Nationalized
+    
     @Column(name = "waste_name", columnDefinition = "NVARCHAR(255)", nullable = false)
     String wasteName;
 
@@ -36,7 +36,7 @@ public class SelfTreatedHwStat {
 
     @Column(name = "volume_kg", nullable = false)
     Double volumeKg;
-    @Nationalized
+    
     @Column(name = "self_treatment_method", columnDefinition = "NVARCHAR(255)", nullable = false)
     String selfTreatmentMethod;
 }

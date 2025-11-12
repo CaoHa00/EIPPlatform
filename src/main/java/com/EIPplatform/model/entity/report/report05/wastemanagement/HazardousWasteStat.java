@@ -27,19 +27,19 @@ public class HazardousWasteStat {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "wm_id", nullable = false)
     WasteManagementData wasteManagementData;
-    @Nationalized
+    
     @Column(name = "waste_name", columnDefinition = "NVARCHAR(255)", nullable = false)
     String wasteName;
-    @Nationalized
+    
     @Column(name = "hw_code", columnDefinition = "NVARCHAR(50)", nullable = false)
     String hwCode;
 
     @Column(name = "volume_cy", nullable = false)
     Double volumeCy;
-    @Nationalized
+    
     @Column(name = "treatment_method", columnDefinition = "NVARCHAR(255)", nullable = false)
     String treatmentMethod;
-    @Nationalized
+    
     @Column(name = "receiver_org", columnDefinition = "NVARCHAR(MAX)", nullable = false)
     String receiverOrg;
 

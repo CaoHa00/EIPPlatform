@@ -35,7 +35,7 @@ public class WasteManagementData {
     @JoinColumn(name = "report_id", nullable = false, unique = true)
     @JsonBackReference(value = "report-waste-management")
     ReportA05 report;
-    @Nationalized
+    
     @Column(name = "sw_general_note", columnDefinition = "NVARCHAR(MAX)")
     String swGeneralNote;
 
@@ -80,13 +80,13 @@ public class WasteManagementData {
     @Fetch(FetchMode.SUBSELECT)
     @Builder.Default
     List<SelfTreatedHwStat> selfTreatedHwStats = new ArrayList<>();
-    @Nationalized
+    
     @Column(name = "incident_plan_development", columnDefinition = "NVARCHAR(MAX)", nullable = false)
     String incidentPlanDevelopment;
-    @Nationalized
+    
     @Column(name = "incident_prevention_measures", columnDefinition = "NVARCHAR(MAX)", nullable = false)
     String incidentPreventionMeasures;
-    @Nationalized
+    
     @Column(name = "incident_response_report", columnDefinition = "NVARCHAR(MAX)", nullable = false)
     String incidentResponseReport;
 
@@ -98,44 +98,44 @@ public class WasteManagementData {
 
     @Column(name = "water_total_volume_kg")
     Double waterTotalVolumeKg;
-    @Nationalized
+    
     @Column(name = "water_estimation_method", columnDefinition = "NVARCHAR(MAX)", nullable = false)
     String waterEstimationMethod;
 
     @Column(name = "air_total_volume_kg")
     Double airTotalVolumeKg;
-    @Nationalized
+    
     @Column(name = "air_estimation_method", columnDefinition = "NVARCHAR(MAX)", nullable = false)
     String airEstimationMethod;
 
     @Column(name = "soil_total_volume_kg")
     Double soilTotalVolumeKg;
-    @Nationalized
+    
     @Column(name = "soil_estimation_method", columnDefinition = "NVARCHAR(MAX)", nullable = false)
     String soilEstimationMethod;
 
     @Column(name = "sewage_sludge_total_volume_kg")
     Double sewageSludgeTotalVolumeKg;
-    @Nationalized
+    
     @Column(name = "sewage_sludge_estimation_method", columnDefinition = "NVARCHAR(MAX)", nullable = false)
     String sewageSludgeEstimationMethod;
 
     @Column(name = "hw_onsite_total_volume_kg")
     Double hwOnsiteTotalVolumeKg;
-    @Nationalized
+    
     @Column(name = "hw_onsite_estimation_method", columnDefinition = "NVARCHAR(MAX)", nullable = false)
     String hwOnsiteEstimationMethod;
-    @Nationalized
+    
     @Column(name = "hw_recycle_total_volume_kg")
     Double hwRecycleTotalVolumeKg;
-    @Nationalized
+    
     @Column(name = "hw_recycle_estimation_method", columnDefinition = "NVARCHAR(MAX)", nullable = false)
     String hwRecycleEstimationMethod;
 
     @Column(name = "hw_disposal_total_volume_kg")
     Double hwDisposalTotalVolumeKg;
     
-    @Nationalized
+    
     @Column(name = "hw_disposal_estimation_method", columnDefinition = "NVARCHAR(MAX)", nullable = false)
     String hwDisposalEstimationMethod;
 }

@@ -27,13 +27,13 @@ public class IndustrialSolidWasteStat {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "wm_id", nullable = false)
     WasteManagementData wasteManagementData;
-    @Nationalized
+    
     @Column(name = "waste_group", columnDefinition = "NVARCHAR(255)", nullable = false)
     String wasteGroup;
 
     @Column(name = "volume_cy", nullable = false)
     Double volumeCy;
-    @Nationalized
+    
     @Column(name = "receiver_org", columnDefinition = "NVARCHAR(255)", nullable = false)
     String receiverOrg;
 

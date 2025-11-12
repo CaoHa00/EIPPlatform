@@ -68,10 +68,10 @@ public class ReportA05 {
 
     @Column(name = "reviewed_at")
     LocalDateTime reviewedAt;
-    @Nationalized
+    
     @Column(name = "review_notes", columnDefinition = "NVARCHAR(MAX)")
     String reviewNotes;
-    @Nationalized
+    
     @Column(name = "inspection_remedy_report", columnDefinition = "NVARCHAR(MAX)")
     String inspectionRemedyReport;
 

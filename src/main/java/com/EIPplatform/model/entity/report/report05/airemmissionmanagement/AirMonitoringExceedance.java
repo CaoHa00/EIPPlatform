@@ -26,7 +26,7 @@ public class AirMonitoringExceedance {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "air_emission_data_id", nullable = false)
     AirEmissionData airEmissionData;
-    @Nationalized
+    
     @Column(name = "point_name", columnDefinition = "NVARCHAR(255)", nullable = false)
     String pointName;
 
@@ -41,7 +41,7 @@ public class AirMonitoringExceedance {
 
     @Column(name = "latitude", length = 20)
     String latitude;
-    @Nationalized
+    
     @Column(name = "exceeded_param", columnDefinition = "NVARCHAR(100)", nullable = false)
     String exceededParam;
 

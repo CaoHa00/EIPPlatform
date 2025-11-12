@@ -58,14 +58,14 @@ public class UserAccount {
 
     @Column(nullable = false)
     String password;
-    @Nationalized
+    
     @Column(nullable = false, columnDefinition = "NVARCHAR(255)")
     String fullName;
 
     @Builder.Default
     @Column(nullable = false)
     boolean enable = true;
-    @Nationalized
+    
     @Column(nullable = false, columnDefinition = "NVARCHAR(10)")
     String phoneNumber;
 

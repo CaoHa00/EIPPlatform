@@ -44,26 +44,26 @@ public class BusinessDetail {
     @Column(name = "business_detail_id", columnDefinition = "uniqueidentifier")
     UUID businessDetailId;
 
-    @Nationalized
+    
     @Column(nullable = false, unique = true, columnDefinition = "NVARCHAR(255)")
     String facilityName;
 
-    @Nationalized
+    
     @Column(nullable = false, columnDefinition = "NVARCHAR(255)")
     String legalRepresentative;
 
     @Column(nullable = false, length = 20)
     String phoneNumber;
 
-    @Nationalized
+    
     @Column(nullable = false, columnDefinition = "NVARCHAR(500)")
     String address;
 
-    @Nationalized
+    
     @Column(nullable = false, columnDefinition = "NVARCHAR(255)")
     String activityType;
 
-    @Nationalized
+    
     @Column(nullable = false, columnDefinition = "NVARCHAR(255)")
     String scaleCapacity;
 
@@ -82,7 +82,7 @@ public class BusinessDetail {
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     OperationType operationType = OperationType.REGULAR;
-    @Nationalized
+    
     @Column(length = 500, columnDefinition = "NVARCHAR(500)")
     String seasonalDescription;
 
