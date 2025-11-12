@@ -1,6 +1,5 @@
 package com.EIPplatform.mapper.businessInformation;
 
-
 import org.mapstruct.*;
 
 import com.EIPplatform.model.dto.legalDocs.LegalDocsCreationRequest;

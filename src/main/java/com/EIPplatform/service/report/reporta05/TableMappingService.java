@@ -1,23 +1,25 @@
 package com.EIPplatform.service.report.reporta05;
 
-import com.EIPplatform.model.dto.report.airemmissionmanagement.airautomonitoringstat.AirAutoMonitoringIncidentDTO;
-import com.EIPplatform.model.dto.report.airemmissionmanagement.airautomonitoringstat.AirAutoMonitoringStatDTO;
-import com.EIPplatform.model.dto.report.airemmissionmanagement.airautoqcvnexceedance.AirAutoQcvnExceedanceDTO;
-import com.EIPplatform.model.dto.report.airemmissionmanagement.airmonitoringexceedance.AirMonitoringExceedanceDTO;
-import com.EIPplatform.model.dto.report.wastemanagement.domesticsolidwastestat.DomesticSolidWasteStatDTO;
-import com.EIPplatform.model.dto.report.wastemanagement.exportedhwstat.ExportedHwStatDTO;
-import com.EIPplatform.model.dto.report.wastemanagement.hazardouswastestat.HazardousWasteStatDTO;
-import com.EIPplatform.model.dto.report.wastemanagement.industrialsolidwastestat.IndustrialSolidWasteStatDTO;
-import com.EIPplatform.model.dto.report.wastemanagement.othersolidwastestat.OtherSolidWasteStatDTO;
-import com.EIPplatform.model.dto.report.wastemanagement.popinventorystat.PopInventoryStatDTO;
-import com.EIPplatform.model.dto.report.wastemanagement.recycleindustrialwastestat.RecycleIndustrialWasteStatDTO;
-import com.EIPplatform.model.dto.report.wastemanagement.selftreatedhwstat.SelfTreatedHwStatDTO;
-import com.EIPplatform.model.dto.report.wastewatermanager.autowwmonitoringincidents.AutoWWMonitoringIncidentsDTO;
-import com.EIPplatform.model.dto.report.wastewatermanager.autowwmonitoringstats.AutoWWMonitoringStatsDTO;
-import com.EIPplatform.model.dto.report.wastewatermanager.autowwqcvnexceedances.AutoWWQcvnExceedancesDTO;
-import com.EIPplatform.model.dto.report.wastewatermanager.wastewatermonitoringexceedances.WasteWaterMonitoringExceedancesDTO;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.xwpf.usermodel.*;
+
+import com.EIPplatform.model.dto.report.report05.airemmissionmanagement.airautomonitoringstat.AirAutoMonitoringIncidentDTO;
+import com.EIPplatform.model.dto.report.report05.airemmissionmanagement.airautomonitoringstat.AirAutoMonitoringStatDTO;
+import com.EIPplatform.model.dto.report.report05.airemmissionmanagement.airautoqcvnexceedance.AirAutoQcvnExceedanceDTO;
+import com.EIPplatform.model.dto.report.report05.airemmissionmanagement.airmonitoringexceedance.AirMonitoringExceedanceDTO;
+import com.EIPplatform.model.dto.report.report05.wastemanagement.domesticsolidwastestat.DomesticSolidWasteStatDTO;
+import com.EIPplatform.model.dto.report.report05.wastemanagement.exportedhwstat.ExportedHwStatDTO;
+import com.EIPplatform.model.dto.report.report05.wastemanagement.hazardouswastestat.HazardousWasteStatDTO;
+import com.EIPplatform.model.dto.report.report05.wastemanagement.industrialsolidwastestat.IndustrialSolidWasteStatDTO;
+import com.EIPplatform.model.dto.report.report05.wastemanagement.othersolidwastestat.OtherSolidWasteStatDTO;
+import com.EIPplatform.model.dto.report.report05.wastemanagement.popinventorystat.PopInventoryStatDTO;
+import com.EIPplatform.model.dto.report.report05.wastemanagement.recycleindustrialwastestat.RecycleIndustrialWasteStatDTO;
+import com.EIPplatform.model.dto.report.report05.wastemanagement.selftreatedhwstat.SelfTreatedHwStatDTO;
+import com.EIPplatform.model.dto.report.report05.wastewatermanager.autowwmonitoringincidents.AutoWWMonitoringIncidentsDTO;
+import com.EIPplatform.model.dto.report.report05.wastewatermanager.autowwmonitoringstats.AutoWWMonitoringStatsDTO;
+import com.EIPplatform.model.dto.report.report05.wastewatermanager.autowwqcvnexceedances.AutoWWQcvnExceedancesDTO;
+import com.EIPplatform.model.dto.report.report05.wastewatermanager.wastewatermonitoringexceedances.WasteWaterMonitoringExceedancesDTO;
+
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;

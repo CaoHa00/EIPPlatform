@@ -1,6 +1,5 @@
 package com.EIPplatform.model.dto.investors;
 
-
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 import lombok.experimental.SuperBuilder;

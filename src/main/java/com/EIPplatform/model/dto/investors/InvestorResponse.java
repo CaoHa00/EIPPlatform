@@ -1,6 +1,5 @@
 package com.EIPplatform.model.dto.investors;
 
-
 import com.EIPplatform.configuration.AuditMetaData;
 import com.EIPplatform.model.enums.InvestorType;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
@@ -12,14 +11,10 @@ import lombok.experimental.SuperBuilder;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-@JsonTypeInfo(
-    use = JsonTypeInfo.Id.NAME,
-    include = JsonTypeInfo.As.PROPERTY,
-    property = "investorType"
-)
+@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "investorType")
 @JsonSubTypes({
-    @JsonSubTypes.Type(value = InvestorOrganizationResponse.class, name = "ORGANIZATION"),
-    @JsonSubTypes.Type(value = InvestorIndividualResponse.class, name = "INDIVIDUAL")
+        @JsonSubTypes.Type(value = InvestorOrganizationResponse.class, name = "ORGANIZATION"),
+        @JsonSubTypes.Type(value = InvestorIndividualResponse.class, name = "INDIVIDUAL")
 })
 @Getter
 @Setter

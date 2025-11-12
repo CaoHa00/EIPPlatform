@@ -42,8 +42,7 @@ public class WasteManagementDataServiceImpl implements WasteManagementDataServic
                         "ReportA05",
                         "reportId",
                         reportId,
-                        WasteManagementError.REPORT_NOT_FOUND
-                ));
+                        WasteManagementError.REPORT_NOT_FOUND));
 
         ReportA05DraftDTO draft = reportCacheService.getDraftReport(reportId);
         if (draft != null && draft.getWasteManagementData() != null) {
@@ -59,8 +58,6 @@ public class WasteManagementDataServiceImpl implements WasteManagementDataServic
         log.info("Created (or replaced) WasteManagementData in cache for reportId: {}", reportId);
         return responseDto;
     }
-
-
 
     @Override
     @Transactional(readOnly = true)
