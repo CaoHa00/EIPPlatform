@@ -42,7 +42,7 @@ public class BusinessHistoryConsumptionController {
                                 .build());
         }
 
-        @PutMapping("/{businessHistoryConsumptionId}")
+        @PutMapping("/{businessHistoryConsumptionId}/user/{userAccountId}")
         public ResponseEntity<ApiResponse<BusinessHistoryConsumptionDTO>> update(
                         @PathVariable UUID businessHistoryConsumptionId,
                         @RequestBody @Valid BusinessHistoryConsumptionUpdateDTO dto,
