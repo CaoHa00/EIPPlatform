@@ -39,7 +39,7 @@ public class ReportA05 {
     @Column(name = "report_id", updatable = false, nullable = false)
     UUID reportId;
 
-    @Column(name = "report_code", unique = true, nullable = false)
+    @Column(name = "report_code", unique = true, nullable = false, columnDefinition = "NVARCHAR(255)")
     String reportCode;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -50,7 +50,7 @@ public class ReportA05 {
     @Column(name = "report_year", nullable = false)
     Integer reportYear;
 
-    @Column(name = "reporting_period", length = 50)
+    @Column(name = "reporting_period", length = 50, columnDefinition = "NVARCHAR(255)")
     String reportingPeriod;
 
     @ManyToOne(fetch = FetchType.LAZY)

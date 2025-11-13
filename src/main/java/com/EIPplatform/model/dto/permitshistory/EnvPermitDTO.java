@@ -1,8 +1,6 @@
 package com.EIPplatform.model.dto.permitshistory;
 
 import lombok.*;
-import lombok.experimental.FieldDefaults;
-
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 

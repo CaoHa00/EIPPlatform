@@ -48,12 +48,12 @@ public class BusinessDetail {
     @Nationalized
     @Column(nullable = false, unique = true, columnDefinition = "NVARCHAR(255)")
     String facilityName;
-  
+
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     @JoinColumn(name = "legal_representative_id", referencedColumnName = "legal_representative_id", nullable = false, foreignKey = @ForeignKey(name = "fk_business_detail_legal_representative"))
     LegalRepresentative legalRepresentative;
 
-    @Column(nullable = false, length = 20)
+    @Column(nullable = false, length = 20, columnDefinition = "NVARCHAR(255)")
     String phoneNumber;
     @Nationalized
     @Column(nullable = false, columnDefinition = "NVARCHAR(500)")
@@ -64,17 +64,17 @@ public class BusinessDetail {
     @Nationalized
     @Column(nullable = false, columnDefinition = "NVARCHAR(255)")
     String scaleCapacity;
-
-    @Column(length = 100)
+    @Nationalized
+    @Column(length = 100, columnDefinition = "NVARCHAR(255)")
     String ISO_certificate_14001;
-
-    @Column(name = "iso_certificate_file_path", length = 255)
+    @Nationalized
+    @Column(name = "iso_certificate_file_path", length = 255, columnDefinition = "NVARCHAR(255)")
     String isoCertificateFilePath;
-
-    @Column(nullable = false, length = 50)
+    @Nationalized
+    @Column(nullable = false, length = 50, columnDefinition = "NVARCHAR(255)")
     String businessRegistrationNumber;
-
-    @Column(nullable = false, unique = true, length = 50)
+    @Nationalized
+    @Column(nullable = false, unique = true, length = 50, columnDefinition = "NVARCHAR(255)")
     String taxCode;
 
     @Column(nullable = false)

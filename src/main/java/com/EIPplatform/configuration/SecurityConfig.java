@@ -29,45 +29,45 @@ import lombok.experimental.FieldDefaults;
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class SecurityConfig {
-    String[] PUBLIC_ENDPOINTS = {
-            "/api/authentication/login",
-            "/api/authentication/logout",
-            "/api/authentication/refresh"
-    };
-    List<String> endPointsCORS = List.of(
-            "https://sbms-iic.eiu.vn",
-            "http://localhost:7000",
-            "http://localhost:3000");
+        String[] PUBLIC_ENDPOINTS = {
+                        "/api/authentication/login",
+                        "/api/authentication/logout",
+                        "/api/authentication/refresh"
+        };
+        List<String> endPointsCORS = List.of(
+                        "https://eip-bcm.eiu.vn",
+                        "http://localhost:3000",
+                        "http://10.10.115.20:3000");
 
-    @Bean
-    public SecurityFilterChain filterChain(HttpSecurity httpSecurity,
-            CorsConfigurationSource corsConfigurationSource)
-            throws Exception {
-        httpSecurity
-                .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(PUBLIC_ENDPOINTS).permitAll()
-                        .anyRequest().permitAll())
-                .csrf(AbstractHttpConfigurer::disable)
-                .cors(request -> request.configurationSource(corsConfigurationSource));
+        @Bean
+        public SecurityFilterChain filterChain(HttpSecurity httpSecurity,
+                        CorsConfigurationSource corsConfigurationSource)
+                        throws Exception {
+                httpSecurity
+                                .authorizeHttpRequests(auth -> auth
+                                                .requestMatchers(PUBLIC_ENDPOINTS).permitAll()
+                                                .anyRequest().permitAll())
+                                .csrf(AbstractHttpConfigurer::disable)
+                                .cors(request -> request.configurationSource(corsConfigurationSource));
 
-        return httpSecurity.build();
-    }
+                return httpSecurity.build();
+        }
 
-    @Bean
-    public CorsConfigurationSource corsConfigurationSource() {
-        CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(endPointsCORS);
-        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE",
-                "OPTIONS"));
-        configuration.setAllowedHeaders(List.of("*"));
-        configuration.setAllowCredentials(true);
+        @Bean
+        public CorsConfigurationSource corsConfigurationSource() {
+                CorsConfiguration configuration = new CorsConfiguration();
+                configuration.setAllowedOrigins(endPointsCORS);
+                configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE",
+                                "OPTIONS"));
+                configuration.setAllowedHeaders(List.of("*"));
+                configuration.setAllowCredentials(true);
 
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", configuration);
-        return source;
-    }
+                UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+                source.registerCorsConfiguration("/**", configuration);
+                return source;
+        }
 
-       @Bean
+        @Bean
         PasswordEncoder passwordEncoder() {
                 return new BCryptPasswordEncoder(10);
         }

@@ -48,7 +48,8 @@ public interface PermitMapper {
     EnvPermits toMainPermitEntity(CreateMainPermitRequest request, @Context BusinessDetail businessDetail);
 
     @AfterMapping
-    default void setMainPermitBusinessDetailAndDefaults(@MappingTarget EnvPermits entity, @Context BusinessDetail businessDetail) {
+    default void setMainPermitBusinessDetailAndDefaults(@MappingTarget EnvPermits entity,
+            @Context BusinessDetail businessDetail) {
         entity.setBusinessDetail(businessDetail);
         entity.setIsActive(true);
         entity.setCreatedAt(LocalDateTime.now());
@@ -70,7 +71,8 @@ public interface PermitMapper {
     EnvComponentPermitDTO toComponentPermitDTO(EnvComponentPermit permit);
 
     @AfterMapping
-    default void calculateComponentPermitDaysUntilExpiry(@MappingTarget EnvComponentPermitDTO dto, EnvComponentPermit permit) {
+    default void calculateComponentPermitDaysUntilExpiry(@MappingTarget EnvComponentPermitDTO dto,
+            EnvComponentPermit permit) {
         if (permit.getIssueDate() != null) {
             LocalDate expiryDate = permit.getIssueDate().plusYears(5);
             long daysUntil = ChronoUnit.DAYS.between(LocalDate.now(), expiryDate);
@@ -83,10 +85,12 @@ public interface PermitMapper {
     @Mapping(target = "permitFilePath", ignore = true)
     @Mapping(target = "isActive", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
-    EnvComponentPermit toComponentPermitEntity(CreateComponentPermitRequest request, @Context BusinessDetail businessDetail);
+    EnvComponentPermit toComponentPermitEntity(CreateComponentPermitRequest request,
+            @Context BusinessDetail businessDetail);
 
     @AfterMapping
-    default void setComponentPermitBusinessDetailAndDefaults(@MappingTarget EnvComponentPermit entity, @Context BusinessDetail businessDetail) {
+    default void setComponentPermitBusinessDetailAndDefaults(@MappingTarget EnvComponentPermit entity,
+            @Context BusinessDetail businessDetail) {
         entity.setBusinessDetail(businessDetail);
         entity.setIsActive(true);
         entity.setCreatedAt(LocalDateTime.now());

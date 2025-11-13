@@ -3,6 +3,7 @@ package com.EIPplatform.mapper.businessInformation;
 import com.EIPplatform.model.dto.businessInformation.BusinessDetailDTO;
 import com.EIPplatform.model.dto.businessInformation.BusinessDetailResponse;
 import com.EIPplatform.model.entity.user.businessInformation.BusinessDetail;
+import com.EIPplatform.model.entity.user.legalRepresentative.LegalRepresentative;
 import com.EIPplatform.model.entity.user.authentication.UserAccount;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -23,14 +24,15 @@ public interface BusinessDetailMapper {
 
     List<BusinessDetailResponse> toResponseList(List<BusinessDetail> entities);
 
-    @Mapping(source = "legalRepresentative", target = "legalRepresentative")
     @Mapping(target = "businessDetailId", ignore = true)
     @Mapping(target = "businessHistoryConsumptions", ignore = true)
     @Mapping(target = "auditMetaData", ignore = true)
-//    @Mapping(target = "reports", ignore = true)
+    @Mapping(target = "reports", ignore = true)
     @Mapping(target = "envPermits", ignore = true)
     @Mapping(target = "envComponentPermits", ignore = true)
     @Mapping(target = "userAccounts", ignore = true)
+    @Mapping(target = "investor", ignore = true)
+    @Mapping(target = "legalRepresentative", ignore = true)
     @Mapping(source = "ISO_certificate_14001", target = "ISO_certificate_14001")
     @Mapping(target = "isoCertificateFilePath", ignore = true)
     BusinessDetail toEntity(BusinessDetailDTO dto);
@@ -52,4 +54,12 @@ public interface BusinessDetailMapper {
                 .map(this::mapUserAccountToString)
                 .collect(Collectors.toList());
     }
+
+    default String map(LegalRepresentative legalRepresentative) {
+        if (legalRepresentative == null) {
+            return null;
+        }
+        return legalRepresentative.getLegalRepresentativeId().toString();
+    }
+
 }

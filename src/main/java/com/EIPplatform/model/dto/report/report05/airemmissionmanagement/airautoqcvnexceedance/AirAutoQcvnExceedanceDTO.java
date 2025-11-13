@@ -1,9 +1,11 @@
 package com.EIPplatform.model.dto.report.report05.airemmissionmanagement.airautoqcvnexceedance;
 
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
-
-import java.math.BigDecimal;
 
 @Data
 @Builder
@@ -20,5 +22,5 @@ public class AirAutoQcvnExceedanceDTO {
 
     Integer qcvnLimitValue;
 
-    BigDecimal exceedRatioPercent;
+    Double exceedRatioPercent;
 }

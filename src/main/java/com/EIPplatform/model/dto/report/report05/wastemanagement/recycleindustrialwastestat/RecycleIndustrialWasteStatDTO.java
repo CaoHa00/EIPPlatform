@@ -1,10 +1,11 @@
 package com.EIPplatform.model.dto.report.report05.wastemanagement.recycleindustrialwastestat;
 
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
-
-import java.math.BigDecimal;
-
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -13,7 +14,7 @@ import java.math.BigDecimal;
 public class RecycleIndustrialWasteStatDTO {
     Long recycleId;
     String transferOrg;
-    BigDecimal volumeCy;
+    Double volumeCy;
     String wasteTypeDesc;
-    BigDecimal volumePy;
+    Double volumePy;
 }

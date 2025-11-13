@@ -1,10 +1,13 @@
 package com.EIPplatform.model.dto.report.report05.airemmissionmanagement.airmonitoringexceedance;
 
-import lombok.*;
-import lombok.experimental.FieldDefaults;
-
-import java.math.BigDecimal;
 import java.time.LocalDate;
+
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.experimental.FieldDefaults;
 
 @Data
 @Builder
@@ -27,8 +30,8 @@ public class AirMonitoringExceedanceDTO {
 
     String exceededParam;
 
-    BigDecimal resultValue;
+    Double resultValue;
 
-    BigDecimal qcvnLimit;
+    Double qcvnLimit;
 
 }
