@@ -27,6 +27,7 @@ import jakarta.transaction.Transactional;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import lombok.experimental.NonFinal;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.ByteArrayOutputStream;
@@ -74,6 +75,7 @@ public class ReportA05ServiceImpl implements ReportA05Service {
         WasteManagementDataRepository wasteManagementDataRepository;
         AirEmissionDataRepository airEmissionDataRepository;
         WasteWaterRepository wasteWaterDataRepository;
+        @NonFinal
         @Value("${app.storage.local.upload-dir:/app/uploads}")
         private String uploadDir;
 
