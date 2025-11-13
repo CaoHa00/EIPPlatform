@@ -1,4 +1,4 @@
-package com.EIPplatform.model.dto.legalrepresentative;
+package com.EIPplatform.model.dto.legalRepresentative;
 
 import jakarta.validation.constraints.*;
 import lombok.*;

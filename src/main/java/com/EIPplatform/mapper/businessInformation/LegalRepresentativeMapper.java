@@ -2,10 +2,10 @@ package com.EIPplatform.mapper.businessInformation;
 
 import org.mapstruct.*;
 
-import com.EIPplatform.model.dto.legalrepresentative.LegalRepresentativeCreationRequest;
-import com.EIPplatform.model.dto.legalrepresentative.LegalRepresentativeDTO;
-import com.EIPplatform.model.dto.legalrepresentative.LegalRepresentativeResponse;
-import com.EIPplatform.model.dto.legalrepresentative.LegalRepresentativeUpdationRequest;
+import com.EIPplatform.model.dto.legalRepresentative.LegalRepresentativeCreationRequest;
+import com.EIPplatform.model.dto.legalRepresentative.LegalRepresentativeDTO;
+import com.EIPplatform.model.dto.legalRepresentative.LegalRepresentativeResponse;
+import com.EIPplatform.model.dto.legalRepresentative.LegalRepresentativeUpdationRequest;
 import com.EIPplatform.model.entity.user.legalRepresentative.LegalRepresentative;
 
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE, nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)

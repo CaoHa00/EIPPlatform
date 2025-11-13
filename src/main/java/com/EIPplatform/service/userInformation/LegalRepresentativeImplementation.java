@@ -15,9 +15,9 @@ import org.springframework.transaction.annotation.Transactional;
 import com.EIPplatform.exception.ExceptionFactory;
 import com.EIPplatform.exception.errorCategories.LegalRepresentativeError;
 import com.EIPplatform.mapper.businessInformation.LegalRepresentativeMapper;
-import com.EIPplatform.model.dto.legalrepresentative.LegalRepresentativeCreationRequest;
-import com.EIPplatform.model.dto.legalrepresentative.LegalRepresentativeResponse;
-import com.EIPplatform.model.dto.legalrepresentative.LegalRepresentativeUpdationRequest;
+import com.EIPplatform.model.dto.legalRepresentative.LegalRepresentativeCreationRequest;
+import com.EIPplatform.model.dto.legalRepresentative.LegalRepresentativeResponse;
+import com.EIPplatform.model.dto.legalRepresentative.LegalRepresentativeUpdationRequest;
 import com.EIPplatform.model.entity.user.legalRepresentative.LegalRepresentative;
 import com.EIPplatform.repository.user.LegalRepresentativeRepository;
 

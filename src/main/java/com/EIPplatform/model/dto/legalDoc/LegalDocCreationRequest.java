@@ -1,5 +1,4 @@
-package com.EIPplatform.model.dto.legalDocs;
-
+package com.EIPplatform.model.dto.legalDoc;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -15,10 +14,7 @@ import java.util.UUID;
 @AllArgsConstructor
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class LegalDocsUpdateRequest {
-
-    @NotNull(message = "FIELD_REQUIRED")
-    UUID legalDocId;
+public class LegalDocCreationRequest {
 
     @NotBlank(message = "FIELD_REQUIRED")
     String type;

@@ -13,9 +13,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.EIPplatform.model.dto.api.ApiResponse;
-import com.EIPplatform.model.dto.legalrepresentative.LegalRepresentativeCreationRequest;
-import com.EIPplatform.model.dto.legalrepresentative.LegalRepresentativeResponse;
-import com.EIPplatform.model.dto.legalrepresentative.LegalRepresentativeUpdationRequest;
+import com.EIPplatform.model.dto.legalRepresentative.LegalRepresentativeCreationRequest;
+import com.EIPplatform.model.dto.legalRepresentative.LegalRepresentativeResponse;
+import com.EIPplatform.model.dto.legalRepresentative.LegalRepresentativeUpdationRequest;
 import com.EIPplatform.service.userInformation.LegalRepresentativeInterface;
 
 import jakarta.validation.Valid;

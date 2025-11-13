@@ -8,9 +8,9 @@ import lombok.experimental.FieldDefaults;
 import org.springframework.web.bind.annotation.*;
 
 import com.EIPplatform.model.dto.api.ApiResponse;
-import com.EIPplatform.model.dto.legalDocs.LegalDocsCreationRequest;
-import com.EIPplatform.model.dto.legalDocs.LegalDocsResponse;
-import com.EIPplatform.model.dto.legalDocs.LegalDocsUpdateRequest;
+import com.EIPplatform.model.dto.legalDoc.LegalDocCreationRequest;
+import com.EIPplatform.model.dto.legalDoc.LegalDocResponse;
+import com.EIPplatform.model.dto.legalDoc.LegalDocUpdateRequest;
 import com.EIPplatform.service.userInformation.LegalDocsInterface;
 
 import java.util.List;
@@ -20,63 +20,63 @@ import java.util.UUID;
 @RequestMapping("/api/v1/legal-docs")
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-public class LegalDocsController {
+public class LegalDocController {
 
     LegalDocsInterface legalDocsService;
 
     @PostMapping
-    public ApiResponse<LegalDocsResponse> createLegalDoc(
-            @RequestBody @Valid LegalDocsCreationRequest request) {
+    public ApiResponse<LegalDocResponse> createLegalDoc(
+            @RequestBody @Valid LegalDocCreationRequest request) {
 
-        LegalDocsResponse response = legalDocsService.createLegalDoc(request);
+        LegalDocResponse response = legalDocsService.createLegalDoc(request);
 
-        return ApiResponse.<LegalDocsResponse>builder()
+        return ApiResponse.<LegalDocResponse>builder()
                 .message("Legal document created successfully")
                 .result(response)
                 .build();
     }
 
     @PutMapping
-    public ApiResponse<LegalDocsResponse> updateLegalDoc(
-            @RequestBody @Valid LegalDocsUpdateRequest request) {
+    public ApiResponse<LegalDocResponse> updateLegalDoc(
+            @RequestBody @Valid LegalDocUpdateRequest request) {
 
-        LegalDocsResponse response = legalDocsService.updateLegalDoc(request);
+        LegalDocResponse response = legalDocsService.updateLegalDoc(request);
 
-        return ApiResponse.<LegalDocsResponse>builder()
+        return ApiResponse.<LegalDocResponse>builder()
                 .message("Legal document updated successfully")
                 .result(response)
                 .build();
     }
 
     @GetMapping("/{legalDocId}")
-    public ApiResponse<LegalDocsResponse> getLegalDocById(
+    public ApiResponse<LegalDocResponse> getLegalDocById(
             @PathVariable UUID legalDocId) {
 
-        LegalDocsResponse response = legalDocsService.getLegalDocById(legalDocId);
+        LegalDocResponse response = legalDocsService.getLegalDocById(legalDocId);
 
-        return ApiResponse.<LegalDocsResponse>builder()
+        return ApiResponse.<LegalDocResponse>builder()
                 .result(response)
                 .build();
     }
 
     @GetMapping
-    public ApiResponse<List<LegalDocsResponse>> getAllLegalDocs() {
+    public ApiResponse<List<LegalDocResponse>> getAllLegalDocs() {
 
-        List<LegalDocsResponse> response = legalDocsService.getAllLegalDocs();
+        List<LegalDocResponse> response = legalDocsService.getAllLegalDocs();
 
-        return ApiResponse.<List<LegalDocsResponse>>builder()
+        return ApiResponse.<List<LegalDocResponse>>builder()
                 .result(response)
                 .build();
     }
 
     @GetMapping("/investor-organization/{investorOrganizationId}")
-    public ApiResponse<List<LegalDocsResponse>> getLegalDocsByInvestorOrganization(
+    public ApiResponse<List<LegalDocResponse>> getLegalDocsByInvestorOrganization(
             @PathVariable UUID investorOrganizationId) {
 
-        List<LegalDocsResponse> response = legalDocsService
+        List<LegalDocResponse> response = legalDocsService
                 .getLegalDocsByInvestorOrganization(investorOrganizationId);
 
-        return ApiResponse.<List<LegalDocsResponse>>builder()
+        return ApiResponse.<List<LegalDocResponse>>builder()
                 .result(response)
                 .build();
     }

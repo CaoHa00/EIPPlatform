@@ -1,4 +1,4 @@
-package com.EIPplatform.model.dto.legalrepresentative;
+package com.EIPplatform.model.dto.legalRepresentative;
 
 import lombok.*;
 import lombok.experimental.FieldDefaults;
