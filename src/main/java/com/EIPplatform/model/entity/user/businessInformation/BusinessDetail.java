@@ -8,7 +8,6 @@ import java.util.UUID;
 import com.EIPplatform.model.enums.OperationType;
 import jakarta.persistence.*;
 
-import org.checkerframework.checker.units.qual.N;
 import org.hibernate.annotations.Nationalized;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 

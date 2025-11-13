@@ -25,9 +25,9 @@ import java.util.Map;
 @RequiredArgsConstructor
 @Slf4j
 public class FileController {
-    
+
     private final FileStorageService fileStorageService;
-    
+
     /**
      * Upload single file
      */
@@ -36,17 +36,17 @@ public class FileController {
             @RequestParam("file") MultipartFile file,
             @RequestParam("businessName") String businessName,
             @RequestParam("sector") String sector) {
-        
-        log.info("Upload request - Business: {}, Sector: {}, File: {}", 
-            businessName, sector, file.getOriginalFilename());
-        
+
+        log.info("Upload request - Business: {}, Sector: {}, File: {}",
+                businessName, sector, file.getOriginalFilename());
+
         FileStorageRequest request = FileStorageRequest.builder()
-            .businessName(businessName)
-            .sector(sector)
-            .build();
-            
+                .businessName(businessName)
+                .sector(sector)
+                .build();
+
         String filePath = fileStorageService.uploadFile(file, request);
-        
+
         Map<String, Object> response = new HashMap<>();
         response.put("success", true);
         response.put("filePath", filePath);
@@ -54,10 +54,10 @@ public class FileController {
         response.put("fileSize", file.getSize());
         response.put("businessName", businessName);
         response.put("sector", sector);
-        
+
         return ResponseEntity.ok(response);
     }
-    
+
     /**
      * Upload multiple files
      */
@@ -66,25 +66,25 @@ public class FileController {
             @RequestParam("files") List<MultipartFile> files,
             @RequestParam("businessName") String businessName,
             @RequestParam("sector") String sector) {
-        
-        log.info("Upload multiple files - Business: {}, Sector: {}, Count: {}", 
-            businessName, sector, files.size());
-        
+
+        log.info("Upload multiple files - Business: {}, Sector: {}, Count: {}",
+                businessName, sector, files.size());
+
         FileStorageRequest request = FileStorageRequest.builder()
-            .businessName(businessName)
-            .sector(sector)
-            .build();
-            
+                .businessName(businessName)
+                .sector(sector)
+                .build();
+
         List<String> filePaths = fileStorageService.uploadFiles(files, request);
-        
+
         Map<String, Object> response = new HashMap<>();
         response.put("success", true);
         response.put("filePaths", filePaths);
         response.put("count", filePaths.size());
-        
+
         return ResponseEntity.ok(response);
     }
-    
+
     /**
      * Download file
      */
@@ -93,17 +93,17 @@ public class FileController {
             @RequestParam("businessName") String businessName,
             @RequestParam("sector") String sector,
             @RequestParam("fileName") String fileName) {
-        
-        log.info("Download request - Business: {}, Sector: {}, File: {}", 
-            businessName, sector, fileName);
-        
+
+        log.info("Download request - Business: {}, Sector: {}, File: {}",
+                businessName, sector, fileName);
+
         FileStorageRequest request = FileStorageRequest.builder()
-            .businessName(businessName)
-            .sector(sector)
-            .build();
-            
+                .businessName(businessName)
+                .sector(sector)
+                .build();
+
         Resource resource = fileStorageService.downloadFile(request, fileName);
-        
+
         // Detect content type
         String contentType = "application/octet-stream";
         try {
@@ -114,14 +114,14 @@ public class FileController {
         } catch (IOException e) {
             log.warn("Could not determine file type for: {}", fileName);
         }
-        
+
         return ResponseEntity.ok()
-            .contentType(MediaType.parseMediaType(contentType))
-            .header(HttpHeaders.CONTENT_DISPOSITION, 
-                "attachment; filename=\"" + fileName + "\"")
-            .body(resource);
+                .contentType(MediaType.parseMediaType(contentType))
+                .header(HttpHeaders.CONTENT_DISPOSITION,
+                        "attachment; filename=\"" + fileName + "\"")
+                .body(resource);
     }
-    
+
     /**
      * List all files in a business/sector
      */
@@ -129,26 +129,26 @@ public class FileController {
     public ResponseEntity<Map<String, Object>> listFiles(
             @RequestParam("businessName") String businessName,
             @RequestParam("sector") String sector) {
-        
+
         log.info("List files - Business: {}, Sector: {}", businessName, sector);
-        
+
         FileStorageRequest request = FileStorageRequest.builder()
-            .businessName(businessName)
-            .sector(sector)
-            .build();
-            
+                .businessName(businessName)
+                .sector(sector)
+                .build();
+
         List<String> files = fileStorageService.listFiles(request);
-        
+
         Map<String, Object> response = new HashMap<>();
         response.put("success", true);
         response.put("businessName", businessName);
         response.put("sector", sector);
         response.put("files", files);
         response.put("count", files.size());
-        
+
         return ResponseEntity.ok(response);
     }
-    
+
     /**
      * Delete file
      */
@@ -157,26 +157,26 @@ public class FileController {
             @RequestParam("businessName") String businessName,
             @RequestParam("sector") String sector,
             @RequestParam("fileName") String fileName) {
-        
-        log.info("Delete request - Business: {}, Sector: {}, File: {}", 
-            businessName, sector, fileName);
-        
+
+        log.info("Delete request - Business: {}, Sector: {}, File: {}",
+                businessName, sector, fileName);
+
         FileStorageRequest request = FileStorageRequest.builder()
-            .businessName(businessName)
-            .sector(sector)
-            .build();
-            
+                .businessName(businessName)
+                .sector(sector)
+                .build();
+
         String filePath = request.toFullPath(fileName);
         fileStorageService.deleteFile(filePath);
-        
+
         Map<String, Object> response = new HashMap<>();
         response.put("success", true);
         response.put("message", "File deleted successfully");
         response.put("filePath", filePath);
-        
+
         return ResponseEntity.ok(response);
     }
-    
+
     /**
      * Check if file exists
      */
@@ -185,19 +185,19 @@ public class FileController {
             @RequestParam("businessName") String businessName,
             @RequestParam("sector") String sector,
             @RequestParam("fileName") String fileName) {
-        
+
         FileStorageRequest request = FileStorageRequest.builder()
-            .businessName(businessName)
-            .sector(sector)
-            .build();
-            
+                .businessName(businessName)
+                .sector(sector)
+                .build();
+
         String filePath = request.toFullPath(fileName);
         boolean exists = fileStorageService.fileExists(filePath);
-        
+
         Map<String, Object> response = new HashMap<>();
         response.put("exists", exists);
         response.put("filePath", filePath);
-        
+
         return ResponseEntity.ok(response);
     }
 }
