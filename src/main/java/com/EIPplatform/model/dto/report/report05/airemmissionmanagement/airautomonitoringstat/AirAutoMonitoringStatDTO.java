@@ -1,10 +1,11 @@
 package com.EIPplatform.model.dto.report.report05.airemmissionmanagement.airautomonitoringstat;
 
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
-
-import java.math.BigDecimal;
-
 @Data
 @Builder
 @AllArgsConstructor

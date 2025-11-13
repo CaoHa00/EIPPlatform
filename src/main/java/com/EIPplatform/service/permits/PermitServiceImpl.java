@@ -1,12 +1,27 @@
 package com.EIPplatform.service.permits;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
+import java.util.UUID;
+import java.util.stream.Collectors;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.Resource;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
+
 import com.EIPplatform.exception.ExceptionFactory;
-import com.EIPplatform.exception.errorCategories.ForbiddenError;
 import com.EIPplatform.exception.errorCategories.PermitError;
-import com.EIPplatform.exception.errorCategories.UserError;
 import com.EIPplatform.exception.errorCategories.ValidationError;
 import com.EIPplatform.mapper.permitshistory.PermitMapper;
-import com.EIPplatform.model.dto.fileStorage.FileStorageRequest;
 import com.EIPplatform.model.dto.permitshistory.CreateComponentPermitRequest;
 import com.EIPplatform.model.dto.permitshistory.CreateMainPermitRequest;
 import com.EIPplatform.model.dto.permitshistory.EnvComponentPermitDTO;
@@ -14,29 +29,19 @@ import com.EIPplatform.model.dto.permitshistory.EnvPermitDTO;
 import com.EIPplatform.model.dto.permitshistory.PermitStatisticsDTO;
 import com.EIPplatform.model.dto.permitshistory.UpdateComponentPermitRequest;
 import com.EIPplatform.model.dto.permitshistory.UpdateEnvPermitRequest;
-import com.EIPplatform.model.entity.permitshistory.EnvPermits;
 import com.EIPplatform.model.entity.permitshistory.EnvComponentPermit;
-import com.EIPplatform.model.entity.user.authentication.UserAccount;
+import com.EIPplatform.model.entity.permitshistory.EnvPermits;
 import com.EIPplatform.model.entity.user.businessInformation.BusinessDetail;
 import com.EIPplatform.repository.authentication.UserAccountRepository;
+import com.EIPplatform.repository.permitshistory.EnvComponentPermitRepository;
 import com.EIPplatform.repository.permitshistory.EnvPermitsRepository;
 import com.EIPplatform.repository.user.BusinessDetailRepository;
-import com.EIPplatform.repository.permitshistory.EnvComponentPermitRepository;
 import com.EIPplatform.service.fileStorage.FileStorageService;
 import com.EIPplatform.util.PermitUtils;
+
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.Resource;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
-
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.*;
-import java.util.stream.Collectors;
 
 @Service
 @Transactional

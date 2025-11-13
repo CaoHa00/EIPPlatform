@@ -4,15 +4,13 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-import com.EIPplatform.model.dto.businessInformation.BusinessDetailResponse;
-import com.EIPplatform.model.entity.user.authentication.UserAccount;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import com.EIPplatform.model.entity.user.authentication.UserAccount;
 import com.EIPplatform.model.entity.user.businessInformation.BusinessDetail;
-import com.EIPplatform.model.entity.user.businessInformation.BusinessHistoryConsumption;
 
 @Repository
 public interface BusinessDetailRepository extends JpaRepository<BusinessDetail, UUID> {
