@@ -1,10 +1,7 @@
 package com.EIPplatform.model.dto.legalrepresentative;
 
 import java.time.LocalDate;
-import java.util.List;
-import java.util.UUID;
 
-import com.EIPplatform.model.entity.user.userInformation.UserProfile;
 import com.EIPplatform.model.enums.Gender;
 
 import jakarta.validation.constraints.Email;
