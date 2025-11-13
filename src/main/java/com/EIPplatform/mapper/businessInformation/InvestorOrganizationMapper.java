@@ -8,7 +8,7 @@ import com.EIPplatform.model.dto.investors.InvestorOrganizationUpdateRequest;
 import com.EIPplatform.model.entity.user.investors.InvestorOrganizationDetail;
 
 @Mapper(componentModel = "spring", nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE, uses = {
-        LegalDocsMapper.class })
+        LegalDocMapper.class })
 public interface InvestorOrganizationMapper {
 
     @Mapping(target = "investorId", ignore = true)

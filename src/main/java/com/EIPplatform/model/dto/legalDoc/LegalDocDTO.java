@@ -1,4 +1,4 @@
-package com.EIPplatform.model.dto.legalDocs;
+package com.EIPplatform.model.dto.legalDoc;
 
 import java.time.LocalDate;
 import java.util.UUID;
@@ -17,7 +17,7 @@ import lombok.experimental.FieldDefaults;
 @AllArgsConstructor
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class LegalDocsDTO {
+public class LegalDocDTO {
   UUID legalDocId;
     String type;
     String number;

@@ -3,7 +3,7 @@ package com.EIPplatform.model.entity.user.investors;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.EIPplatform.model.entity.user.legalDocs.LegalDocs;
+import com.EIPplatform.model.entity.user.legalDoc.LegalDoc;
 import com.EIPplatform.model.enums.InvestorType;
 
 import jakarta.persistence.*;
@@ -27,7 +27,7 @@ public class InvestorOrganizationDetail extends Investor {
 
     @OneToMany(mappedBy = "investorOrganization", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
-    List<LegalDocs> legalDocs = new ArrayList<>();
+    List<LegalDoc> legalDocs = new ArrayList<>();
 
     @PrePersist
     public void prePersist() {
@@ -35,12 +35,12 @@ public class InvestorOrganizationDetail extends Investor {
     }
 
 
-    public void addLegalDoc(LegalDocs legalDoc) {
+    public void addLegalDoc(LegalDoc legalDoc) {
         legalDocs.add(legalDoc);
         legalDoc.setInvestorOrganization(this);
     }
 
-    public void removeLegalDoc(LegalDocs legalDoc) {
+    public void removeLegalDoc(LegalDoc legalDoc) {
         legalDocs.remove(legalDoc);
         legalDoc.setInvestorOrganization(null);
     }

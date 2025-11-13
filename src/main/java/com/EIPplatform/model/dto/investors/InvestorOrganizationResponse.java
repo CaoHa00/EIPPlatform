@@ -6,7 +6,7 @@ import lombok.experimental.SuperBuilder;
 
 import java.util.List;
 
-import com.EIPplatform.model.dto.legalDocs.LegalDocsResponse;
+import com.EIPplatform.model.dto.legalDoc.LegalDocResponse;
 
 @Getter
 @Setter
@@ -16,5 +16,5 @@ import com.EIPplatform.model.dto.legalDocs.LegalDocsResponse;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class InvestorOrganizationResponse extends InvestorResponse {
     String organizationName;
-    List<LegalDocsResponse> legalDocs;
+    List<LegalDocResponse> legalDocs;
 }

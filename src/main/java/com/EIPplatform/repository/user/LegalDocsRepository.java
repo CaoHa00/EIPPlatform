@@ -1,17 +1,17 @@
 package com.EIPplatform.repository.user;
 
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
-
-import com.EIPplatform.model.entity.user.legalDocs.LegalDocs;
-
 import java.util.List;
 import java.util.UUID;
 
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+
+import com.EIPplatform.model.entity.user.legalDoc.LegalDoc;
+
 @Repository
-public interface LegalDocsRepository extends JpaRepository<LegalDocs, UUID> {
+public interface LegalDocsRepository extends JpaRepository<LegalDoc, UUID> {
     
-    List<LegalDocs> findByInvestorOrganization_InvestorId(UUID investorOrganizationId);
+    List<LegalDoc> findByInvestorOrganization_InvestorId(UUID investorOrganizationId);
     
     boolean existsByNumberAndInvestorOrganization_InvestorId(String number, UUID investorOrganizationId);
     

@@ -9,13 +9,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.EIPplatform.exception.ExceptionFactory;
-import com.EIPplatform.exception.errorCategories.LegalDocsError;
-import com.EIPplatform.mapper.businessInformation.LegalDocsMapper;
-import com.EIPplatform.model.dto.legalDocs.LegalDocsCreationRequest;
-import com.EIPplatform.model.dto.legalDocs.LegalDocsResponse;
-import com.EIPplatform.model.dto.legalDocs.LegalDocsUpdateRequest;
+import com.EIPplatform.exception.errorCategories.LegalDocError;
+import com.EIPplatform.mapper.businessInformation.LegalDocMapper;
+import com.EIPplatform.model.dto.legalDoc.LegalDocCreationRequest;
+import com.EIPplatform.model.dto.legalDoc.LegalDocResponse;
+import com.EIPplatform.model.dto.legalDoc.LegalDocUpdateRequest;
 import com.EIPplatform.model.entity.user.investors.InvestorOrganizationDetail;
-import com.EIPplatform.model.entity.user.legalDocs.LegalDocs;
+import com.EIPplatform.model.entity.user.legalDoc.LegalDoc;
 import com.EIPplatform.repository.user.InvestorOrganizationRepository;
 import com.EIPplatform.repository.user.LegalDocsRepository;
 
@@ -28,16 +28,16 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @Transactional
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-public class LegalDocsImplementation implements LegalDocsInterface {
+public class LegalDocImplementation implements LegalDocsInterface {
 
     LegalDocsRepository legalDocsRepository;
     InvestorOrganizationRepository investorOrganizationRepository;
-    LegalDocsMapper legalDocsMapper;
+    LegalDocMapper legalDocsMapper;
     ExceptionFactory exceptionFactory;
 
     @Override
     @Transactional
-    public LegalDocsResponse createLegalDoc(LegalDocsCreationRequest request) {
+    public LegalDocResponse createLegalDoc(LegalDocCreationRequest request) {
 
         validateGPMTProjectName(request.getType(), request.getProjectName());
 
@@ -46,7 +46,7 @@ public class LegalDocsImplementation implements LegalDocsInterface {
                 .orElseThrow(() -> exceptionFactory.createNotFoundException(
                         "Investor Organization",
                         request.getInvestorOrganizationId(),
-                        LegalDocsError.INVESTOR_ORGANIZATION_NOT_FOUND
+                        LegalDocError.INVESTOR_ORGANIZATION_NOT_FOUND
                 ));
 
         if (legalDocsRepository.existsByNumberAndInvestorOrganization_InvestorId(
@@ -56,29 +56,29 @@ public class LegalDocsImplementation implements LegalDocsInterface {
                     "Legal Document",
                     "number",
                     request.getNumber(),
-                    LegalDocsError.LEGAL_DOC_NUMBER_ALREADY_EXISTS
+                    LegalDocError.LEGAL_DOC_NUMBER_ALREADY_EXISTS
             );
         }
 
-        LegalDocs entity = legalDocsMapper.toEntity(request);
+        LegalDoc entity = legalDocsMapper.toEntity(request);
         entity.setInvestorOrganization(investorOrganization);
         
-        LegalDocs savedEntity = legalDocsRepository.save(entity);
+        LegalDoc savedEntity = legalDocsRepository.save(entity);
         return legalDocsMapper.toResponse(savedEntity);
     }
 
     @Override
     @Transactional
-    public LegalDocsResponse updateLegalDoc(LegalDocsUpdateRequest request) {
+    public LegalDocResponse updateLegalDoc(LegalDocUpdateRequest request) {
 
         validateGPMTProjectName(request.getType(), request.getProjectName());
 
-        LegalDocs existingEntity = legalDocsRepository
+        LegalDoc existingEntity = legalDocsRepository
                 .findById(request.getLegalDocId())
                 .orElseThrow(() -> exceptionFactory.createNotFoundException(
                         "Legal Document",
                         request.getLegalDocId(),
-                        LegalDocsError.LEGAL_DOC_NOT_FOUND
+                        LegalDocError.LEGAL_DOC_NOT_FOUND
                 ));
 
         InvestorOrganizationDetail investorOrganization = investorOrganizationRepository
@@ -86,7 +86,7 @@ public class LegalDocsImplementation implements LegalDocsInterface {
                 .orElseThrow(() -> exceptionFactory.createNotFoundException(
                         "Investor Organization",
                         request.getInvestorOrganizationId(),
-                        LegalDocsError.INVESTOR_ORGANIZATION_NOT_FOUND
+                        LegalDocError.INVESTOR_ORGANIZATION_NOT_FOUND
                 ));
 
         if (legalDocsRepository.existsByNumberAndInvestorOrganization_InvestorIdAndLegalDocIdNot(
@@ -97,27 +97,27 @@ public class LegalDocsImplementation implements LegalDocsInterface {
                     "Legal Document",
                     "number",
                     request.getNumber(),
-                    LegalDocsError.LEGAL_DOC_NUMBER_ALREADY_EXISTS
+                    LegalDocError.LEGAL_DOC_NUMBER_ALREADY_EXISTS
             );
         }
 
         legalDocsMapper.updateEntityFromRequest(request, existingEntity);
         existingEntity.setInvestorOrganization(investorOrganization);
         
-        LegalDocs updatedEntity = legalDocsRepository.save(existingEntity);
+        LegalDoc updatedEntity = legalDocsRepository.save(existingEntity);
         return legalDocsMapper.toResponse(updatedEntity);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public LegalDocsResponse getLegalDocById(UUID legalDocId) {
+    public LegalDocResponse getLegalDocById(UUID legalDocId) {
 
-        LegalDocs entity = legalDocsRepository
+        LegalDoc entity = legalDocsRepository
                 .findById(legalDocId)
                 .orElseThrow(() -> exceptionFactory.createNotFoundException(
                         "Legal Document",
                         legalDocId,
-                        LegalDocsError.LEGAL_DOC_NOT_FOUND
+                        LegalDocError.LEGAL_DOC_NOT_FOUND
                 ));
 
         return legalDocsMapper.toResponse(entity);
@@ -125,7 +125,7 @@ public class LegalDocsImplementation implements LegalDocsInterface {
 
     @Override
     @Transactional(readOnly = true)
-    public List<LegalDocsResponse> getAllLegalDocs() {
+    public List<LegalDocResponse> getAllLegalDocs() {
         return legalDocsRepository.findAll()
                 .stream()
                 .map(legalDocsMapper::toResponse)
@@ -134,13 +134,13 @@ public class LegalDocsImplementation implements LegalDocsInterface {
 
     @Override
     @Transactional(readOnly = true)
-    public List<LegalDocsResponse> getLegalDocsByInvestorOrganization(UUID investorOrganizationId) {
+    public List<LegalDocResponse> getLegalDocsByInvestorOrganization(UUID investorOrganizationId) {
 
         if (!investorOrganizationRepository.existsById(investorOrganizationId)) {
             throw exceptionFactory.createNotFoundException(
                     "Investor Organization",
                     investorOrganizationId,
-                    LegalDocsError.INVESTOR_ORGANIZATION_NOT_FOUND
+                    LegalDocError.INVESTOR_ORGANIZATION_NOT_FOUND
             );
         }
 
@@ -157,7 +157,7 @@ public class LegalDocsImplementation implements LegalDocsInterface {
             throw exceptionFactory.createNotFoundException(
                     "Legal Document",
                     legalDocId,
-                    LegalDocsError.LEGAL_DOC_NOT_FOUND
+                    LegalDocError.LEGAL_DOC_NOT_FOUND
             );
         }
 
@@ -170,7 +170,7 @@ public class LegalDocsImplementation implements LegalDocsInterface {
                     "Legal Document",
                     "projectName",
                     null,
-                    LegalDocsError.PROJECT_NAME_REQUIRED_FOR_GPMT
+                    LegalDocError.PROJECT_NAME_REQUIRED_FOR_GPMT
             );
         }
     }

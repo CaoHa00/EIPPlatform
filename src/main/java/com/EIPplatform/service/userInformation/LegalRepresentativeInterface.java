@@ -3,9 +3,9 @@ package com.EIPplatform.service.userInformation;
 import java.util.List;
 import java.util.UUID;
 
-import com.EIPplatform.model.dto.legalrepresentative.LegalRepresentativeCreationRequest;
-import com.EIPplatform.model.dto.legalrepresentative.LegalRepresentativeResponse;
-import com.EIPplatform.model.dto.legalrepresentative.LegalRepresentativeUpdationRequest;
+import com.EIPplatform.model.dto.legalRepresentative.LegalRepresentativeCreationRequest;
+import com.EIPplatform.model.dto.legalRepresentative.LegalRepresentativeResponse;
+import com.EIPplatform.model.dto.legalRepresentative.LegalRepresentativeUpdationRequest;
 
 public interface LegalRepresentativeInterface {
     LegalRepresentativeResponse createLegalRepresentative(LegalRepresentativeCreationRequest request);

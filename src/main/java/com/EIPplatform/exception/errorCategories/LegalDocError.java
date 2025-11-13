@@ -11,7 +11,7 @@ import lombok.experimental.FieldDefaults;
 
 @Getter
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-public enum LegalDocsError implements ErrorCodeInterface {
+public enum LegalDocError implements ErrorCodeInterface {
     LEGAL_DOC_NOT_FOUND(3001, "Legal document not found", HttpStatus.NOT_FOUND),
     LEGAL_DOC_NUMBER_ALREADY_EXISTS(3002, "Legal document number already exists for this organization", HttpStatus.BAD_REQUEST),
     INVESTOR_ORGANIZATION_NOT_FOUND(3003, "Investor organization not found", HttpStatus.NOT_FOUND),
@@ -21,7 +21,7 @@ public enum LegalDocsError implements ErrorCodeInterface {
     String message;
     HttpStatusCode statusCode;
 
-    LegalDocsError(int code, String message, HttpStatusCode statusCode) {
+    LegalDocError(int code, String message, HttpStatusCode statusCode) {
         this.code = code;
         this.message = message;
         this.statusCode = statusCode;
