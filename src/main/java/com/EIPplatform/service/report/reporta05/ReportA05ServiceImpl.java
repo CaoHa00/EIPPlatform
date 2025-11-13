@@ -384,10 +384,10 @@ public class ReportA05ServiceImpl implements ReportA05Service {
                 EnvPermits envPermits = business.getEnvPermits();
                 List<BusinessHistoryConsumption> businessHistoryConsumptions = business
                                 .getBusinessHistoryConsumptions();
-
-                String dateStr = LocalDate.now().toString();
-                String monthStr = LocalDate.now().getMonth().toString();
-                String yearStr = String.valueOf(LocalDate.now().getYear());
+                LocalDate today = LocalDate.now();
+                String day = String.valueOf(today.getDayOfMonth());
+                String month = String.valueOf(today.getMonthValue());
+                String year = String.valueOf(today.getYear());
                 // FIX: Map dữ liệu với key chính xác
                 Map<String, String> data = new HashMap<>();
                 data.put("facility_name", business.getFacilityName());
@@ -438,9 +438,9 @@ public class ReportA05ServiceImpl implements ReportA05Service {
                                         bhc.getWaterConsumptionPy() != null ? bhc.getWaterConsumptionPy().toString()
                                                         : "");
                 }
-                data.put("dateStr", dateStr);
-                data.put("monthYearStr", monthStr);
-                data.put("yearStr", yearStr);
+                data.put("dateStr", day);
+                data.put("monthYearStr", month);
+                data.put("yearStr", year);
 
                 if (wasteWaterDataDTO != null) {
                         log.debug("Log wasteWaterDATAdto");
