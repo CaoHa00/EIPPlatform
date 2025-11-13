@@ -9,11 +9,14 @@ import com.EIPplatform.model.dto.report.report05.*;
 import com.EIPplatform.model.dto.report.report05.airemmissionmanagement.airemissiondata.AirEmissionDataDTO;
 import com.EIPplatform.model.dto.report.report05.wastemanagement.WasteManagementDataDTO;
 import com.EIPplatform.model.dto.report.report05.wastewatermanager.wastewatermanagement.WasteWaterDataDTO;
+
+import com.EIPplatform.model.entity.permitshistory.EnvPermits;
 import com.EIPplatform.model.entity.report.report05.ReportA05;
 import com.EIPplatform.model.entity.report.report05.airemmissionmanagement.AirEmissionData;
 import com.EIPplatform.model.entity.report.report05.wastemanagement.WasteManagementData;
 import com.EIPplatform.model.entity.report.report05.wastewatermanager.WasteWaterData;
 import com.EIPplatform.model.entity.user.businessInformation.BusinessDetail;
+import com.EIPplatform.model.entity.user.businessInformation.BusinessHistoryConsumption;
 import com.EIPplatform.repository.report.ReportA05Repository;
 import com.EIPplatform.repository.report.report05.airemmissionmanagement.AirEmissionDataRepository;
 import com.EIPplatform.repository.report.report05.wastemanagement.WasteManagementDataRepository;
@@ -33,7 +36,9 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
@@ -376,6 +381,9 @@ public class ReportA05ServiceImpl implements ReportA05Service {
                 AirEmissionDataDTO airEmissionDataDTO = draftData != null ? draftData.getAirEmissionData() : null;
                 WasteManagementDataDTO wasteManagementDataDTO = draftData != null ? draftData.getWasteManagementData()
                                 : null;
+                EnvPermits envPermits = business.getEnvPermits();
+                List<BusinessHistoryConsumption> businessHistoryConsumptions = business
+                                .getBusinessHistoryConsumptions();
 
                 String dateStr = LocalDate.now().toString();
                 String monthStr = LocalDate.now().getMonth().toString();
@@ -393,15 +401,49 @@ public class ReportA05ServiceImpl implements ReportA05Service {
                 data.put("business_license_number", business.getBusinessRegistrationNumber());
                 data.put("tax_code", business.getTaxCode());
                 data.put("seasonal_period", business.getOperationType().name());
-                // data.put("product_volume_cy",
-                // business.getProductVolumeCy() != null
-                // ? business.getProductVolumeCy().toString()
-                // : "");
+
+                // permit
+                data.put("env_permit_number", envPermits.getPermitNumber());
+                data.put("env_permit_issue_date", formatDate(envPermits.getIssueDate()));
+                data.put("env_permit_issuer", envPermits.getIssuerOrg());
+                data.put("env_permit_file", envPermits.getPermitFilePath());
+                // business history
+                for (BusinessHistoryConsumption bhc : businessHistoryConsumptions) {
+                        data.put("product_volume_cy",
+                                        bhc.getProductVolumeCy() != null ? bhc.getProductVolumeCy().toString() : "");
+                        data.put("product_unit_cy", bhc.getProductUnitCy());
+                        data.put("product_volume_py",
+                                        bhc.getProductVolumePy() != null ? bhc.getProductVolumePy().toString() : "");
+                        data.put("product_unit_py", bhc.getProductUnitPy());
+                        data.put("fuel_consumption_cy",
+                                        bhc.getFuelConsumptionCy() != null ? bhc.getFuelConsumptionCy().toString()
+                                                        : "");
+                        data.put("fuel_unit_cy", bhc.getFuelUnitCy());
+                        data.put("fuel_consumption_py",
+                                        bhc.getFuelConsumptionPy() != null ? bhc.getFuelConsumptionPy().toString()
+                                                        : "");
+                        data.put("fuel_unit_py", bhc.getFuelUnitPy());
+                        data.put("electricity_consumption_cy",
+                                        bhc.getElectricityConsumptionCy() != null
+                                                        ? bhc.getElectricityConsumptionCy().toString()
+                                                        : "");
+                        data.put("electricity_consumption_py",
+                                        bhc.getElectricityConsumptionPy() != null
+                                                        ? bhc.getElectricityConsumptionPy().toString()
+                                                        : "");
+                        data.put("water_consumption_cy",
+                                        bhc.getWaterConsumptionCy() != null ? bhc.getWaterConsumptionCy().toString()
+                                                        : "");
+                        data.put("water_consumption_py",
+                                        bhc.getWaterConsumptionPy() != null ? bhc.getWaterConsumptionPy().toString()
+                                                        : "");
+                }
                 data.put("dateStr", dateStr);
                 data.put("monthYearStr", monthStr);
                 data.put("yearStr", yearStr);
 
                 if (wasteWaterDataDTO != null) {
+                        log.debug("Log wasteWaterDATAdto");
                         data.put("ww_treatment_desc",
                                         wasteWaterDataDTO.getTreatmentWwDesc() != null
                                                         ? wasteWaterDataDTO.getTreatmentWwDesc()
@@ -609,8 +651,8 @@ public class ReportA05ServiceImpl implements ReportA05Service {
                                                         ? airEmissionDataDTO.getAirAutoStationGps()
                                                         : "");
                         data.put("air_auto_station_map",
-                                        airEmissionDataDTO.getAirAutoStationMap() != null
-                                                        ? airEmissionDataDTO.getAirAutoStationMap()
+                                        airEmissionDataDTO.getAirAutoStationMapFilePath() != null
+                                                        ? airEmissionDataDTO.getAirAutoStationMapFilePath()
                                                         : "");
                         data.put("air_auto_source_desc",
                                         airEmissionDataDTO.getAirAutoSourceDesc() != null
@@ -884,12 +926,22 @@ public class ReportA05ServiceImpl implements ReportA05Service {
                                         outputDir,
                                         business.getFacilityName().replaceAll("[^a-zA-Z0-9]", "_"),
                                         reportId);
-
                         Files.write(Paths.get(fileName), result);
                         log.info(" File generated: {}", fileName);
 
                         return result;
                 }
+        }
+
+        /**
+         * Format LocalDate to dd/MM/yyyy or return empty if null
+         */
+        private String formatDate(LocalDate date) {
+                if (date == null) {
+                        return "";
+                }
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+                return date.format(formatter);
         }
 
         /**

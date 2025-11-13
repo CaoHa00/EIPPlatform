@@ -1,8 +1,11 @@
 package com.EIPplatform.controller.report.report05;
 
 import com.EIPplatform.model.dto.report.report05.*;
+import com.EIPplatform.model.entity.user.authentication.UserAccount;
 import com.EIPplatform.service.report.reporta05.ReportA05Service;
+import com.EIPplatform.util.SessionUtils;
 
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
