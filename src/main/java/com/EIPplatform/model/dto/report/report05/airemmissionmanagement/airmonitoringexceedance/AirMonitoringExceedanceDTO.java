@@ -19,7 +19,7 @@ public class AirMonitoringExceedanceDTO {
 
     String pointSymbol;
 
-    LocalDate monitoringDate;
+    String monitoringDate;
 
     String longitude;
 

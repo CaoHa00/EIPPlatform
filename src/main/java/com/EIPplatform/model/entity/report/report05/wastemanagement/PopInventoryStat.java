@@ -28,19 +28,19 @@ public class PopInventoryStat {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "wm_id", nullable = false)
     WasteManagementData wasteManagementData;
-    
+
     @Column(name = "pop_name", columnDefinition = "NVARCHAR(500)", nullable = false)
     String popName;
-    
+
     @Column(name = "cas_code", columnDefinition = "NVARCHAR(50)")
     String casCode;
 
     @Column(name = "import_date")
-    LocalDate importDate;
+    String importDate;
 
     @Column(name = "import_volume")
     Double importVolume;
-    
+
     @Column(name = "concentration", columnDefinition = "NVARCHAR(100)")
     String concentration;
 
@@ -49,7 +49,7 @@ public class PopInventoryStat {
 
     @Column(name = "volume_stocked")
     Double volumeStocked;
-    
+
     @Column(name = "compliance_result", columnDefinition = "NVARCHAR(255)")
     String complianceResult;
 }

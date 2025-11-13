@@ -226,14 +226,33 @@ public class ReportA05ServiceImpl implements ReportA05Service {
                 draftData.setLastModified(LocalDateTime.now());
                 reportCacheService.deleteDraftReport(reportId, userAccountId);
 
+                WasteManagementDataDTO wasteManagementDataDTO = null;
+                if (saved.getWasteManagementData() != null) {
+                        wasteManagementDataDTO = wasteManagementDataMapper.toDto(saved.getWasteManagementData());  // Gọi trực tiếp!
+                }
+
+                AirEmissionDataDTO airEmissionDataDTO = null;
+                if (saved.getAirEmissionData() != null) {
+                        airEmissionDataDTO = airEmissionDataMapper.toDto(saved.getAirEmissionData());
+                }
+
+                WasteWaterDataDTO wasteWaterDataDTO = null;
+                if (saved.getWasteWaterData() != null) {
+                        wasteWaterDataDTO = wasteWaterDataMapper.toDto(saved.getWasteWaterData());
+                }
+
                 BusinessDetail bd = saved.getBusinessDetail();
                 return ReportA05DTO.builder()
+                                .reportId(saved.getReportId())
                                 .reportCode(saved.getReportCode())
                                 .businessDetailId(bd != null ? bd.getBusinessDetailId() : null)
                                 .facilityName(bd != null ? bd.getFacilityName() : null)
                                 .reportYear(saved.getReportYear())
                                 .reportingPeriod(saved.getReportingPeriod())
                                 .reviewNotes(saved.getReviewNotes())
+                                .airEmissionData(airEmissionDataDTO)
+                                .wasteManagementData(wasteManagementDataDTO)
+                                .wasteWaterData(wasteWaterDataDTO)
                                 .inspectionRemedyReport(saved.getInspectionRemedyReport())
                                 .completionPercentage(saved.getCompletionPercentage())
                                 .createdAt(saved.getCreatedAt())

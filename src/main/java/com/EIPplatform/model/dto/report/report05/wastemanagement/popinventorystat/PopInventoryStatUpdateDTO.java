@@ -16,7 +16,7 @@ public class PopInventoryStatUpdateDTO {
 
     String casCode;
 
-    LocalDate importDate;
+    String importDate;
 
     Double importVolume;
 

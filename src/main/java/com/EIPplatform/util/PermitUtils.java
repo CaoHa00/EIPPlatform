@@ -72,7 +72,7 @@ public class PermitUtils {
         // Ví dụ: permits/env-permit/ABC-Company/2024
         String folderPath = String.format("permits/%s/%s/%d",
                 subFolder,
-                businessDetail.getFacilityName(),
+                businessDetail.getFacilityName().trim(),
                 year);
 
         // Sử dụng uploadFile method với folder path

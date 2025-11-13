@@ -314,7 +314,7 @@ public class TableMappingService {
             setCellText(newRow.getCell(0), String.valueOf(i + 1)); // TT
             setCellText(newRow.getCell(1), item.getPointName()); // Tên điểm
             setCellText(newRow.getCell(2), item.getPointSymbol()); // Ký hiệu
-            setCellText(newRow.getCell(3), formatDate(item.getMonitoringDate())); // Thời gian
+            setCellText(newRow.getCell(3), item.getMonitoringDate());// Thời gian
             setCellText(newRow.getCell(4), item.getLongitude()); // kinh do
             setCellText(newRow.getCell(5), item.getLatitude()); // vi do
             setCellText(newRow.getCell(6), item.getExceededParam()); // Chỉ tiêu

@@ -3,6 +3,7 @@ package com.EIPplatform.model.dto.report.report05.airemmissionmanagement.airauto
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Data
@@ -14,7 +15,7 @@ public class AirAutoMonitoringIncidentUpdateDTO {
 
     String incidentName;
 
-    LocalDateTime incidentTime;
+    String incidentTime;
 
     String incidentRemedy;
 }
