@@ -34,7 +34,7 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class FileStorageServiceImplementation implements FileStorageService {
 
-    @Value("${app.storage.local.upload-dir:D:/}")
+    @Value("${app.storage.local.upload-dir:/app/uploads}")
     private String uploadDir;
 
     private Path rootLocation;
@@ -71,8 +71,7 @@ public class FileStorageServiceImplementation implements FileStorageService {
             // Validate file
             if (file.isEmpty()) {
                 throw exceptionFactory.createValidationException(
-                        "File", "empty", true, ValidationError.EMPTY_FILE
-                );
+                        "File", "empty", true, ValidationError.EMPTY_FILE);
             }
 
             // Validate folder path
@@ -96,8 +95,7 @@ public class FileStorageServiceImplementation implements FileStorageService {
                         "File",
                         Arrays.asList("storagePath"),
                         Arrays.asList("Cannot store file outside current directory"),
-                        ForbiddenError.FORBIDDEN
-                );
+                        ForbiddenError.FORBIDDEN);
             }
 
             // Additional security check
@@ -106,8 +104,7 @@ public class FileStorageServiceImplementation implements FileStorageService {
                         "File",
                         Arrays.asList("storagePath"),
                         Arrays.asList("Cannot store file outside root directory"),
-                        ForbiddenError.FORBIDDEN
-                );
+                        ForbiddenError.FORBIDDEN);
             }
 
             // Copy file
@@ -124,10 +121,12 @@ public class FileStorageServiceImplementation implements FileStorageService {
     }
 
     /**
-     * Store file to a specific directory with given filename (new method for explicit control)
+     * Store file to a specific directory with given filename (new method for
+     * explicit control)
+     * 
      * @param directory thư mục đích (relative to root)
-     * @param fileName tên file (đã unique hoặc custom)
-     * @param file MultipartFile cần store
+     * @param fileName  tên file (đã unique hoặc custom)
+     * @param file      MultipartFile cần store
      * @return đường dẫn file đã store (relative path)
      */
     @Override
@@ -138,8 +137,7 @@ public class FileStorageServiceImplementation implements FileStorageService {
             // Validate file
             if (file.isEmpty()) {
                 throw exceptionFactory.createValidationException(
-                        "File", "empty", true, ValidationError.EMPTY_FILE
-                );
+                        "File", "empty", true, ValidationError.EMPTY_FILE);
             }
 
             // Validate directory and filename
@@ -163,8 +161,7 @@ public class FileStorageServiceImplementation implements FileStorageService {
                         "File",
                         Arrays.asList("storagePath"),
                         Arrays.asList("Cannot store file outside current directory"),
-                        ForbiddenError.FORBIDDEN
-                );
+                        ForbiddenError.FORBIDDEN);
             }
 
             if (!destinationFile.startsWith(rootLocation.toAbsolutePath())) {
@@ -172,8 +169,7 @@ public class FileStorageServiceImplementation implements FileStorageService {
                         "File",
                         Arrays.asList("storagePath"),
                         Arrays.asList("Cannot store file outside root directory"),
-                        ForbiddenError.FORBIDDEN
-                );
+                        ForbiddenError.FORBIDDEN);
             }
 
             // Copy file
@@ -250,8 +246,7 @@ public class FileStorageServiceImplementation implements FileStorageService {
             // Security check: đảm bảo file nằm trong root directory
             if (!file.startsWith(rootLocation.toAbsolutePath())) {
                 throw exceptionFactory.createNotFoundException(
-                        "File", "path", filePath, PermitError.FILE_NOT_FOUND
-                );
+                        "File", "path", filePath, PermitError.FILE_NOT_FOUND);
             }
 
             Resource resource = new UrlResource(file.toUri());
@@ -260,14 +255,12 @@ public class FileStorageServiceImplementation implements FileStorageService {
                 return resource;
             } else {
                 throw exceptionFactory.createNotFoundException(
-                        "File", "path", filePath, PermitError.FILE_NOT_FOUND
-                );
+                        "File", "path", filePath, PermitError.FILE_NOT_FOUND);
             }
         } catch (MalformedURLException e) {
             log.error("Failed to download file", e);
             throw exceptionFactory.createNotFoundException(
-                    "File", "path", filePath, PermitError.FILE_NOT_FOUND
-            );
+                    "File", "path", filePath, PermitError.FILE_NOT_FOUND);
         }
     }
 
