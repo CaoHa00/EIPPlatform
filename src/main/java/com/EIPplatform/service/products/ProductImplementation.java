@@ -1,5 +1,8 @@
 package com.EIPplatform.service.products;
 
+import com.EIPplatform.exception.errorCategories.BusinessDetailError;
+import com.EIPplatform.model.entity.user.businessInformation.BusinessDetail;
+import com.EIPplatform.repository.user.BusinessDetailRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -17,6 +20,7 @@ import com.EIPplatform.model.entity.products.Product;
 import com.EIPplatform.repository.user.ProductRepository;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -30,6 +34,7 @@ public class ProductImplementation implements ProductInterface {
     ProductRepository productRepository;
     ProductMapper productMapper;
     ExceptionFactory exceptionFactory;
+    BusinessDetailRepository businessDetailRepository;
 
     @Override
     public ProductResponse createProduct(ProductCreationRequest request) {
@@ -44,6 +49,17 @@ public class ProductImplementation implements ProductInterface {
         }
 
         Product entity = productMapper.toEntity(request);
+
+        //Mapping businessDetail to product
+        BusinessDetail businessDetail = businessDetailRepository
+                .findById(request.getBusinessDetailId())
+                .orElseThrow(() -> exceptionFactory.createNotFoundException(
+                        "BusinessDetail",
+                        request.getBusinessDetailId(),
+                        BusinessDetailError.BUSINESS_DETAIL_ID_NOT_FOUND));
+        entity.setBusinessDetail(businessDetail);
+
+
         Product savedEntity = productRepository.save(entity);
         return productMapper.toResponse(savedEntity);
     }
