@@ -17,7 +17,7 @@ public class AirMonitoringExceedanceUpdateDTO {
 
     String pointSymbol;
 
-    java.time.LocalDate monitoringDate;
+    String monitoringDate;
 
     String longitude;
 

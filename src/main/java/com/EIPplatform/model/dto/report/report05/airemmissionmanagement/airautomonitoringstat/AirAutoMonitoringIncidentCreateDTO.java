@@ -4,6 +4,7 @@ import jakarta.validation.constraints.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Data
@@ -18,7 +19,7 @@ public class AirAutoMonitoringIncidentCreateDTO {
     String incidentName;
 
     @NotNull(message = "IS_REQUIRED")
-    LocalDateTime incidentTime;
+    String incidentTime;
 
     @NotBlank(message = "IS_REQUIRED")
     String incidentRemedy;

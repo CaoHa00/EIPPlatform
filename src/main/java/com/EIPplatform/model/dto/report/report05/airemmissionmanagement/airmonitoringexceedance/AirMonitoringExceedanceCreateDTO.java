@@ -23,7 +23,7 @@ public class AirMonitoringExceedanceCreateDTO {
     String pointSymbol;
 
     @NotNull(message = "IS_REQUIRED")
-    LocalDate monitoringDate;
+    String monitoringDate;
 
     @Size(max = 20)
     String longitude;

@@ -26,13 +26,13 @@ public class AirAutoMonitoringIncident {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "air_emission_data_id", nullable = false)
     AirEmissionData airEmissionData;
-    
+
     @Column(name = "incident_name", nullable = false, columnDefinition = "NVARCHAR(255)")
     String incidentName;
 
     @Column(name = "incident_time", nullable = false)
-    LocalDateTime incidentTime;
-    
+    String incidentTime;
+
     @Lob
     @Column(name = "incident_remedy", nullable = false, columnDefinition = "NVARCHAR(MAX)")
     String incidentRemedy;

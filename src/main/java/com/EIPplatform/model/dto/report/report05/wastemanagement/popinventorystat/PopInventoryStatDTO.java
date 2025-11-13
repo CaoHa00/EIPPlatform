@@ -15,7 +15,7 @@ public class PopInventoryStatDTO {
     Long popInventoryId;
     String popName;
     String casCode;
-    LocalDate importDate;
+    String importDate;
     Double importVolume;
     String concentration;
     Double volumeUsed;
