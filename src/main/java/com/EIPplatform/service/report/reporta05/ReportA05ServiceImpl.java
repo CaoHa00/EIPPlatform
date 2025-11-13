@@ -30,9 +30,11 @@ import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.lang.Double;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -49,6 +51,7 @@ import org.apache.poi.xwpf.usermodel.XWPFRun;
 import org.apache.poi.xwpf.usermodel.XWPFTable;
 import org.apache.poi.xwpf.usermodel.XWPFTableCell;
 import org.apache.poi.xwpf.usermodel.XWPFTableRow;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
@@ -71,6 +74,8 @@ public class ReportA05ServiceImpl implements ReportA05Service {
         WasteManagementDataRepository wasteManagementDataRepository;
         AirEmissionDataRepository airEmissionDataRepository;
         WasteWaterRepository wasteWaterDataRepository;
+        @Value("${app.storage.local.upload-dir:/app/uploads}")
+        private String uploadDir;
 
         @Override
         @Transactional
@@ -228,7 +233,9 @@ public class ReportA05ServiceImpl implements ReportA05Service {
 
                 WasteManagementDataDTO wasteManagementDataDTO = null;
                 if (saved.getWasteManagementData() != null) {
-                        wasteManagementDataDTO = wasteManagementDataMapper.toDto(saved.getWasteManagementData());  // Gọi trực tiếp!
+                        wasteManagementDataDTO = wasteManagementDataMapper.toDto(saved.getWasteManagementData()); // Gọi
+                                                                                                                  // trực
+                                                                                                                  // tiếp!
                 }
 
                 AirEmissionDataDTO airEmissionDataDTO = null;
@@ -935,21 +942,83 @@ public class ReportA05ServiceImpl implements ReportA05Service {
                         }
 
                         doc.write(baos);
+
                         byte[] result = baos.toByteArray();
 
                         // Ghi ra file để kiểm tra (optional)
-                        String outputDir = "D:\\Cao Ha\\eipFolder\\generated\\reports";
-                        Files.createDirectories(Paths.get(outputDir));
+                        // String outputDir = "D:\\Cao Ha\\eipFolder\\generated\\reports";
+                        // Files.createDirectories(Paths.get(outputDir));
 
-                        String fileName = String.format("%s/ReportA05_%s_%s.docx",
-                                        outputDir,
-                                        business.getFacilityName().replaceAll("[^a-zA-Z0-9]", "_"),
-                                        reportId);
-                        Files.write(Paths.get(fileName), result);
-                        log.info(" File generated: {}", fileName);
+                        // String fileName = String.format("%s/ReportA05_%s_%s.docx",
+                        // outputDir,
+                        // business.getFacilityName().replaceAll("[^a-zA-Z0-9]", "_"),
+                        // reportId);
+                        // Files.write(Paths.get(fileName), result);
+                        // log.info(" File generated: {}", fileName);
+                        ReportA05DTO reportDTO = ReportA05DTO.builder()
+                                        .reportYear(report.getReportYear())
+                                        .build();
+                        String savedFilePath = saveReportFile(result, reportId, business, reportDTO);
+                        log.info("✅ Report file generated and saved: {} ({} bytes)", savedFilePath, result.length);
 
                         return result;
                 }
+        }
+
+        private String saveReportFile(byte[] fileBytes, UUID reportId, BusinessDetail business, ReportA05DTO report) {
+                try {
+                        // Tạo subfolder theo năm: reporta05/2025/
+                        Integer reportYear = report.getReportYear() != null ? report.getReportYear()
+                                        : LocalDateTime.now().getYear();
+                        Path reportDir = Paths.get(uploadDir, "reporta05", String.valueOf(reportYear));
+
+                        // Tạo folder nếu chưa có
+                        Files.createDirectories(reportDir);
+                        log.info("📁 Report directory: {}", reportDir);
+
+                        // Tạo tên file
+                        String timestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss"));
+                        String facilityName = business.getFacilityName() != null
+                                        ? sanitizeFileName(business.getFacilityName())
+                                        : "Unknown";
+
+                        String fileName = String.format("BaoCaoA05_%s_%s_%s.docx",
+                                        facilityName,
+                                        reportId.toString().substring(0, 8),
+                                        timestamp);
+
+                        // Lưu file
+                        Path filePath = reportDir.resolve(fileName);
+                        Files.write(filePath, fileBytes);
+
+                        // Return relative path
+                        String relativePath = String.format("reporta05/%d/%s", reportYear, fileName);
+                        log.info(" File saved successfully: {}", relativePath);
+
+                        return relativePath;
+
+                } catch (IOException e) {
+                        log.error("⚠️ Could not save report file: {}", e.getMessage(), e);
+                        throw new RuntimeException("Failed to save report file", e);
+                }
+        }
+
+        private String sanitizeFileName(String input) {
+                if (input == null || input.isEmpty()) {
+                        return "Unknown";
+                }
+
+                String sanitized = input
+                                .replaceAll("[/\\\\:*?\"<>|]", "") // Loại bỏ ký tự không hợp lệ
+                                .replaceAll("\\s+", "_") // Thay space = underscore
+                                .trim();
+
+                // Giới hạn độ dài
+                if (sanitized.length() > 50) {
+                        sanitized = sanitized.substring(0, 50);
+                }
+
+                return sanitized;
         }
 
         /**
