@@ -1,4 +1,5 @@
 package com.EIPplatform.model.entity.report.report06.part01;
+import com.EIPplatform.model.entity.products.Product;
 import com.EIPplatform.model.entity.report.report06.Report06;
 import com.EIPplatform.model.entity.user.authentication.UserAccount;
 import com.EIPplatform.model.entity.user.legalDocs.LegalDocs;
@@ -47,7 +48,7 @@ public class BusinessInformation {
     @Column(name = "activity_type", columnDefinition = "NVARCHAR(255)") // New: activity_type (from BD)
     String activityType; // Pulled from report06.businessDetail.activityType
 
-//    @ManyToOne(fetch = FetchType.LAZY) // Assuming single FK as per design, but kept as ManyToOne; adjust to ManyToMany if needed
-//    @JoinColumn(name = "product_id")
-//    Product product; // New: product_id (FK), replaces ManyToMany mainProducts (simplified to single)
+    @ManyToOne(fetch = FetchType.LAZY) // Assuming single FK as per design, but kept as ManyToOne; adjust to ManyToMany if needed
+    @JoinColumn(name = "product_id")
+    Product product; // New: product_id (FK), replaces ManyToMany mainProducts (simplified to single)
 }

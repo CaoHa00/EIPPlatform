@@ -53,6 +53,10 @@ public class ScaleCapacity {
     @Column(name = "updated_at", columnDefinition = "DATETIME2 DEFAULT GETDATE()")
     LocalDateTime updatedAt;
 
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "business_detail_id")
+    private BusinessDetail businessDetail;
+
     @PrePersist
     protected void onCreate() {
         createdAt = LocalDateTime.now();

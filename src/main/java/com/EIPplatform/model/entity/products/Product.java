@@ -1,5 +1,7 @@
 package com.EIPplatform.model.entity.products;
 
+import com.EIPplatform.model.entity.user.businessInformation.BusinessDetail;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -43,6 +45,11 @@ public class Product {
 
     @Column(name = "product_image", columnDefinition = "NVARCHAR(MAX)")
     String productImage;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "business_detail_id")
+    @JsonBackReference(value = "businessDetail-products")
+    private BusinessDetail businessDetail;
 
     @Embedded
     @Builder.Default

@@ -66,9 +66,9 @@ public class Report06 {
     @Column(name = "reviewed_at")
     LocalDateTime reviewedAt;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "report_status_id", nullable = false)
-    ReportStatus reportStatus;
+//    @ManyToOne(fetch = FetchType.LAZY)
+//    @JoinColumn(name = "report_status_id", nullable = false)
+//    ReportStatus reportStatus;
 
     @OneToOne(fetch = FetchType.LAZY)
 
