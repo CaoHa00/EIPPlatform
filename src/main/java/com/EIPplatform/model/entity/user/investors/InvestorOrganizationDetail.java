@@ -7,12 +7,7 @@ import com.EIPplatform.model.entity.user.legalDocs.LegalDocs;
 import com.EIPplatform.model.enums.InvestorType;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.AccessLevel;
-import lombok.Builder;
+import lombok.*;
 import lombok.experimental.FieldDefaults;
 import lombok.experimental.SuperBuilder;
 

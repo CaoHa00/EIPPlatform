@@ -51,7 +51,7 @@ public class Result {
     // MỤC 4: Độ tin cậy, tính đầy đủ, độ không chắc chắn (4.1-4.3)
     // ============================================================
     @Column(name = "reliability_statement", columnDefinition = "NVARCHAR(MAX)") // Mục 4.1: reliability_statement - Thuyết minh về Độ tin cậy (TEXT, optional)
-    String reliabilityStatement;
+            String reliabilityStatement;
 
     @Column(name = "completeness_statement", columnDefinition = "NVARCHAR(MAX)") // Mục 4.2: completeness_statement - Thuyết minh về Tính đầy đủ (TEXT, optional)
     String completenessStatement;

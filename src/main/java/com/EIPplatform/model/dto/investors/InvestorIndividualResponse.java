@@ -5,7 +5,6 @@ import lombok.experimental.FieldDefaults;
 import lombok.experimental.SuperBuilder;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 
 import com.EIPplatform.model.enums.Gender;
 
@@ -23,9 +22,4 @@ public class InvestorIndividualResponse extends InvestorResponse {
     String identificationNumber;
     String passportId;
     String nationality;
-
-    LocalDateTime createdAt;
-    String createdBy;
-    LocalDateTime updatedAt;
-    String updatedBy;
 }

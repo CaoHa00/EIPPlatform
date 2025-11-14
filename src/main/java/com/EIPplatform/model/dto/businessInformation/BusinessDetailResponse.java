@@ -30,8 +30,7 @@ public class BusinessDetailResponse {
     OperationType operationType;
     String seasonalDescription;
 
-    // Optional: Nếu cần expose investor info, thêm String investorName; nhưng giữ nguyên như original
-    // List<String> userAccounts;  // Giữ nếu cần list ID
+    List<String> userAccounts;
 
     LocalDateTime createdAt;
     String createdBy;
