@@ -2,10 +2,15 @@ package com.EIPplatform.service.report.reportcache;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.util.Set;
+import java.util.Objects;
 import java.util.UUID;
 
+import org.springframework.data.redis.connection.RedisConnection;
+import org.springframework.data.redis.connection.RedisConnectionFactory;
+import org.springframework.data.redis.connection.RedisKeyCommands;
+import org.springframework.data.redis.core.Cursor;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.ScanOptions;
 import org.springframework.stereotype.Service;
 
 import com.EIPplatform.model.dto.report.report05.ReportA05DraftDTO;
@@ -24,6 +29,7 @@ import lombok.AccessLevel;
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class ReportCacheServiceImpl implements ReportCacheService {
+
     RedisTemplate<String, String> redisTemplate;
     ObjectMapper objectMapper = new ObjectMapper().registerModule(new JavaTimeModule());
 
@@ -31,7 +37,8 @@ public class ReportCacheServiceImpl implements ReportCacheService {
     private static final Duration CACHE_TTL = Duration.ofHours(24);
 
     /**
-     * Build cache key with pattern: report:draft:user:{userAccountId}:report:{reportId}
+     * Build cache key with pattern:
+     * report:draft:user:{userAccountId}:report:{reportId}
      */
     private String buildCacheKey(UUID userAccountId, UUID reportId) {
         return CACHE_KEY_PREFIX + userAccountId.toString() + ":report:" + reportId.toString();
@@ -119,14 +126,25 @@ public class ReportCacheServiceImpl implements ReportCacheService {
     @Override
     public void deleteAllDraftsByUser(UUID userAccountId) {
         log.info("Deleting all draft reports for userAccountId: {}", userAccountId);
-        String pattern = buildUserDraftsPattern(userAccountId);
-        Set<String> keys = redisTemplate.keys(pattern);
 
-        if (keys != null && !keys.isEmpty()) {
-            Long deleted = redisTemplate.delete(keys);
-            log.info("Deleted {} draft reports for userAccountId: {}", deleted, userAccountId);
-        } else {
-            log.info("No draft reports found for userAccountId: {}", userAccountId);
+        String pattern = buildUserDraftsPattern(userAccountId);
+        ScanOptions scanOptions = ScanOptions.scanOptions().match(pattern).count(1000).build();
+
+        RedisConnectionFactory factory
+                = Objects.requireNonNull(redisTemplate.getConnectionFactory(), "RedisConnectionFactory is null");
+
+        try (RedisConnection connection = factory.getConnection(); Cursor<byte[]> cursor = connection.keyCommands().scan(scanOptions)) {
+
+            RedisKeyCommands keyCommands = connection.keyCommands();
+            long deletedCount = 0;
+
+            while (cursor.hasNext()) {
+                byte[] key = cursor.next();
+                keyCommands.del(key);
+                deletedCount++;
+            }
+
+            log.info("Deleted {} draft reports for userAccountId: {}", deletedCount, userAccountId);
         }
     }
 }
