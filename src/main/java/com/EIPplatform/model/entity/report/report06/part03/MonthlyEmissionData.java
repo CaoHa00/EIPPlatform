@@ -19,12 +19,12 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class MonthlyEmissionData {
+public class MonthlyEmissionData {// dữ liệu phát thải hàng thánbg
     @Id
     @GeneratedValue
     @UuidGenerator
-    @Column(name = "monthly_emission_data", updatable = false, nullable = false)
-    UUID id; // ID chính của bảng monthly_emission_data
+    @Column(name = "monthly_emission_data_id", updatable = false, nullable = false)
+    UUID monthlyEmissionDataId; // ID chính của bảng monthly_emission_data
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "emission_data_id", nullable = false)
