@@ -1,6 +1,11 @@
 package com.EIPplatform.mapper.businessInformation;
 
-import org.mapstruct.*;
+import org.mapstruct.BeanMapping;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.MappingTarget;
+import org.mapstruct.NullValuePropertyMappingStrategy;
+import org.mapstruct.ReportingPolicy;
 
 import com.EIPplatform.model.dto.legalRepresentative.LegalRepresentativeCreationRequest;
 import com.EIPplatform.model.dto.legalRepresentative.LegalRepresentativeDTO;

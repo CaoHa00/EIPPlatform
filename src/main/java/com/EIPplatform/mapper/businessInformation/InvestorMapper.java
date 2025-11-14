@@ -4,8 +4,14 @@ import com.EIPplatform.model.dto.investors.*;
 import com.EIPplatform.model.entity.user.investors.Investor;
 import com.EIPplatform.model.entity.user.investors.InvestorIndividualDetail;
 import com.EIPplatform.model.entity.user.investors.InvestorOrganizationDetail;
-import com.EIPplatform.mapper.businessInformation.LegalDocMapper; // Đảm bảo bạn có mapper này
-import org.mapstruct.*;
+
+import org.mapstruct.BeanMapping;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.MappingTarget;
+import org.mapstruct.Named;
+import org.mapstruct.NullValuePropertyMappingStrategy;
+import org.mapstruct.ReportingPolicy;
 
 @Mapper(
     componentModel = "spring",

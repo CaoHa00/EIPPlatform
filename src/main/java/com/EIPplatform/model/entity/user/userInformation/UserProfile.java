@@ -3,7 +3,6 @@ package com.EIPplatform.model.entity.user.userInformation;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-import org.hibernate.annotations.Nationalized;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import com.EIPplatform.configuration.AuditMetaData;

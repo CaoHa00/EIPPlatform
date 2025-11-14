@@ -2,8 +2,6 @@ package com.EIPplatform.model.entity.permitshistory;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import org.hibernate.annotations.Nationalized;
-//import com.EIPplatform.model.entity.report.report06.part01.BusinessInformation;
 import com.EIPplatform.model.entity.user.businessInformation.BusinessDetail;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;

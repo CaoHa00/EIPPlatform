@@ -1,10 +1,5 @@
 package com.EIPplatform.service.userInformation;
 
-import lombok.AccessLevel;
-import lombok.RequiredArgsConstructor;
-import lombok.experimental.FieldDefaults;
-import lombok.extern.slf4j.Slf4j;
-
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -20,6 +15,11 @@ import com.EIPplatform.model.dto.legalRepresentative.LegalRepresentativeResponse
 import com.EIPplatform.model.dto.legalRepresentative.LegalRepresentativeUpdationRequest;
 import com.EIPplatform.model.entity.user.legalRepresentative.LegalRepresentative;
 import com.EIPplatform.repository.user.LegalRepresentativeRepository;
+
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Service
