@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import com.EIPplatform.model.entity.products.Product;
 import com.EIPplatform.model.enums.OperationType;
 import jakarta.persistence.*;
 
@@ -62,7 +61,9 @@ public class BusinessDetail {
     @Nationalized
     @Column(nullable = false, columnDefinition = "NVARCHAR(255)")
     String activityType;
-
+    @Nationalized
+    @Column(nullable = false, columnDefinition = "NVARCHAR(255)")
+    String scaleCapacity;
     @Nationalized
     @Column(length = 100, columnDefinition = "NVARCHAR(255)")
     String ISO_certificate_14001;
@@ -112,34 +113,6 @@ public class BusinessDetail {
     @OneToMany(mappedBy = "businessDetail", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonBackReference(value = "businessDetail-componentPermits")
     List<EnvComponentPermit> envComponentPermits = new ArrayList<>();
-
-    @OneToMany(mappedBy = "businessDetail", fetch =  FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonManagedReference(value = "businessDetail-projects")
-    @Builder.Default
-    private List<Project> projects = new ArrayList<>();
-
-    @OneToMany(mappedBy = "businessDetail", fetch =  FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonManagedReference(value = "businessDetail-facilities")
-    @Builder.Default
-    private List<Facility> facilities = new ArrayList<>();
-
-    @OneToOne(mappedBy = "businessDetail", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
-    private ScaleCapacity scaleCapacity;
-
-    @OneToMany(mappedBy = "businessDetail", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonManagedReference(value = "businessDetail-processes")
-    @Builder.Default
-    private List<Process> processes = new ArrayList<>();
-
-    @OneToMany(mappedBy = "businessDetail", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonManagedReference(value = "businessDetail-equipments")
-    @Builder.Default
-    private List<Equipment> equipments = new ArrayList<>();
-
-    @OneToMany(mappedBy = "businessDetail", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonManagedReference(value = "businessDetail-products")
-    @Builder.Default
-    private List<Product> products = new ArrayList<>();
 
     public LocalDateTime getCreatedAt() {
         return auditMetaData.getCreatedAt();

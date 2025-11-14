@@ -41,7 +41,7 @@ public class EmissionSource {
     @Column(name = "source_name", nullable = false, columnDefinition = "NVARCHAR(255)")
     String sourceName; // Mục 3, Bảng 3.1: Tên nguồn phát thải (not_null)
 
-    @Column(name = "source_code", nullable = false, columnDefinition = "NVARCHAR(100)", unique = true)
+    @Column(name = "source_code", nullable = false, columnDefinition = "NVARCHAR(100)")
     String sourceCode; // Mục 3, Bảng 3.1: Ký hiệu nguồn (not_null, unique per report)
 
     @Column(name = "source_description", columnDefinition = "NVARCHAR(MAX)")

@@ -1,6 +1,5 @@
 package com.EIPplatform.model.entity.user.businessInformation;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -27,8 +26,8 @@ public class Facility {
     @Id
     @GeneratedValue
     @UuidGenerator
-    @Column(name = "facility_id", updatable = false, nullable = false)
-    UUID facilityId; // facilities_id (PK)
+    @Column(name = "facilities_id", updatable = false, nullable = false)
+    UUID facilitiesId; // facilities_id (PK)
 
     @Column(name = "area_name", nullable = false, columnDefinition = "NVARCHAR(255)")
     String areaName; // area_name (not_null, tên khu vực)
@@ -54,11 +53,6 @@ public class Facility {
     @Column(name = "updated_at", columnDefinition = "DATETIME2 DEFAULT GETDATE()")
     LocalDateTime updatedAt;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JsonBackReference(value = "businessDetail-facilities")
-    @JoinColumn(name = "business_detail_id")
-    private BusinessDetail businessDetail;
-
     @PrePersist
     protected void onCreate() {
         createdAt = LocalDateTime.now();
@@ -69,5 +63,4 @@ public class Facility {
     protected void onUpdate() {
         updatedAt = LocalDateTime.now();
     }
-
 }
