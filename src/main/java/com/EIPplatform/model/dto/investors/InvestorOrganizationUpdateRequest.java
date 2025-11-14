@@ -6,7 +6,10 @@ import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
+import java.util.List;
 import java.util.UUID;
+
+import com.EIPplatform.model.entity.user.legalDoc.LegalDoc;
 
 @Getter
 @Setter
@@ -22,7 +25,7 @@ public class InvestorOrganizationUpdateRequest {
     @NotBlank(message = "FIELD_REQUIRED")
     String organizationName;
 
-    String legalDocs;
+    List<LegalDoc> legalDocs;
 
     String address;
 

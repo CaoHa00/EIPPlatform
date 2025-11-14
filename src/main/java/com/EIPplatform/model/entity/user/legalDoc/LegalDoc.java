@@ -68,7 +68,7 @@ public class LegalDoc {
 
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "investor_organization_id", referencedColumnName = "investor_id", foreignKey = @ForeignKey(name = "fk_legal_docs_investor_organization"))
+    @JoinColumn(name = "investor_organization_id", referencedColumnName = "investor_id", foreignKey = @ForeignKey(name = "fk_legal_doc_investor_organization"))
     InvestorOrganizationDetail investorOrganization;
 
     @Embedded

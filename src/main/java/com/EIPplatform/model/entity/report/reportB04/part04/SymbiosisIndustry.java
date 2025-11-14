@@ -19,6 +19,8 @@ import lombok.experimental.FieldDefaults;
 
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 @Builder
 @Entity
 @Getter
@@ -194,16 +196,7 @@ public class SymbiosisIndustry {
 
     //------------------------sym_companies------------------------------
     @OneToMany(mappedBy = "symbiosisIndustry", cascade = CascadeType.PERSIST, fetch = FetchType.LAZY)
+    @JsonBackReference(value = "symbiosisIndustry-symCompanies")
     List<SymCompany> symCompanies;
 
-    // Helper methods to maintain relationship
-    public void addSymCompany(SymCompany symCompany) {
-        symCompanies.add(symCompany);
-        symCompany.setSymbiosisIndustry(this);
-    }
-
-    public void removeSymCompany(SymCompany symCompany) {
-        symCompanies.remove(symCompany);
-        symCompany.setSymbiosisIndustry(null);
-    }
 }

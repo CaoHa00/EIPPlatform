@@ -9,7 +9,7 @@ import org.springframework.stereotype.Repository;
 import com.EIPplatform.model.entity.user.legalDoc.LegalDoc;
 
 @Repository
-public interface LegalDocsRepository extends JpaRepository<LegalDoc, UUID> {
+public interface LegalDocRepository extends JpaRepository<LegalDoc, UUID> {
     
     List<LegalDoc> findByInvestorOrganization_InvestorId(UUID investorOrganizationId);
     

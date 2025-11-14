@@ -1,28 +1,18 @@
 package com.EIPplatform.service.report.reportcache;
 
 import java.util.UUID;
-
 import com.EIPplatform.model.dto.report.report05.ReportA05DraftDTO;
 import com.EIPplatform.model.dto.report.report05.wastewatermanager.wastewatermanagement.WasteWaterDataDTO;
 
 public interface ReportCacheService {
-    /**
-     * Lưu draft report vào cache
-     */
-    void saveDraftReport(ReportA05DraftDTO draft);
+    void saveDraftReport(ReportA05DraftDTO draft, UUID userAccountId);
 
-    /**
-     * Lấy draft report từ cache
-     */
-    ReportA05DraftDTO getDraftReport(UUID reportId);
+    ReportA05DraftDTO getDraftReport(UUID reportId, UUID userAccountId);
 
-    /**
-     * Cập nhật phần waste water vào draft
-     */
-    void updateWasteWaterData(UUID reportId, WasteWaterDataDTO wasteWaterDataDTO);
+    void updateWasteWaterData(UUID reportId, UUID userAccountId, WasteWaterDataDTO wasteWaterDataDTO);
 
-    /**
-     * Xóa draft khỏi cache (sau khi save vào DB)
-     */
-    void deleteDraftReport(UUID reportId);
+    void deleteDraftReport(UUID reportId, UUID userAccountId);
+
+    // Optional: Xóa tất cả draft của một user
+    void deleteAllDraftsByUser(UUID userAccountId);
 }

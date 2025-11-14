@@ -1,14 +1,21 @@
 package com.EIPplatform.model.entity.user.investors;
-
-import jakarta.persistence.*;
-import lombok.*;
-import lombok.experimental.FieldDefaults;
-import lombok.experimental.SuperBuilder;
-
 import java.time.LocalDate;
 
 import com.EIPplatform.model.enums.Gender;
-import com.EIPplatform.model.enums.InvestorType;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.DiscriminatorValue;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.Table;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.experimental.FieldDefaults;
+import lombok.experimental.SuperBuilder;
 
 @Entity
 @Table(name = "investor_individual_detail")
@@ -31,21 +38,15 @@ public class InvestorIndividualDetail extends Investor {
     @Column(name = "date_of_birth", nullable = false)
     LocalDate dateOfBirth;
 
-    @Column(name = "is_native", nullable = false)
-    @Builder.Default
-    Boolean isNative = false;
+    @Column(name = "is_native", nullable = false, columnDefinition = "bit default 0")
+    boolean isNative;
 
     @Column(name = "identification_number", columnDefinition = "NVARCHAR(50)", nullable = false)
     String identificationNumber;
 
-    @Column(name = "passport_id", columnDefinition = "NVARCHAR(50)", nullable = false)
+    @Column(name = "passport_id", columnDefinition = "NVARCHAR(50)")
     String passportId;
 
     @Column(name = "nationality", columnDefinition = "NVARCHAR(100)", nullable = false)
     String nationality;
-
-    @PrePersist
-    public void prePersist() {
-        this.investorType = InvestorType.INDIVIDUAL;
-    }
 }

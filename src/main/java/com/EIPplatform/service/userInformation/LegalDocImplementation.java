@@ -17,7 +17,7 @@ import com.EIPplatform.model.dto.legalDoc.LegalDocUpdateRequest;
 import com.EIPplatform.model.entity.user.investors.InvestorOrganizationDetail;
 import com.EIPplatform.model.entity.user.legalDoc.LegalDoc;
 import com.EIPplatform.repository.user.InvestorOrganizationRepository;
-import com.EIPplatform.repository.user.LegalDocsRepository;
+import com.EIPplatform.repository.user.LegalDocRepository;
 
 import java.util.List;
 import java.util.UUID;
@@ -30,7 +30,7 @@ import java.util.stream.Collectors;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class LegalDocImplementation implements LegalDocsInterface {
 
-    LegalDocsRepository legalDocsRepository;
+    LegalDocRepository legalDocsRepository;
     InvestorOrganizationRepository investorOrganizationRepository;
     LegalDocMapper legalDocsMapper;
     ExceptionFactory exceptionFactory;

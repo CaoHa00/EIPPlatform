@@ -4,10 +4,18 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.EIPplatform.model.entity.user.legalDoc.LegalDoc;
-import com.EIPplatform.model.enums.InvestorType;
 
-import jakarta.persistence.*;
-import lombok.*;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.DiscriminatorValue;
+import jakarta.persistence.Entity;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.experimental.FieldDefaults;
 import lombok.experimental.SuperBuilder;
 
@@ -26,16 +34,12 @@ public class InvestorOrganizationDetail extends Investor {
     String organizationName;
 
     @OneToMany(mappedBy = "investorOrganization", cascade = CascadeType.ALL, orphanRemoval = true)
-    @Builder.Default
-    List<LegalDoc> legalDocs = new ArrayList<>();
-
-    @PrePersist
-    public void prePersist() {
-        this.investorType = InvestorType.ORGANIZATION;
-    }
-
+    List<LegalDoc> legalDocs;
 
     public void addLegalDoc(LegalDoc legalDoc) {
+        if (legalDocs == null) {
+            legalDocs = new ArrayList<>();
+        }
         legalDocs.add(legalDoc);
         legalDoc.setInvestorOrganization(this);
     }
