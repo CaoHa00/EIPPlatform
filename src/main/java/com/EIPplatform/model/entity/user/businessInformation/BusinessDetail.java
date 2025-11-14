@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import com.EIPplatform.model.entity.products.Product;
 import com.EIPplatform.model.enums.OperationType;
 import org.hibernate.annotations.Nationalized;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
@@ -126,6 +127,10 @@ public class BusinessDetail {
     @OneToMany(mappedBy = "businessDetail", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonBackReference(value = "businessDetail-componentPermits")
     List<EnvComponentPermit> envComponentPermits = new ArrayList<>();
+
+    @OneToMany(mappedBy = "businessDetail", fetch = FetchType.LAZY, cascade = CascadeType.PERSIST, orphanRemoval = true)
+    @JsonManagedReference(value = "businessDetail-products")
+    List<Product> products = new ArrayList<>();
 
     public LocalDateTime getCreatedAt() {
         return auditMetaData.getCreatedAt();
