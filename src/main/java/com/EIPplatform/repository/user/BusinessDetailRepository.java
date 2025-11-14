@@ -5,8 +5,10 @@ import java.util.Optional;
 import java.util.UUID;
 
 import com.EIPplatform.model.dto.businessInformation.BusinessDetailResponse;
+import com.EIPplatform.model.entity.permitshistory.EnvComponentPermit;
 import com.EIPplatform.model.entity.user.authentication.UserAccount;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -45,4 +47,11 @@ public interface BusinessDetailRepository extends JpaRepository<BusinessDetail, 
     boolean existsByPhoneNumber(String phoneNumber);
 
     Optional<BusinessDetail> findByPhoneNumber(String phoneNumber);
+
+    @Query("SELECT e FROM EnvComponentPermit e WHERE e.businessDetail.businessDetailId = :businessDetailId")
+    List<EnvComponentPermit> findByBusinessDetailBusinessDetailId(UUID businessDetailId);
+
+    @Modifying  // Để JPA biết đây là update/delete query
+    @Query("DELETE FROM EnvComponentPermit e WHERE e.businessDetail.businessDetailId = :businessDetailId")
+    void deleteByBusinessDetailBusinessDetailId(@Param("businessDetailId") UUID businessDetailId);
 }

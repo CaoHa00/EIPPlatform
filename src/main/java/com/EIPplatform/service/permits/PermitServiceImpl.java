@@ -264,6 +264,48 @@ public class PermitServiceImpl implements PermitService {
     }
 
     @Override
+    @Transactional
+    public List<EnvComponentPermitDTO> createComponentPermits(UUID userAccountId, List<CreateComponentPermitRequest> requests, MultipartFile[] files) {
+        BusinessDetail businessDetail = PermitUtils.getBusinessDetailByUserAccountId(businessDetailRepository, userAccountId, exceptionFactory);
+
+        businessDetailRepository.deleteByBusinessDetailBusinessDetailId(businessDetail.getBusinessDetailId());
+        log.info("Deleted all existing component permits for businessDetail: {}", businessDetail.getBusinessDetailId());
+        List<EnvComponentPermitDTO> results = new ArrayList<>();
+        int numFiles = (files != null) ? files.length : 0;
+
+        for (int i = 0; i < requests.size(); i++) {
+            CreateComponentPermitRequest request = requests.get(i);
+            MultipartFile file = (i < numFiles) ? files[i] : null;
+
+            PermitUtils.checkDuplicateComponentPermitNumber(componentPermitRepository, businessDetail.getBusinessDetailId(), request.getPermitNumber(), exceptionFactory);
+
+            EnvComponentPermit componentPermit = EnvComponentPermit.builder()
+                    .businessDetail(businessDetail)
+                    .permitType(request.getPermitType())
+                    .projectName(request.getProjectName())
+                    .permitNumber(request.getPermitNumber())
+                    .issueDate(request.getIssueDate())
+                    .issuerOrg(request.getIssuerOrg())
+                    .isActive(true)
+                    .createdAt(LocalDateTime.now())
+                    .build();
+
+            if (file != null && !file.isEmpty()) {
+                int year = (request.getIssueDate() != null) ? request.getIssueDate().getYear() : LocalDate.now().getYear();
+                String filePath = PermitUtils.uploadPermitFile(businessDetail, file, "component-permits", year, fileStorageService, exceptionFactory);
+                componentPermit.setPermitFilePath(filePath);
+            }
+
+            componentPermit = componentPermitRepository.save(componentPermit);
+            log.info("Component permit created: {} by user: {}", componentPermit.getPermitId(), userAccountId);
+
+            results.add(permitMapper.toComponentPermitDTO(componentPermit));
+        }
+
+        return results;
+    }
+
+    @Override
     public List<EnvComponentPermitDTO> createMultipleComponentPermits(UUID userAccountId,
                                                                       List<CreateComponentPermitRequest> requests) {
         BusinessDetail businessDetail = PermitUtils.getBusinessDetailByUserAccountId(businessDetailRepository, userAccountId, exceptionFactory);

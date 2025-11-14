@@ -20,6 +20,7 @@ public interface PermitService {
 
     // ==================== COMPONENT PERMITS ====================
     EnvComponentPermitDTO createComponentPermit(UUID userAccountId, CreateComponentPermitRequest request, MultipartFile file);
+    List<EnvComponentPermitDTO> createComponentPermits(UUID userAccountId, List<CreateComponentPermitRequest> requests, MultipartFile[] files);
     List<EnvComponentPermitDTO> createMultipleComponentPermits(UUID userAccountId, List<CreateComponentPermitRequest> requests);
     EnvComponentPermitDTO getComponentPermitById(UUID userAccountId, Long permitId);
     List<EnvComponentPermitDTO> getAllComponentPermits(UUID userAccountId);
