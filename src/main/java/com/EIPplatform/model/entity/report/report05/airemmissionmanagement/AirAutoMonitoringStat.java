@@ -4,10 +4,6 @@ import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
-import java.lang.Double;
-
-import org.hibernate.annotations.Nationalized;
-
 @Entity
 @Table(name = "air_auto_monitoring_stat")
 @Getter

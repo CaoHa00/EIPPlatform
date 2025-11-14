@@ -1,3 +1,4 @@
+
 package com.EIPplatform.util;
 
 import java.util.Arrays;
@@ -10,11 +11,11 @@ import com.EIPplatform.exception.errorCategories.ForbiddenError;
 import com.EIPplatform.exception.errorCategories.PermitError;
 import com.EIPplatform.exception.errorCategories.UserError;
 import com.EIPplatform.exception.errorCategories.ValidationError;
-import com.EIPplatform.model.entity.permitshistory.EnvComponentPermit;
-import com.EIPplatform.model.entity.user.businessInformation.BusinessDetail;
+import com.EIPplatform.model.entity.businessInformation.BusinessDetail;
+import com.EIPplatform.model.entity.businessInformation.permitshistory.EnvComponentPermit;
 import com.EIPplatform.repository.authentication.UserAccountRepository;
+import com.EIPplatform.repository.businessInformation.BusinessDetailRepository;
 import com.EIPplatform.repository.permitshistory.EnvComponentPermitRepository;
-import com.EIPplatform.repository.user.BusinessDetailRepository;
 import com.EIPplatform.service.fileStorage.FileStorageService;
 
 public class PermitUtils {

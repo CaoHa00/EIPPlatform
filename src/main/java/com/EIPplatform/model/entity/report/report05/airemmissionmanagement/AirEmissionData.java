@@ -8,10 +8,7 @@ import lombok.experimental.FieldDefaults;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
-import org.hibernate.annotations.Nationalized;
 import org.hibernate.annotations.UpdateTimestamp;
-
-import java.lang.Double;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;

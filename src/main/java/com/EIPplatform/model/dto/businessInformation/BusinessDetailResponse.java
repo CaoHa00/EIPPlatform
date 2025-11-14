@@ -4,7 +4,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
-import com.EIPplatform.model.entity.user.legalRepresentative.LegalRepresentative;
+import com.EIPplatform.model.entity.businessInformation.legalRepresentative.LegalRepresentative;
 import com.EIPplatform.model.enums.OperationType;
 
 import lombok.AllArgsConstructor;

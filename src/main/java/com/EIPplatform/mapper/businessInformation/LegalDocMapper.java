@@ -5,7 +5,7 @@ import org.mapstruct.*;
 import com.EIPplatform.model.dto.legalDoc.LegalDocCreationRequest;
 import com.EIPplatform.model.dto.legalDoc.LegalDocResponse;
 import com.EIPplatform.model.dto.legalDoc.LegalDocUpdateRequest;
-import com.EIPplatform.model.entity.user.legalDoc.LegalDoc;
+import com.EIPplatform.model.entity.legalDoc.LegalDoc;
 
 @Mapper(componentModel = "spring", nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
 public interface LegalDocMapper {

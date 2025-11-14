@@ -13,19 +13,18 @@ import com.EIPplatform.model.dto.report.report05.UpdateInspectionRemedyReportReq
 import com.EIPplatform.model.dto.report.report05.airemmissionmanagement.airemissiondata.AirEmissionDataDTO;
 import com.EIPplatform.model.dto.report.report05.wastemanagement.WasteManagementDataDTO;
 import com.EIPplatform.model.dto.report.report05.wastewatermanager.wastewatermanagement.WasteWaterDataDTO;
-
-import com.EIPplatform.model.entity.permitshistory.EnvPermits;
+import com.EIPplatform.model.entity.businessInformation.BusinessDetail;
+import com.EIPplatform.model.entity.businessInformation.BusinessHistoryConsumption;
+import com.EIPplatform.model.entity.businessInformation.permitshistory.EnvPermits;
 import com.EIPplatform.model.entity.report.report05.ReportA05;
 import com.EIPplatform.model.entity.report.report05.airemmissionmanagement.AirEmissionData;
 import com.EIPplatform.model.entity.report.report05.wastemanagement.WasteManagementData;
 import com.EIPplatform.model.entity.report.report05.wastewatermanager.WasteWaterData;
-import com.EIPplatform.model.entity.user.businessInformation.BusinessDetail;
-import com.EIPplatform.model.entity.user.businessInformation.BusinessHistoryConsumption;
+import com.EIPplatform.repository.businessInformation.BusinessDetailRepository;
 import com.EIPplatform.repository.report.ReportA05Repository;
 import com.EIPplatform.repository.report.report05.airemmissionmanagement.AirEmissionDataRepository;
 import com.EIPplatform.repository.report.report05.wastemanagement.WasteManagementDataRepository;
 import com.EIPplatform.repository.report.report05.wastewatermanager.WasteWaterRepository;
-import com.EIPplatform.repository.user.BusinessDetailRepository;
 import com.EIPplatform.service.report.reportcache.ReportCacheService;
 import jakarta.transaction.Transactional;
 import lombok.AccessLevel;
@@ -37,7 +36,7 @@ import lombok.extern.slf4j.Slf4j;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.lang.Double;
+
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -321,6 +320,8 @@ public class ReportA05ServiceImpl implements ReportA05Service {
 
         private boolean isSectionComplete(Object sectionDto) {
                 if (sectionDto == null)
+                
+                
                         return false;
 
                 return true;

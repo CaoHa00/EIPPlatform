@@ -2,10 +2,10 @@ package com.EIPplatform.mapper.businessInformation;
 
 import org.mapstruct.*;
 
-import com.EIPplatform.model.dto.investors.InvestorOrganizationCreationRequest;
-import com.EIPplatform.model.dto.investors.InvestorOrganizationResponse;
-import com.EIPplatform.model.dto.investors.InvestorOrganizationUpdateRequest;
-import com.EIPplatform.model.entity.user.investors.InvestorOrganizationDetail;
+import com.EIPplatform.model.dto.businessInformation.investors.InvestorOrganizationCreationRequest;
+import com.EIPplatform.model.dto.businessInformation.investors.InvestorOrganizationResponse;
+import com.EIPplatform.model.dto.businessInformation.investors.InvestorOrganizationUpdateRequest;
+import com.EIPplatform.model.entity.businessInformation.investors.InvestorOrganizationDetail;
 
 @Mapper(componentModel = "spring", nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE, uses = {
         LegalDocMapper.class })

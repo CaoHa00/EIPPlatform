@@ -3,7 +3,7 @@ package com.EIPplatform.model.dto.report.report05.airemmissionmanagement.airauto
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
-import java.lang.Double;
+
 
 @Data
 @Builder

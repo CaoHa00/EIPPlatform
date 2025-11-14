@@ -18,13 +18,7 @@ import lombok.experimental.FieldDefaults;
 public class ReportInvestorDetailUpdateRequest {
     
     String reportInvestorType;
-
-    // Sửa từ InvestorResponse -> UUID investorId
     UUID investorId;
-
-    // Sửa từ LegalDocDTO -> Long legalDocId
     UUID legalDocId;
-
-    // Sửa từ ThirdPartyImplementerDTO -> Long thirdPartyImplementerId
     Long thirdPartyImplementerId;
 }

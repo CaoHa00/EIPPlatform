@@ -3,11 +3,6 @@ package com.EIPplatform.model.entity.report.report05.wastemanagement;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
-
-import java.lang.Double;
-
-import org.hibernate.annotations.Nationalized;
-
 @Entity
 @Table(name = "exported_hw_stats", indexes = {
         @Index(name = "idx_wm_id", columnList = "wm_id")

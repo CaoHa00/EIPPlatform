@@ -1,9 +1,10 @@
+
 package com.EIPplatform.mapper.businessInformation;
 
 import com.EIPplatform.model.dto.businessInformation.BusinessDetailDTO;
 import com.EIPplatform.model.dto.businessInformation.BusinessDetailResponse;
-import com.EIPplatform.model.entity.user.businessInformation.BusinessDetail;
-import com.EIPplatform.model.entity.user.legalRepresentative.LegalRepresentative;
+import com.EIPplatform.model.entity.businessInformation.BusinessDetail;
+import com.EIPplatform.model.entity.businessInformation.legalRepresentative.LegalRepresentative;
 import com.EIPplatform.model.entity.user.authentication.UserAccount;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
