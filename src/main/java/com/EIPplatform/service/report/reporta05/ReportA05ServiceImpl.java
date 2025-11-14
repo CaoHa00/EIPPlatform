@@ -399,7 +399,7 @@ public class ReportA05ServiceImpl implements ReportA05Service {
                 data.put("phone_number", business.getPhoneNumber());
                 // data.put("legal_representative", business.getLegalRepresentative());
                 data.put("activity_type", business.getActivityType());
-                data.put("scale_capacity", business.getScaleCapacity());
+//                data.put("scale_capacity", business.getScaleCapacity());
                 data.put("iso_14001_certificate",
                                 business.getISO_certificate_14001() != null ? business.getISO_certificate_14001() : "");
                 data.put("business_license_number", business.getBusinessRegistrationNumber());

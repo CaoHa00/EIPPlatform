@@ -1,6 +1,7 @@
 package com.EIPplatform.model.entity.user.businessInformation;
 
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -55,6 +56,11 @@ public class Equipment {
 
     @Column(name = "updated_at", columnDefinition = "DATETIME2 DEFAULT GETDATE()")
     LocalDateTime updatedAt;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "business_detail_id")
+    @JsonBackReference(value = "businessDetail-equipments")
+    private BusinessDetail businessDetail;
 
     @PrePersist
     protected void onCreate() {
