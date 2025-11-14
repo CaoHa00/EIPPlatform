@@ -1,6 +1,7 @@
-package com.EIPplatform.service.report.reportcache;
+package com.EIPplatform.service.report.reportcache.reportCacheA05;
 
 import java.util.UUID;
+
 import com.EIPplatform.model.dto.report.report05.ReportA05DraftDTO;
 import com.EIPplatform.model.dto.report.report05.wastewatermanager.wastewatermanagement.WasteWaterDataDTO;
 
