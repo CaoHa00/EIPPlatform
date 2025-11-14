@@ -94,6 +94,7 @@ public class AirEmissionDataCreateDTO {
 
     @Valid
     @NotNull(message = "IS_REQUIRED")
+    @Size(min = 0, max = 100)
     List<@Valid AirAutoMonitoringStatCreateDTO> airAutoMonitoringStats;
 
     @Valid
