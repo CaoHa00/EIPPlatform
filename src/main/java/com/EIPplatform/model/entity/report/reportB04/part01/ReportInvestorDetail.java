@@ -2,8 +2,8 @@ package com.EIPplatform.model.entity.report.reportB04.part01;
 
 import org.hibernate.annotations.Nationalized;
 
-import com.EIPplatform.model.entity.user.investors.Investor;
-import com.EIPplatform.model.entity.user.legalDoc.LegalDoc;
+import com.EIPplatform.model.entity.businessInformation.investors.Investor;
+import com.EIPplatform.model.entity.legalDoc.LegalDoc;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

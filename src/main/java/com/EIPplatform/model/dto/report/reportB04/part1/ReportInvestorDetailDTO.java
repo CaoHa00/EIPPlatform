@@ -1,6 +1,6 @@
 package com.EIPplatform.model.dto.report.reportB04.part1;
 
-import com.EIPplatform.model.dto.investors.InvestorResponse;
+import com.EIPplatform.model.dto.businessInformation.investors.InvestorResponse;
 import com.EIPplatform.model.dto.legalDoc.LegalDocDTO;
 
 import lombok.AccessLevel;

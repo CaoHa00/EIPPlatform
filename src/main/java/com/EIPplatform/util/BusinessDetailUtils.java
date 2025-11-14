@@ -1,11 +1,13 @@
+
 package com.EIPplatform.util;
 
 import com.EIPplatform.exception.ExceptionFactory;
 import com.EIPplatform.exception.errorCategories.BusinessDetailError;
 import com.EIPplatform.model.dto.businessInformation.BusinessDetailDTO;
-import com.EIPplatform.model.entity.user.businessInformation.BusinessDetail;
+import com.EIPplatform.model.entity.businessInformation.BusinessDetail;
 import com.EIPplatform.model.enums.OperationType;
-import com.EIPplatform.repository.user.BusinessDetailRepository;
+import com.EIPplatform.repository.businessInformation.BusinessDetailRepository;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 

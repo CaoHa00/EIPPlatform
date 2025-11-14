@@ -1,8 +1,7 @@
 package com.EIPplatform.service.products;
 
 import com.EIPplatform.exception.errorCategories.BusinessDetailError;
-import com.EIPplatform.model.entity.user.businessInformation.BusinessDetail;
-import com.EIPplatform.repository.user.BusinessDetailRepository;
+
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -12,15 +11,16 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.EIPplatform.exception.ExceptionFactory;
 import com.EIPplatform.exception.errorCategories.ProductError;
-import com.EIPplatform.mapper.ProductMapper;
-import com.EIPplatform.model.dto.products.ProductCreationRequest;
-import com.EIPplatform.model.dto.products.ProductResponse;
-import com.EIPplatform.model.dto.products.ProductUpdateRequest;
-import com.EIPplatform.model.entity.products.Product;
-import com.EIPplatform.repository.user.ProductRepository;
+import com.EIPplatform.mapper.businessInformation.ProductMapper;
+import com.EIPplatform.model.dto.businessInformation.products.ProductCreationRequest;
+import com.EIPplatform.model.dto.businessInformation.products.ProductResponse;
+import com.EIPplatform.model.dto.businessInformation.products.ProductUpdateRequest;
+import com.EIPplatform.model.entity.businessInformation.BusinessDetail;
+import com.EIPplatform.model.entity.businessInformation.products.Product;
+import com.EIPplatform.repository.businessInformation.BusinessDetailRepository;
+import com.EIPplatform.repository.businessInformation.ProductRepository;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 

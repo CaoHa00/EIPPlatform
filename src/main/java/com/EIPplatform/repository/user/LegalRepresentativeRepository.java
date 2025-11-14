@@ -6,7 +6,7 @@ import java.util.UUID;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import com.EIPplatform.model.entity.user.legalRepresentative.LegalRepresentative;
+import com.EIPplatform.model.entity.businessInformation.legalRepresentative.LegalRepresentative;
 
 @Repository
 public interface LegalRepresentativeRepository extends JpaRepository<LegalRepresentative, UUID> {

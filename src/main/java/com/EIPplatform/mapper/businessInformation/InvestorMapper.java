@@ -1,9 +1,9 @@
 package com.EIPplatform.mapper.businessInformation;
 
-import com.EIPplatform.model.dto.investors.*;
-import com.EIPplatform.model.entity.user.investors.Investor;
-import com.EIPplatform.model.entity.user.investors.InvestorIndividualDetail;
-import com.EIPplatform.model.entity.user.investors.InvestorOrganizationDetail;
+import com.EIPplatform.model.dto.businessInformation.investors.*;
+import com.EIPplatform.model.entity.businessInformation.investors.Investor;
+import com.EIPplatform.model.entity.businessInformation.investors.InvestorIndividualDetail;
+import com.EIPplatform.model.entity.businessInformation.investors.InvestorOrganizationDetail;
 
 import org.mapstruct.BeanMapping;
 import org.mapstruct.Mapper;

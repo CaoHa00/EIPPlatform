@@ -1,7 +1,5 @@
 package com.EIPplatform.model.entity.report.report05.wastewatermanager;
 
-import org.hibernate.annotations.Nationalized;
-
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.*;

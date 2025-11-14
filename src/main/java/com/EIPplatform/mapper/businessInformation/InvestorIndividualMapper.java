@@ -2,10 +2,10 @@ package com.EIPplatform.mapper.businessInformation;
 
 import org.mapstruct.*;
 
-import com.EIPplatform.model.dto.investors.InvestorIndividualCreationRequest;
-import com.EIPplatform.model.dto.investors.InvestorIndividualResponse;
-import com.EIPplatform.model.dto.investors.InvestorIndividualUpdateRequest;
-import com.EIPplatform.model.entity.user.investors.InvestorIndividualDetail;
+import com.EIPplatform.model.dto.businessInformation.investors.InvestorIndividualCreationRequest;
+import com.EIPplatform.model.dto.businessInformation.investors.InvestorIndividualResponse;
+import com.EIPplatform.model.dto.businessInformation.investors.InvestorIndividualUpdateRequest;
+import com.EIPplatform.model.entity.businessInformation.investors.InvestorIndividualDetail;
 
 @Mapper(componentModel = "spring", nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
 public interface InvestorIndividualMapper {

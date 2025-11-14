@@ -8,8 +8,8 @@ import org.hibernate.annotations.Nationalized;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import com.EIPplatform.configuration.AuditMetaData;
+import com.EIPplatform.model.entity.businessInformation.BusinessDetail;
 import com.EIPplatform.model.entity.fileStorage.FileStorage;
-import com.EIPplatform.model.entity.user.businessInformation.BusinessDetail;
 import com.EIPplatform.model.entity.user.userInformation.UserProfile;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 

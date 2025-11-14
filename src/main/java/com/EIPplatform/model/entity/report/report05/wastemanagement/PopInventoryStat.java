@@ -4,11 +4,6 @@ import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
-import java.lang.Double;
-import java.time.LocalDate;
-
-import org.hibernate.annotations.Nationalized;
-
 @Entity
 @Table(name = "pop_inventory_stats", indexes = {
         @Index(name = "idx_wm_id", columnList = "wm_id")

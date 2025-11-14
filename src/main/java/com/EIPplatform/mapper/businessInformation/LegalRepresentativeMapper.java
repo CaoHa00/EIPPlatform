@@ -7,11 +7,11 @@ import org.mapstruct.MappingTarget;
 import org.mapstruct.NullValuePropertyMappingStrategy;
 import org.mapstruct.ReportingPolicy;
 
-import com.EIPplatform.model.dto.legalRepresentative.LegalRepresentativeCreationRequest;
-import com.EIPplatform.model.dto.legalRepresentative.LegalRepresentativeDTO;
-import com.EIPplatform.model.dto.legalRepresentative.LegalRepresentativeResponse;
-import com.EIPplatform.model.dto.legalRepresentative.LegalRepresentativeUpdationRequest;
-import com.EIPplatform.model.entity.user.legalRepresentative.LegalRepresentative;
+import com.EIPplatform.model.dto.businessInformation.legalRepresentative.LegalRepresentativeCreationRequest;
+import com.EIPplatform.model.dto.businessInformation.legalRepresentative.LegalRepresentativeDTO;
+import com.EIPplatform.model.dto.businessInformation.legalRepresentative.LegalRepresentativeResponse;
+import com.EIPplatform.model.dto.businessInformation.legalRepresentative.LegalRepresentativeUpdationRequest;
+import com.EIPplatform.model.entity.businessInformation.legalRepresentative.LegalRepresentative;
 
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE, nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
 public interface LegalRepresentativeMapper {

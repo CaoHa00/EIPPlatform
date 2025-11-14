@@ -8,16 +8,15 @@ import com.EIPplatform.mapper.report.reportB04.part1.ReportInvestorDetailMapper;
 import com.EIPplatform.model.dto.report.reportB04.part1.request.ReportInvestorDetailCreateRequest;
 import com.EIPplatform.model.dto.report.reportB04.part1.request.ReportInvestorDetailUpdateRequest;
 import com.EIPplatform.model.dto.report.reportB04.part1.response.ReportInvestorDetailResponse;
+import com.EIPplatform.model.entity.businessInformation.investors.Investor;
+import com.EIPplatform.model.entity.legalDoc.LegalDoc;
 import com.EIPplatform.model.entity.report.reportB04.part01.ReportInvestorDetail;
-import com.EIPplatform.model.entity.user.investors.Investor;
-import com.EIPplatform.model.entity.user.legalDoc.LegalDoc;
 import com.EIPplatform.model.entity.report.reportB04.part01.ThirdPartyImplementer;
-
+import com.EIPplatform.repository.businessInformation.InvestorRepository;
+import com.EIPplatform.repository.report.reportB04.part1.ReportInvestorDetailRepository;
 // Giả định bạn đã có các Repository này
 import com.EIPplatform.repository.report.reportB04.part1.ThirdPartyImplementerRepository;
-import com.EIPplatform.repository.user.InvestorRepository;
 import com.EIPplatform.repository.user.LegalDocRepository;
-import com.EIPplatform.repository.user.ReportInvestorDetailRepository;
 
 import jakarta.persistence.EntityNotFoundException; // Dùng exception chuẩn
 import lombok.RequiredArgsConstructor;
