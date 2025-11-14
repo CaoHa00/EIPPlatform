@@ -8,9 +8,7 @@ import lombok.*;
 import lombok.experimental.FieldDefaults;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
-import org.hibernate.annotations.Nationalized;
 
-import java.lang.Double;
 import java.util.ArrayList;
 import java.util.List;
 

@@ -1,10 +1,11 @@
 package com.EIPplatform.model.dto.report.report05.wastemanagement.popinventorystat;
 
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
-
-import java.lang.Double;
-import java.time.LocalDate;
 
 @Data
 @NoArgsConstructor
@@ -15,7 +16,7 @@ public class PopInventoryStatDTO {
     Long popInventoryId;
     String popName;
     String casCode;
-    LocalDate importDate;
+    String importDate;
     Double importVolume;
     String concentration;
     Double volumeUsed;

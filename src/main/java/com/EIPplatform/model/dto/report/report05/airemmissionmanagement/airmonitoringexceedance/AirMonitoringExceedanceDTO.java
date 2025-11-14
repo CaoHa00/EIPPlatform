@@ -1,10 +1,11 @@
 package com.EIPplatform.model.dto.report.report05.airemmissionmanagement.airmonitoringexceedance;
 
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
-
-import java.lang.Double;
-import java.time.LocalDate;
 
 @Data
 @Builder
@@ -19,7 +20,7 @@ public class AirMonitoringExceedanceDTO {
 
     String pointSymbol;
 
-    LocalDate monitoringDate;
+    String monitoringDate;
 
     String longitude;
 

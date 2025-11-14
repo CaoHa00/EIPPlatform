@@ -6,8 +6,6 @@ import lombok.experimental.FieldDefaults;
 
 import java.time.LocalDate;
 
-import org.hibernate.annotations.Nationalized;
-
 @Entity
 @Table(name = "air_monitoring_exceedance")
 @Getter

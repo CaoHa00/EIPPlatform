@@ -3,7 +3,7 @@ package com.EIPplatform.model.dto.report.report05.wastemanagement.domesticsolidw
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
-import java.lang.Double;
+
 
 @Data
 @Builder

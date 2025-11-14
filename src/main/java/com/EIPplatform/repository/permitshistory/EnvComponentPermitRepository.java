@@ -8,7 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import com.EIPplatform.model.entity.permitshistory.EnvComponentPermit;
+import com.EIPplatform.model.entity.businessInformation.permitshistory.EnvComponentPermit;
 
 @Repository
 public interface EnvComponentPermitRepository extends JpaRepository<EnvComponentPermit, Long> {

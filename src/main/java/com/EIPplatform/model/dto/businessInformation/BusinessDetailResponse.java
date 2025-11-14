@@ -4,7 +4,9 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
+import com.EIPplatform.model.entity.businessInformation.legalRepresentative.LegalRepresentative;
 import com.EIPplatform.model.enums.OperationType;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -18,7 +20,7 @@ public class BusinessDetailResponse {
 
     UUID businessDetailId;
     String facilityName;
-    String legalRepresentative;
+    LegalRepresentative legalRepresentative;
     String phoneNumber;
     String address;
     String activityType;

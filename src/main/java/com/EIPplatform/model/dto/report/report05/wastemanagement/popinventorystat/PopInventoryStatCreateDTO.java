@@ -6,8 +6,7 @@ import jakarta.validation.constraints.Size;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
-import java.lang.Double;
-import java.time.LocalDate;
+
 
 @Data
 @Builder
@@ -30,7 +29,7 @@ public class PopInventoryStatCreateDTO {
     @Size(max = 50)
     String casCode;
 
-    LocalDate importDate;
+    String importDate;
 
     @Size(max = 100)
     String concentration;

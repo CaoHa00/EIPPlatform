@@ -2,7 +2,6 @@ package com.EIPplatform.controller.report.report05;
 
 import com.EIPplatform.model.dto.report.report05.*;
 import com.EIPplatform.service.report.reporta05.ReportA05Service;
-
 import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;

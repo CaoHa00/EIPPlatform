@@ -5,6 +5,9 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 @Configuration
 public class WebConfig implements WebMvcConfigurer {
 
@@ -13,7 +16,14 @@ public class WebConfig implements WebMvcConfigurer {
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
+        // registry.addResourceHandler("/files/**")
+        // .addResourceLocations("file:///" + uploadDir + "/");
+        String filePrefix = uploadDir.startsWith("/") ? "file:" : "file:///";
+
         registry.addResourceHandler("/files/**")
-                .addResourceLocations("file:///" + uploadDir + "/");
+                .addResourceLocations(filePrefix + uploadDir + "/")
+                .setCachePeriod(3600); // Optional: cache 1 giờ
+
+        log.info("Configured file serving from: {}{}", filePrefix, uploadDir);
     }
 }

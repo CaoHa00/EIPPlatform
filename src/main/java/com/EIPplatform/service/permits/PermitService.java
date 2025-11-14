@@ -1,8 +1,9 @@
 package com.EIPplatform.service.permits;
 
-import com.EIPplatform.model.dto.permitshistory.*;
 import org.springframework.core.io.Resource;
 import org.springframework.web.multipart.MultipartFile;
+
+import com.EIPplatform.model.dto.businessInformation.permitshistory.*;
 
 import java.util.List;
 import java.util.UUID;

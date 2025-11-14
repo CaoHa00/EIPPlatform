@@ -3,9 +3,6 @@ package com.EIPplatform.model.dto.report.report05.airemmissionmanagement.airauto
 import jakarta.validation.constraints.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
-
-import java.time.LocalDateTime;
-
 @Data
 @Builder
 @AllArgsConstructor
@@ -18,7 +15,7 @@ public class AirAutoMonitoringIncidentCreateDTO {
     String incidentName;
 
     @NotNull(message = "IS_REQUIRED")
-    LocalDateTime incidentTime;
+    String incidentTime;
 
     @NotBlank(message = "IS_REQUIRED")
     String incidentRemedy;

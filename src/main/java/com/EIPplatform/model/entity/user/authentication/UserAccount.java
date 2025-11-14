@@ -8,8 +8,8 @@ import org.hibernate.annotations.Nationalized;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import com.EIPplatform.configuration.AuditMetaData;
+import com.EIPplatform.model.entity.businessInformation.BusinessDetail;
 import com.EIPplatform.model.entity.fileStorage.FileStorage;
-import com.EIPplatform.model.entity.user.businessInformation.BusinessDetail;
 import com.EIPplatform.model.entity.user.userInformation.UserProfile;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 
@@ -51,12 +51,12 @@ public class UserAccount {
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(columnDefinition = "uniqueidentifier")
     UUID userAccountId;
-
+    @Nationalized
     @Email
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false, unique = true, columnDefinition = "NVARCHAR(255)")
     String email;
-
-    @Column(nullable = false)
+    @Nationalized
+    @Column(nullable = false, columnDefinition = "NVARCHAR(255)")
     String password;
     
     @Column(nullable = false, columnDefinition = "NVARCHAR(255)")

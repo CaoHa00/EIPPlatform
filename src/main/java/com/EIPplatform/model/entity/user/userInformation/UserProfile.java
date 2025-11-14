@@ -3,7 +3,6 @@ package com.EIPplatform.model.entity.user.userInformation;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-import org.hibernate.annotations.Nationalized;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import com.EIPplatform.configuration.AuditMetaData;
@@ -43,10 +42,10 @@ public class UserProfile {
     @Column(columnDefinition = "uniqueidentifier")
     UUID userProfileId;
 
-    @Column(nullable = true)
+    @Column(nullable = true, columnDefinition = "NVARCHAR(255)")
     String avatarUrl;
 
-    @Column(nullable = true)
+    @Column(nullable = true, columnDefinition = "NVARCHAR(255)")
     String identificationNumber;
     
     @Column(nullable = true, columnDefinition = "NVARCHAR(255)")
