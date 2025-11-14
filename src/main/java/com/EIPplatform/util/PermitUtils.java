@@ -1,21 +1,21 @@
 package com.EIPplatform.util;
 
+import java.util.Arrays;
+import java.util.UUID;
+
+import org.springframework.web.multipart.MultipartFile;
+
 import com.EIPplatform.exception.ExceptionFactory;
 import com.EIPplatform.exception.errorCategories.ForbiddenError;
 import com.EIPplatform.exception.errorCategories.PermitError;
 import com.EIPplatform.exception.errorCategories.UserError;
 import com.EIPplatform.exception.errorCategories.ValidationError;
-import com.EIPplatform.model.dto.fileStorage.FileStorageRequest;
 import com.EIPplatform.model.entity.permitshistory.EnvComponentPermit;
 import com.EIPplatform.model.entity.user.businessInformation.BusinessDetail;
 import com.EIPplatform.repository.authentication.UserAccountRepository;
-import com.EIPplatform.repository.user.BusinessDetailRepository;
 import com.EIPplatform.repository.permitshistory.EnvComponentPermitRepository;
+import com.EIPplatform.repository.user.BusinessDetailRepository;
 import com.EIPplatform.service.fileStorage.FileStorageService;
-import org.springframework.web.multipart.MultipartFile;
-
-import java.util.Arrays;
-import java.util.UUID;
 
 public class PermitUtils {
 

@@ -1,8 +1,25 @@
-package com.EIPplatform.model.entity.report.reportB04;
+package com.EIPplatform.model.entity.report.reportB04.part04;
 
-import jakarta.persistence.*;
-import lombok.*;
+
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.experimental.FieldDefaults;
+
+import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonBackReference;
 
 @Builder
 @Entity
@@ -11,11 +28,13 @@ import lombok.experimental.FieldDefaults;
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class b4_part_4 {
+public class SymbiosisIndustry {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "b4_part_4_id")
-    Long b4Part4Id;
+    @Column(name = "si_id")
+    Long siId;
+
+
 
     //------------------------Indus------------------------------
     @Column(name = "indus_sym_count", columnDefinition = "NVARCHAR(255)")
@@ -45,18 +64,11 @@ public class b4_part_4 {
     @Column(name = "symbiosis_desc_other", columnDefinition = "NVARCHAR(255)")
     String symbiosisDescOther;
 
-
-
-    //------------------------sym_companies------------------------------
-    @Column(name = "sym_companies", columnDefinition = "NVARCHAR(255)")
-    String symCompanies;
-
-
     //---------------------sym_electricity---------------------
     @Column(name = "sym_electricity_saving", columnDefinition = "NVARCHAR(255)")
     String symElectricitySaving;
 
-    @Column(name = "sym_electricity_unit", columnDefinition = "NVARCHAR(255)")
+    @Column(name = "sym_electricity_unit", nullable = false, columnDefinition = "NVARCHAR(255)")
     String symElectricityUnit = "kwh";
 
     @Column(name = "sym_electricity_co2_reduction", columnDefinition = "NVARCHAR(255)")
@@ -84,29 +96,25 @@ public class b4_part_4 {
     @Column(name = "sym_fuel_other_benefits", nullable = false, columnDefinition = "NVARCHAR(255)")
     String symFuelOtherBenefits;
 
-
     //---------------------Total---------------------
     @Column(name = "sym_total_co2_reduction", nullable = false, columnDefinition = "NVARCHAR(255)")
     String symTotalCo2Reduction;
-
 
     //---------------------sym_water---------------------
     @Column(name = "sym_water_saving", columnDefinition = "NVARCHAR(255)")
     String symWaterSaving;
 
-    @Column(name = "sym_water_saving_unit", columnDefinition = "NVARCHAR(255)")
+    @Column(name = "sym_water_saving_unit", nullable = false, columnDefinition = "NVARCHAR(255)")
     String symWaterSavingUnit = "m3/year";
 
     @Column(name = "sym_water_saving_cost", columnDefinition = "NVARCHAR(255)")
     String symWaterSavingCost;
 
-
-
     //---------------------sym_wastewater---------------------
     @Column(name = "sym_wastewater_reduction", columnDefinition = "NVARCHAR(255)")
     String symWastewaterReduction;
 
-    @Column(name = "sym_wastewater_unit", columnDefinition = "NVARCHAR(255)")
+    @Column(name = "sym_wastewater_unit", nullable = false, columnDefinition = "NVARCHAR(255)")
     String symWastewaterUnit = "m3/year";
 
     @Column(name = "sym_wastewater_saving_cost", columnDefinition = "NVARCHAR(255)")
@@ -123,7 +131,7 @@ public class b4_part_4 {
     @Column(name = "sym_waste_reuse_cost_saving", columnDefinition = "NVARCHAR(255)")
     String symWasteReuseCostSaving;
 
-    @Column(name = "sym_waste_reuse_unit", columnDefinition = "NVARCHAR(255)")
+    @Column(name = "sym_waste_reuse_unit", nullable = false, columnDefinition = "NVARCHAR(255)")
     String symWasteReuseUnit = "ton/year";
 
     @Column(name = "sym_waste_recycle_amount", columnDefinition = "NVARCHAR(255)")
@@ -132,7 +140,7 @@ public class b4_part_4 {
     @Column(name = "sym_waste_recycle_cost_saving", columnDefinition = "NVARCHAR(255)")
     String symWasteRecycleCostSaving;
 
-    @Column(name = "sym_waste_recycle_unit", columnDefinition = "NVARCHAR(255)")
+    @Column(name = "sym_waste_recycle_unit", nullable = false, columnDefinition = "NVARCHAR(255)")
     String symWasteRecycleUnit = "ton/year";
 
 
@@ -144,7 +152,7 @@ public class b4_part_4 {
     @Column(name = "sym_st_material_cost_saving", columnDefinition = "NVARCHAR(255)")
     String symStMaterialCostSaving;
 
-    @Column(name = "sym_st_material_unit", columnDefinition = "NVARCHAR(255)")
+    @Column(name = "sym_st_material_unit", nullable = false, columnDefinition = "NVARCHAR(255)")
     String symStMaterialUnit = "ton/year";
 
 
@@ -155,13 +163,13 @@ public class b4_part_4 {
     @Column(name = "sym_nd_material_cost_saving", columnDefinition = "NVARCHAR(255)")
     String symNdMaterialCostSaving;
 
-    @Column(name = "sym_nd_material_unit", columnDefinition = "NVARCHAR(255)")
+    @Column(name = "sym_nd_material_unit", nullable = false, columnDefinition = "NVARCHAR(255)")
     String symNdMaterialUnit = "ton/year";
 
     @Column(name = "sym_nd_material_supply_amount", columnDefinition = "NVARCHAR(255)")
     String symNdMaterialSupplyAmount;
 
-    @Column(name = "sym_nd_material_supply_amount_unit", columnDefinition = "NVARCHAR(255)")
+    @Column(name = "sym_nd_material_supply_amount_unit", nullable = false, columnDefinition = "NVARCHAR(255)")
     String symNdMaterialSupplyAmountUnit;
 
     @Column(name = "sym_nd_material_supply_saving_cost", columnDefinition = "NVARCHAR(255)")
@@ -175,7 +183,7 @@ public class b4_part_4 {
     @Column(name = "sym_chemical_cost_saving", columnDefinition = "NVARCHAR(255)")
     String symChemicalCostSaving;
 
-    @Column(name = "sym_chemical_unit", columnDefinition = "NVARCHAR(255)")
+    @Column(name = "sym_chemical_unit", nullable = false, columnDefinition = "NVARCHAR(255)")
     String symChemicalUnit = "ton/year";
 
 
@@ -185,4 +193,10 @@ public class b4_part_4 {
 
     @Column(name = "sym_service_sharing_cost_saving", columnDefinition = "NVARCHAR(255)")
     String symServiceSharingCostSaving;
+
+    //------------------------sym_companies------------------------------
+    @OneToMany(mappedBy = "symbiosisIndustry", cascade = CascadeType.PERSIST, fetch = FetchType.LAZY)
+    @JsonBackReference(value = "symbiosisIndustry-symCompanies")
+    List<SymCompany> symCompanies;
+
 }

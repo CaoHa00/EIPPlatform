@@ -16,7 +16,6 @@ import com.EIPplatform.repository.authentication.UserAccountRepository;
 import com.EIPplatform.repository.user.BusinessDetailRepository;
 import com.EIPplatform.service.fileStorage.FileStorageService;
 import com.EIPplatform.util.BusinessDetailUtils;
-
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -47,8 +46,7 @@ public class BusinessDetailImplementation implements BusinessDetailInterface {
                         "BusinessDetail",
                         "userAccountId",
                         userAccountId,
-                        BusinessDetailError.NOT_FOUND
-                ));
+                        BusinessDetailError.NOT_FOUND));
     }
 
     @Override
@@ -58,22 +56,20 @@ public class BusinessDetailImplementation implements BusinessDetailInterface {
                         "BusinessDetail",
                         "userAccountId",
                         userAccountId,
-                        BusinessDetailError.NOT_FOUND
-                ));
+                        BusinessDetailError.NOT_FOUND));
+
         UserAccount userAccount = userAccountRepository.findByUserAccountId(userAccountId)
                 .orElseThrow(() -> exceptionFactory.createNotFoundException(
                         "UserAccount",
                         "userAccountId",
                         userAccountId,
-                        UserError.NOT_FOUND
-                ));
+                        UserError.NOT_FOUND));
         if (!entity.getUserAccounts().contains(userAccount)) {
             throw exceptionFactory.createCustomException(
                     "BusinessDetail",
                     List.of("userAccountId", "businessDetailId"),
                     List.of(userAccountId, entity.getBusinessDetailId()),
-                    UserError.UNAUTHORIZED_ACCESS
-            );
+                    UserError.UNAUTHORIZED_ACCESS);
         }
         if (entity.getIsoCertificateFilePath() != null) {
             try {
@@ -92,7 +88,8 @@ public class BusinessDetailImplementation implements BusinessDetailInterface {
     }
 
     @Override
-    public BusinessDetailResponse createBusinessDetail(UUID userAccountId, BusinessDetailDTO dto, MultipartFile isoFile) {
+    public BusinessDetailResponse createBusinessDetail(UUID userAccountId, BusinessDetailDTO dto,
+            MultipartFile isoFile) {
         businessDetailUtils.validateOperationDetails(dto.getOperationType(), dto.getSeasonalDescription());
         businessDetailUtils.validateUniqueFields(dto, null);
         UserAccount userAccount = userAccountRepository.findByUserAccountId(userAccountId)
@@ -100,8 +97,7 @@ public class BusinessDetailImplementation implements BusinessDetailInterface {
                         "UserAccount",
                         "userAccountId",
                         userAccountId,
-                        UserError.NOT_FOUND
-                ));
+                        UserError.NOT_FOUND));
         BusinessDetail entity = businessDetailMapper.toEntity(dto);
         entity.getUserAccounts().add(userAccount);
         userAccount.setBusinessDetail(entity);
@@ -115,8 +111,7 @@ public class BusinessDetailImplementation implements BusinessDetailInterface {
                     "BusinessDetail",
                     List.of("operation", "companyName"),
                     List.of("save", dto.getFacilityName()),
-                    UserError.ID_GENERATION_FAILED
-            );
+                    UserError.ID_GENERATION_FAILED);
         }
         userAccountRepository.flush();
         BusinessDetailResponse response = businessDetailMapper.toResponse(entity);
@@ -126,18 +121,18 @@ public class BusinessDetailImplementation implements BusinessDetailInterface {
     }
 
     @Override
-    public BusinessDetailResponse updateBusinessDetail(UUID userAccountId, BusinessDetailDTO dto, MultipartFile isoFile) {
+    public BusinessDetailResponse updateBusinessDetail(UUID userAccountId, BusinessDetailDTO dto,
+            MultipartFile isoFile) {
         BusinessDetail entity = businessDetailRepository.findByUserAccountId(userAccountId)
                 .orElseThrow(() -> exceptionFactory.createNotFoundException(
                         "BusinessDetail",
                         "userAccountId",
                         userAccountId,
-                        BusinessDetailError.NOT_FOUND
-                ));
+                        BusinessDetailError.NOT_FOUND));
         businessDetailUtils.validateOperationDetails(dto.getOperationType(), dto.getSeasonalDescription());
         businessDetailUtils.validateUniqueFields(dto, entity.getBusinessDetailId());
         entity.setFacilityName(dto.getFacilityName());
-        entity.setLegalRepresentative(dto.getLegalRepresentative());
+        // entity.setLegalRepresentative(dto.getLegalRepresentative());
         entity.setPhoneNumber(dto.getPhoneNumber());
         entity.setAddress(dto.getAddress());
         entity.setActivityType(dto.getActivityType());
@@ -173,8 +168,7 @@ public class BusinessDetailImplementation implements BusinessDetailInterface {
                         "BusinessDetail",
                         "userAccountId",
                         userAccountId,
-                        BusinessDetailError.NOT_FOUND
-                ));
+                        BusinessDetailError.NOT_FOUND));
         return entity.getBusinessDetailId();
     }
 
@@ -183,22 +177,24 @@ public class BusinessDetailImplementation implements BusinessDetailInterface {
         return businessDetailMapper.toResponseList(businessDetailRepository.findAll());
     }
 
-//    @Override
-//    public BusinessDetailWithHistoryConsumptionDTO getBusinessDetailWithHistoryConsumption(UUID id) {
-//        var entity = businessDetailRepository.findById(id)
-//                .orElseThrow(() -> exceptionFactory.createNotFoundException(
-//                        "BusinessDetail",
-//                        "id",
-//                        id,
-//                        BusinessDetailError.BUSINESS_DETAIL_ID_NOT_FOUND
-//                ));
-//        return businessDetailWithHistoryConsumptionMapper.toDTO(entity);
-//    }
+    // @Override
+    // public BusinessDetailWithHistoryConsumptionDTO
+    // getBusinessDetailWithHistoryConsumption(UUID id) {
+    // var entity = businessDetailRepository.findById(id)
+    // .orElseThrow(() -> exceptionFactory.createNotFoundException(
+    // "BusinessDetail",
+    // "id",
+    // id,
+    // BusinessDetailError.BUSINESS_DETAIL_ID_NOT_FOUND
+    // ));
+    // return businessDetailWithHistoryConsumptionMapper.toDTO(entity);
+    // }
 
     // ==================== FILE-SPECIFIC METHODS ====================
 
     /**
-     * Upload ISO cert file for BusinessDetail (separate endpoint for file-only upload)
+     * Upload ISO cert file for BusinessDetail (separate endpoint for file-only
+     * upload)
      */
     @Transactional
     public BusinessDetailResponse uploadIsoCertificateFile(UUID userAccountId, MultipartFile file) {
@@ -208,8 +204,7 @@ public class BusinessDetailImplementation implements BusinessDetailInterface {
                         "BusinessDetail",
                         "userAccountId",
                         userAccountId,
-                        BusinessDetailError.NOT_FOUND
-                ));
+                        BusinessDetailError.NOT_FOUND));
 
         // Kiểm tra user có thuộc BusinessDetail không
         UserAccount userAccount = userAccountRepository.findByUserAccountId(userAccountId)
@@ -217,21 +212,18 @@ public class BusinessDetailImplementation implements BusinessDetailInterface {
                         "UserAccount",
                         "userAccountId",
                         userAccountId,
-                        UserError.NOT_FOUND
-                ));
+                        UserError.NOT_FOUND));
         if (!entity.getUserAccounts().contains(userAccount)) {
             throw exceptionFactory.createCustomException(
                     "BusinessDetail",
                     List.of("userAccountId", "businessDetailId"),
                     List.of(userAccountId, entity.getBusinessDetailId()),
-                    UserError.UNAUTHORIZED_ACCESS
-            );
+                    UserError.UNAUTHORIZED_ACCESS);
         }
 
         if (file.isEmpty()) {
             throw exceptionFactory.createValidationException(
-                    "File", "cannot be empty", "", UserError.MISSING_REQUIRED_FIELD
-            );
+                    "File", "cannot be empty", "", UserError.MISSING_REQUIRED_FIELD);
         }
         if (entity.getIsoCertificateFilePath() != null) {
             try {
@@ -259,8 +251,7 @@ public class BusinessDetailImplementation implements BusinessDetailInterface {
                         "BusinessDetail",
                         "userAccountId",
                         userAccountId,
-                        BusinessDetailError.NOT_FOUND
-                ));
+                        BusinessDetailError.NOT_FOUND));
 
         // Kiểm tra user có thuộc BusinessDetail không
         UserAccount userAccount = userAccountRepository.findByUserAccountId(userAccountId)
@@ -268,15 +259,13 @@ public class BusinessDetailImplementation implements BusinessDetailInterface {
                         "UserAccount",
                         "userAccountId",
                         userAccountId,
-                        UserError.NOT_FOUND
-                ));
+                        UserError.NOT_FOUND));
         if (!entity.getUserAccounts().contains(userAccount)) {
             throw exceptionFactory.createCustomException(
                     "BusinessDetail",
                     List.of("userAccountId", "businessDetailId"),
                     List.of(userAccountId, entity.getBusinessDetailId()),
-                    UserError.UNAUTHORIZED_ACCESS
-            );
+                    UserError.UNAUTHORIZED_ACCESS);
         }
 
         if (entity.getIsoCertificateFilePath() == null) {
@@ -284,8 +273,7 @@ public class BusinessDetailImplementation implements BusinessDetailInterface {
                     "IsoCertFile",
                     "businessDetailId",
                     entity.getBusinessDetailId(),
-                    BusinessDetailError.ISO_CERT_FILE_NOT_FOUND
-            );
+                    BusinessDetailError.ISO_CERT_FILE_NOT_FOUND);
         }
         fileStorageService.deleteFile(entity.getIsoCertificateFilePath());
         entity.setIsoCertificateFilePath(null);

@@ -6,6 +6,7 @@ import java.util.HashSet;
 import com.EIPplatform.configuration.AuditMetaData;
 import com.EIPplatform.model.enums.RoleName;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
@@ -24,6 +25,7 @@ import lombok.NoArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.FieldDefaults;
+
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import java.util.Set;
 import java.util.UUID;  

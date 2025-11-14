@@ -5,7 +5,11 @@ import com.EIPplatform.exception.errorCategories.ReportError;
 import com.EIPplatform.mapper.report.report05.airemmissionmanagement.AirEmissionDataMapper;
 import com.EIPplatform.mapper.report.report05.wastemanagement.WasteManagementDataMapper;
 import com.EIPplatform.mapper.report.report05.wastewatermanager.WasteWaterDataMapper;
-import com.EIPplatform.model.dto.report.report05.*;
+import com.EIPplatform.model.dto.report.report05.CreateReportRequest;
+import com.EIPplatform.model.dto.report.report05.InspectionRemedyResponse;
+import com.EIPplatform.model.dto.report.report05.ReportA05DTO;
+import com.EIPplatform.model.dto.report.report05.ReportA05DraftDTO;
+import com.EIPplatform.model.dto.report.report05.UpdateInspectionRemedyReportRequest;
 import com.EIPplatform.model.dto.report.report05.airemmissionmanagement.airemissiondata.AirEmissionDataDTO;
 import com.EIPplatform.model.dto.report.report05.wastemanagement.WasteManagementDataDTO;
 import com.EIPplatform.model.dto.report.report05.wastewatermanager.wastewatermanagement.WasteWaterDataDTO;
@@ -421,7 +425,7 @@ public class ReportA05ServiceImpl implements ReportA05Service {
                 data.put("facility_name", business.getFacilityName());
                 data.put("address", business.getAddress());
                 data.put("phone_number", business.getPhoneNumber());
-                data.put("legal_representative", business.getLegalRepresentative());
+                // data.put("legal_representative", business.getLegalRepresentative());
                 data.put("activity_type", business.getActivityType());
                 data.put("scale_capacity", business.getScaleCapacity());
                 data.put("iso_14001_certificate",
