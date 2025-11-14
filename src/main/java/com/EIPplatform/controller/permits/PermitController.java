@@ -30,7 +30,7 @@ public class PermitController {
     @PostMapping(value = "/envpermits", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ApiResponse<EnvPermitDTO> createEnvPermit(
             @RequestParam UUID userAccountId,
-            @RequestPart("data") CreateMainPermitRequest request,
+            @RequestPart("data")@Valid CreateMainPermitRequest request,
             @RequestPart(value = "file", required = false) MultipartFile file) {
         var result = permitService.createEnvPermit(userAccountId, request, file);
         return ApiResponse.<EnvPermitDTO>builder()

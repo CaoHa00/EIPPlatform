@@ -25,8 +25,9 @@ public class WasteManagementDataController {
     @PostMapping("/{reportId}/draft/wastemanagement")
     public ApiResponse<WasteManagementDataDTO> createWasteManagementData(
             @PathVariable UUID reportId,
+            @RequestParam UUID userAccountId,
             @RequestBody @Valid WasteManagementDataCreateDTO request) {
-        var result = wasteManagementDataService.createWasteManagementData(reportId, request);
+        var result = wasteManagementDataService.createWasteManagementData(reportId, userAccountId, request);
         return ApiResponse.<WasteManagementDataDTO>builder()
                 .result(result)
                 .build();
@@ -34,8 +35,9 @@ public class WasteManagementDataController {
 
     @GetMapping("/{reportId}/draft/wastemanagement")
     public ApiResponse<WasteManagementDataDTO> getWasteManagementData(
-            @PathVariable UUID reportId) {
-        var result = wasteManagementDataService.getWasteManagementData(reportId);
+            @PathVariable UUID reportId,
+            @RequestParam UUID userAccountId) {
+        var result = wasteManagementDataService.getWasteManagementData(reportId, userAccountId);
         return ApiResponse.<WasteManagementDataDTO>builder()
                 .result(result)
                 .build();
@@ -43,8 +45,9 @@ public class WasteManagementDataController {
 
     @DeleteMapping("/{reportId}/draft/wastemanagement")
     public ApiResponse<Void> deleteWasteManagementData(
-            @PathVariable UUID reportId) {
-        wasteManagementDataService.deleteWasteManagementData(reportId);
+            @PathVariable UUID reportId,
+            @RequestParam UUID userAccountId) {
+        wasteManagementDataService.deleteWasteManagementData(reportId, userAccountId);
         return ApiResponse.<Void>builder()
                 .build();
     }

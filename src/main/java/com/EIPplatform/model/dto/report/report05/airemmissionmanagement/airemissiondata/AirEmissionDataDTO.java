@@ -7,7 +7,7 @@ import com.EIPplatform.model.dto.report.report05.airemmissionmanagement.airmonit
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
-import java.math.BigDecimal;
+import java.lang.Double;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -22,9 +22,9 @@ public class AirEmissionDataDTO {
 
     String airTreatmentDesc;
 
-    BigDecimal airEmissionCy;
+    Double airEmissionCy;
 
-    BigDecimal airEmissionPy;
+    Double airEmissionPy;
 
     String airMonitorPeriod;
 
@@ -45,8 +45,6 @@ public class AirEmissionDataDTO {
     String airAutoStationLocation;
 
     String airAutoStationGps;
-
-    String airAutoStationMap;
 
     String airAutoSourceDesc;
 

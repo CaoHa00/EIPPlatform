@@ -4,7 +4,6 @@ import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
 
 import org.hibernate.annotations.Nationalized;
@@ -27,7 +26,7 @@ public class AirMonitoringExceedance {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "air_emission_data_id", nullable = false)
     AirEmissionData airEmissionData;
-    @Nationalized
+    
     @Column(name = "point_name", columnDefinition = "NVARCHAR(255)", nullable = false)
     String pointName;
 
@@ -42,13 +41,13 @@ public class AirMonitoringExceedance {
 
     @Column(name = "latitude", length = 20)
     String latitude;
-    @Nationalized
+    
     @Column(name = "exceeded_param", columnDefinition = "NVARCHAR(100)", nullable = false)
     String exceededParam;
 
-    @Column(name = "result_value", precision = 15, scale = 5, nullable = false)
-    BigDecimal resultValue;
+    @Column(name = "result_value", nullable = false)
+    Double resultValue;
 
-    @Column(name = "qcvn_limit", precision = 15, scale = 5, nullable = false)
-    BigDecimal qcvnLimit;
+    @Column(name = "qcvn_limit", nullable = false)
+    Double qcvnLimit;
 }

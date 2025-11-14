@@ -5,7 +5,7 @@
 //import lombok.experimental.FieldDefaults;
 //import org.hibernate.annotations.UuidGenerator;
 //
-//import java.math.BigDecimal;
+//import java.lang.Double;
 //import java.time.LocalDateTime;
 //import java.util.UUID;
 //
@@ -41,11 +41,11 @@
 //    @Column(name = "floor_count", nullable = false)
 //    Integer floorCount; // floor_count (số tầng, optional nhưng spec không chỉ rõ nullable)
 //
-//    @Column(name = "build_area", precision = 12, scale = 2)
-//    BigDecimal buildArea; // build_area (diện tích xây dựng, m²)
+//    @Column(name = "build_area", precision = 12)
+//    Double buildArea; // build_area (diện tích xây dựng, m²)
 //
-//    @Column(name = "floor_area", precision = 12, scale = 2)
-//    BigDecimal floorArea; // floor_area (diện tích sàn, m²)
+//    @Column(name = "floor_area", precision = 12)
+//    Double floorArea; // floor_area (diện tích sàn, m²)
 //
 //    @Column(name = "created_at", nullable = false, updatable = false, columnDefinition = "DATETIME2 DEFAULT GETDATE()")
 //    LocalDateTime createdAt;

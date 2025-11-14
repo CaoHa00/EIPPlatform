@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
-import java.math.BigDecimal;
+import java.lang.Double;
 
 import org.hibernate.annotations.Nationalized;
 
@@ -27,16 +27,16 @@ public class IndustrialSolidWasteStat {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "wm_id", nullable = false)
     WasteManagementData wasteManagementData;
-    @Nationalized
+    
     @Column(name = "waste_group", columnDefinition = "NVARCHAR(255)", nullable = false)
     String wasteGroup;
 
-    @Column(name = "volume_cy", precision = 10, scale = 2, nullable = false)
-    BigDecimal volumeCy;
-    @Nationalized
+    @Column(name = "volume_cy", nullable = false)
+    Double volumeCy;
+    
     @Column(name = "receiver_org", columnDefinition = "NVARCHAR(255)", nullable = false)
     String receiverOrg;
 
-    @Column(name = "volume_py", precision = 10, scale = 2, nullable = false)
-    BigDecimal volumePy;
+    @Column(name = "volume_py", nullable = false)
+    Double volumePy;
 }

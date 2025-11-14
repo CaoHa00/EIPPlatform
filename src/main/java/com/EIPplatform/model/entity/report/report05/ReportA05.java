@@ -14,7 +14,7 @@ import lombok.experimental.FieldDefaults;
 import org.hibernate.annotations.Nationalized;
 import org.hibernate.annotations.UuidGenerator;
 
-import java.math.BigDecimal;
+import java.lang.Double;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -68,15 +68,15 @@ public class ReportA05 {
 
     @Column(name = "reviewed_at")
     LocalDateTime reviewedAt;
-    @Nationalized
+    
     @Column(name = "review_notes", columnDefinition = "NVARCHAR(MAX)")
     String reviewNotes;
-    @Nationalized
+    
     @Column(name = "inspection_remedy_report", columnDefinition = "NVARCHAR(MAX)")
     String inspectionRemedyReport;
 
-    @Column(name = "completion_percentage", precision = 5, scale = 2)
-    BigDecimal completionPercentage;
+    @Column(name = "completion_percentage", precision = 5)
+    Double completionPercentage;
 
     @Column(name = "version", nullable = false)
     Integer version;
@@ -118,7 +118,7 @@ public class ReportA05 {
             isDeleted = false;
         }
         if (completionPercentage == null) {
-            completionPercentage = BigDecimal.ZERO;
+            completionPercentage = 0.0;
         }
     }
 

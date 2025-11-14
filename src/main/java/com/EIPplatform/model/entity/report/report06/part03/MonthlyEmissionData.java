@@ -4,7 +4,7 @@
 //import lombok.*;
 //import lombok.experimental.FieldDefaults;
 //import org.hibernate.annotations.UuidGenerator;
-//import java.math.BigDecimal;
+//import java.lang.Double;
 //import java.util.UUID;
 //
 ///**
@@ -34,8 +34,8 @@
 //    @Column(name = "month", nullable = false) // Mục 2, Bảng 2.1: month - Tháng (Integer 1-12)
 //    Integer month;
 //
-//    @Column(name = "value", precision = 14, scale = 2, nullable = false) // Mục 2, Bảng 2.1: month_X (e.g., month_1) - Giá trị tháng (DECIMAL(14,2), bắt buộc >=0)
-//    BigDecimal value; // Monthly value
+//    @Column(name = "value", precision = 14, nullable = false) // Mục 2, Bảng 2.1: month_X (e.g., month_1) - Giá trị tháng (DECIMAL(14,2), bắt buộc >=0)
+//    Double value; // Monthly value
 //
 //    @Column(name = "notes", columnDefinition = "NVARCHAR(500)") // Mục 2, Bảng 2.1: notes_X (e.g., notes_1) - Ghi chú tháng (VARCHAR(500), optional)
 //    String notes;

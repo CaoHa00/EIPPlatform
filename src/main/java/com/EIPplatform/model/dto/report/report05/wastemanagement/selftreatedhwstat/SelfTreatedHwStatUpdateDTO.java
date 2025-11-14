@@ -3,7 +3,7 @@ package com.EIPplatform.model.dto.report.report05.wastemanagement.selftreatedhws
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
-import java.math.BigDecimal;
+import java.lang.Double;
 
 @Data
 @Builder
@@ -15,7 +15,7 @@ public class SelfTreatedHwStatUpdateDTO {
 
     String hwCode;
 
-    BigDecimal volumeKg;
+    Double volumeKg;
 
     String selfTreatmentMethod;
 }

@@ -3,7 +3,7 @@ package com.EIPplatform.model.dto.report.report05.wastemanagement.popinventoryst
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
-import java.math.BigDecimal;
+import java.lang.Double;
 import java.time.LocalDate;
 
 @Data
@@ -16,15 +16,15 @@ public class PopInventoryStatUpdateDTO {
 
     String casCode;
 
-    LocalDate importDate;
+    String importDate;
 
-    BigDecimal importVolume;
+    Double importVolume;
 
     String concentration;
 
-    BigDecimal volumeUsed;
+    Double volumeUsed;
 
-    BigDecimal volumeStocked;
+    Double volumeStocked;
 
     String complianceResult;
 }

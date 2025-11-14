@@ -7,7 +7,7 @@ import jakarta.validation.constraints.Size;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
-import java.math.BigDecimal;
+import java.lang.Double;
 
 @Data
 @Builder
@@ -23,7 +23,7 @@ public class ExportedHwStatCreateDTO {
 
     @NotNull(message = "IS_REQUIRED")
     @DecimalMin(value = "0.0", inclusive = true)
-    BigDecimal volumeKg;
+    Double volumeKg;
 
     @NotBlank(message = "IS_REQUIRED")
     String transporterOrg;

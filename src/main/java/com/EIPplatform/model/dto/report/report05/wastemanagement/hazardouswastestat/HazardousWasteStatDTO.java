@@ -1,6 +1,10 @@
 package com.EIPplatform.model.dto.report.report05.wastemanagement.hazardouswastestat;
 
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
 @Data
 @NoArgsConstructor

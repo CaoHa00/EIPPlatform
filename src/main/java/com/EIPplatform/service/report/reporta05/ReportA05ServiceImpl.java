@@ -13,11 +13,14 @@ import com.EIPplatform.model.dto.report.report05.UpdateInspectionRemedyReportReq
 import com.EIPplatform.model.dto.report.report05.airemmissionmanagement.airemissiondata.AirEmissionDataDTO;
 import com.EIPplatform.model.dto.report.report05.wastemanagement.WasteManagementDataDTO;
 import com.EIPplatform.model.dto.report.report05.wastewatermanager.wastewatermanagement.WasteWaterDataDTO;
+
+import com.EIPplatform.model.entity.permitshistory.EnvPermits;
 import com.EIPplatform.model.entity.report.report05.ReportA05;
 import com.EIPplatform.model.entity.report.report05.airemmissionmanagement.AirEmissionData;
 import com.EIPplatform.model.entity.report.report05.wastemanagement.WasteManagementData;
 import com.EIPplatform.model.entity.report.report05.wastewatermanager.WasteWaterData;
 import com.EIPplatform.model.entity.user.businessInformation.BusinessDetail;
+import com.EIPplatform.model.entity.user.businessInformation.BusinessHistoryConsumption;
 import com.EIPplatform.repository.report.ReportA05Repository;
 import com.EIPplatform.repository.report.report05.airemmissionmanagement.AirEmissionDataRepository;
 import com.EIPplatform.repository.report.report05.wastemanagement.WasteManagementDataRepository;
@@ -28,16 +31,21 @@ import jakarta.transaction.Transactional;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import lombok.experimental.NonFinal;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
-import java.math.BigDecimal;
+import java.lang.Double;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
@@ -48,6 +56,7 @@ import org.apache.poi.xwpf.usermodel.XWPFRun;
 import org.apache.poi.xwpf.usermodel.XWPFTable;
 import org.apache.poi.xwpf.usermodel.XWPFTableCell;
 import org.apache.poi.xwpf.usermodel.XWPFTableRow;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
@@ -70,6 +79,9 @@ public class ReportA05ServiceImpl implements ReportA05Service {
         WasteManagementDataRepository wasteManagementDataRepository;
         AirEmissionDataRepository airEmissionDataRepository;
         WasteWaterRepository wasteWaterDataRepository;
+        @NonFinal
+        @Value("${app.storage.local.upload-dir:/app/uploads}")
+        private String uploadDir;
 
         @Override
         @Transactional
@@ -92,7 +104,7 @@ public class ReportA05ServiceImpl implements ReportA05Service {
                                 .reportingPeriod(request.getReportingPeriod())
                                 .version(1)
                                 .isDeleted(false)
-                                .completionPercentage(BigDecimal.ZERO)
+                                .completionPercentage(0.0)
                                 .build();
 
                 ReportA05 saved = reportA05Repository.save(report);
@@ -159,8 +171,8 @@ public class ReportA05ServiceImpl implements ReportA05Service {
         }
 
         @Override
-        public ReportA05DraftDTO getDraftData(UUID reportId) {
-                ReportA05DraftDTO draft = reportCacheService.getDraftReport(reportId);
+        public ReportA05DraftDTO getDraftData(UUID reportId, UUID userAccountId) {
+                ReportA05DraftDTO draft = reportCacheService.getDraftReport(reportId, userAccountId);
                 if (draft == null) {
                         return null;
                 }
@@ -173,23 +185,23 @@ public class ReportA05ServiceImpl implements ReportA05Service {
          */
         @Override
         @Transactional
-        public ReportA05DraftDTO updateDraftCompletion(UUID reportId) {
-                ReportA05DraftDTO draft = getDraftData(reportId);
+        public ReportA05DraftDTO updateDraftCompletion(UUID reportId, UUID userAccountId) {
+                ReportA05DraftDTO draft = getDraftData(reportId, userAccountId);
                 if (draft == null) {
                         throw exceptionFactory.createCustomException(ReportError.DRAFT_NOT_FOUND);
                 }
                 int percentage = calculateCompletionPercentage(draft);
                 draft.setCompletionPercentage(percentage);
                 draft.setLastModified(LocalDateTime.now());
-                reportCacheService.saveDraftReport(draft);
-                log.info("Updated completion for report {}: {}%", reportId, percentage);
+                reportCacheService.saveDraftReport(draft, userAccountId);
+                log.info("Updated completion for report {} (user {}): {}%", reportId, userAccountId, percentage);
                 return draft;
         }
 
         @Override
         @Transactional
-        public ReportA05DTO submitDraftToDatabase(UUID reportId) {
-                ReportA05DraftDTO draftData = getDraftData(reportId);
+        public ReportA05DTO submitDraftToDatabase(UUID reportId, UUID userAccountId) {
+                ReportA05DraftDTO draftData = getDraftData(reportId, userAccountId);
                 if (draftData == null) {
                         throw exceptionFactory.createCustomException(ReportError.DRAFT_NOT_FOUND);
                 }
@@ -216,23 +228,44 @@ public class ReportA05ServiceImpl implements ReportA05Service {
                 saveOrUpdateAirEmissionData(report, draftData);
 
                 if (draftData.getCompletionPercentage() != null) {
-                        report.setCompletionPercentage(BigDecimal.valueOf(draftData.getCompletionPercentage()));
+                        report.setCompletionPercentage(Double.valueOf(draftData.getCompletionPercentage()));
                 }
 
                 ReportA05 saved = reportA05Repository.save(report);
 
                 draftData.setIsDraft(false);
                 draftData.setLastModified(LocalDateTime.now());
-                reportCacheService.deleteDraftReport(reportId);
+                reportCacheService.deleteDraftReport(reportId, userAccountId);
+
+                WasteManagementDataDTO wasteManagementDataDTO = null;
+                if (saved.getWasteManagementData() != null) {
+                        wasteManagementDataDTO = wasteManagementDataMapper.toDto(saved.getWasteManagementData()); // Gọi
+                                                                                                                  // trực
+                                                                                                                  // tiếp!
+                }
+
+                AirEmissionDataDTO airEmissionDataDTO = null;
+                if (saved.getAirEmissionData() != null) {
+                        airEmissionDataDTO = airEmissionDataMapper.toDto(saved.getAirEmissionData());
+                }
+
+                WasteWaterDataDTO wasteWaterDataDTO = null;
+                if (saved.getWasteWaterData() != null) {
+                        wasteWaterDataDTO = wasteWaterDataMapper.toDto(saved.getWasteWaterData());
+                }
 
                 BusinessDetail bd = saved.getBusinessDetail();
                 return ReportA05DTO.builder()
+                                .reportId(saved.getReportId())
                                 .reportCode(saved.getReportCode())
                                 .businessDetailId(bd != null ? bd.getBusinessDetailId() : null)
                                 .facilityName(bd != null ? bd.getFacilityName() : null)
                                 .reportYear(saved.getReportYear())
                                 .reportingPeriod(saved.getReportingPeriod())
                                 .reviewNotes(saved.getReviewNotes())
+                                .airEmissionData(airEmissionDataDTO)
+                                .wasteManagementData(wasteManagementDataDTO)
+                                .wasteWaterData(wasteWaterDataDTO)
                                 .inspectionRemedyReport(saved.getInspectionRemedyReport())
                                 .completionPercentage(saved.getCompletionPercentage())
                                 .createdAt(saved.getCreatedAt())
@@ -278,14 +311,12 @@ public class ReportA05ServiceImpl implements ReportA05Service {
         }
 
         private int calculateCompletionPercentage(ReportA05DraftDTO draft) {
-                int score = 0;
-                if (isSectionComplete(draft.getWasteWaterData()))
-                        score += 33;
-                if (isSectionComplete(draft.getWasteManagementData()))
-                        score += 33;
-                if (isSectionComplete(draft.getAirEmissionData()))
-                        score += 34;
-                return score;
+                if (draft.getWasteWaterData() != null
+                                && draft.getWasteManagementData() != null
+                                && draft.getAirEmissionData() != null) {
+                        return 100;
+                }
+                return 0;
         }
 
         private boolean isSectionComplete(Object sectionDto) {
@@ -296,15 +327,9 @@ public class ReportA05ServiceImpl implements ReportA05Service {
         }
 
         private boolean isDraftComplete(ReportA05DraftDTO draftData) {
-                // Tính % nếu null
-                if (draftData.getCompletionPercentage() == null) {
-                        draftData.setCompletionPercentage(calculateCompletionPercentage(draftData));
-                }
-                boolean allFieldsFilled = draftData.getWasteWaterData() != null
+                return draftData.getWasteWaterData() != null
                                 && draftData.getWasteManagementData() != null
                                 && draftData.getAirEmissionData() != null;
-                boolean completionComplete = draftData.getCompletionPercentage() == 100;
-                return allFieldsFilled && completionComplete;
         }
 
         private void saveOrUpdateWasteWaterData(ReportA05 report, ReportA05DraftDTO draftData) {
@@ -372,7 +397,7 @@ public class ReportA05ServiceImpl implements ReportA05Service {
         }
 
         @Override
-        public byte[] generateReportFile(UUID reportId) throws Exception {
+        public byte[] generateReportFile(UUID reportId, UUID userAccountId) throws Exception {
                 ReportA05 report = reportA05Repository.findById(reportId)
                                 .orElseThrow(() -> exceptionFactory.createNotFoundException("ReportA05",
                                                 reportId,
@@ -383,15 +408,18 @@ public class ReportA05ServiceImpl implements ReportA05Service {
                         throw exceptionFactory.createCustomException(ReportError.BUSINESS_NOT_FOUND);
                 }
 
-                ReportA05DraftDTO draftData = getDraftData(reportId);
+                ReportA05DraftDTO draftData = getDraftData(reportId, userAccountId);
                 WasteWaterDataDTO wasteWaterDataDTO = draftData != null ? draftData.getWasteWaterData() : null;
                 AirEmissionDataDTO airEmissionDataDTO = draftData != null ? draftData.getAirEmissionData() : null;
                 WasteManagementDataDTO wasteManagementDataDTO = draftData != null ? draftData.getWasteManagementData()
                                 : null;
-
-                String dateStr = LocalDate.now().toString();
-                String monthStr = LocalDate.now().getMonth().toString();
-                String yearStr = String.valueOf(LocalDate.now().getYear());
+                EnvPermits envPermits = business.getEnvPermits();
+                List<BusinessHistoryConsumption> businessHistoryConsumptions = business
+                                .getBusinessHistoryConsumptions();
+                LocalDate today = LocalDate.now();
+                String day = String.valueOf(today.getDayOfMonth());
+                String month = String.valueOf(today.getMonthValue());
+                String year = String.valueOf(today.getYear());
                 // FIX: Map dữ liệu với key chính xác
                 Map<String, String> data = new HashMap<>();
                 data.put("facility_name", business.getFacilityName());
@@ -405,15 +433,49 @@ public class ReportA05ServiceImpl implements ReportA05Service {
                 data.put("business_license_number", business.getBusinessRegistrationNumber());
                 data.put("tax_code", business.getTaxCode());
                 data.put("seasonal_period", business.getOperationType().name());
-                // data.put("product_volume_cy",
-                // business.getProductVolumeCy() != null
-                // ? business.getProductVolumeCy().toString()
-                // : "");
-                data.put("dateStr", dateStr);
-                data.put("monthYearStr", monthStr);
-                data.put("yearStr", yearStr);
+
+                // permit
+                data.put("env_permit_number", envPermits.getPermitNumber());
+                data.put("env_permit_issue_date", formatDate(envPermits.getIssueDate()));
+                data.put("env_permit_issuer", envPermits.getIssuerOrg());
+                data.put("env_permit_file", envPermits.getPermitFilePath());
+                // business history
+                for (BusinessHistoryConsumption bhc : businessHistoryConsumptions) {
+                        data.put("product_volume_cy",
+                                        bhc.getProductVolumeCy() != null ? bhc.getProductVolumeCy().toString() : "");
+                        data.put("product_unit_cy", bhc.getProductUnitCy());
+                        data.put("product_volume_py",
+                                        bhc.getProductVolumePy() != null ? bhc.getProductVolumePy().toString() : "");
+                        data.put("product_unit_py", bhc.getProductUnitPy());
+                        data.put("fuel_consumption_cy",
+                                        bhc.getFuelConsumptionCy() != null ? bhc.getFuelConsumptionCy().toString()
+                                                        : "");
+                        data.put("fuel_unit_cy", bhc.getFuelUnitCy());
+                        data.put("fuel_consumption_py",
+                                        bhc.getFuelConsumptionPy() != null ? bhc.getFuelConsumptionPy().toString()
+                                                        : "");
+                        data.put("fuel_unit_py", bhc.getFuelUnitPy());
+                        data.put("electricity_consumption_cy",
+                                        bhc.getElectricityConsumptionCy() != null
+                                                        ? bhc.getElectricityConsumptionCy().toString()
+                                                        : "");
+                        data.put("electricity_consumption_py",
+                                        bhc.getElectricityConsumptionPy() != null
+                                                        ? bhc.getElectricityConsumptionPy().toString()
+                                                        : "");
+                        data.put("water_consumption_cy",
+                                        bhc.getWaterConsumptionCy() != null ? bhc.getWaterConsumptionCy().toString()
+                                                        : "");
+                        data.put("water_consumption_py",
+                                        bhc.getWaterConsumptionPy() != null ? bhc.getWaterConsumptionPy().toString()
+                                                        : "");
+                }
+                data.put("dateStr", day);
+                data.put("monthYearStr", month);
+                data.put("yearStr", year);
 
                 if (wasteWaterDataDTO != null) {
+                        log.debug("Log wasteWaterDATAdto");
                         data.put("ww_treatment_desc",
                                         wasteWaterDataDTO.getTreatmentWwDesc() != null
                                                         ? wasteWaterDataDTO.getTreatmentWwDesc()
@@ -621,8 +683,8 @@ public class ReportA05ServiceImpl implements ReportA05Service {
                                                         ? airEmissionDataDTO.getAirAutoStationGps()
                                                         : "");
                         data.put("air_auto_station_map",
-                                        airEmissionDataDTO.getAirAutoStationMap() != null
-                                                        ? airEmissionDataDTO.getAirAutoStationMap()
+                                        airEmissionDataDTO.getAirAutoStationMapFilePath() != null
+                                                        ? airEmissionDataDTO.getAirAutoStationMapFilePath()
                                                         : "");
                         data.put("air_auto_source_desc",
                                         airEmissionDataDTO.getAirAutoSourceDesc() != null
@@ -886,22 +948,94 @@ public class ReportA05ServiceImpl implements ReportA05Service {
                         }
 
                         doc.write(baos);
+
                         byte[] result = baos.toByteArray();
 
                         // Ghi ra file để kiểm tra (optional)
-                        String outputDir = "D:\\Cao Ha\\eipFolder\\generated\\reports";
-                        Files.createDirectories(Paths.get(outputDir));
+                        // String outputDir = "D:\\Cao Ha\\eipFolder\\generated\\reports";
+                        // Files.createDirectories(Paths.get(outputDir));
 
-                        String fileName = String.format("%s/ReportA05_%s_%s.docx",
-                                        outputDir,
-                                        business.getFacilityName().replaceAll("[^a-zA-Z0-9]", "_"),
-                                        reportId);
-
-                        Files.write(Paths.get(fileName), result);
-                        log.info(" File generated: {}", fileName);
+                        // String fileName = String.format("%s/ReportA05_%s_%s.docx",
+                        // outputDir,
+                        // business.getFacilityName().replaceAll("[^a-zA-Z0-9]", "_"),
+                        // reportId);
+                        // Files.write(Paths.get(fileName), result);
+                        // log.info(" File generated: {}", fileName);
+                        ReportA05DTO reportDTO = ReportA05DTO.builder()
+                                        .reportYear(report.getReportYear())
+                                        .build();
+                        String savedFilePath = saveReportFile(result, reportId, business, reportDTO);
+                        log.info("✅ Report file generated and saved: {} ({} bytes)", savedFilePath, result.length);
 
                         return result;
                 }
+        }
+
+        private String saveReportFile(byte[] fileBytes, UUID reportId, BusinessDetail business, ReportA05DTO report) {
+                try {
+                        // Tạo subfolder theo năm: reporta05/2025/
+                        Integer reportYear = report.getReportYear() != null ? report.getReportYear()
+                                        : LocalDateTime.now().getYear();
+                        Path reportDir = Paths.get(uploadDir, "reporta05", String.valueOf(reportYear));
+
+                        // Tạo folder nếu chưa có
+                        Files.createDirectories(reportDir);
+                        log.info("📁 Report directory: {}", reportDir);
+
+                        // Tạo tên file
+                        String timestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss"));
+                        String facilityName = business.getFacilityName() != null
+                                        ? sanitizeFileName(business.getFacilityName())
+                                        : "Unknown";
+
+                        String fileName = String.format("BaoCaoA05_%s_%s_%s.docx",
+                                        facilityName,
+                                        reportId.toString().substring(0, 8),
+                                        timestamp);
+
+                        // Lưu file
+                        Path filePath = reportDir.resolve(fileName);
+                        Files.write(filePath, fileBytes);
+
+                        // Return relative path
+                        String relativePath = String.format("reporta05/%d/%s", reportYear, fileName);
+                        log.info(" File saved successfully: {}", relativePath);
+
+                        return relativePath;
+
+                } catch (IOException e) {
+                        log.error("⚠️ Could not save report file: {}", e.getMessage(), e);
+                        throw new RuntimeException("Failed to save report file", e);
+                }
+        }
+
+        private String sanitizeFileName(String input) {
+                if (input == null || input.isEmpty()) {
+                        return "Unknown";
+                }
+
+                String sanitized = input
+                                .replaceAll("[/\\\\:*?\"<>|]", "") // Loại bỏ ký tự không hợp lệ
+                                .replaceAll("\\s+", "_") // Thay space = underscore
+                                .trim();
+
+                // Giới hạn độ dài
+                if (sanitized.length() > 50) {
+                        sanitized = sanitized.substring(0, 50);
+                }
+
+                return sanitized;
+        }
+
+        /**
+         * Format LocalDate to dd/MM/yyyy or return empty if null
+         */
+        private String formatDate(LocalDate date) {
+                if (date == null) {
+                        return "";
+                }
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+                return date.format(formatter);
         }
 
         /**

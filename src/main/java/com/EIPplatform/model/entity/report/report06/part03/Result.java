@@ -5,7 +5,7 @@
 //import lombok.*;
 //import lombok.experimental.FieldDefaults;
 //import org.hibernate.annotations.UuidGenerator;
-//import java.math.BigDecimal;
+//import java.lang.Double;
 //import java.util.UUID;
 //
 ///**
@@ -38,11 +38,11 @@
 //    @Column(name = "production_unit_name", columnDefinition = "NVARCHAR(255)") // Mục 3.1: production_unit_name - Tên đơn vị tính cường độ phát thải (VARCHAR(255), optional)
 //            String productionUnitName;
 //
-//    @Column(name = "total_production_output", precision = 14, scale = 2) // Mục 3.2: total_production_output - Tổng sản lượng / Giá trị (DECIMAL(14,2), optional nhưng bắt buộc nếu 3.1 có)
-//    BigDecimal totalProductionOutput;
+//    @Column(name = "total_production_output", precision = 14) // Mục 3.2: total_production_output - Tổng sản lượng / Giá trị (DECIMAL(14,2), optional nhưng bắt buộc nếu 3.1 có)
+//    Double totalProductionOutput;
 //
-//    @Column(name = "intensity_ratio_result", precision = 10, scale = 4) // Mục 3.3: intensity_ratio_result - Cường độ phát thải (DECIMAL(10,4), auto-calculated, read-only)
-//    BigDecimal intensityRatioResult;
+//    @Column(name = "intensity_ratio_result", scale = 4) // Mục 3.3: intensity_ratio_result - Cường độ phát thải (DECIMAL(10,4), auto-calculated, read-only)
+//    Double intensityRatioResult;
 //
 //    @Column(name = "result_commentary", columnDefinition = "NVARCHAR(MAX)") // Mục 3.4: result_commentary - Thuyết minh / Nhận xét kết quả (TEXT, optional)
 //    String resultCommentary;

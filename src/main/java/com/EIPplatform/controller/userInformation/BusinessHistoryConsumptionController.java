@@ -20,36 +20,38 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class BusinessHistoryConsumptionController {
 
-    private final BusinessHistoryConsumptionInterface businessHistoryConsumptionService;
+        private final BusinessHistoryConsumptionInterface businessHistoryConsumptionService;
 
-    @GetMapping("/business/{businessDetailId}")
-    public ResponseEntity<ApiResponse<List<BusinessHistoryConsumptionDTO>>> getByBusinessDetailId(
-            @PathVariable UUID businessDetailId,
-            @RequestParam UUID userAccountId) {
-        var result = businessHistoryConsumptionService.findByBusinessDetailId(businessDetailId,userAccountId);
-        return ResponseEntity.ok(ApiResponse.<List<BusinessHistoryConsumptionDTO>>builder()
-                .result(result)
-                .build());
-    }
+        @GetMapping("/business/{businessDetailId}")
+        public ResponseEntity<ApiResponse<List<BusinessHistoryConsumptionDTO>>> getByBusinessDetailId(
+                        @PathVariable UUID businessDetailId,
+                        @RequestParam UUID userAccountId) {
+                var result = businessHistoryConsumptionService.findByBusinessDetailId(businessDetailId, userAccountId);
+                return ResponseEntity.ok(ApiResponse.<List<BusinessHistoryConsumptionDTO>>builder()
+                                .result(result)
+                                .build());
+        }
 
-    @PostMapping("/business/{userAccountId}")
-    public ResponseEntity<ApiResponse<BusinessHistoryConsumptionDTO>> create(
-            @PathVariable UUID userAccountId,
-            @RequestBody @Valid BusinessHistoryConsumptionCreateDTO dto) {
-        var result = businessHistoryConsumptionService.createBusinessHistoryConsumption(userAccountId, dto);
-        return ResponseEntity.ok(ApiResponse.<BusinessHistoryConsumptionDTO>builder()
-                .result(result)
-                .build());
-    }
+        @PostMapping("/business/{userAccountId}")
+        public ResponseEntity<ApiResponse<BusinessHistoryConsumptionDTO>> create(
+                        @PathVariable UUID userAccountId,
+                        @RequestBody @Valid BusinessHistoryConsumptionCreateDTO dto) {
+                var result = businessHistoryConsumptionService.createBusinessHistoryConsumption(userAccountId, dto);
+                return ResponseEntity.ok(ApiResponse.<BusinessHistoryConsumptionDTO>builder()
+                                .result(result)
+                                .build());
+        }
 
-    @PutMapping("/{businessHistoryConsumptionId}")
-    public ResponseEntity<ApiResponse<BusinessHistoryConsumptionDTO>> update(
-            @PathVariable UUID businessHistoryConsumptionId,
-            @RequestBody @Valid BusinessHistoryConsumptionUpdateDTO dto,
-            @AuthenticationPrincipal UserAccount currentUser) {
-        var result = businessHistoryConsumptionService.updateBusinessHistoryConsumption(currentUser.getUserAccountId(), businessHistoryConsumptionId, dto);
-        return ResponseEntity.ok(ApiResponse.<BusinessHistoryConsumptionDTO>builder()
-                .result(result)
-                .build());
-    }
+        @PutMapping("/{businessHistoryConsumptionId}/user/{userAccountId}")
+        public ResponseEntity<ApiResponse<BusinessHistoryConsumptionDTO>> update(
+                        @PathVariable UUID businessHistoryConsumptionId,
+                        @RequestBody @Valid BusinessHistoryConsumptionUpdateDTO dto,
+                        @PathVariable UUID userAccountId) {
+                var result = businessHistoryConsumptionService.updateBusinessHistoryConsumption(userAccountId,
+                                businessHistoryConsumptionId, dto);
+                return ResponseEntity.ok(ApiResponse.<BusinessHistoryConsumptionDTO>builder()
+                                .result(result)
+                                .build());
+        }
+
 }

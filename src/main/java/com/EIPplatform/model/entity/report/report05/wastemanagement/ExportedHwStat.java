@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
-import java.math.BigDecimal;
+import java.lang.Double;
 
 import org.hibernate.annotations.Nationalized;
 
@@ -27,22 +27,22 @@ public class ExportedHwStat {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "wm_id", nullable = false)
     WasteManagementData wasteManagementData;
-    @Nationalized
+    
     @Column(name = "waste_name", columnDefinition = "NVARCHAR(255)", nullable = false)
     String wasteName;
-    @Nationalized
+    
     @Column(name = "hw_code", columnDefinition = "NVARCHAR(50)", nullable = false)
     String hwCode;
-    @Nationalized
+    
     @Column(name = "basel_code", columnDefinition = "NVARCHAR(50)")
     String baselCode;
 
-    @Column(name = "volume_kg", precision = 10, scale = 2, nullable = false)
-    BigDecimal volumeKg;
-    @Nationalized
+    @Column(name = "volume_kg", nullable = false)
+    Double volumeKg;
+    
     @Column(name = "transporter_org", columnDefinition = "NVARCHAR(MAX)", nullable = false)
     String transporterOrg;
-    @Nationalized
+    
     @Column(name = "overseas_processor_org", columnDefinition = "NVARCHAR(MAX)", nullable = false)
     String overseasProcessorOrg;
 }

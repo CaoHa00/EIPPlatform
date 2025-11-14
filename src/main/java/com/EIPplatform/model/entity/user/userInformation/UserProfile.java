@@ -48,7 +48,7 @@ public class UserProfile {
 
     @Column(nullable = true, columnDefinition = "NVARCHAR(255)")
     String identificationNumber;
-    @Nationalized
+    
     @Column(nullable = true, columnDefinition = "NVARCHAR(255)")
     String address;
 

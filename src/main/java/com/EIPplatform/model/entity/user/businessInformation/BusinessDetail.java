@@ -33,7 +33,7 @@ import lombok.experimental.FieldDefaults;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "[business_detail]")
+@Table(name = "business_detail")
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @EntityListeners(AuditingEntityListener.class)
@@ -43,7 +43,7 @@ public class BusinessDetail {
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "business_detail_id", columnDefinition = "uniqueidentifier")
     UUID businessDetailId;
-    @Nationalized
+
     @Column(nullable = false, unique = true, columnDefinition = "NVARCHAR(255)")
     String facilityName;
 
@@ -53,13 +53,13 @@ public class BusinessDetail {
 
     @Column(nullable = false, length = 20, columnDefinition = "NVARCHAR(255)")
     String phoneNumber;
-    @Nationalized
+
     @Column(nullable = false, columnDefinition = "NVARCHAR(500)")
     String address;
-    @Nationalized
+
     @Column(nullable = false, columnDefinition = "NVARCHAR(255)")
     String activityType;
-    @Nationalized
+
     @Column(nullable = false, columnDefinition = "NVARCHAR(255)")
     String scaleCapacity;
     @Nationalized
@@ -71,14 +71,14 @@ public class BusinessDetail {
     @Nationalized
     @Column(nullable = false, length = 50, columnDefinition = "NVARCHAR(255)")
     String businessRegistrationNumber;
-    @Nationalized
-    @Column(nullable = false, unique = true, length = 50, columnDefinition = "NVARCHAR(255)")
+
+    @Column(nullable = false, unique = true)
     String taxCode;
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     OperationType operationType = OperationType.REGULAR;
-    @Nationalized
+
     @Column(length = 500, columnDefinition = "NVARCHAR(500)")
     String seasonalDescription;
 

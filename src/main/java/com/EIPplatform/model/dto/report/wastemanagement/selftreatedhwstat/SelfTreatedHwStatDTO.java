@@ -1,7 +1,5 @@
 package com.EIPplatform.model.dto.report.wastemanagement.selftreatedhwstat;
 
-import java.math.BigDecimal;
-
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -17,6 +15,6 @@ public class SelfTreatedHwStatDTO {
     Long selfTreatedId;
     String wasteName;
     String hwCode;
-    BigDecimal volumeKg;
+    Double volumeKg;
     String selfTreatmentMethod;
 }

@@ -33,10 +33,10 @@ public class BusinessHistoryConsumption {
 
     @Column(nullable = false)
     Integer productVolumePy;
-    @Nationalized
+    
     @Column(nullable = false, columnDefinition = "NVARCHAR(50)")
     String productUnitCy;
-    @Nationalized
+    
     @Column(nullable = false, columnDefinition = "NVARCHAR(50)")
     String productUnitPy;
 
@@ -45,10 +45,10 @@ public class BusinessHistoryConsumption {
 
     @Column(nullable = false)
     Integer fuelConsumptionPy;
-    @Nationalized
+    
     @Column(nullable = false, columnDefinition = "NVARCHAR(50)")
     String fuelUnitCy;
-    @Nationalized
+    
     @Column(nullable = false, columnDefinition = "NVARCHAR(50)")
     String fuelUnitPy;
 

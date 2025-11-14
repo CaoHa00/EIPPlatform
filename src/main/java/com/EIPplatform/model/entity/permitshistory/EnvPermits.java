@@ -33,19 +33,19 @@ public class EnvPermits {
     @JoinColumn(name = "business_detail_id", unique = true)
     @JsonBackReference(value = "businessDetail-mainPermit")
     BusinessDetail businessDetail;
-    @Nationalized
+    
     @Column(name = "permit_number", nullable = false, columnDefinition = "VARCHAR(255)")
     String permitNumber;
 
     @Column(name = "issue_date", nullable = false)
     LocalDate issueDate;
-    @Nationalized
+    
     @Column(name = "issuer_org", nullable = false, columnDefinition = "NVARCHAR(255)")
     String issuerOrg;
-    @Nationalized
+    
     @Column(name = "project_name", columnDefinition = "NVARCHAR(255)")
     String projectName;
-    @Nationalized
+    
     @Column(name = "permit_file_path", columnDefinition = "VARCHAR(500)")
     String permitFilePath;
 
