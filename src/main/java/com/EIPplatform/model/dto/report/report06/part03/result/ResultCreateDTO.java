@@ -20,10 +20,12 @@ public class ResultCreateDTO {
 
     @DecimalMin(value = "0.0", inclusive = true)
     BigDecimal totalProductionOutput;
-
+    
     String resultCommentary;
 
     String reliabilityStatement;
+
+    String intensityRatioResult;
 
     String completenessStatement;
 

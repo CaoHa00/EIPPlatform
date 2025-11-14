@@ -19,7 +19,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class MonthlyEmissionData {
+public class MonthlyEmissionData {// dữ liệu phát thải hàng thánbg
     @Id
     @GeneratedValue
     @UuidGenerator

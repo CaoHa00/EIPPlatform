@@ -29,5 +29,5 @@ public class EmissionDataCreateDTO {
 
     @NotNull(message = "IS_REQUIRED")
     @Valid
-    UncertaintyEvaluationCreateDTO uncertaintyEvaluation;
+    List<@Valid UncertaintyEvaluationCreateDTO> uncertaintyEvaluation;
 }
