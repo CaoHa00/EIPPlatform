@@ -1,14 +1,28 @@
 package com.EIPplatform.model.entity.user.investors;
 
 
-import jakarta.persistence.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import com.EIPplatform.configuration.AuditMetaData;
-import com.EIPplatform.model.enums.InvestorType;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.DiscriminatorColumn;
+import jakarta.persistence.DiscriminatorType;
+import jakarta.persistence.Embedded;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EntityListeners;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Inheritance;
+import jakarta.persistence.InheritanceType;
+import jakarta.persistence.Table;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -29,10 +43,6 @@ public abstract class Investor {
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "investor_id", columnDefinition = "uniqueidentifier")
     UUID investorId;
-
-    @Enumerated(EnumType.STRING)
-    @Column(name = "investor_type", insertable = false, updatable = false)
-    InvestorType investorType;
 
     @Column(name = "address", columnDefinition = "NVARCHAR(500)")
     String address;

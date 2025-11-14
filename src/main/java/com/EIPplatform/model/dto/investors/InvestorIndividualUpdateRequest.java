@@ -1,13 +1,21 @@
 package com.EIPplatform.model.dto.investors;
 
-import jakarta.validation.constraints.*;
-import lombok.*;
-import lombok.experimental.FieldDefaults;
-
 import java.time.LocalDate;
 import java.util.UUID;
 
 import com.EIPplatform.model.enums.Gender;
+
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Past;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.experimental.FieldDefaults;
 
 @Getter
 @Setter
@@ -35,7 +43,6 @@ public class InvestorIndividualUpdateRequest {
     @NotBlank(message = "FIELD_REQUIRED")
     String identificationNumber;
 
-    @NotBlank(message = "FIELD_REQUIRED")
     String passportId;
 
     @NotBlank(message = "FIELD_REQUIRED")
