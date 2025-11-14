@@ -46,5 +46,6 @@ public class EmissionData {
     List<MonthlyEmissionData> monthlyDatas = new ArrayList<>(); // Mục 2, Bảng 2.1: OneToMany đến MonthlyEmissionData (bảng monthly_emission_data, month_1 đến month_12 + notes)
 
     @Column(name = "total_annual_data", precision = 16, scale = 2) // Mục 2.2: total_annual_data - Tổng dữ liệu hoạt động (Cả năm) (DECIMAL(16,2), auto SUM từ monthlyDatas, read-only)
+
     BigDecimal totalAnnualData;
 }
