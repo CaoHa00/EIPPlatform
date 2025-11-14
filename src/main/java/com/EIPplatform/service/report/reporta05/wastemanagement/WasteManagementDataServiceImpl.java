@@ -3,6 +3,7 @@ package com.EIPplatform.service.report.reporta05.wastemanagement;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+import com.EIPplatform.util.StringNormalizerUtil;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -36,7 +37,7 @@ public class WasteManagementDataServiceImpl implements WasteManagementDataServic
     @Override
     @Transactional
     public WasteManagementDataDTO createWasteManagementData(UUID reportId, UUID userAccountId, WasteManagementDataCreateDTO request) {
-
+        request = StringNormalizerUtil.normalizeRequest(request);
         ReportA05 report = reportA05Repository.findById(reportId)
                 .orElseThrow(() -> exceptionFactory.createNotFoundException(
                         "ReportA05",

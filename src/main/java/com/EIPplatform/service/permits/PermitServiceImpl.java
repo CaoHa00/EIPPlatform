@@ -24,6 +24,7 @@ import com.EIPplatform.repository.user.BusinessDetailRepository;
 import com.EIPplatform.repository.permitshistory.EnvComponentPermitRepository;
 import com.EIPplatform.service.fileStorage.FileStorageService;
 import com.EIPplatform.util.PermitUtils;
+import com.EIPplatform.util.StringNormalizerUtil;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
@@ -74,6 +75,7 @@ public class PermitServiceImpl implements PermitService {
 
     @Override
     public EnvPermitDTO createEnvPermit(UUID userAccountId, CreateMainPermitRequest request, MultipartFile file) {
+        request = StringNormalizerUtil.normalizeRequest(request);
         PermitUtils.validateUserExists(userAccountRepository, userAccountId, exceptionFactory);
 
         BusinessDetail businessDetail = PermitUtils.getBusinessDetailByUserAccountId(businessDetailRepository, userAccountId, exceptionFactory);
@@ -131,6 +133,7 @@ public class PermitServiceImpl implements PermitService {
 
     @Override
     public EnvPermitDTO updateEnvPermit(UUID userAccountId, UpdateEnvPermitRequest request, MultipartFile file) {
+        request = StringNormalizerUtil.normalizeRequest(request);
         BusinessDetail businessDetail = PermitUtils.getBusinessDetailByUserAccountId(businessDetailRepository, userAccountId, exceptionFactory);
 
         EnvPermits envPermit = envPermitsRepository

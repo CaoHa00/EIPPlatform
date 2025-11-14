@@ -4,6 +4,7 @@ import com.EIPplatform.model.dto.api.ApiResponse;
 import com.EIPplatform.model.dto.report.report05.airemmissionmanagement.airemissiondata.AirEmissionDataCreateDTO;
 import com.EIPplatform.model.dto.report.report05.airemmissionmanagement.airemissiondata.AirEmissionDataDTO;
 import com.EIPplatform.service.report.reporta05.airemmissionmanagement.AirEmissionDataService;
+import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -30,7 +31,7 @@ public class AirEmissionDataController {
     public ApiResponse<AirEmissionDataDTO> createAirEmissionData(
             @PathVariable UUID reportId,
             @RequestParam UUID userAccountId,
-            @RequestPart("data") AirEmissionDataCreateDTO request,
+            @RequestPart("data")@Valid AirEmissionDataCreateDTO request,
             @RequestPart(value = "file", required = false) MultipartFile file) {
         var result = airEmissionDataService.createAirEmissionData(reportId, userAccountId, request, file);
         return ApiResponse.<AirEmissionDataDTO>builder()

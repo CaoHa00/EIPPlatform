@@ -10,6 +10,7 @@ import com.EIPplatform.model.dto.report.report05.airemmissionmanagement.airemiss
 import com.EIPplatform.model.entity.report.report05.airemmissionmanagement.AirEmissionData;
 import com.EIPplatform.service.fileStorage.FileStorageService;
 import com.EIPplatform.service.report.reportcache.ReportCacheService;
+import com.EIPplatform.util.StringNormalizerUtil;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -40,6 +41,8 @@ public class AirEmissionDataServiceImpl implements AirEmissionDataService {
     @Override
     @Transactional
     public AirEmissionDataDTO createAirEmissionData(UUID reportId, UUID userAccountId, AirEmissionDataCreateDTO request, MultipartFile file) {
+
+        request = StringNormalizerUtil.normalizeRequest(request);
 
         ReportA05 report = reportA05Repository.findById(reportId)
                 .orElseThrow(() -> exceptionFactory.createNotFoundException(
