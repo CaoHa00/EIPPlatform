@@ -15,7 +15,7 @@ import com.EIPplatform.model.dto.report.report05.wastemanagement.WasteManagement
 import com.EIPplatform.model.entity.report.report05.ReportA05;
 import com.EIPplatform.model.entity.report.report05.wastemanagement.WasteManagementData;
 import com.EIPplatform.repository.report.ReportA05Repository;
-import com.EIPplatform.service.report.reportcache.ReportCacheService;
+import com.EIPplatform.service.report.reportcache.reportCacheA05.ReportCacheService;
 
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;

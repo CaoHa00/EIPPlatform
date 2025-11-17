@@ -35,7 +35,6 @@ public class ReportA05DraftDTO implements Serializable {
     WasteManagementDataDTO wasteManagementData;
     AirEmissionDataDTO airEmissionData;
 
-
     // AirEmissionDataDTO airEmissionData;  // Bước tiếp theo
     // SolidWasteDataDTO solidWasteData;    // Bước tiếp theo (có thể hợp nhất với WasteManagementData nếu cần)
 

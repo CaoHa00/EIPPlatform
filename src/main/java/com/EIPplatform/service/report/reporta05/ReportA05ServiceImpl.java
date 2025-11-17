@@ -25,7 +25,8 @@ import com.EIPplatform.repository.report.ReportA05Repository;
 import com.EIPplatform.repository.report.report05.airemmissionmanagement.AirEmissionDataRepository;
 import com.EIPplatform.repository.report.report05.wastemanagement.WasteManagementDataRepository;
 import com.EIPplatform.repository.report.report05.wastewatermanager.WasteWaterRepository;
-import com.EIPplatform.service.report.reportcache.ReportCacheService;
+import com.EIPplatform.service.report.reportcache.reportCacheA05.ReportCacheService;
+
 import jakarta.transaction.Transactional;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
