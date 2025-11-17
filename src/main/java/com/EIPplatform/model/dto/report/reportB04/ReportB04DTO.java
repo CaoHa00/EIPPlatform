@@ -1,5 +1,5 @@
 package com.EIPplatform.model.dto.report.reportB04;
-import java.io.Serializable;
+
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -16,34 +16,35 @@ import lombok.experimental.FieldDefaults;
 
 @Getter
 @Setter
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class ReportB04DraftDTO implements Serializable{
-    private static final long serialVersionUID = 1L;
+public class ReportB04DTO {
+
     UUID reportId;
+    String reportCode;
     UUID businessDetailId;
+    String facilityName;
     Integer reportYear;
     String reportingPeriod;
+    String reviewNotes;
+    String inspectionRemedyReport;
+    Double completionPercentage;
+    Integer version;
+    Boolean isDeleted;
+    LocalDateTime createdAt;
+    // ============= RELATIONSHIPS =============
 
-    // part1
+    // -- part 1 --
     ReportInvestorDetailDTO reportInvestorDetail;
 
-    // part2
-    ProductDTO productDTO;
+    // -- part 2 --
+    ProductDTO product;
 
-    //part3
-    // ResourcesSavingAndReductionDTO resourcesSavingAndReductionDTO;
+    // -- part 3 --
+    // ResourcesSavingAndReductionDTO resourcesSavingAndReduction;
 
-    //part3
+    // -- part 4 --
     // SymbiosisIndustryDTO symbiosisIndustry;
-
-    // Metadata
-    LocalDateTime lastModified;
-    Integer currentStep;
-    Boolean isDraft;
-
-    // Tracking
-    Integer completionPercentage;
 }

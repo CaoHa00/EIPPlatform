@@ -13,8 +13,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ScanOptions;
 import org.springframework.stereotype.Service;
 
-import com.EIPplatform.model.dto.report.report05.ReportA05DraftDTO;
-import com.EIPplatform.model.dto.report.report05.wastewatermanager.wastewatermanagement.WasteWaterDataDTO;
+import com.EIPplatform.model.dto.report.reportB04.ReportB04DraftDTO;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
@@ -52,7 +51,7 @@ public class ReportB04CacheServiceImpl implements ReportB04CacheService {
     }
 
     @Override
-    public void saveDraftReport(ReportA05DraftDTO draft, UUID userAccountId) {
+    public void saveDraftReport(ReportB04DraftDTO draft, UUID userAccountId) {
         log.info("Saving draft reportB04 to cache - reportId: {}, userAccountId: {}", draft.getReportId(), userAccountId);
 
         draft.setLastModified(LocalDateTime.now());
@@ -71,7 +70,7 @@ public class ReportB04CacheServiceImpl implements ReportB04CacheService {
     }
 
     @Override
-    public ReportA05DraftDTO getDraftReport(UUID reportId, UUID userAccountId) {
+    public ReportB04DraftDTO getDraftReport(UUID reportId, UUID userAccountId) {
         log.info("Getting draft reportB04 from cache - reportId: {}, userAccountId: {}", reportId, userAccountId);
         String key = buildCacheKey(userAccountId, reportId);
         try {
@@ -80,7 +79,7 @@ public class ReportB04CacheServiceImpl implements ReportB04CacheService {
                 log.warn("Draft reportB04 not found in cache - reportId: {}, userAccountId: {}", reportId, userAccountId);
                 return null;
             }
-            ReportA05DraftDTO draft = objectMapper.readValue(json, ReportA05DraftDTO.class);
+            ReportB04DraftDTO draft = objectMapper.readValue(json, ReportB04DraftDTO.class);
             log.info("Draft reportB04 found in cache - reportId: {}, userAccountId: {}", reportId, userAccountId);
             return draft;
         } catch (Exception e) {
@@ -90,26 +89,26 @@ public class ReportB04CacheServiceImpl implements ReportB04CacheService {
         }
     }
 
-    @Override
-    public void updateWasteWaterData(UUID reportId, UUID userAccountId, WasteWaterDataDTO wasteWaterDataDTO) {
-        log.info("Updating waste water data in cache - reportId: {}, userAccountId: {}", reportId, userAccountId);
+    // @Override
+    // public void updateWasteWaterData(UUID reportId, UUID userAccountId, WasteWaterDataDTO wasteWaterDataDTO) {
+    //     log.info("Updating waste water data in cache - reportId: {}, userAccountId: {}", reportId, userAccountId);
 
-        // Lấy draft hiện tại (hoặc tạo mới nếu chưa có)
-        ReportA05DraftDTO draft = getDraftReport(reportId, userAccountId);
-        if (draft == null) {
-            draft = ReportA05DraftDTO.builder()
-                    .reportId(reportId)
-                    .build();
-        }
+    //     // Lấy draft hiện tại (hoặc tạo mới nếu chưa có)
+    //     ReportA05DraftDTO draft = getDraftReport(reportId, userAccountId);
+    //     if (draft == null) {
+    //         draft = ReportA05DraftDTO.builder()
+    //                 .reportId(reportId)
+    //                 .build();
+    //     }
 
-        // Cập nhật waste water data
-        draft.setWasteWaterData(wasteWaterDataDTO);
+    //     // Cập nhật waste water data
+    //     draft.setWasteWaterData(wasteWaterDataDTO);
 
-        // Lưu lại với userAccountId
-        saveDraftReport(draft, userAccountId);
+    //     // Lưu lại với userAccountId
+    //     saveDraftReport(draft, userAccountId);
 
-        log.info("Updated waste water data in cache - reportId: {}, userAccountId: {}", reportId, userAccountId);
-    }
+    //     log.info("Updated waste water data in cache - reportId: {}, userAccountId: {}", reportId, userAccountId);
+    // }
 
     @Override
     public void deleteDraftReport(UUID reportId, UUID userAccountId) {

@@ -2,15 +2,14 @@ package com.EIPplatform.service.report.reportCache.reportCacheB04;
 
 import java.util.UUID;
 
-import com.EIPplatform.model.dto.report.report05.ReportA05DraftDTO;
-import com.EIPplatform.model.dto.report.report05.wastewatermanager.wastewatermanagement.WasteWaterDataDTO;
+import com.EIPplatform.model.dto.report.reportB04.ReportB04DraftDTO;
 
 public interface ReportB04CacheService {
-    void saveDraftReport(ReportA05DraftDTO draft, UUID userAccountId);
+    void saveDraftReport(ReportB04DraftDTO draft, UUID userAccountId);
 
-    ReportA05DraftDTO getDraftReport(UUID reportId, UUID userAccountId);
+    ReportB04DraftDTO getDraftReport(UUID reportId, UUID userAccountId);
 
-    void updateWasteWaterData(UUID reportId, UUID userAccountId, WasteWaterDataDTO wasteWaterDataDTO);
+    // void updateWasteWaterData(UUID reportId, UUID userAccountId, WasteWaterDataDTO wasteWaterDataDTO);
 
     void deleteDraftReport(UUID reportId, UUID userAccountId);
 
