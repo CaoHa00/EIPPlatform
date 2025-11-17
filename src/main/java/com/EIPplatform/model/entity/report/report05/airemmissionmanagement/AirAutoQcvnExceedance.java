@@ -4,10 +4,6 @@ import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
-import java.math.BigDecimal;
-
-import org.hibernate.annotations.Nationalized;
-
 @Entity
 @Table(name = "air_auto_qcvn_exceedance")
 @Getter
@@ -26,7 +22,7 @@ public class AirAutoQcvnExceedance {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "air_emission_data_id", nullable = false)
     AirEmissionData airEmissionData;
-    @Nationalized
+    
     @Column(name = "param_name", nullable = false, columnDefinition = "NVARCHAR(100)")
     String paramName;
 
@@ -36,6 +32,6 @@ public class AirAutoQcvnExceedance {
     @Column(name = "qcvn_limit_value", nullable = false)
     Integer qcvnLimitValue;
 
-    @Column(name = "exceed_ratio_percent", precision = 5, scale = 2, nullable = false)
-    BigDecimal exceedRatioPercent;
+    @Column(name = "exceed_ratio_percent", nullable = false)
+    Double exceedRatioPercent;
 }

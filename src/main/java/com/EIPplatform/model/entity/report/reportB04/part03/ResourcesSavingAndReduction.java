@@ -1,7 +1,5 @@
 package com.EIPplatform.model.entity.report.reportB04.part03;
 
-
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;

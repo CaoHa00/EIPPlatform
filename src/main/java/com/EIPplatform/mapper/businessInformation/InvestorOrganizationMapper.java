@@ -2,23 +2,21 @@ package com.EIPplatform.mapper.businessInformation;
 
 import org.mapstruct.*;
 
-import com.EIPplatform.model.dto.investors.InvestorOrganizationCreationRequest;
-import com.EIPplatform.model.dto.investors.InvestorOrganizationResponse;
-import com.EIPplatform.model.dto.investors.InvestorOrganizationUpdateRequest;
-import com.EIPplatform.model.entity.user.investors.InvestorOrganizationDetail;
+import com.EIPplatform.model.dto.businessInformation.investors.InvestorOrganizationCreationRequest;
+import com.EIPplatform.model.dto.businessInformation.investors.InvestorOrganizationResponse;
+import com.EIPplatform.model.dto.businessInformation.investors.InvestorOrganizationUpdateRequest;
+import com.EIPplatform.model.entity.businessInformation.investors.InvestorOrganizationDetail;
 
 @Mapper(componentModel = "spring", nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE, uses = {
-        LegalDocsMapper.class })
+        LegalDocMapper.class })
 public interface InvestorOrganizationMapper {
 
     @Mapping(target = "investorId", ignore = true)
-    @Mapping(target = "investorType", ignore = true)
-    @Mapping(target = "legalDocs", ignore = true)
+    @Mapping(target = "legalDocs", ignore = true) // vẫn ignore để add thủ công
     @Mapping(target = "auditMetaData", ignore = true)
     InvestorOrganizationDetail toEntity(InvestorOrganizationCreationRequest request);
 
-    @Mapping(target = "investorType", ignore = true)
-    @Mapping(target = "legalDocs", ignore = true)
+    @Mapping(target = "legalDocs", ignore = true) // tránh ghi đè list hiện có
     @Mapping(target = "auditMetaData", ignore = true)
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     void updateEntityFromRequest(InvestorOrganizationUpdateRequest request,

@@ -9,7 +9,8 @@ import com.EIPplatform.model.dto.report.report05.airemmissionmanagement.airemiss
 import com.EIPplatform.model.dto.report.report05.airemmissionmanagement.airemissiondata.AirEmissionDataDTO;
 import com.EIPplatform.model.entity.report.report05.airemmissionmanagement.AirEmissionData;
 import com.EIPplatform.service.fileStorage.FileStorageService;
-import com.EIPplatform.service.report.reportcache.ReportCacheService;
+import com.EIPplatform.service.report.reportCache.reportCacheA05.ReportCacheFactory;
+import com.EIPplatform.service.report.reportCache.reportCacheA05.ReportCacheService;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -33,13 +34,14 @@ public class AirEmissionDataServiceImpl implements AirEmissionDataService {
 
     ReportA05Repository reportA05Repository;
     AirEmissionDataMapper airEmissionDataMapper;
-    ReportCacheService reportCacheService;
+    ReportCacheFactory reportCacheFactory;
+    ReportCacheService<ReportA05DraftDTO> reportCacheService = reportCacheFactory.getCacheService(ReportA05DraftDTO.class);
     FileStorageService fileStorageService;
     ExceptionFactory exceptionFactory;
 
     @Override
     @Transactional
-    public AirEmissionDataDTO createAirEmissionData(UUID reportId, AirEmissionDataCreateDTO request, MultipartFile file) {
+    public AirEmissionDataDTO createAirEmissionData(UUID reportId, UUID userAccountId, AirEmissionDataCreateDTO request, MultipartFile file) {
 
         ReportA05 report = reportA05Repository.findById(reportId)
                 .orElseThrow(() -> exceptionFactory.createNotFoundException(
@@ -49,52 +51,62 @@ public class AirEmissionDataServiceImpl implements AirEmissionDataService {
                         AirEmissionError.REPORT_NOT_FOUND
                 ));
 
-        ReportA05DraftDTO draft = reportCacheService.getDraftReport(reportId);
-        if (draft != null && draft.getAirEmissionData() != null) {
-            AirEmissionDataDTO oldDto = draft.getAirEmissionData();
-            if (oldDto.getAirAutoStationMapFilePath() != null && file !=null) {
-                try {
-                    fileStorageService.deleteFile(oldDto.getAirAutoStationMapFilePath());
-                    log.info("Deleted old map file for AirEmissionData: {}", oldDto.getAirAutoStationMapFilePath());
-                } catch (Exception e) {
-                    log.warn("Failed to delete old map file: {}", oldDto.getAirAutoStationMapFilePath(), e);
-                }
-            }
-        }
+        ReportA05DraftDTO draft = reportCacheService.getDraftReport(reportId, userAccountId);
+        AirEmissionDataDTO oldDto = (draft != null) ? draft.getAirEmissionData() : null;
 
         AirEmissionData entity = airEmissionDataMapper.toEntity(request);
 
+        // Handle map file
         if (file != null && !file.isEmpty()) {
+            if (oldDto != null && oldDto.getAirAutoStationMapFilePath() != null) {
+                fileStorageService.deleteFile(oldDto.getAirAutoStationMapFilePath());
+                log.info("Deleted old map file for AirEmissionData: {}", oldDto.getAirAutoStationMapFilePath());
+            }
             String filePath = uploadMapFile(report, file);
             entity.setAirAutoStationMapFilePath(filePath);
+        } else if (oldDto != null && oldDto.getAirAutoStationMapFilePath() != null) {
+            // Keep old file path if no new file provided
+            entity.setAirAutoStationMapFilePath(oldDto.getAirAutoStationMapFilePath());
         }
 
         AirEmissionDataDTO responseDto = airEmissionDataMapper.toDto(entity);
-        saveToCache(reportId, responseDto);
 
-        log.info("Created (or replaced) AirEmissionData in cache for reportId: {}", reportId);
+        // Create draft if it doesn't exist
+        if (draft == null) {
+            draft = ReportA05DraftDTO.builder()
+                    .reportId(reportId)
+                    .isDraft(true)
+                    .lastModified(LocalDateTime.now())
+                    .build();
+            reportCacheService.saveDraftReport(draft, userAccountId, reportId);
+        }
+
+        // Update the section using the cache service
+        reportCacheService.updateSectionData(reportId, userAccountId, responseDto, "airEmissionData");
+
+        log.info("Created AirEmissionData in cache - reportId: {}, userAccountId: {}", reportId, userAccountId);
         return responseDto;
     }
 
     @Override
     @Transactional(readOnly = true)
-    public AirEmissionDataDTO getAirEmissionData(UUID reportId) {
+    public AirEmissionDataDTO getAirEmissionData(UUID reportId, UUID userAccountId) {
 
-        ReportA05DraftDTO draft = reportCacheService.getDraftReport(reportId);
+        ReportA05DraftDTO draft = reportCacheService.getDraftReport(reportId, userAccountId);
         if (draft != null && draft.getAirEmissionData() != null) {
-            log.info("Found AirEmissionData in cache for reportId: {}", reportId);
+            log.info("Found AirEmissionData in cache - reportId: {}, userAccountId: {}", reportId, userAccountId);
             return draft.getAirEmissionData();
         }
 
-        log.warn("AirEmissionData not found in cache for reportId: {}", reportId);
+        log.warn("AirEmissionData not found in cache - reportId: {}, userAccountId: {}", reportId, userAccountId);
         return null;
     }
 
     @Override
     @Transactional
-    public void deleteAirEmissionData(UUID reportId) {
+    public void deleteAirEmissionData(UUID reportId, UUID userAccountId) {
 
-        ReportA05DraftDTO draft = reportCacheService.getDraftReport(reportId);
+        ReportA05DraftDTO draft = reportCacheService.getDraftReport(reportId, userAccountId);
         if (draft != null && draft.getAirEmissionData() != null) {
             AirEmissionDataDTO dto = draft.getAirEmissionData();
             if (dto.getAirAutoStationMapFilePath() != null) {
@@ -105,21 +117,17 @@ public class AirEmissionDataServiceImpl implements AirEmissionDataService {
                     log.warn("Failed to delete map file: {}", dto.getAirAutoStationMapFilePath(), e);
                 }
             }
-        }
-
-        if (draft != null) {
-            draft.setAirEmissionData(null);
-            reportCacheService.saveDraftReport(draft);
-            log.info("Deleted AirEmissionData from cache for reportId: {}", reportId);
+            reportCacheService.updateSectionData(reportId, userAccountId, null, "airEmissionData");
+            log.info("Deleted AirEmissionData from cache - reportId: {}, userAccountId: {}", reportId, userAccountId);
         } else {
-            log.warn("No draft found in cache for reportId: {}", reportId);
+            log.warn("No AirEmissionData found in cache - reportId: {}, userAccountId: {}", reportId, userAccountId);
         }
     }
 
     @Override
     @Transactional
-    public void deleteAirEmissionDataFile(UUID reportId) {
-        ReportA05DraftDTO draft = reportCacheService.getDraftReport(reportId);
+    public void deleteAirEmissionDataFile(UUID reportId, UUID userAccountId) {
+        ReportA05DraftDTO draft = reportCacheService.getDraftReport(reportId, userAccountId);
         if (draft == null || draft.getAirEmissionData() == null) {
             throw exceptionFactory.createNotFoundException(
                     "AirEmissionData",
@@ -138,15 +146,15 @@ public class AirEmissionDataServiceImpl implements AirEmissionDataService {
 
         fileStorageService.deleteFile(dto.getAirAutoStationMapFilePath());
         dto.setAirAutoStationMapFilePath(null);
-        saveToCache(reportId, dto);
+        reportCacheService.updateSectionData(reportId, userAccountId, dto, "airEmissionData");
 
-        log.info("Deleted map file for AirEmissionData for reportId: {}", reportId);
+        log.info("Deleted map file for AirEmissionData - reportId: {}, userAccountId: {}", reportId, userAccountId);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public Resource downloadAirEmissionDataFile(UUID reportId) {
-        ReportA05DraftDTO draft = reportCacheService.getDraftReport(reportId);
+    public Resource downloadAirEmissionDataFile(UUID reportId, UUID userAccountId) {
+        ReportA05DraftDTO draft = reportCacheService.getDraftReport(reportId, userAccountId);
         if (draft == null || draft.getAirEmissionData() == null) {
             throw exceptionFactory.createNotFoundException(
                     "AirEmissionData",
@@ -168,8 +176,8 @@ public class AirEmissionDataServiceImpl implements AirEmissionDataService {
 
     @Override
     @Transactional(readOnly = true)
-    public boolean hasAirEmissionDataFile(UUID reportId) {
-        ReportA05DraftDTO draft = reportCacheService.getDraftReport(reportId);
+    public boolean hasAirEmissionDataFile(UUID reportId, UUID userAccountId) {
+        ReportA05DraftDTO draft = reportCacheService.getDraftReport(reportId, userAccountId);
         if (draft == null || draft.getAirEmissionData() == null || draft.getAirEmissionData().getAirAutoStationMapFilePath() == null) {
             return false;
         }
@@ -180,27 +188,12 @@ public class AirEmissionDataServiceImpl implements AirEmissionDataService {
     // ==================== PRIVATE HELPERS ====================
 
     private String uploadMapFile(ReportA05 report, MultipartFile file) {
-        // Generate path: e.g., "reports/{reportId}/air-map/{year}/{filename}"
-        int year = LocalDateTime.now().getYear(); // Or from report date if available
+        int year = LocalDateTime.now().getYear();
         String fileName = "air-station-map-" + System.currentTimeMillis() + "-" + file.getOriginalFilename();
         String directory = "reports/" + report.getReportId() + "/air-emission/map/" + year;
         String filePath = fileStorageService.storeFile(directory, fileName, file);
 
         log.info("Uploaded map file to: {} for report: {}", filePath, report.getReportId());
         return filePath;
-    }
-
-    private void saveToCache(UUID reportId, AirEmissionDataDTO data) {
-        ReportA05DraftDTO draft = reportCacheService.getDraftReport(reportId);
-        if (draft == null) {
-            draft = ReportA05DraftDTO.builder()
-                    .reportId(reportId)
-                    .isDraft(true)
-                    .lastModified(LocalDateTime.now())
-                    .build();
-        }
-
-        draft.setAirEmissionData(data);
-        reportCacheService.saveDraftReport(draft);
     }
 }

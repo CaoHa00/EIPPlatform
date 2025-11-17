@@ -11,19 +11,19 @@ import java.util.List;
 public interface AirAutoQcvnExceedanceMapper {
 
     // Create DTO to Entity
-    @Mapping(target = "airAutoQcvnExceedanceId", ignore = true) // Auto-generate ID
-    @Mapping(target = "airEmissionData", ignore = true) // Set in service
+    @Mapping(target = "airAutoQcvnExceedanceId", ignore = true)
+    @Mapping(target = "airEmissionData", ignore = true)
     @Mapping(source = "paramName", target = "paramName")
     @Mapping(source = "exceedDaysCount", target = "exceedDaysCount")
     @Mapping(source = "qcvnLimitValue", target = "qcvnLimitValue")
-    @Mapping(source = "exceedRatioPercent", target = "exceedRatioPercent") // BigDecimal tự handle
+    @Mapping(source = "exceedRatioPercent", target = "exceedRatioPercent")
     AirAutoQcvnExceedance toEntity(AirAutoQcvnExceedanceCreateDTO dto);
 
     // List mapping
     List<AirAutoQcvnExceedance> toEntityList(List<AirAutoQcvnExceedanceCreateDTO> dtos);
 
     // Entity to Response DTO
-    @Mapping(source = "airAutoQcvnExceedanceId", target = "id") // Map ID to DTO's id
+    @Mapping(source = "airAutoQcvnExceedanceId", target = "id")
     @Mapping(source = "paramName", target = "paramName")
     @Mapping(source = "exceedDaysCount", target = "exceedDaysCount")
     @Mapping(source = "qcvnLimitValue", target = "qcvnLimitValue")

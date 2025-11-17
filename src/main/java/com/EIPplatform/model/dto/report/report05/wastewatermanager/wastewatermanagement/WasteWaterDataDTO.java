@@ -8,8 +8,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Data
@@ -29,7 +27,7 @@ public class WasteWaterDataDTO {
     Double coolingWaterPy;
     Double coolingWaterDesign;
     String connectionStatusDesc;
-    String connectionDiagram; // File path
+    String connectionDiagram;
     String domMonitorPeriod;
     String domMonitorFreq;
     String domMonitorLocations;
@@ -47,7 +45,7 @@ public class WasteWaterDataDTO {
     List<WasteWaterMonitoringExceedancesDTO> monitoringExceedances;
     String autoStationLocation;
     String autoStationGps;
-    String autoStationMap; // File path
+    String autoStationMap;
     String autoSourceDesc;
     String autoDataFrequency;
     String autoCalibrationInfo;
@@ -60,6 +58,4 @@ public class WasteWaterDataDTO {
     List<AutoWWQcvnExceedancesDTO> qcvnExceedances;
     String autoCompletenessReview;
     String autoExceedSummary;
-    LocalDateTime createdAt;
-    LocalDateTime updatedAt;
 }

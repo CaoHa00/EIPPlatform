@@ -4,7 +4,7 @@ import jakarta.validation.constraints.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
-import java.math.BigDecimal;
+
 
 @Data
 @Builder
@@ -31,9 +31,9 @@ public class AirAutoMonitoringStatCreateDTO {
 
     @NotNull(message = "IS_REQUIRED")
     @DecimalMin(value = "0.0", inclusive = true)
-    BigDecimal ratioReceivedDesign;
+    Double ratioReceivedDesign;
 
     @NotNull(message = "IS_REQUIRED")
     @DecimalMin(value = "0.0", inclusive = true)
-    BigDecimal ratioErrorReceived;
+    Double ratioErrorReceived;
 }

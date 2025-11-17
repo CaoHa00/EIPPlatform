@@ -3,7 +3,7 @@ package com.EIPplatform.model.dto.report.report05.wastemanagement.hazardouswaste
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
-import java.math.BigDecimal;
+
 
 @Data
 @Builder
@@ -15,11 +15,11 @@ public class HazardousWasteStatUpdateDTO {
 
     String hwCode;
 
-    BigDecimal volumeCy;
+    Double volumeCy;
 
     String treatmentMethod;
 
     String receiverOrg;
 
-    BigDecimal volumePy;
+    Double volumePy;
 }

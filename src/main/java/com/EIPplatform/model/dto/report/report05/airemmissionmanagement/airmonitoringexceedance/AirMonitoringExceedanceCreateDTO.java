@@ -4,7 +4,7 @@ import jakarta.validation.constraints.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
-import java.math.BigDecimal;
+
 import java.time.LocalDate;
 
 @Data
@@ -23,7 +23,7 @@ public class AirMonitoringExceedanceCreateDTO {
     String pointSymbol;
 
     @NotNull(message = "IS_REQUIRED")
-    LocalDate monitoringDate;
+    String monitoringDate;
 
     @Size(max = 20)
     String longitude;
@@ -36,8 +36,8 @@ public class AirMonitoringExceedanceCreateDTO {
     String exceededParam;
 
     @NotNull(message = "IS_REQUIRED")
-    BigDecimal resultValue;
+    Double resultValue;
 
     @NotNull(message = "IS_REQUIRED")
-    BigDecimal qcvnLimit;
+    Double qcvnLimit;
 }

@@ -3,7 +3,7 @@ package com.EIPplatform.model.dto.report.report05.airemmissionmanagement.airauto
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
-import java.math.BigDecimal;
+
 
 @Data
 @Builder
@@ -20,7 +20,7 @@ public class AirAutoMonitoringStatUpdateDTO {
 
     Integer valError;
 
-    BigDecimal ratioReceivedDesign;
+    Double ratioReceivedDesign;
 
-    BigDecimal ratioErrorReceived;
+    Double ratioErrorReceived;
 }

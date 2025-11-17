@@ -8,8 +8,8 @@ import org.hibernate.annotations.Nationalized;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import com.EIPplatform.configuration.AuditMetaData;
+import com.EIPplatform.model.entity.businessInformation.BusinessDetail;
 import com.EIPplatform.model.entity.fileStorage.FileStorage;
-import com.EIPplatform.model.entity.user.businessInformation.BusinessDetail;
 import com.EIPplatform.model.entity.user.userInformation.UserProfile;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 
@@ -42,7 +42,7 @@ import lombok.experimental.FieldDefaults;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "[user_account]")
+@Table(name = "user_account")
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @EntityListeners(AuditingEntityListener.class)
@@ -58,14 +58,14 @@ public class UserAccount {
     @Nationalized
     @Column(nullable = false, columnDefinition = "NVARCHAR(255)")
     String password;
-    @Nationalized
+    
     @Column(nullable = false, columnDefinition = "NVARCHAR(255)")
     String fullName;
 
     @Builder.Default
     @Column(nullable = false)
     boolean enable = true;
-    @Nationalized
+    
     @Column(nullable = false, columnDefinition = "NVARCHAR(10)")
     String phoneNumber;
 

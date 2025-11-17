@@ -12,7 +12,7 @@ import jakarta.validation.Valid;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
-import java.math.BigDecimal;
+
 import java.util.List;
 
 @Data
@@ -54,31 +54,31 @@ public class WasteManagementDataUpdateDTO {
     @Valid
     List<@Valid PopInventoryStatUpdateDTO> popInventoryStats;
 
-    BigDecimal waterTotalVolumeKg;
+    Double waterTotalVolumeKg;
 
     String waterEstimationMethod;
 
-    BigDecimal airTotalVolumeKg;
+    Double airTotalVolumeKg;
 
     String airEstimationMethod;
 
-    BigDecimal soilTotalVolumeKg;
+    Double soilTotalVolumeKg;
 
     String soilEstimationMethod;
 
-    BigDecimal sewageSludgeTotalVolumeKg;
+    Double sewageSludgeTotalVolumeKg;
 
     String sewageSludgeEstimationMethod;
 
-    BigDecimal hwOnsiteTotalVolumeKg;
+    Double hwOnsiteTotalVolumeKg;
 
     String hwOnsiteEstimationMethod;
 
-    BigDecimal hwRecycleTotalVolumeKg;
+    Double hwRecycleTotalVolumeKg;
 
     String hwRecycleEstimationMethod;
 
-    BigDecimal hwDisposalTotalVolumeKg;
+    Double hwDisposalTotalVolumeKg;
 
     String hwDisposalEstimationMethod;
 }

@@ -15,7 +15,7 @@ import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
-import java.math.BigDecimal;
+
 import java.util.List;
 
 @Data
@@ -62,49 +62,49 @@ public class WasteManagementDataCreateDTO {
 
     @NotNull(message = "IS_REQUIRED")
     @DecimalMin(value = "0.0", inclusive = true)
-    BigDecimal waterTotalVolumeKg;
+    Double waterTotalVolumeKg;
 
     @NotBlank(message = "IS_REQUIRED")
     String waterEstimationMethod;
 
     @NotNull(message = "IS_REQUIRED")
     @DecimalMin(value = "0.0", inclusive = true)
-    BigDecimal airTotalVolumeKg;
+    Double airTotalVolumeKg;
 
     @NotBlank(message = "IS_REQUIRED")
     String airEstimationMethod;
 
     @NotNull(message = "IS_REQUIRED")
     @DecimalMin(value = "0.0", inclusive = true)
-    BigDecimal soilTotalVolumeKg;
+    Double soilTotalVolumeKg;
 
     @NotBlank(message = "IS_REQUIRED")
     String soilEstimationMethod;
 
     @NotNull(message = "IS_REQUIRED")
     @DecimalMin(value = "0.0", inclusive = true)
-    BigDecimal sewageSludgeTotalVolumeKg;
+    Double sewageSludgeTotalVolumeKg;
 
     @NotBlank(message = "IS_REQUIRED")
     String sewageSludgeEstimationMethod;
 
     @NotNull(message = "IS_REQUIRED")
     @DecimalMin(value = "0.0", inclusive = true)
-    BigDecimal hwOnsiteTotalVolumeKg;
+    Double hwOnsiteTotalVolumeKg;
 
     @NotBlank(message = "IS_REQUIRED")
     String hwOnsiteEstimationMethod;
 
     @NotNull(message = "IS_REQUIRED")
     @DecimalMin(value = "0.0", inclusive = true)
-    BigDecimal hwRecycleTotalVolumeKg;
+    Double hwRecycleTotalVolumeKg;
 
     @NotBlank(message = "IS_REQUIRED")
     String hwRecycleEstimationMethod;
 
     @NotNull(message = "IS_REQUIRED")
     @DecimalMin(value = "0.0", inclusive = true)
-    BigDecimal hwDisposalTotalVolumeKg;
+    Double hwDisposalTotalVolumeKg;
 
     @NotBlank(message = "IS_REQUIRED")
     String hwDisposalEstimationMethod;

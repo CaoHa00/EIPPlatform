@@ -28,7 +28,7 @@ public class AutoWWMonitoringIncidents {
     @JoinColumn(name = "ww_id", nullable = false)
     @JsonBackReference
     WasteWaterData wasteWaterData;
-    @Nationalized
+    
     @Column(name = "incident_name", columnDefinition = "NVARCHAR(200)", nullable = false)
     String incidentName;
     @Nationalized

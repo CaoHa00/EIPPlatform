@@ -18,7 +18,6 @@ public interface AirEmissionDataMapper {
 
     @Mapping(target = "airEmissionDataId", ignore = true)
     @Mapping(target = "report", ignore = true)
-    @Mapping(source = "airAutoStationMap", target = "airAutoStationMapFilePath")
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "updatedAt", ignore = true)
     @Mapping(target = "airMonitoringExceedances", source = "airMonitoringExceedances")
@@ -30,7 +29,6 @@ public interface AirEmissionDataMapper {
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     @Mapping(target = "airEmissionDataId", ignore = true)
     @Mapping(target = "report", ignore = true)
-    @Mapping(target = "airAutoStationMapFilePath", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "updatedAt", ignore = true)
     @Mapping(target = "airMonitoringExceedances", source = "airMonitoringExceedances")
@@ -42,7 +40,6 @@ public interface AirEmissionDataMapper {
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     @Mapping(target = "airEmissionDataId", ignore = true)
     @Mapping(target = "report", ignore = true)
-    @Mapping(target = "airAutoStationMapFilePath", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "updatedAt", ignore = true)
     @Mapping(target = "airMonitoringExceedances", source = "airMonitoringExceedances")
@@ -51,7 +48,6 @@ public interface AirEmissionDataMapper {
     @Mapping(target = "airAutoQcvnExceedances", source = "airAutoQcvnExceedances")
     void updateEntityFromDto(AirEmissionDataDTO dto, @MappingTarget AirEmissionData entity);
 
-    @Mapping(source = "airAutoStationMapFilePath", target = "airAutoStationMap")
     @Mapping(target = "airMonitoringExceedances", source = "airMonitoringExceedances")
     @Mapping(target = "airAutoMonitoringStats", source = "airAutoMonitoringStats")
     @Mapping(target = "airAutoMonitoringIncidents", source = "airAutoMonitoringIncidents")
@@ -62,7 +58,6 @@ public interface AirEmissionDataMapper {
 
     @Mapping(target = "airEmissionDataId", ignore = true)
     @Mapping(target = "report", ignore = true)
-    @Mapping(target = "airAutoStationMapFilePath", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "updatedAt", ignore = true)
     AirEmissionData dtoToEntity(AirEmissionDataDTO dto);

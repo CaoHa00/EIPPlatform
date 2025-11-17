@@ -1,7 +1,5 @@
 package com.EIPplatform.model.entity.report.report05.wastewatermanager;
 
-import org.hibernate.annotations.Nationalized;
-
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.*;
@@ -27,22 +25,22 @@ public class WasteWaterMonitoringExceedances {
     @JoinColumn(name = "ww_id", nullable = false)
     @JsonBackReference
     WasteWaterData wasteWaterData;
-    @Nationalized
+    
     @Column(name = "point_name", columnDefinition = "NVARCHAR(255)", nullable = false)
     String pointName; // Tên điểm quan trắc
-    @Nationalized
+    
     @Column(name = "point_symbol", columnDefinition = "NVARCHAR(50)", nullable = false)
     String pointSymbol; // Ký hiệu điểm
 
     @Column(name = "monitoring_date", nullable = false)
     String monitoringDate; // Thời gian quan trắc
-    @Nationalized
+    
     @Column(name = "longitude", columnDefinition = "NVARCHAR(20)")
     String longitude; // Kinh độ
-    @Nationalized
+    
     @Column(name = "latitude", columnDefinition = "NVARCHAR(20)")
     String latitude; // Vĩ độ
-    @Nationalized
+    
     @Column(name = "exceeded_param", columnDefinition = "NVARCHAR(100)", nullable = false)
     String exceededParam; // Chỉ tiêu vượt QCVN
 

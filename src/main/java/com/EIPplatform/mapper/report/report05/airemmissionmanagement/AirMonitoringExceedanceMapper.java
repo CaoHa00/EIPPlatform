@@ -19,15 +19,15 @@ public interface AirMonitoringExceedanceMapper {
     @Mapping(source = "longitude", target = "longitude")
     @Mapping(source = "latitude", target = "latitude")
     @Mapping(source = "exceededParam", target = "exceededParam")
-    @Mapping(source = "resultValue", target = "resultValue") // BigDecimal tự handle precision
-    @Mapping(source = "qcvnLimit", target = "qcvnLimit") // BigDecimal tự handle
+    @Mapping(source = "resultValue", target = "resultValue")
+    @Mapping(source = "qcvnLimit", target = "qcvnLimit")
     AirMonitoringExceedance toEntity(AirMonitoringExceedanceCreateDTO dto);
 
     // List mapping
     List<AirMonitoringExceedance> toEntityList(List<AirMonitoringExceedanceCreateDTO> dtos);
 
     // Entity to Response DTO
-    @Mapping(source = "airMonitoringExceedanceId", target = "id") // Map ID to DTO's id
+    @Mapping(source = "airMonitoringExceedanceId", target = "id")
     @Mapping(source = "pointName", target = "pointName")
     @Mapping(source = "pointSymbol", target = "pointSymbol")
     @Mapping(source = "monitoringDate", target = "monitoringDate")
@@ -41,7 +41,6 @@ public interface AirMonitoringExceedanceMapper {
     // List to DTO list
     List<AirMonitoringExceedanceDTO> toDtoList(List<AirMonitoringExceedance> entities);
 
-    // Optional: AfterMapping to set parent (sử dụng @Context nếu cần, nhưng khuyến nghị set trong service)
     @AfterMapping
     default void setParent(@MappingTarget AirMonitoringExceedance entity, @Context AirEmissionData parent) {
         if (parent != null) {

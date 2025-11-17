@@ -4,10 +4,6 @@ import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
-import java.math.BigDecimal;
-
-import org.hibernate.annotations.Nationalized;
-
 @Entity
 @Table(name = "air_auto_monitoring_stat")
 @Getter
@@ -26,7 +22,7 @@ public class AirAutoMonitoringStat {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "air_emission_data_id", nullable = false)
     AirEmissionData airEmissionData;
-    @Nationalized
+    
     @Column(name = "param_name", nullable = false, columnDefinition = "NVARCHAR(100)")
     String paramName;
 
@@ -39,9 +35,9 @@ public class AirAutoMonitoringStat {
     @Column(name = "val_error", nullable = false)
     Integer valError;
 
-    @Column(name = "ratio_received_design", precision = 5, scale = 2, nullable = false)
-    BigDecimal ratioReceivedDesign;
+    @Column(name = "ratio_received_design",  nullable = false)
+    Double ratioReceivedDesign;
 
-    @Column(name = "ratio_error_received", precision = 5, scale = 2, nullable = false)
-    BigDecimal ratioErrorReceived;
+    @Column(name = "ratio_error_received", nullable = false)
+    Double ratioErrorReceived;
 }

@@ -1,20 +1,16 @@
 package com.EIPplatform.model.entity.report.report05;
 
+import com.EIPplatform.model.entity.businessInformation.BusinessDetail;
 import com.EIPplatform.model.entity.report.report05.airemmissionmanagement.AirEmissionData;
 import com.EIPplatform.model.entity.report.report05.wastemanagement.WasteManagementData;
 import com.EIPplatform.model.entity.report.report05.wastewatermanager.WasteWaterData;
 import com.EIPplatform.model.entity.user.authentication.UserAccount;
-import com.EIPplatform.model.entity.user.businessInformation.BusinessDetail;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
-
-import org.hibernate.annotations.Nationalized;
 import org.hibernate.annotations.UuidGenerator;
-
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -68,15 +64,15 @@ public class ReportA05 {
 
     @Column(name = "reviewed_at")
     LocalDateTime reviewedAt;
-    @Nationalized
+    
     @Column(name = "review_notes", columnDefinition = "NVARCHAR(MAX)")
     String reviewNotes;
-    @Nationalized
+    
     @Column(name = "inspection_remedy_report", columnDefinition = "NVARCHAR(MAX)")
     String inspectionRemedyReport;
 
-    @Column(name = "completion_percentage", precision = 5, scale = 2)
-    BigDecimal completionPercentage;
+    @Column(name = "completion_percentage", precision = 5)
+    Double completionPercentage;
 
     @Column(name = "version", nullable = false)
     Integer version;
@@ -118,7 +114,7 @@ public class ReportA05 {
             isDeleted = false;
         }
         if (completionPercentage == null) {
-            completionPercentage = BigDecimal.ZERO;
+            completionPercentage = 0.0;
         }
     }
 
