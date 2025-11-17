@@ -33,7 +33,7 @@ public interface BusinessDetailMapper {
     @Mapping(target = "envComponentPermits", ignore = true)
     @Mapping(target = "userAccounts", ignore = true)
     @Mapping(target = "investor", ignore = true)
-    @Mapping(target = "legalRepresentative", ignore = true)
+    // @Mapping(target = "legalRepresentative", ignore = true)
     @Mapping(source = "ISO_certificate_14001", target = "ISO_certificate_14001")
     @Mapping(target = "isoCertificateFilePath", ignore = true)
     BusinessDetail toEntity(BusinessDetailDTO dto);

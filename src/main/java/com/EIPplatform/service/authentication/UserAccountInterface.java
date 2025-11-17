@@ -3,17 +3,17 @@ package com.EIPplatform.service.authentication;
 import java.util.List;
 import java.util.UUID;
 
-import com.EIPplatform.model.dto.api.UserAccountDTO;
+import com.EIPplatform.model.dto.userAccount.*;
 
 public interface UserAccountInterface {
 
-    UserAccountDTO findById(UUID id);
+    UserAccountResponseDTO findById(UUID id);
 
     void deleteById(UUID id);
 
-    UserAccountDTO create(UserAccountDTO dto);
+    UserAccountResponseDTO create(UserAccountCreateDTO dto);
 
-    UserAccountDTO update(UUID id, UserAccountDTO dto);
+    UserAccountResponseDTO update(UUID id, UserAccountUpdateDTO dto);
 
-    List<UserAccountDTO> findAll();
+    List<UserAccountResponseDTO> findAll();
 }

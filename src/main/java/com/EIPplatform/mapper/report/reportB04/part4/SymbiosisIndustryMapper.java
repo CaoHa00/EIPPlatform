@@ -1,6 +1,5 @@
 package com.EIPplatform.mapper.report.reportB04.part4;
 
-import com.EIPplatform.model.dto.report.reportB04.part1.ReportInvestorDetailDTO;
 import com.EIPplatform.model.dto.report.reportB04.part4.SymbiosisIndustryDTO;
 import com.EIPplatform.model.entity.report.reportB04.part04.SymbiosisIndustry;
 

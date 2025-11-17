@@ -14,6 +14,7 @@ import com.EIPplatform.model.dto.businessInformation.legalRepresentative.LegalRe
 import com.EIPplatform.model.dto.businessInformation.legalRepresentative.LegalRepresentativeResponse;
 import com.EIPplatform.model.dto.businessInformation.legalRepresentative.LegalRepresentativeUpdationRequest;
 import com.EIPplatform.model.entity.businessInformation.legalRepresentative.LegalRepresentative;
+import com.EIPplatform.repository.businessInformation.BusinessDetailRepository;
 import com.EIPplatform.repository.user.LegalRepresentativeRepository;
 
 import lombok.AccessLevel;
@@ -29,11 +30,25 @@ import lombok.extern.slf4j.Slf4j;
 public class LegalRepresentativeImplementation implements LegalRepresentativeInterface {
     LegalRepresentativeRepository legalRepresentativeRepository;
     LegalRepresentativeMapper legalRepresentativeMapper;
+    BusinessDetailRepository businessDetailRepository;
     ExceptionFactory exceptionFactory;
 
     @Transactional
     public LegalRepresentativeResponse createLegalRepresentative(LegalRepresentativeCreationRequest request) {
 
+        if (request.getBusinessDetailId() == null) {
+            throw exceptionFactory.createNotFoundException(
+                    "BusinessDetail",
+                    request.getBusinessDetailId(),
+                    LegalRepresentativeError.BUSINESS_DETAIL_ID_REQUIRED);
+        }
+        if (!businessDetailRepository.existsById(request.getBusinessDetailId())) {
+            throw exceptionFactory.createNotFoundException(
+                    "BusinessDetail",
+                    "id",
+                    request.getBusinessDetailId(),
+                    LegalRepresentativeError.BUSINESS_DETAIL_NOT_FOUND);
+        }
         if (request.getTaxCode() != null && !request.getTaxCode().isBlank()) {
             if (legalRepresentativeRepository.existsByTaxCode(request.getTaxCode())) {
                 throw exceptionFactory.createAlreadyExistsException("Legal Representative", "tax code",

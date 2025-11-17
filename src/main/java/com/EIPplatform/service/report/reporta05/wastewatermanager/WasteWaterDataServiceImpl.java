@@ -14,6 +14,7 @@ import com.EIPplatform.mapper.report.report05.wastewatermanager.WasteWaterDataMa
 import com.EIPplatform.model.dto.report.report05.ReportA05DraftDTO;
 import com.EIPplatform.model.dto.report.report05.wastewatermanager.wastewatermanagement.WasteWaterDataCreateDTO;
 import com.EIPplatform.model.dto.report.report05.wastewatermanager.wastewatermanagement.WasteWaterDataDTO;
+import com.EIPplatform.model.dto.report.reportB04.ReportB04DraftDTO;
 import com.EIPplatform.model.entity.report.report05.ReportA05;
 import com.EIPplatform.model.entity.report.report05.wastewatermanager.WasteWaterData;
 import com.EIPplatform.repository.report.ReportA05Repository;
@@ -21,6 +22,7 @@ import com.EIPplatform.service.fileStorage.FileStorageService;
 import com.EIPplatform.service.report.reportCache.reportCacheA05.ReportCacheFactory;
 import com.EIPplatform.service.report.reportCache.reportCacheA05.ReportCacheService;
 
+import jakarta.annotation.PostConstruct;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -35,12 +37,18 @@ public class WasteWaterDataServiceImpl implements WasteWaterDataService {
 
     ReportA05Repository reportA05Repository;
     WasteWaterDataMapper wasteWaterDataMapper;
-    @NonFinal
     ReportCacheFactory reportCacheFactory;
-    ReportCacheService<ReportA05DraftDTO> reportCacheService = reportCacheFactory.getCacheService(ReportA05DraftDTO.class);
     FileStorageService fileStorageService;
     ExceptionFactory exceptionFactory;
 
+    @NonFinal
+    ReportCacheService<ReportA05DraftDTO> reportCacheService;
+
+    @PostConstruct
+    @SuppressWarnings("unused")
+    void init() {
+        this.reportCacheService = reportCacheFactory.getCacheService(ReportA05DraftDTO.class);
+    }
     @Override
     @Transactional
     public WasteWaterDataDTO createWasteWaterData(
@@ -55,8 +63,7 @@ public class WasteWaterDataServiceImpl implements WasteWaterDataService {
                         "ReportA05",
                         "reportId",
                         reportId,
-                        WasteWaterError.REPORT_NOT_FOUND
-                ));
+                        WasteWaterError.REPORT_NOT_FOUND));
 
         ReportA05DraftDTO draft = reportCacheService.getDraftReport(reportId, userAccountId);
         WasteWaterDataDTO oldDto = (draft != null) ? draft.getWasteWaterData() : null;
@@ -130,7 +137,8 @@ public class WasteWaterDataServiceImpl implements WasteWaterDataService {
             if (dto != null) {
                 deleteFiles(dto);
                 reportCacheService.updateSectionData(reportId, userAccountId, null, "wasteWaterData");
-                log.info("Deleted WasteWaterData from cache - reportId: {}, userAccountId: {}", reportId, userAccountId);
+                log.info("Deleted WasteWaterData from cache - reportId: {}, userAccountId: {}", reportId,
+                        userAccountId);
             } else {
                 log.warn("No WasteWaterData found in cache - reportId: {}, userAccountId: {}", reportId, userAccountId);
             }
@@ -148,15 +156,13 @@ public class WasteWaterDataServiceImpl implements WasteWaterDataService {
                     "WasteWaterData",
                     "reportId",
                     reportId,
-                    WasteWaterError.NOT_FOUND
-            );
+                    WasteWaterError.NOT_FOUND);
         }
 
         WasteWaterDataDTO dto = draft.getWasteWaterData();
         if (dto.getConnectionDiagram() == null) {
             throw exceptionFactory.createNotFoundException(
-                    "ConnectionDiagramFile", "wasteWaterData", reportId.toString(), WasteWaterError.NOT_FOUND
-            );
+                    "ConnectionDiagramFile", "wasteWaterData", reportId.toString(), WasteWaterError.NOT_FOUND);
         }
 
         fileStorageService.deleteFile(dto.getConnectionDiagram());
@@ -175,15 +181,13 @@ public class WasteWaterDataServiceImpl implements WasteWaterDataService {
                     "WasteWaterData",
                     "reportId",
                     reportId,
-                    WasteWaterError.NOT_FOUND
-            );
+                    WasteWaterError.NOT_FOUND);
         }
 
         WasteWaterDataDTO dto = draft.getWasteWaterData();
         if (dto.getAutoStationMap() == null) {
             throw exceptionFactory.createNotFoundException(
-                    "AutoStationMapFile", "wasteWaterData", reportId.toString(), WasteWaterError.NOT_FOUND
-            );
+                    "AutoStationMapFile", "wasteWaterData", reportId.toString(), WasteWaterError.NOT_FOUND);
         }
 
         fileStorageService.deleteFile(dto.getAutoStationMap());
@@ -202,15 +206,13 @@ public class WasteWaterDataServiceImpl implements WasteWaterDataService {
                     "WasteWaterData",
                     "reportId",
                     reportId,
-                    WasteWaterError.NOT_FOUND
-            );
+                    WasteWaterError.NOT_FOUND);
         }
 
         WasteWaterDataDTO dto = draft.getWasteWaterData();
         if (dto.getConnectionDiagram() == null) {
             throw exceptionFactory.createNotFoundException(
-                    "ConnectionDiagramFile", "wasteWaterData", reportId.toString(), WasteWaterError.NOT_FOUND
-            );
+                    "ConnectionDiagramFile", "wasteWaterData", reportId.toString(), WasteWaterError.NOT_FOUND);
         }
 
         return fileStorageService.downloadFile(dto.getConnectionDiagram());
@@ -225,15 +227,13 @@ public class WasteWaterDataServiceImpl implements WasteWaterDataService {
                     "WasteWaterData",
                     "reportId",
                     reportId,
-                    WasteWaterError.NOT_FOUND
-            );
+                    WasteWaterError.NOT_FOUND);
         }
 
         WasteWaterDataDTO dto = draft.getWasteWaterData();
         if (dto.getAutoStationMap() == null) {
             throw exceptionFactory.createNotFoundException(
-                    "AutoStationMapFile", "wasteWaterData", reportId.toString(), WasteWaterError.NOT_FOUND
-            );
+                    "AutoStationMapFile", "wasteWaterData", reportId.toString(), WasteWaterError.NOT_FOUND);
         }
 
         return fileStorageService.downloadFile(dto.getAutoStationMap());
@@ -243,7 +243,8 @@ public class WasteWaterDataServiceImpl implements WasteWaterDataService {
     @Transactional(readOnly = true)
     public boolean hasWasteWaterDataConnectionFile(UUID reportId, UUID userAccountId) {
         ReportA05DraftDTO draft = reportCacheService.getDraftReport(reportId, userAccountId);
-        if (draft == null || draft.getWasteWaterData() == null || draft.getWasteWaterData().getConnectionDiagram() == null) {
+        if (draft == null || draft.getWasteWaterData() == null
+                || draft.getWasteWaterData().getConnectionDiagram() == null) {
             return false;
         }
 
@@ -254,7 +255,8 @@ public class WasteWaterDataServiceImpl implements WasteWaterDataService {
     @Transactional(readOnly = true)
     public boolean hasWasteWaterDataMapFile(UUID reportId, UUID userAccountId) {
         ReportA05DraftDTO draft = reportCacheService.getDraftReport(reportId, userAccountId);
-        if (draft == null || draft.getWasteWaterData() == null || draft.getWasteWaterData().getAutoStationMap() == null) {
+        if (draft == null || draft.getWasteWaterData() == null
+                || draft.getWasteWaterData().getAutoStationMap() == null) {
             return false;
         }
 

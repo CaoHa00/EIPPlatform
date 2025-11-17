@@ -20,7 +20,8 @@ public class BusinessDetailResponse {
 
     UUID businessDetailId;
     String facilityName;
-    LegalRepresentative legalRepresentative;
+    // LegalRepresentative legalRepresentative;
+    String legalRepresentative;
     String phoneNumber;
     String address;
     String activityType;

@@ -23,12 +23,13 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Inheritance;
 import jakarta.persistence.InheritanceType;
 import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
-@Table(name = "investor")
+@Table(name = "investor", uniqueConstraints = @UniqueConstraint(columnNames = "tax_code"))
 @Inheritance(strategy = InheritanceType.JOINED)
 @DiscriminatorColumn(name = "investor_type", discriminatorType = DiscriminatorType.STRING)
 @Getter
@@ -47,7 +48,7 @@ public abstract class Investor {
     @Column(name = "address", columnDefinition = "NVARCHAR(500)")
     String address;
 
-    @Column(name = "tax_code", columnDefinition = "NVARCHAR(50)", unique = true)
+    @Column(name = "tax_code", columnDefinition = "NVARCHAR(50)")
     String taxCode;
 
     @Column(name = "phone", columnDefinition = "NVARCHAR(20)", nullable = false)

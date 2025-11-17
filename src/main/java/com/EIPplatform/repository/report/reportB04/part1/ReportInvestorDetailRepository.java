@@ -13,6 +13,6 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface ReportInvestorDetailRepository extends JpaRepository<ReportInvestorDetail, Long>, JpaSpecificationExecutor<ReportInvestorDetail> {
-    @Query("SELECT w FROM ReportInvestorDetail w WHERE w.report.reportId = :reportId")
+    @Query("SELECT w FROM ReportInvestorDetail w WHERE w.reportB04.reportId = :reportId")
     Optional<ReportInvestorDetail> findByReportIdWithCollections(@Param("reportId") UUID reportId);
 }

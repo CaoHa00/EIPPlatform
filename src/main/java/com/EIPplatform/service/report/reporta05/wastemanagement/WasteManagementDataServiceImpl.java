@@ -18,6 +18,7 @@ import com.EIPplatform.repository.report.ReportA05Repository;
 import com.EIPplatform.service.report.reportCache.reportCacheA05.ReportCacheFactory;
 import com.EIPplatform.service.report.reportCache.reportCacheA05.ReportCacheService;
 
+import jakarta.annotation.PostConstruct;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -32,10 +33,18 @@ public class WasteManagementDataServiceImpl implements WasteManagementDataServic
 
     ReportA05Repository reportA05Repository;
     WasteManagementDataMapper wasteManagementDataMapper;
-    @NonFinal
     ReportCacheFactory reportCacheFactory;
-    ReportCacheService<ReportA05DraftDTO> reportCacheService = reportCacheFactory.getCacheService(ReportA05DraftDTO.class);
     ExceptionFactory exceptionFactory;
+
+    @NonFinal
+    ReportCacheService<ReportA05DraftDTO> reportCacheService;
+
+    @PostConstruct
+    @SuppressWarnings("unused")
+    void init() {
+        this.reportCacheService = reportCacheFactory.getCacheService(ReportA05DraftDTO.class);
+    }
+
 
     @Override
     @Transactional

@@ -21,6 +21,7 @@ import com.EIPplatform.service.fileStorage.FileStorageService;
 import com.EIPplatform.service.report.reportCache.reportCacheA05.ReportCacheFactory;
 import com.EIPplatform.service.report.reportCache.reportCacheA05.ReportCacheService;
 
+import jakarta.annotation.PostConstruct;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -35,23 +36,30 @@ public class AirEmissionDataServiceImpl implements AirEmissionDataService {
 
     ReportA05Repository reportA05Repository;
     AirEmissionDataMapper airEmissionDataMapper;
-    @NonFinal
     ReportCacheFactory reportCacheFactory;
-    ReportCacheService<ReportA05DraftDTO> reportCacheService = reportCacheFactory.getCacheService(ReportA05DraftDTO.class);
     FileStorageService fileStorageService;
     ExceptionFactory exceptionFactory;
 
+    @NonFinal
+    ReportCacheService<ReportA05DraftDTO> reportCacheService;
+
+    @PostConstruct
+    @SuppressWarnings("unused")
+    void init() {
+        this.reportCacheService = reportCacheFactory.getCacheService(ReportA05DraftDTO.class);
+    }
+
     @Override
     @Transactional
-    public AirEmissionDataDTO createAirEmissionData(UUID reportId, UUID userAccountId, AirEmissionDataCreateDTO request, MultipartFile file) {
+    public AirEmissionDataDTO createAirEmissionData(UUID reportId, UUID userAccountId, AirEmissionDataCreateDTO request,
+            MultipartFile file) {
 
         ReportA05 report = reportA05Repository.findById(reportId)
                 .orElseThrow(() -> exceptionFactory.createNotFoundException(
                         "ReportA05",
                         "reportId",
                         reportId,
-                        AirEmissionError.REPORT_NOT_FOUND
-                ));
+                        AirEmissionError.REPORT_NOT_FOUND));
 
         ReportA05DraftDTO draft = reportCacheService.getDraftReport(reportId, userAccountId);
         AirEmissionDataDTO oldDto = (draft != null) ? draft.getAirEmissionData() : null;
@@ -135,15 +143,13 @@ public class AirEmissionDataServiceImpl implements AirEmissionDataService {
                     "AirEmissionData",
                     "reportId",
                     reportId,
-                    AirEmissionError.NOT_FOUND
-            );
+                    AirEmissionError.NOT_FOUND);
         }
 
         AirEmissionDataDTO dto = draft.getAirEmissionData();
         if (dto.getAirAutoStationMapFilePath() == null) {
             throw exceptionFactory.createNotFoundException(
-                    "MapFile", "airEmissionData", reportId.toString(), AirEmissionError.NOT_FOUND
-            );
+                    "MapFile", "airEmissionData", reportId.toString(), AirEmissionError.NOT_FOUND);
         }
 
         fileStorageService.deleteFile(dto.getAirAutoStationMapFilePath());
@@ -162,15 +168,13 @@ public class AirEmissionDataServiceImpl implements AirEmissionDataService {
                     "AirEmissionData",
                     "reportId",
                     reportId,
-                    AirEmissionError.NOT_FOUND
-            );
+                    AirEmissionError.NOT_FOUND);
         }
 
         AirEmissionDataDTO dto = draft.getAirEmissionData();
         if (dto.getAirAutoStationMapFilePath() == null) {
             throw exceptionFactory.createNotFoundException(
-                    "MapFile", "airEmissionData", reportId.toString(), AirEmissionError.NOT_FOUND
-            );
+                    "MapFile", "airEmissionData", reportId.toString(), AirEmissionError.NOT_FOUND);
         }
 
         return fileStorageService.downloadFile(dto.getAirAutoStationMapFilePath());
@@ -180,7 +184,8 @@ public class AirEmissionDataServiceImpl implements AirEmissionDataService {
     @Transactional(readOnly = true)
     public boolean hasAirEmissionDataFile(UUID reportId, UUID userAccountId) {
         ReportA05DraftDTO draft = reportCacheService.getDraftReport(reportId, userAccountId);
-        if (draft == null || draft.getAirEmissionData() == null || draft.getAirEmissionData().getAirAutoStationMapFilePath() == null) {
+        if (draft == null || draft.getAirEmissionData() == null
+                || draft.getAirEmissionData().getAirAutoStationMapFilePath() == null) {
             return false;
         }
 

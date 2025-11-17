@@ -1,12 +1,15 @@
 package com.EIPplatform.service.authentication;
+
 import java.util.List;
-import java.util.UUID; 
+import java.util.UUID;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.EIPplatform.mapper.authentication.UserAccountMapper;
-import com.EIPplatform.model.dto.api.UserAccountDTO;
+import com.EIPplatform.model.dto.userAccount.*;
+import com.EIPplatform.model.entity.user.authentication.UserAccount;
 import com.EIPplatform.repository.authentication.UserAccountRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -15,36 +18,47 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @Transactional
 public class UserAccountImplementation implements UserAccountInterface {
+
     private final UserAccountRepository userAccountRepository;
     private final UserAccountMapper userAccountMapper;
+
     @Override
-    public UserAccountDTO findById(UUID id) {
-        return userAccountRepository.findById(id)
-                .map(userAccountMapper::toDTO)
-                .orElse(null);
+    public UserAccountResponseDTO findById(UUID id) {
+        UserAccount entity = userAccountRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("UserAccount not found"));
+        return userAccountMapper.toResponseDTO(entity);
     }
 
     @Override
     public void deleteById(UUID id) {
+        if (!userAccountRepository.existsById(id)) {
+            throw new RuntimeException("UserAccount not found");
+        }
         userAccountRepository.deleteById(id);
     }
 
     @Override
-    public UserAccountDTO create(UserAccountDTO dto) {
-        var entity = userAccountMapper.toEntity(dto);
+    public UserAccountResponseDTO create(UserAccountCreateDTO dto) {
+        // DTO -> Entity
+        UserAccount entity = userAccountMapper.toEntity(dto);
         entity = userAccountRepository.save(entity);
-        return userAccountMapper.toDTO(entity);
+        return userAccountMapper.toResponseDTO(entity);
     }
 
     @Override
-    public UserAccountDTO update(UUID id, UserAccountDTO dto) {
-        throw new UnsupportedOperationException("Not supported yet.");
+    public UserAccountResponseDTO update(UUID id, UserAccountUpdateDTO dto) {
+        UserAccount entity = userAccountRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("UserAccount not found"));
+        // Cập nhật entity từ DTO
+        userAccountMapper.updateFromDTO(dto, entity);
+        entity = userAccountRepository.save(entity);
+        return userAccountMapper.toResponseDTO(entity);
     }
 
     @Override
-    public List<UserAccountDTO> findAll() {
-        var entities = userAccountRepository.findAll();
-        return userAccountMapper.toDTOList(entities);
+    public List<UserAccountResponseDTO> findAll() {
+        return userAccountRepository.findAll().stream()
+                .map(userAccountMapper::toResponseDTO)
+                .collect(Collectors.toList());
     }
-    
 }

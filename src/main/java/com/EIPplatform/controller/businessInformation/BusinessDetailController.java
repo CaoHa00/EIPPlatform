@@ -66,7 +66,7 @@ public class BusinessDetailController {
 //                .build();
 //    }
 
-    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PostMapping(consumes = { MediaType.MULTIPART_FORM_DATA_VALUE, MediaType.APPLICATION_OCTET_STREAM_VALUE })
     public ApiResponse<BusinessDetailResponse> createBusinessDetail(
             @RequestParam UUID userAccountId,
             @RequestPart("data") BusinessDetailDTO dto,

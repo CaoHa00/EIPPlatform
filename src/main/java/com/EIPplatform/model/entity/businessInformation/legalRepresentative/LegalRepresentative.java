@@ -7,7 +7,9 @@ import java.util.UUID;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import com.EIPplatform.configuration.AuditMetaData;
+import com.EIPplatform.model.entity.businessInformation.BusinessDetail;
 import com.EIPplatform.model.enums.Gender;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Embedded;
@@ -15,9 +17,13 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -69,7 +75,7 @@ public class LegalRepresentative {
     @Column(name = "address", columnDefinition = "NVARCHAR(500)")
     String address;
 
-    @Column(name = "tax_code", columnDefinition = "NVARCHAR(50)", unique = true)
+    @Column(name = "tax_code", columnDefinition = "VARCHAR(50)", unique = true)
     String taxCode;
 
     @Column(name = "phone", columnDefinition = "NVARCHAR(20)", nullable = false)
@@ -81,6 +87,11 @@ public class LegalRepresentative {
     @Column(name = "email", columnDefinition = "NVARCHAR(255)")
     String email;
 
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "business_detail_id", nullable = false)
+    @JsonBackReference(value = "businessDetail-legalRep-ref")
+    BusinessDetail businessDetail;
+    
     @Embedded
     @Builder.Default
     AuditMetaData auditMetaData = new AuditMetaData();
