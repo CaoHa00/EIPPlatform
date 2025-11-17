@@ -1,4 +1,4 @@
-package com.EIPplatform.service.report.reportcache.reportCacheB04;
+package com.EIPplatform.service.report.reportCache.reportCacheB04;
 
 import java.time.Duration;
 import java.time.LocalDateTime;

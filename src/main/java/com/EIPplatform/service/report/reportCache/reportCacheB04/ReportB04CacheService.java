@@ -1,4 +1,4 @@
-package com.EIPplatform.service.report.reportcache.reportCacheB04;
+package com.EIPplatform.service.report.reportCache.reportCacheB04;
 
 import java.util.UUID;
 
