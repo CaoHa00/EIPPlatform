@@ -27,5 +27,4 @@ public class ProductDTO {
     String productEnergyConsumedSources;
     String productImage;
     BusinessDetail businessDetail;
-
 }

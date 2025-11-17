@@ -50,9 +50,9 @@ public class ReportInvestorDetail {
     String reportInvestorType;
 
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "report_id", nullable = false, unique = true)
+    @JoinColumn(name = "report_b04_id", nullable = false, unique = true)
     @JsonBackReference(value = "report-rid-ref")
-    ReportB04 report;
+    ReportB04 reportB04;
 
     /** 
      * Liên kết trực tiếp tới Investor (chính là investor_id)

@@ -1,5 +1,11 @@
-package com.EIPplatform.model.dto.report.reportB04.part4.response;
+package com.EIPplatform.model.dto.report.reportB04.part4;
 
+import java.util.List;
+import java.util.UUID;
+
+import com.EIPplatform.model.dto.report.reportB04.part4.request.SymCompanyCreateDTO;
+
+import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -7,17 +13,15 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
 
-import java.util.List;
-import java.util.UUID;
-
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class SymbiosisIndustryReponseDTO {
 
+public class SymbiosisIndustryDTO {
     // Indus
+
     String indusSymCount;
     String indusSymType;
 
@@ -33,28 +37,37 @@ public class SymbiosisIndustryReponseDTO {
 
     // sym_electricity
     String symElectricitySaving;
+    @NotNull
     String symElectricityUnit;
     String symElectricityCo2Reduction;
     String symElectricitySavingCost;
     String symElectricityOtherBenefits;
 
     // sym_fuel
+    @NotNull
     String symFuelSavingAmount;
+    @NotNull
     String symFuelSavingUnit;
+    @NotNull
     String symFuelCo2Reduction;
+    @NotNull
     String symFuelSavingCost;
+    @NotNull
     String symFuelOtherBenefits;
 
     // Total
+    @NotNull
     String symTotalCo2Reduction;
 
     // sym_water
     String symWaterSaving;
+    @NotNull
     String symWaterSavingUnit;
     String symWaterSavingCost;
 
     // sym_wastewater
     String symWastewaterReduction;
+    @NotNull
     String symWastewaterUnit;
     String symWastewaterSavingCost;
 
@@ -62,27 +75,33 @@ public class SymbiosisIndustryReponseDTO {
     String symWasteTreatedReduction;
     String symWasteReuseAmount;
     String symWasteReuseCostSaving;
+    @NotNull
     String symWasteReuseUnit;
     String symWasteRecycleAmount;
     String symWasteRecycleCostSaving;
+    @NotNull
     String symWasteRecycleUnit;
 
     // sym_st_material
     String symStMaterialSavingQuantity;
     String symStMaterialCostSaving;
+    @NotNull
     String symStMaterialUnit;
 
     // sym_nd_material
     String symNdMaterialSavingQuantity;
     String symNdMaterialCostSaving;
+    @NotNull
     String symNdMaterialUnit;
     String symNdMaterialSupplyAmount;
+    @NotNull
     String symNdMaterialSupplyAmountUnit;
     String symNdMaterialSupplySavingCost;
 
     // sym_chemical
     String symChemicalSavingAmount;
     String symChemicalCostSaving;
+    @NotNull
     String symChemicalUnit;
 
     // sym_service
@@ -90,6 +109,5 @@ public class SymbiosisIndustryReponseDTO {
     String symServiceSharingCostSaving;
 
     // Relationships (optional - include only if needed)
-    UUID reportB04Id;
-    List<SymCompanyResponseDTO> symCompanies;
+    List<SymCompanyCreateDTO> symCompanies;
 }

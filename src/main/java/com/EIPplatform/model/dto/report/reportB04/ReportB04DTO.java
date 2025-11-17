@@ -5,7 +5,8 @@ import java.util.UUID;
 
 import com.EIPplatform.model.dto.businessInformation.products.ProductDTO;
 import com.EIPplatform.model.dto.report.reportB04.part1.ReportInvestorDetailDTO;
-
+import com.EIPplatform.model.dto.report.reportB04.part3.ResourcesSavingAndReductionDTO;
+import com.EIPplatform.model.dto.report.reportB04.part4.SymbiosisIndustryDTO;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -43,8 +44,8 @@ public class ReportB04DTO {
     ProductDTO product;
 
     // -- part 3 --
-    // ResourcesSavingAndReductionDTO resourcesSavingAndReduction;
+    ResourcesSavingAndReductionDTO resourcesSavingAndReduction;
 
     // -- part 4 --
-    // SymbiosisIndustryDTO symbiosisIndustry;
+    SymbiosisIndustryDTO symbiosisIndustry;
 }

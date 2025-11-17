@@ -1,6 +1,5 @@
 package com.EIPplatform.model.dto.report.reportB04.part4.response;
 
-import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

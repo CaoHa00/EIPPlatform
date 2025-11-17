@@ -8,6 +8,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import com.EIPplatform.configuration.AuditMetaData;
 import com.EIPplatform.model.entity.businessInformation.BusinessDetail;
+import com.EIPplatform.model.entity.report.reportB04.ReportB04;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -50,6 +51,11 @@ public class Product {
     @JoinColumn(name = "business_detail_id", nullable = false)
     @JsonBackReference(value = "businessDetail-products")
     BusinessDetail businessDetail;
+
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "report_b04_id", nullable = false, unique = true)
+    @JsonBackReference(value = "report-productId-ref")
+    ReportB04 reportB04;
 
     @Embedded
     @Builder.Default

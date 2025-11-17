@@ -141,8 +141,6 @@ public class ResourcesSavingAndReduction {
     @Column(name = "chemical_unit", nullable = false, columnDefinition = "NVARCHAR(255)")
     String chemicalUnit = "ton/year";
 
-
-
     //==================Relationship===========================
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "report_b04_id")
