@@ -1,10 +1,14 @@
 package com.EIPplatform.model.entity.report.reportB04.part03;
 
+import com.EIPplatform.model.entity.report.reportB04.ReportB04;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToOne;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -137,4 +141,10 @@ public class ResourcesSavingAndReduction {
     @Column(name = "chemical_unit", nullable = false, columnDefinition = "NVARCHAR(255)")
     String chemicalUnit = "ton/year";
 
+
+
+    //==================Relationship===========================
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "report_b04_id")
+    ReportB04 reportB04;
 }
