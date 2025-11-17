@@ -9,7 +9,8 @@ import com.EIPplatform.model.dto.report.report05.wastewatermanager.wastewaterman
 import com.EIPplatform.model.dto.report.report05.wastewatermanager.wastewatermanagement.WasteWaterDataDTO;
 import com.EIPplatform.model.entity.report.report05.wastewatermanager.WasteWaterData;
 import com.EIPplatform.service.fileStorage.FileStorageService;
-import com.EIPplatform.service.report.reportcache.ReportCacheService;
+import com.EIPplatform.service.report.reportCache.reportCacheA05.ReportCacheFactory;
+import com.EIPplatform.service.report.reportCache.reportCacheA05.ReportCacheService;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -33,7 +34,8 @@ public class WasteWaterDataServiceImpl implements WasteWaterDataService {
 
     ReportA05Repository reportA05Repository;
     WasteWaterDataMapper wasteWaterDataMapper;
-    ReportCacheService reportCacheService;
+    ReportCacheFactory reportCacheFactory;
+    ReportCacheService<ReportA05DraftDTO> reportCacheService = reportCacheFactory.getCacheService(ReportA05DraftDTO.class);
     FileStorageService fileStorageService;
     ExceptionFactory exceptionFactory;
 
@@ -55,25 +57,50 @@ public class WasteWaterDataServiceImpl implements WasteWaterDataService {
                 ));
 
         ReportA05DraftDTO draft = reportCacheService.getDraftReport(reportId, userAccountId);
-        if (draft != null && draft.getWasteWaterData() != null) {
-            WasteWaterDataDTO oldDto = draft.getWasteWaterData();
-            deleteOldFiles(oldDto, connectionFile, mapFile);
-        }
+        WasteWaterDataDTO oldDto = (draft != null) ? draft.getWasteWaterData() : null;
 
         WasteWaterData entity = wasteWaterDataMapper.toEntity(request);
 
+        // Handle connection diagram file
         if (connectionFile != null && !connectionFile.isEmpty()) {
+            if (oldDto != null && oldDto.getConnectionDiagram() != null) {
+                fileStorageService.deleteFile(oldDto.getConnectionDiagram());
+                log.info("Deleted old connection diagram file: {}", oldDto.getConnectionDiagram());
+            }
             String filePath = uploadConnectionDiagramFile(report, connectionFile);
             entity.setConnectionDiagram(filePath);
+        } else if (oldDto != null && oldDto.getConnectionDiagram() != null) {
+            // Keep old file path if no new file provided
+            entity.setConnectionDiagram(oldDto.getConnectionDiagram());
         }
 
+        // Handle auto station map file
         if (mapFile != null && !mapFile.isEmpty()) {
+            if (oldDto != null && oldDto.getAutoStationMap() != null) {
+                fileStorageService.deleteFile(oldDto.getAutoStationMap());
+                log.info("Deleted old auto station map file: {}", oldDto.getAutoStationMap());
+            }
             String filePath = uploadAutoStationMapFile(report, mapFile);
             entity.setAutoStationMap(filePath);
+        } else if (oldDto != null && oldDto.getAutoStationMap() != null) {
+            // Keep old file path if no new file provided
+            entity.setAutoStationMap(oldDto.getAutoStationMap());
         }
 
         WasteWaterDataDTO responseDto = wasteWaterDataMapper.toDto(entity);
-        saveToCache(reportId, userAccountId, responseDto);
+
+        // Create draft if it doesn't exist
+        if (draft == null) {
+            draft = ReportA05DraftDTO.builder()
+                    .reportId(reportId)
+                    .isDraft(true)
+                    .lastModified(LocalDateTime.now())
+                    .build();
+            reportCacheService.saveDraftReport(draft, userAccountId, reportId);
+        }
+
+        // Update the section using the cache service
+        reportCacheService.updateSectionData(reportId, userAccountId, responseDto, "wasteWaterData");
 
         log.info("Created WasteWaterData in cache - reportId: {}, userAccountId: {}", reportId, userAccountId);
         return responseDto;
@@ -96,15 +123,15 @@ public class WasteWaterDataServiceImpl implements WasteWaterDataService {
     @Transactional
     public void deleteWasteWaterData(UUID reportId, UUID userAccountId) {
         ReportA05DraftDTO draft = reportCacheService.getDraftReport(reportId, userAccountId);
-        if (draft != null && draft.getWasteWaterData() != null) {
-            WasteWaterDataDTO dto = draft.getWasteWaterData();
-            deleteFiles(dto);
-        }
-
         if (draft != null) {
-            draft.setWasteWaterData(null);
-            reportCacheService.saveDraftReport(draft, userAccountId);
-            log.info("Deleted WasteWaterData from cache - reportId: {}, userAccountId: {}", reportId, userAccountId);
+            WasteWaterDataDTO dto = draft.getWasteWaterData();
+            if (dto != null) {
+                deleteFiles(dto);
+                reportCacheService.updateSectionData(reportId, userAccountId, null, "wasteWaterData");
+                log.info("Deleted WasteWaterData from cache - reportId: {}, userAccountId: {}", reportId, userAccountId);
+            } else {
+                log.warn("No WasteWaterData found in cache - reportId: {}, userAccountId: {}", reportId, userAccountId);
+            }
         } else {
             log.warn("No draft found in cache - reportId: {}, userAccountId: {}", reportId, userAccountId);
         }
@@ -132,7 +159,7 @@ public class WasteWaterDataServiceImpl implements WasteWaterDataService {
 
         fileStorageService.deleteFile(dto.getConnectionDiagram());
         dto.setConnectionDiagram(null);
-        saveToCache(reportId, userAccountId, dto);
+        reportCacheService.updateSectionData(reportId, userAccountId, dto, "wasteWaterData");
 
         log.info("Deleted connection diagram file - reportId: {}, userAccountId: {}", reportId, userAccountId);
     }
@@ -159,7 +186,7 @@ public class WasteWaterDataServiceImpl implements WasteWaterDataService {
 
         fileStorageService.deleteFile(dto.getAutoStationMap());
         dto.setAutoStationMap(null);
-        saveToCache(reportId, userAccountId, dto);
+        reportCacheService.updateSectionData(reportId, userAccountId, dto, "wasteWaterData");
 
         log.info("Deleted auto station map file - reportId: {}, userAccountId: {}", reportId, userAccountId);
     }
@@ -252,40 +279,6 @@ public class WasteWaterDataServiceImpl implements WasteWaterDataService {
 
         log.info("Uploaded auto station map file to: {} for report: {}", filePath, report.getReportId());
         return filePath;
-    }
-
-    private void saveToCache(UUID reportId, UUID userAccountId, WasteWaterDataDTO data) {
-        ReportA05DraftDTO draft = reportCacheService.getDraftReport(reportId, userAccountId);
-        if (draft == null) {
-            draft = ReportA05DraftDTO.builder()
-                    .reportId(reportId)
-                    .isDraft(true)
-                    .lastModified(LocalDateTime.now())
-                    .build();
-        }
-
-        draft.setWasteWaterData(data);
-        reportCacheService.saveDraftReport(draft, userAccountId);
-    }
-
-    private void deleteOldFiles(WasteWaterDataDTO oldDto, MultipartFile connectionFile, MultipartFile mapFile) {
-        if (oldDto.getConnectionDiagram() != null && connectionFile != null) {
-            try {
-                fileStorageService.deleteFile(oldDto.getConnectionDiagram());
-                log.info("Deleted old connection diagram file: {}", oldDto.getConnectionDiagram());
-            } catch (Exception e) {
-                log.warn("Failed to delete old connection diagram file", e);
-            }
-        }
-
-        if (oldDto.getAutoStationMap() != null && mapFile != null) {
-            try {
-                fileStorageService.deleteFile(oldDto.getAutoStationMap());
-                log.info("Deleted old auto station map file: {}", oldDto.getAutoStationMap());
-            } catch (Exception e) {
-                log.warn("Failed to delete old auto station map file", e);
-            }
-        }
     }
 
     private void deleteFiles(WasteWaterDataDTO dto) {

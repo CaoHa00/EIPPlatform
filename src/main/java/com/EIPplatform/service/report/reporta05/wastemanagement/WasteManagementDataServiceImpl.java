@@ -3,6 +3,8 @@ package com.EIPplatform.service.report.reporta05.wastemanagement;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+import com.EIPplatform.service.report.reportCache.reportCacheA05.ReportCacheFactory;
+import com.EIPplatform.service.report.reportCache.reportCacheA05.ReportCacheService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -15,7 +17,6 @@ import com.EIPplatform.model.dto.report.report05.wastemanagement.WasteManagement
 import com.EIPplatform.model.entity.report.report05.ReportA05;
 import com.EIPplatform.model.entity.report.report05.wastemanagement.WasteManagementData;
 import com.EIPplatform.repository.report.ReportA05Repository;
-import com.EIPplatform.service.report.reportcache.ReportCacheService;
 
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -30,7 +31,8 @@ public class WasteManagementDataServiceImpl implements WasteManagementDataServic
 
     ReportA05Repository reportA05Repository;
     WasteManagementDataMapper wasteManagementDataMapper;
-    ReportCacheService reportCacheService;
+    ReportCacheFactory reportCacheFactory;
+    ReportCacheService<ReportA05DraftDTO> reportCacheService = reportCacheFactory.getCacheService(ReportA05DraftDTO.class);
     ExceptionFactory exceptionFactory;
 
     @Override
@@ -53,7 +55,19 @@ public class WasteManagementDataServiceImpl implements WasteManagementDataServic
         entity.setReport(report);
 
         WasteManagementDataDTO responseDto = wasteManagementDataMapper.toDto(entity);
-        saveToCache(reportId, userAccountId, responseDto);
+
+        // Create draft if it doesn't exist
+        if (draft == null) {
+            draft = ReportA05DraftDTO.builder()
+                    .reportId(reportId)
+                    .isDraft(true)
+                    .lastModified(LocalDateTime.now())
+                    .build();
+            reportCacheService.saveDraftReport(draft, userAccountId, reportId);
+        }
+
+        // Update the section using the cache service
+        reportCacheService.updateSectionData(reportId, userAccountId, responseDto, "wasteManagementData");
 
         log.info("Created WasteManagementData in cache - reportId: {}, userAccountId: {}", reportId, userAccountId);
         return responseDto;
@@ -79,25 +93,10 @@ public class WasteManagementDataServiceImpl implements WasteManagementDataServic
 
         ReportA05DraftDTO draft = reportCacheService.getDraftReport(reportId, userAccountId);
         if (draft != null) {
-            draft.setWasteManagementData(null);
-            reportCacheService.saveDraftReport(draft, userAccountId);
+            reportCacheService.updateSectionData(reportId, userAccountId, null, "wasteManagementData");
             log.info("Deleted WasteManagementData from cache - reportId: {}, userAccountId: {}", reportId, userAccountId);
         } else {
             log.warn("No draft found in cache - reportId: {}, userAccountId: {}", reportId, userAccountId);
         }
-    }
-
-    private void saveToCache(UUID reportId, UUID userAccountId, WasteManagementDataDTO data) {
-        ReportA05DraftDTO draft = reportCacheService.getDraftReport(reportId, userAccountId);
-        if (draft == null) {
-            draft = ReportA05DraftDTO.builder()
-                    .reportId(reportId)
-                    .isDraft(true)
-                    .lastModified(LocalDateTime.now())
-                    .build();
-        }
-
-        draft.setWasteManagementData(data);
-        reportCacheService.saveDraftReport(draft, userAccountId);
     }
 }
