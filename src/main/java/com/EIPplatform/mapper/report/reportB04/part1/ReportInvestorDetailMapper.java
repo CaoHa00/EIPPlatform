@@ -8,6 +8,7 @@ import org.mapstruct.Mapping; // <-- THÊM IMPORT NÀY
 import org.mapstruct.MappingTarget;
 import org.mapstruct.NullValuePropertyMappingStrategy;
 
+import com.EIPplatform.model.dto.report.reportB04.part1.ReportInvestorDetailDTO;
 import com.EIPplatform.model.dto.report.reportB04.part1.request.ReportInvestorDetailCreateRequest;
 import com.EIPplatform.model.dto.report.reportB04.part1.request.ReportInvestorDetailUpdateRequest;
 import com.EIPplatform.model.dto.report.reportB04.part1.response.ReportInvestorDetailResponse;
@@ -48,6 +49,14 @@ public interface ReportInvestorDetailMapper {
 
     @Mapping(source = "investor", target = "investor", qualifiedByName = "toInvestorResponse")
     ReportInvestorDetailResponse toResponse(ReportInvestorDetail entity);
+
+     @Mapping(source = "investor", target = "investor", qualifiedByName = "toInvestorResponse")
+    ReportInvestorDetailDTO toDTO(ReportInvestorDetail entity);
+
+    @Mapping(target = "ridId", ignore = true)
+    @Mapping(target = "report", ignore = true)
+    @Mapping(source = "investor", target = "investor", qualifiedByName = "toInvestorResponse")
+    ReportInvestorDetail dtoToEntity(ReportInvestorDetailDTO dto);
 
     List<ReportInvestorDetailResponse> toResponseList(List<ReportInvestorDetail> entities);
 

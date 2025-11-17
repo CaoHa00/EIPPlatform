@@ -1,9 +1,14 @@
 package com.EIPplatform.mapper.businessInformation;
 
 
-import org.mapstruct.*;
+import org.mapstruct.BeanMapping;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.MappingTarget;
+import org.mapstruct.NullValuePropertyMappingStrategy;
 
 import com.EIPplatform.model.dto.businessInformation.products.ProductCreationRequest;
+import com.EIPplatform.model.dto.businessInformation.products.ProductDTO;
 import com.EIPplatform.model.dto.businessInformation.products.ProductResponse;
 import com.EIPplatform.model.dto.businessInformation.products.ProductUpdateRequest;
 import com.EIPplatform.model.entity.businessInformation.products.Product;
@@ -22,4 +27,6 @@ public interface ProductMapper {
     void updateEntityFromRequest(ProductUpdateRequest request, @MappingTarget Product entity);
 
     ProductResponse toResponse(Product entity);
+
+    ProductDTO toDTO (Product entity);
 }

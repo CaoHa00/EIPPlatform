@@ -12,6 +12,7 @@ import com.EIPplatform.model.entity.report.reportB04.part03.ResourcesSavingAndRe
 import com.EIPplatform.model.entity.report.reportB04.part04.SymbiosisIndustry;
 import com.EIPplatform.model.entity.user.authentication.UserAccount;
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -103,6 +104,7 @@ public class ReportB04 {
 
     // -- part 1 --
     @OneToOne(cascade = CascadeType.PERSIST, fetch = FetchType.LAZY, optional = false)
+    @JsonManagedReference(value = "report-rid-ref")
     @JoinColumn(name = "rid_id")
     ReportInvestorDetail reportInvestorDetail;
 

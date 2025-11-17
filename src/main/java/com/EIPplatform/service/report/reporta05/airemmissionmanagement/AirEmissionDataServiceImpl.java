@@ -2,14 +2,7 @@ package com.EIPplatform.service.report.reporta05.airemmissionmanagement;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
-import com.EIPplatform.exception.errorCategories.AirEmissionError;
-import com.EIPplatform.mapper.report.report05.airemmissionmanagement.AirEmissionDataMapper;
-import com.EIPplatform.model.dto.report.report05.airemmissionmanagement.airemissiondata.AirEmissionDataCreateDTO;
-import com.EIPplatform.model.dto.report.report05.airemmissionmanagement.airemissiondata.AirEmissionDataDTO;
-import com.EIPplatform.model.entity.report.report05.airemmissionmanagement.AirEmissionData;
-import com.EIPplatform.service.fileStorage.FileStorageService;
-import com.EIPplatform.service.report.reportCache.reportCacheA05.ReportCacheFactory;
-import com.EIPplatform.service.report.reportCache.reportCacheA05.ReportCacheService;
+
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,11 +18,13 @@ import com.EIPplatform.model.entity.report.report05.ReportA05;
 import com.EIPplatform.model.entity.report.report05.airemmissionmanagement.AirEmissionData;
 import com.EIPplatform.repository.report.ReportA05Repository;
 import com.EIPplatform.service.fileStorage.FileStorageService;
-import com.EIPplatform.service.report.reportcache.reportCacheA05.ReportCacheService;
+import com.EIPplatform.service.report.reportCache.reportCacheA05.ReportCacheFactory;
+import com.EIPplatform.service.report.reportCache.reportCacheA05.ReportCacheService;
 
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import lombok.experimental.NonFinal;
 import lombok.extern.slf4j.Slf4j;
 
 @Service
@@ -40,6 +35,7 @@ public class AirEmissionDataServiceImpl implements AirEmissionDataService {
 
     ReportA05Repository reportA05Repository;
     AirEmissionDataMapper airEmissionDataMapper;
+    @NonFinal
     ReportCacheFactory reportCacheFactory;
     ReportCacheService<ReportA05DraftDTO> reportCacheService = reportCacheFactory.getCacheService(ReportA05DraftDTO.class);
     FileStorageService fileStorageService;

@@ -4,6 +4,8 @@ import org.hibernate.annotations.Nationalized;
 
 import com.EIPplatform.model.entity.businessInformation.investors.Investor;
 import com.EIPplatform.model.entity.legalDoc.LegalDoc;
+import com.EIPplatform.model.entity.report.reportB04.ReportB04;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -46,6 +48,11 @@ public class ReportInvestorDetail {
     @Nationalized
     @Column(name = "report_investor_type", nullable = false, columnDefinition = "NVARCHAR(100)")
     String reportInvestorType;
+
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "report_id", nullable = false, unique = true)
+    @JsonBackReference(value = "report-rid-ref")
+    ReportB04 report;
 
     /** 
      * Liên kết trực tiếp tới Investor (chính là investor_id)

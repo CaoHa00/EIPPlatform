@@ -1,39 +1,5 @@
 package com.EIPplatform.service.report.reporta05;
 
-import com.EIPplatform.exception.ExceptionFactory;
-import com.EIPplatform.exception.errorCategories.ReportError;
-import com.EIPplatform.mapper.report.report05.airemmissionmanagement.AirEmissionDataMapper;
-import com.EIPplatform.mapper.report.report05.wastemanagement.WasteManagementDataMapper;
-import com.EIPplatform.mapper.report.report05.wastewatermanager.WasteWaterDataMapper;
-import com.EIPplatform.model.dto.report.report05.CreateReportRequest;
-import com.EIPplatform.model.dto.report.report05.InspectionRemedyResponse;
-import com.EIPplatform.model.dto.report.report05.ReportA05DTO;
-import com.EIPplatform.model.dto.report.report05.ReportA05DraftDTO;
-import com.EIPplatform.model.dto.report.report05.UpdateInspectionRemedyReportRequest;
-import com.EIPplatform.model.dto.report.report05.airemmissionmanagement.airemissiondata.AirEmissionDataDTO;
-import com.EIPplatform.model.dto.report.report05.wastemanagement.WasteManagementDataDTO;
-import com.EIPplatform.model.dto.report.report05.wastewatermanager.wastewatermanagement.WasteWaterDataDTO;
-import com.EIPplatform.model.entity.businessInformation.BusinessDetail;
-import com.EIPplatform.model.entity.businessInformation.BusinessHistoryConsumption;
-import com.EIPplatform.model.entity.businessInformation.permitshistory.EnvPermits;
-import com.EIPplatform.model.entity.report.report05.ReportA05;
-import com.EIPplatform.model.entity.report.report05.airemmissionmanagement.AirEmissionData;
-import com.EIPplatform.model.entity.report.report05.wastemanagement.WasteManagementData;
-import com.EIPplatform.model.entity.report.report05.wastewatermanager.WasteWaterData;
-import com.EIPplatform.repository.businessInformation.BusinessDetailRepository;
-import com.EIPplatform.repository.report.ReportA05Repository;
-import com.EIPplatform.repository.report.report05.airemmissionmanagement.AirEmissionDataRepository;
-import com.EIPplatform.repository.report.report05.wastemanagement.WasteManagementDataRepository;
-import com.EIPplatform.repository.report.report05.wastewatermanager.WasteWaterRepository;
-import com.EIPplatform.service.report.reportCache.reportCacheA05.ReportCacheFactory;
-import com.EIPplatform.service.report.reportCache.reportCacheA05.ReportCacheService;
-import jakarta.transaction.Transactional;
-import lombok.AccessLevel;
-import lombok.RequiredArgsConstructor;
-import lombok.experimental.FieldDefaults;
-import lombok.experimental.NonFinal;
-import lombok.extern.slf4j.Slf4j;
-
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -61,6 +27,41 @@ import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
+import com.EIPplatform.exception.ExceptionFactory;
+import com.EIPplatform.exception.errorCategories.ReportError;
+import com.EIPplatform.mapper.report.report05.airemmissionmanagement.AirEmissionDataMapper;
+import com.EIPplatform.mapper.report.report05.wastemanagement.WasteManagementDataMapper;
+import com.EIPplatform.mapper.report.report05.wastewatermanager.WasteWaterDataMapper;
+import com.EIPplatform.model.dto.report.report05.CreateReportRequest;
+import com.EIPplatform.model.dto.report.report05.InspectionRemedyResponse;
+import com.EIPplatform.model.dto.report.report05.ReportA05DTO;
+import com.EIPplatform.model.dto.report.report05.ReportA05DraftDTO;
+import com.EIPplatform.model.dto.report.report05.UpdateInspectionRemedyReportRequest;
+import com.EIPplatform.model.dto.report.report05.airemmissionmanagement.airemissiondata.AirEmissionDataDTO;
+import com.EIPplatform.model.dto.report.report05.wastemanagement.WasteManagementDataDTO;
+import com.EIPplatform.model.dto.report.report05.wastewatermanager.wastewatermanagement.WasteWaterDataDTO;
+import com.EIPplatform.model.entity.businessInformation.BusinessDetail;
+import com.EIPplatform.model.entity.businessInformation.BusinessHistoryConsumption;
+import com.EIPplatform.model.entity.businessInformation.permitshistory.EnvPermits;
+import com.EIPplatform.model.entity.report.report05.ReportA05;
+import com.EIPplatform.model.entity.report.report05.airemmissionmanagement.AirEmissionData;
+import com.EIPplatform.model.entity.report.report05.wastemanagement.WasteManagementData;
+import com.EIPplatform.model.entity.report.report05.wastewatermanager.WasteWaterData;
+import com.EIPplatform.repository.businessInformation.BusinessDetailRepository;
+import com.EIPplatform.repository.report.ReportA05Repository;
+import com.EIPplatform.repository.report.report05.airemmissionmanagement.AirEmissionDataRepository;
+import com.EIPplatform.repository.report.report05.wastemanagement.WasteManagementDataRepository;
+import com.EIPplatform.repository.report.report05.wastewatermanager.WasteWaterRepository;
+import com.EIPplatform.service.report.reportCache.reportCacheA05.ReportCacheFactory;
+import com.EIPplatform.service.report.reportCache.reportCacheA05.ReportCacheService;
+
+import jakarta.transaction.Transactional;
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
+import lombok.experimental.NonFinal;
+import lombok.extern.slf4j.Slf4j;
+
 @Service
 @Slf4j
 @RequiredArgsConstructor
@@ -70,6 +71,7 @@ public class ReportA05ServiceImpl implements ReportA05Service {
 
         ReportA05Repository reportA05Repository;
         BusinessDetailRepository businessDetailRepository;
+        @NonFinal
         ReportCacheFactory reportCacheFactory;
         ReportCacheService<ReportA05DraftDTO> reportCacheService = reportCacheFactory.getCacheService(ReportA05DraftDTO.class);
         WasteManagementDataMapper wasteManagementDataMapper;

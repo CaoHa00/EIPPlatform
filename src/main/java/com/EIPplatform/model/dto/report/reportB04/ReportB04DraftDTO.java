@@ -28,7 +28,7 @@ public class ReportB04DraftDTO implements Serializable{
     String reportingPeriod;
 
     // part1
-    ReportInvestorDetailDTO reportInvestorDetail;
+    ReportInvestorDetailDTO reportInvestorDetailDTO;
 
     // part2
     ProductDTO productDTO;
