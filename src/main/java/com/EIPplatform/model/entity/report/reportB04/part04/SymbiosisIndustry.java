@@ -1,6 +1,7 @@
 package com.EIPplatform.model.entity.report.reportB04.part04;
 
 
+import com.EIPplatform.model.entity.report.reportB04.ReportB04;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -8,7 +9,9 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -33,8 +36,6 @@ public class SymbiosisIndustry {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "si_id")
     Long siId;
-
-
 
     //------------------------Indus------------------------------
     @Column(name = "indus_sym_count", columnDefinition = "NVARCHAR(255)")
@@ -193,6 +194,12 @@ public class SymbiosisIndustry {
 
     @Column(name = "sym_service_sharing_cost_saving", columnDefinition = "NVARCHAR(255)")
     String symServiceSharingCostSaving;
+
+
+    //=====================Relationship=================================
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "report_b04_id")
+    ReportB04 reportB04;
 
     //------------------------sym_companies------------------------------
     @OneToMany(mappedBy = "symbiosisIndustry", cascade = CascadeType.PERSIST, fetch = FetchType.LAZY)
