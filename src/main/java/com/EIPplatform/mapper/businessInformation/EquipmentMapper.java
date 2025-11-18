@@ -1,7 +1,7 @@
 package com.EIPplatform.mapper.businessInformation;
 
 import com.EIPplatform.model.dto.businessInformation.equipment.EquipmentResponseDto;
-import com.EIPplatform.model.entity.user.businessInformation.Equipment;
+import com.EIPplatform.model.entity.businessInformation.Equipment;
 import org.mapstruct.*;
 import java.util.List;
 
@@ -9,13 +9,12 @@ import java.util.List;
 public interface EquipmentMapper {
 
     // ENTITY → RESPONSE
-    @Mapping(source = "businessDetail.businessDetailId", target = "businessId")
+    @Mapping(source = "businessDetail.businessDetailId", target = "businessDetailId")
     EquipmentResponseDto toResponse(Equipment entity);
 
     List<EquipmentResponseDto> toResponseList(List<Equipment> entities);
 
     // DTO → ENTITY
-    @Mapping(target = "equipmentId", ignore = true)
     @Mapping(target = "businessDetail", ignore = true)
     Equipment toEntity(EquipmentResponseDto dto);
 

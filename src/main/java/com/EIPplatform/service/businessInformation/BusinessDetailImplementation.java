@@ -12,13 +12,12 @@ import com.EIPplatform.mapper.businessInformation.BusinessDetailMapper;
 import com.EIPplatform.model.dto.businessInformation.BusinessDetailDTO;
 import com.EIPplatform.model.dto.businessInformation.BusinessDetailResponse;
 import com.EIPplatform.model.entity.businessInformation.BusinessDetail;
+import com.EIPplatform.model.entity.businessInformation.Equipment;
+import com.EIPplatform.model.entity.businessInformation.Facility;
+import com.EIPplatform.model.entity.businessInformation.Process;
+import com.EIPplatform.model.entity.businessInformation.Project;
+import com.EIPplatform.model.entity.businessInformation.legalRepresentative.LegalRepresentative;
 import com.EIPplatform.model.entity.user.authentication.UserAccount;
-import com.EIPplatform.model.entity.user.businessInformation.BusinessDetail;
-import com.EIPplatform.model.entity.user.businessInformation.Equipment;
-import com.EIPplatform.model.entity.user.businessInformation.Facility;
-import com.EIPplatform.model.entity.user.businessInformation.Process;
-import com.EIPplatform.model.entity.user.businessInformation.Project;
-import com.EIPplatform.model.entity.user.legalRepresentative.LegalRepresentative;
 import com.EIPplatform.repository.authentication.UserAccountRepository;
 import com.EIPplatform.repository.businessInformation.BusinessDetailRepository;
 import com.EIPplatform.service.fileStorage.FileStorageService;
@@ -126,8 +125,7 @@ public class BusinessDetailImplementation implements BusinessDetailInterface {
         entity.setEquipments(equipments);
 
         // Processes
-        List<Process> processes = businessDetailUtils.mapProcesses(dto.getProcesses(), entity);
-        entity.setProcesses(processes);
+        businessDetailUtils.syncProcesses(dto.getProcesses(), entity); // ĐÚNG
 
         // Attach UserAccount
         entity.getUserAccounts().add(userAccount);
@@ -185,8 +183,7 @@ public class BusinessDetailImplementation implements BusinessDetailInterface {
         entity.setEquipments(updatedEquipments);
 
         // Processes update
-        List<Process> updatedProcesses = businessDetailUtils.mapProcesses(dto.getProcesses(), entity);
-        entity.setProcesses(updatedProcesses);
+        businessDetailUtils.syncProcesses(dto.getProcesses(), entity); // ĐÚNG
 
         // =======================
         // 3. ISO FILE UPDATE

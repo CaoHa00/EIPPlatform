@@ -10,7 +10,6 @@ import com.EIPplatform.model.entity.businessInformation.investors.InvestorIndivi
 @Mapper(componentModel = "spring", nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
 public interface InvestorIndividualMapper {
 
-    @Mapping(target = "investorId", ignore = true)
     @Mapping(target = "auditMetaData", ignore = true)
     InvestorIndividualDetail toEntity(InvestorIndividualCreationRequest request);
 

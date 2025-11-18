@@ -12,7 +12,7 @@ import java.util.UUID;
 @AllArgsConstructor
 public class FacilityResponseDto {
     UUID facilityId;
-    UUID businessId;
+    UUID businessDetailId;
     String areaName;
     String areaType;
     String areaFunction;

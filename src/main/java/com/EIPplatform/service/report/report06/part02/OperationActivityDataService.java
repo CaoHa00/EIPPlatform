@@ -1,16 +1,14 @@
 package com.EIPplatform.service.report.report06.part02;
-
-import com.EIPplatform.model.dto.report.report06.part2.OperationalActivityDataDto;
+import com.EIPplatform.model.dto.report.report06.part02.operationalActivityData.OperationalActivityDataCreateDTO;
+import com.EIPplatform.model.dto.report.report06.part02.operationalActivityData.OperationalActivityDataDTO;
+import com.EIPplatform.model.dto.report.report06.part02.operationalActivityData.OperationalActivityDataUpdateDTO;
 
 import java.util.UUID;
-
 public interface OperationActivityDataService {
 
-    OperationalActivityDataDto findById(UUID id);
+    OperationalActivityDataDTO createOperationalActivityData(UUID report06Id, UUID userAccountId, OperationalActivityDataCreateDTO request);
 
-    OperationalActivityDataDto create(OperationalActivityDataDto dto, UUID reportId);
+    OperationalActivityDataDTO getOperationalActivityData(UUID report06Id, UUID userAccountId);
 
-    OperationalActivityDataDto update(UUID id, OperationalActivityDataDto dto);
-
-    void delete(UUID id);
+    void deleteOperationalActivityData(UUID report06Id, UUID userAccountId);
 }

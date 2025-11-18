@@ -1,6 +1,6 @@
-package com.EIPplatform.model.entity.user.businessInformation;
+package com.EIPplatform.model.entity.businessInformation;
 
-import com.EIPplatform.model.entity.user.legalDocs.LegalDocs;
+import com.EIPplatform.model.entity.legalDoc.LegalDoc;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.*;
@@ -34,7 +34,7 @@ public class Project {
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     @JoinColumn(name = "project_id")
     @Builder.Default
-    private List<LegalDocs> legalDocs = new ArrayList<>();
+    private List<LegalDoc> legalDocs = new ArrayList<>();
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JsonBackReference(value = "businessDetail-projects")

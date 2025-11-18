@@ -1,75 +1,116 @@
 package com.EIPplatform.service.report.report06.part02;
 
-import com.EIPplatform.exception.ExceptionFactory;
-import com.EIPplatform.exception.errorCategories.ObjectError;
-import com.EIPplatform.mapper.report.report06.part02.OperationalActivityDataMapper;
-import com.EIPplatform.model.dto.report.report06.part2.OperationalActivityDataDto;
-import com.EIPplatform.model.entity.report.report06.Report06;
-import com.EIPplatform.model.entity.report.report06.part02.OperationalActivityData;
+import java.time.LocalDateTime;
+import java.util.UUID;
+
+import com.EIPplatform.exception.errorCategories.OperationalActivityError;
+import com.EIPplatform.mapper.report.report06.part02.*;
+import com.EIPplatform.model.dto.report.report06.part02.operationalActivityData.*;
+import com.EIPplatform.model.entity.report.report06.part02.*;
 import com.EIPplatform.repository.report.report06.Report06Repository;
-import com.EIPplatform.repository.report.report06.part02.OperationalActivityDataRepository;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import com.EIPplatform.service.report.reportCache.reportCacheA05.ReportCacheFactory;
+import com.EIPplatform.service.report.reportCache.reportCacheA05.ReportCacheService;
+import com.EIPplatform.util.StringNormalizerUtil;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.UUID;
+import com.EIPplatform.exception.ExceptionFactory;
+import com.EIPplatform.model.dto.report.report06.Report06DraftDTO;
+import com.EIPplatform.model.entity.report.report06.Report06;
 
-@Slf4j
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
+import lombok.extern.slf4j.Slf4j;
+import lombok.AccessLevel;
+
 @Service
+@Slf4j
 @RequiredArgsConstructor
-@Transactional
-public class OperationActivityDataServiceImpl implements OperationActivityDataService {
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+public class OperationActivityDataServiceImpl  implements OperationActivityDataService {
 
-    private final OperationalActivityDataRepository opDataRepo;
-    private final Report06Repository reportRepo;
-    private final OperationalActivityDataMapper mapper;
-    private final ExceptionFactory exceptionFactory;
+    Report06Repository report06Repository;
+    OperationalActivityDataMapper operationalActivityDataMapper;
+    ReportCacheFactory reportCacheFactory;
+    ReportCacheService<Report06DraftDTO> reportCacheService;
+    ExceptionFactory exceptionFactory;
 
-    @Override
-    public OperationalActivityDataDto findById(UUID id) {
-        return opDataRepo.findById(id)
-                .map(mapper::toDto)
-                .orElseThrow(() -> exceptionFactory.createNotFoundException(
-                        "OperationalActivityData", "id", ObjectError.ENTITY_NOT_FOUND
-                ));
+    @Autowired
+    public OperationActivityDataServiceImpl(Report06Repository report06Repository,
+                                            OperationalActivityDataMapper operationalActivityDataMapper,
+                                            ReportCacheFactory reportCacheFactory,
+                                            ExceptionFactory exceptionFactory) {
+        this.report06Repository = report06Repository;
+        this.operationalActivityDataMapper = operationalActivityDataMapper;
+        this.reportCacheFactory = reportCacheFactory;
+        this.exceptionFactory = exceptionFactory;
+
+        this.reportCacheService = reportCacheFactory.getCacheService(Report06DraftDTO.class);
     }
 
     @Override
-    public OperationalActivityDataDto create(OperationalActivityDataDto dto, UUID reportId) {
-        Report06 report = reportRepo.findById(reportId)
-                .orElseThrow(() -> exceptionFactory.createNotFoundException(
-                        "Report06", "id", ObjectError.ENTITY_NOT_FOUND));
+    @Transactional
+    public OperationalActivityDataDTO createOperationalActivityData(UUID report06Id, UUID userAccountId, OperationalActivityDataCreateDTO request) {
 
-        OperationalActivityData entity = mapper.toEntity(dto);
+        request = StringNormalizerUtil.normalizeRequest(request);
+
+        Report06 report = report06Repository.findById(report06Id)
+                .orElseThrow(() -> exceptionFactory.createNotFoundException(
+                        "Report06",
+                        "report06Id",
+                        report06Id,
+                        OperationalActivityError.REPORT_NOT_FOUND));
+
+        Report06DraftDTO draft = reportCacheService.getDraftReport(report06Id, userAccountId);
+        if (draft != null && draft.getOperationalActivityData() != null) {
+            log.info("Overwriting existing OperationalActivityData in cache - report06Id: {}, userAccountId: {}", report06Id, userAccountId);
+        }
+
+        OperationalActivityData entity = operationalActivityDataMapper.toEntity(request);
         entity.setReport06(report);
 
-        // Default initial values (required)
-        entity.setDataManagementProcedure("Not Provided");
-        entity.setEmissionFactorSource("Not Provided");
+        OperationalActivityDataDTO responseDto = operationalActivityDataMapper.toDTO(entity);
 
-        entity = opDataRepo.save(entity);
-        return mapper.toDto(entity);
+        if (draft == null) {
+            draft = Report06DraftDTO.builder()
+                    .report06Id(report06Id)
+                    .isDraft(true)
+                    .lastModified(LocalDateTime.now())
+                    .build();
+            reportCacheService.saveDraftReport(draft, userAccountId, report06Id);
+        }
+
+        reportCacheService.updateSectionData(report06Id, userAccountId, responseDto, "operationalActivityData");
+
+        log.info("Created OperationalActivityData in cache - report06Id: {}, userAccountId: {}", report06Id, userAccountId);
+        return responseDto;
     }
 
     @Override
-    public OperationalActivityDataDto update(UUID id, OperationalActivityDataDto dto) {
-        OperationalActivityData entity = opDataRepo.findById(id)
-                .orElseThrow(() -> exceptionFactory.createNotFoundException(
-                        "OperationalActivityData", "id", ObjectError.ENTITY_NOT_FOUND));
+    @Transactional(readOnly = true)
+    public OperationalActivityDataDTO getOperationalActivityData(UUID report06Id, UUID userAccountId) {
 
-        mapper.updateEntity(entity, dto);
+        Report06DraftDTO draft = reportCacheService.getDraftReport(report06Id, userAccountId);
+        if (draft != null && draft.getOperationalActivityData() != null) {
+            log.info("Found OperationalActivityData in cache - report06Id: {}, userAccountId: {}", report06Id, userAccountId);
+            return draft.getOperationalActivityData();
+        }
 
-        entity = opDataRepo.save(entity);
-        return mapper.toDto(entity);
+        log.warn("OperationalActivityData not found in cache - report06Id: {}, userAccountId: {}", report06Id, userAccountId);
+        return null;
     }
 
     @Override
-    public void delete(UUID id) {
-        OperationalActivityData entity = opDataRepo.findById(id)
-                .orElseThrow(() -> exceptionFactory.createNotFoundException(
-                        "OperationalActivityData", "id", ObjectError.ENTITY_NOT_FOUND));
+    @Transactional
+    public void deleteOperationalActivityData(UUID report06Id, UUID userAccountId) {
 
-        opDataRepo.delete(entity);
+        Report06DraftDTO draft = reportCacheService.getDraftReport(report06Id, userAccountId);
+        if (draft != null) {
+            reportCacheService.updateSectionData(report06Id, userAccountId, null, "operationalActivityData");
+            log.info("Deleted OperationalActivityData from cache - report06Id: {}, userAccountId: {}", report06Id, userAccountId);
+        } else {
+            log.warn("No draft found in cache - report06Id: {}, userAccountId: {}", report06Id, userAccountId);
+        }
     }
 }
