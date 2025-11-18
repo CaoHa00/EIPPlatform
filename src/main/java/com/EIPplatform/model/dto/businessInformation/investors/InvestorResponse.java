@@ -2,7 +2,6 @@ package com.EIPplatform.model.dto.businessInformation.investors;
 
 import java.util.UUID;
 
-import com.EIPplatform.configuration.AuditMetaData;
 import com.EIPplatform.model.enums.InvestorType;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
@@ -34,5 +33,5 @@ public abstract class InvestorResponse {
     String phone;
     String fax;
     String email;
-    AuditMetaData auditMetaData;
+    // AuditMetaData auditMetaData;
 }

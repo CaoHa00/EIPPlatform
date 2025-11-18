@@ -1,10 +1,7 @@
 package com.EIPplatform.model.dto.businessInformation;
 
-import java.time.LocalDateTime;
-import java.util.List;
 import java.util.UUID;
 
-import com.EIPplatform.model.entity.businessInformation.legalRepresentative.LegalRepresentative;
 import com.EIPplatform.model.enums.OperationType;
 
 import lombok.AllArgsConstructor;
@@ -33,10 +30,10 @@ public class BusinessDetailResponse {
     OperationType operationType;
     String seasonalDescription;
 
-    List<String> userAccounts;
+    // List<String> userAccounts;
 
-    LocalDateTime createdAt;
-    String createdBy;
-    LocalDateTime updatedAt;
-    String updatedBy;
+    // LocalDateTime createdAt;
+    // String createdBy;
+    // LocalDateTime updatedAt;
+    // String updatedBy;
 }

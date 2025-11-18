@@ -1,24 +1,25 @@
 
 package com.EIPplatform.mapper.businessInformation;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+
+import com.EIPplatform.mapper.authentication.UserAccountMapper;
 import com.EIPplatform.model.dto.businessInformation.BusinessDetailDTO;
 import com.EIPplatform.model.dto.businessInformation.BusinessDetailResponse;
 import com.EIPplatform.model.entity.businessInformation.BusinessDetail;
 import com.EIPplatform.model.entity.businessInformation.legalRepresentative.LegalRepresentative;
 import com.EIPplatform.model.entity.user.authentication.UserAccount;
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
-import com.EIPplatform.mapper.authentication.UserAccountMapper;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Mapper(componentModel = "spring", uses = {
         UserAccountMapper.class
 })
 public interface BusinessDetailMapper {
 
-    @Mapping(target = "userAccounts", source = "userAccounts")
+    // @Mapping(target = "userAccounts", source = "userAccounts")
     @Mapping(source = "ISO_certificate_14001", target = "ISO_certificate_14001")
     @Mapping(source = "isoCertificateFilePath", target = "isoCertificateFilePath")
     BusinessDetailResponse toResponse(BusinessDetail entity);
@@ -33,9 +34,10 @@ public interface BusinessDetailMapper {
     @Mapping(target = "envComponentPermits", ignore = true)
     @Mapping(target = "userAccounts", ignore = true)
     @Mapping(target = "investor", ignore = true)
-    // @Mapping(target = "legalRepresentative", ignore = true)
+    @Mapping(target = "legalRepresentative", ignore = true)
     @Mapping(source = "ISO_certificate_14001", target = "ISO_certificate_14001")
     @Mapping(target = "isoCertificateFilePath", ignore = true)
+    @Mapping(target = "products", ignore = true)
     BusinessDetail toEntity(BusinessDetailDTO dto);
 
     List<BusinessDetail> toEntityList(List<BusinessDetailDTO> dtos);

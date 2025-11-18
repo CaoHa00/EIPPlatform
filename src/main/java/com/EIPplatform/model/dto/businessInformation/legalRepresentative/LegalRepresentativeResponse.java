@@ -1,13 +1,16 @@
 package com.EIPplatform.model.dto.businessInformation.legalRepresentative;
 
-import lombok.*;
-import lombok.experimental.FieldDefaults;
-
 import java.time.LocalDate;
 import java.util.UUID;
 
-import com.EIPplatform.configuration.AuditMetaData;
 import com.EIPplatform.model.enums.Gender;
+
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.experimental.FieldDefaults;
 
 @Data
 @NoArgsConstructor
@@ -29,5 +32,5 @@ public class LegalRepresentativeResponse {
     String phone;
     String fax;
     String email;
-    AuditMetaData auditMetaData;
+    // AuditMetaData auditMetaData;
 }

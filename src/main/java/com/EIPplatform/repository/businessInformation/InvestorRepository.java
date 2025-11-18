@@ -21,4 +21,6 @@ public interface InvestorRepository extends JpaRepository<Investor, UUID>, JpaSp
      * Tương tự, dùng để kiểm tra khi cập nhật.
      */
     boolean existsByTaxCodeAndInvestorIdNot(String taxCode, UUID investorId);
+
+    
 }

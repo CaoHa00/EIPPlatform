@@ -1,4 +1,3 @@
-
 package com.EIPplatform.repository.businessInformation;
 
 import java.util.List;
@@ -38,6 +37,10 @@ public interface BusinessDetailRepository extends JpaRepository<BusinessDetail, 
     List<Object[]> countByIndustrySector();
 
     boolean existsByBusinessRegistrationNumber(String businessRegistrationNumber); //service
+
+    boolean existsByBusinessDetailId(UUID businessDetailId);
+
+    Optional<BusinessDetail> findByBusinessDetailId(UUID businessDetailId); // service
 
     Optional<BusinessDetail> findByBusinessRegistrationNumber(String businessRegistrationNumber); // service
 

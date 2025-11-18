@@ -1,4 +1,4 @@
-package com.EIPplatform.controller.businessInformation;
+package com.EIPplatform.controller.businessInformation.investor;
 
 
 import jakarta.validation.Valid;
