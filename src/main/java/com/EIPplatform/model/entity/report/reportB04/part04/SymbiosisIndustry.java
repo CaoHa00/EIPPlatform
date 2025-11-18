@@ -1,6 +1,6 @@
 package com.EIPplatform.model.entity.report.reportB04.part04;
 
-
+import com.EIPplatform.model.entity.report.reportB04.ReportB04;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -8,7 +8,9 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -34,17 +36,14 @@ public class SymbiosisIndustry {
     @Column(name = "si_id")
     Long siId;
 
-
-
-    //------------------------Indus------------------------------
+    // ------------------------Indus------------------------------
     @Column(name = "indus_sym_count", columnDefinition = "NVARCHAR(255)")
     String indusSymCount;
 
     @Column(name = "indus_sym_type", columnDefinition = "NVARCHAR(255)")
     String indusSymType;
 
-
-    //------------------------is_sym------------------------------
+    // ------------------------is_sym------------------------------
     @Column(name = "is_sym_io_exchange")
     Boolean isSymIoExchange;
 
@@ -57,18 +56,19 @@ public class SymbiosisIndustry {
     @Column(name = "is_sym_resource_recovery")
     Boolean isSymResourceRecovery;
 
-    //------------------------symbiosis------------------------------
+    // ------------------------symbiosis------------------------------
     @Column(name = "symbiosis_type_other", columnDefinition = "NVARCHAR(255)")
     String symbiosisTypeOther;
 
     @Column(name = "symbiosis_desc_other", columnDefinition = "NVARCHAR(255)")
     String symbiosisDescOther;
 
-    //---------------------sym_electricity---------------------
+    // ---------------------sym_electricity---------------------
     @Column(name = "sym_electricity_saving", columnDefinition = "NVARCHAR(255)")
     String symElectricitySaving;
 
     @Column(name = "sym_electricity_unit", nullable = false, columnDefinition = "NVARCHAR(255)")
+    @Builder.Default
     String symElectricityUnit = "kwh";
 
     @Column(name = "sym_electricity_co2_reduction", columnDefinition = "NVARCHAR(255)")
@@ -80,7 +80,7 @@ public class SymbiosisIndustry {
     @Column(name = "sym_electricity_other_benefits", columnDefinition = "NVARCHAR(255)")
     String symElectricityOtherBenefits;
 
-    //---------------------sym_fuel---------------------
+    // ---------------------sym_fuel---------------------
     @Column(name = "sym_fuel_saving_amount", nullable = false, columnDefinition = "NVARCHAR(255)")
     String symFuelSavingAmount;
 
@@ -96,32 +96,33 @@ public class SymbiosisIndustry {
     @Column(name = "sym_fuel_other_benefits", nullable = false, columnDefinition = "NVARCHAR(255)")
     String symFuelOtherBenefits;
 
-    //---------------------Total---------------------
+    // ---------------------Total---------------------
     @Column(name = "sym_total_co2_reduction", nullable = false, columnDefinition = "NVARCHAR(255)")
     String symTotalCo2Reduction;
 
-    //---------------------sym_water---------------------
+    // ---------------------sym_water---------------------
     @Column(name = "sym_water_saving", columnDefinition = "NVARCHAR(255)")
     String symWaterSaving;
 
     @Column(name = "sym_water_saving_unit", nullable = false, columnDefinition = "NVARCHAR(255)")
+    @Builder.Default
     String symWaterSavingUnit = "m3/year";
 
     @Column(name = "sym_water_saving_cost", columnDefinition = "NVARCHAR(255)")
     String symWaterSavingCost;
 
-    //---------------------sym_wastewater---------------------
+    // ---------------------sym_wastewater---------------------
     @Column(name = "sym_wastewater_reduction", columnDefinition = "NVARCHAR(255)")
     String symWastewaterReduction;
 
     @Column(name = "sym_wastewater_unit", nullable = false, columnDefinition = "NVARCHAR(255)")
+    @Builder.Default
     String symWastewaterUnit = "m3/year";
 
     @Column(name = "sym_wastewater_saving_cost", columnDefinition = "NVARCHAR(255)")
     String symWastewaterSavingCost;
 
-
-    //---------------------sym_waste---------------------
+    // ---------------------sym_waste---------------------
     @Column(name = "sym_waste_treated_reduction", columnDefinition = "NVARCHAR(255)")
     String symWasteTreatedReduction;
 
@@ -132,6 +133,7 @@ public class SymbiosisIndustry {
     String symWasteReuseCostSaving;
 
     @Column(name = "sym_waste_reuse_unit", nullable = false, columnDefinition = "NVARCHAR(255)")
+    @Builder.Default
     String symWasteReuseUnit = "ton/year";
 
     @Column(name = "sym_waste_recycle_amount", columnDefinition = "NVARCHAR(255)")
@@ -141,11 +143,10 @@ public class SymbiosisIndustry {
     String symWasteRecycleCostSaving;
 
     @Column(name = "sym_waste_recycle_unit", nullable = false, columnDefinition = "NVARCHAR(255)")
+    @Builder.Default
     String symWasteRecycleUnit = "ton/year";
 
-
-
-    //---------------------sym_st_material---------------------
+    // ---------------------sym_st_material---------------------
     @Column(name = "sym_st_material_saving_quantity", columnDefinition = "NVARCHAR(255)")
     String symStMaterialSavingQuantity;
 
@@ -153,10 +154,10 @@ public class SymbiosisIndustry {
     String symStMaterialCostSaving;
 
     @Column(name = "sym_st_material_unit", nullable = false, columnDefinition = "NVARCHAR(255)")
+    @Builder.Default
     String symStMaterialUnit = "ton/year";
 
-
-    //---------------------sym_nd_material---------------------
+    // ---------------------sym_nd_material---------------------
     @Column(name = "sym_nd_material_saving_quantity", columnDefinition = "NVARCHAR(255)")
     String symNdMaterialSavingQuantity;
 
@@ -164,6 +165,7 @@ public class SymbiosisIndustry {
     String symNdMaterialCostSaving;
 
     @Column(name = "sym_nd_material_unit", nullable = false, columnDefinition = "NVARCHAR(255)")
+    @Builder.Default
     String symNdMaterialUnit = "ton/year";
 
     @Column(name = "sym_nd_material_supply_amount", columnDefinition = "NVARCHAR(255)")
@@ -175,8 +177,7 @@ public class SymbiosisIndustry {
     @Column(name = "sym_nd_material_supply_saving_cost", columnDefinition = "NVARCHAR(255)")
     String symNdMaterialSupplySavingCost;
 
-
-    //---------------------sym_chemical---------------------
+    // ---------------------sym_chemical---------------------
     @Column(name = "sym_chemical_saving_amount", columnDefinition = "NVARCHAR(255)")
     String symChemicalSavingAmount;
 
@@ -184,17 +185,22 @@ public class SymbiosisIndustry {
     String symChemicalCostSaving;
 
     @Column(name = "sym_chemical_unit", nullable = false, columnDefinition = "NVARCHAR(255)")
+    @Builder.Default
     String symChemicalUnit = "ton/year";
 
-
-    //---------------------sym_service---------------------
+    // ---------------------sym_service---------------------
     @Column(name = "sym_service_sharing_list", columnDefinition = "NVARCHAR(255)")
     String symServiceSharingList;
 
     @Column(name = "sym_service_sharing_cost_saving", columnDefinition = "NVARCHAR(255)")
     String symServiceSharingCostSaving;
 
-    //------------------------sym_companies------------------------------
+    // =====================Relationship=================================
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "report_b04_id")
+    ReportB04 reportB04;
+
+    // ------------------------sym_companies------------------------------
     @OneToMany(mappedBy = "symbiosisIndustry", cascade = CascadeType.PERSIST, fetch = FetchType.LAZY)
     @JsonBackReference(value = "symbiosisIndustry-symCompanies")
     List<SymCompany> symCompanies;

@@ -7,11 +7,15 @@ import org.hibernate.annotations.UuidGenerator;
 
 import com.EIPplatform.model.entity.businessInformation.BusinessDetail;
 import com.EIPplatform.model.entity.businessInformation.products.Product;
+import com.EIPplatform.model.entity.report.report05.airemmissionmanagement.AirEmissionData;
+import com.EIPplatform.model.entity.report.report05.wastemanagement.WasteManagementData;
+import com.EIPplatform.model.entity.report.report05.wastewatermanager.WasteWaterData;
 import com.EIPplatform.model.entity.report.reportB04.part01.ReportInvestorDetail;
 import com.EIPplatform.model.entity.report.reportB04.part03.ResourcesSavingAndReduction;
 import com.EIPplatform.model.entity.report.reportB04.part04.SymbiosisIndustry;
 import com.EIPplatform.model.entity.user.authentication.UserAccount;
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -102,23 +106,24 @@ public class ReportB04 {
     // ============= RELATIONSHIPS =============
 
     // -- part 1 --
-    @OneToOne(cascade = CascadeType.PERSIST, fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "rid_id")
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
+    @JsonManagedReference(value = "report-rid-ref")
+    @JoinColumn(name = "rid_id",nullable = true)
     ReportInvestorDetail reportInvestorDetail;
 
     // -- part 2 --
-    @OneToOne(cascade = CascadeType.PERSIST, fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "product_id")
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
+    @JoinColumn(name = "product_id",nullable = true)
     Product product;
     
     // -- part 3 --
-    @OneToOne(cascade = CascadeType.PERSIST, fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "rsar_id")
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
+    @JoinColumn(name = "rsar_id",nullable = true)
     ResourcesSavingAndReduction resourcesSavingAndReduction;
 
     // -- part 4 --
-    @OneToOne(cascade = CascadeType.PERSIST, fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "si_id")
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
+    @JoinColumn(name = "si_id",nullable = true)
     SymbiosisIndustry symbiosisIndustry;
 
      @PrePersist

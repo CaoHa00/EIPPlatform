@@ -1,16 +1,21 @@
-
 package com.EIPplatform.service.businessInformation;
 
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
+
 import com.EIPplatform.exception.ExceptionFactory;
 import com.EIPplatform.exception.errorCategories.BusinessDetailError;
 import com.EIPplatform.exception.errorCategories.UserError;
 import com.EIPplatform.mapper.businessInformation.BusinessDetailMapper;
+import com.EIPplatform.mapper.businessInformation.LegalRepresentativeMapper;
 import com.EIPplatform.model.dto.businessInformation.BusinessDetailDTO;
 import com.EIPplatform.model.dto.businessInformation.BusinessDetailResponse;
+import com.EIPplatform.model.dto.businessInformation.legalRepresentative.LegalRepresentativeCreationNameOnly;
 import com.EIPplatform.model.entity.businessInformation.BusinessDetail;
 import com.EIPplatform.model.entity.businessInformation.Equipment;
 import com.EIPplatform.model.entity.businessInformation.Facility;
@@ -22,13 +27,11 @@ import com.EIPplatform.repository.authentication.UserAccountRepository;
 import com.EIPplatform.repository.businessInformation.BusinessDetailRepository;
 import com.EIPplatform.service.fileStorage.FileStorageService;
 import com.EIPplatform.util.BusinessDetailUtils;
+
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
 
 @Slf4j
 @Service
@@ -43,33 +46,35 @@ public class BusinessDetailImplementation implements BusinessDetailInterface {
     FileStorageService fileStorageService;
     ExceptionFactory exceptionFactory;
     BusinessDetailUtils businessDetailUtils;
+    LegalRepresentativeMapper legalRepresentativeMapper;
+
 
     @Override
     public BusinessDetailResponse findByUserAccountId(UUID userAccountId) {
         return businessDetailRepository.findByUserAccountId(userAccountId)
                 .map(businessDetailMapper::toResponse)
                 .orElseThrow(() -> exceptionFactory.createNotFoundException(
-                        "BusinessDetail",
-                        "userAccountId",
-                        userAccountId,
-                        BusinessDetailError.NOT_FOUND));
+                "BusinessDetail",
+                "userAccountId",
+                userAccountId,
+                BusinessDetailError.NOT_FOUND));
     }
 
     @Override
     public void deleteByUserAccountId(UUID userAccountId) {
         BusinessDetail entity = businessDetailRepository.findByUserAccountId(userAccountId)
                 .orElseThrow(() -> exceptionFactory.createNotFoundException(
-                        "BusinessDetail",
-                        "userAccountId",
-                        userAccountId,
-                        BusinessDetailError.NOT_FOUND));
+                "BusinessDetail",
+                "userAccountId",
+                userAccountId,
+                BusinessDetailError.NOT_FOUND));
 
         UserAccount userAccount = userAccountRepository.findByUserAccountId(userAccountId)
                 .orElseThrow(() -> exceptionFactory.createNotFoundException(
-                        "UserAccount",
-                        "userAccountId",
-                        userAccountId,
-                        UserError.NOT_FOUND));
+                "UserAccount",
+                "userAccountId",
+                userAccountId,
+                UserError.NOT_FOUND));
         if (!entity.getUserAccounts().contains(userAccount)) {
             throw exceptionFactory.createCustomException(
                     "BusinessDetail",
@@ -104,7 +109,10 @@ public class BusinessDetailImplementation implements BusinessDetailInterface {
 
         UserAccount userAccount = userAccountRepository.findByUserAccountId(userAccountId)
                 .orElseThrow(() -> exceptionFactory.createNotFoundException(
-                        "UserAccount", "userAccountId", userAccountId, UserError.NOT_FOUND));
+                "UserAccount",
+                "userAccountId",
+                userAccountId,
+                UserError.NOT_FOUND));
 
         BusinessDetail entity = businessDetailMapper.toEntity(dto);
 
@@ -136,7 +144,13 @@ public class BusinessDetailImplementation implements BusinessDetailInterface {
             entity.setIsoCertificateFilePath(filePath);
         }
 
-        // Save
+        LegalRepresentativeCreationNameOnly legalRepresentativeCreationNameOnly= new LegalRepresentativeCreationNameOnly();
+        legalRepresentativeCreationNameOnly.setName(dto.getLegalRepresentative());
+        LegalRepresentative legalRep = legalRepresentativeMapper
+                .nameToDraftEntity(legalRepresentativeCreationNameOnly);
+        entity.setLegalRepresentative(legalRep);
+        legalRep.setBusinessDetail(entity);
+
         entity = businessDetailRepository.saveAndFlush(entity);
         userAccountRepository.flush();
 
@@ -152,7 +166,10 @@ public class BusinessDetailImplementation implements BusinessDetailInterface {
 
         BusinessDetail entity = businessDetailRepository.findByUserAccountId(userAccountId)
                 .orElseThrow(() -> exceptionFactory.createNotFoundException(
-                        "BusinessDetail", "userAccountId", userAccountId, BusinessDetailError.NOT_FOUND));
+                "BusinessDetail",
+                "userAccountId",
+                userAccountId,
+                BusinessDetailError.NOT_FOUND));
 
         businessDetailUtils.validateOperationDetails(dto.getOperationType(), dto.getSeasonalDescription());
         businessDetailUtils.validateUniqueFields(dto, entity.getBusinessDetailId());
@@ -211,10 +228,10 @@ public class BusinessDetailImplementation implements BusinessDetailInterface {
     public UUID findByBusinessDetailId(UUID userAccountId) {
         BusinessDetail entity = businessDetailRepository.findByUserAccountId(userAccountId)
                 .orElseThrow(() -> exceptionFactory.createNotFoundException(
-                        "BusinessDetail",
-                        "userAccountId",
-                        userAccountId,
-                        BusinessDetailError.NOT_FOUND));
+                "BusinessDetail",
+                "userAccountId",
+                userAccountId,
+                BusinessDetailError.NOT_FOUND));
         return entity.getBusinessDetailId();
     }
 
@@ -235,9 +252,7 @@ public class BusinessDetailImplementation implements BusinessDetailInterface {
     // ));
     // return businessDetailWithHistoryConsumptionMapper.toDTO(entity);
     // }
-
     // ==================== FILE-SPECIFIC METHODS ====================
-
     /**
      * Upload ISO cert file for BusinessDetail (separate endpoint for file-only
      * upload)
@@ -247,18 +262,18 @@ public class BusinessDetailImplementation implements BusinessDetailInterface {
         // Tìm BusinessDetail qua userAccountId để kiểm tra quyền
         BusinessDetail entity = businessDetailRepository.findByUserAccountId(userAccountId)
                 .orElseThrow(() -> exceptionFactory.createNotFoundException(
-                        "BusinessDetail",
-                        "userAccountId",
-                        userAccountId,
-                        BusinessDetailError.NOT_FOUND));
+                "BusinessDetail",
+                "userAccountId",
+                userAccountId,
+                BusinessDetailError.NOT_FOUND));
 
         // Kiểm tra user có thuộc BusinessDetail không
         UserAccount userAccount = userAccountRepository.findByUserAccountId(userAccountId)
                 .orElseThrow(() -> exceptionFactory.createNotFoundException(
-                        "UserAccount",
-                        "userAccountId",
-                        userAccountId,
-                        UserError.NOT_FOUND));
+                "UserAccount",
+                "userAccountId",
+                userAccountId,
+                UserError.NOT_FOUND));
         if (!entity.getUserAccounts().contains(userAccount)) {
             throw exceptionFactory.createCustomException(
                     "BusinessDetail",
@@ -294,18 +309,18 @@ public class BusinessDetailImplementation implements BusinessDetailInterface {
         // Tìm BusinessDetail qua userAccountId để kiểm tra quyền
         BusinessDetail entity = businessDetailRepository.findByUserAccountId(userAccountId)
                 .orElseThrow(() -> exceptionFactory.createNotFoundException(
-                        "BusinessDetail",
-                        "userAccountId",
-                        userAccountId,
-                        BusinessDetailError.NOT_FOUND));
+                "BusinessDetail",
+                "userAccountId",
+                userAccountId,
+                BusinessDetailError.NOT_FOUND));
 
         // Kiểm tra user có thuộc BusinessDetail không
         UserAccount userAccount = userAccountRepository.findByUserAccountId(userAccountId)
                 .orElseThrow(() -> exceptionFactory.createNotFoundException(
-                        "UserAccount",
-                        "userAccountId",
-                        userAccountId,
-                        UserError.NOT_FOUND));
+                "UserAccount",
+                "userAccountId",
+                userAccountId,
+                UserError.NOT_FOUND));
         if (!entity.getUserAccounts().contains(userAccount)) {
             throw exceptionFactory.createCustomException(
                     "BusinessDetail",
@@ -341,7 +356,6 @@ public class BusinessDetailImplementation implements BusinessDetailInterface {
     }
 
     // ==================== PRIVATE HELPERS ====================
-
     private String uploadIsoCertFile(BusinessDetail entity, MultipartFile file) {
         // Generate path: e.g., "business/{businessId}/iso-cert/{year}/{filename}"
         int year = LocalDateTime.now().getYear();

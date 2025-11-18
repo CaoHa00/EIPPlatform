@@ -14,7 +14,9 @@ import lombok.experimental.FieldDefaults;
 public enum LegalRepresentativeError implements ErrorCodeInterface {
 
     LEGAL_REPRESENTATIVE_NOT_FOUND(1001, "Legal representative not found", HttpStatus.NOT_FOUND),
-    TAX_CODE_ALREADY_EXISTS(1002, "Tax code already exists", HttpStatus.BAD_REQUEST);
+    TAX_CODE_ALREADY_EXISTS(1002, "Tax code already exists", HttpStatus.BAD_REQUEST),
+    BUSINESS_DETAIL_ID_REQUIRED(1003, "Business detail id required", HttpStatus.BAD_REQUEST),
+    BUSINESS_DETAIL_NOT_FOUND(1004, "Business detail is not found", HttpStatus.BAD_REQUEST);
 
     int code;
     String message;

@@ -11,7 +11,7 @@ public interface  ReportB04Service {
     
     ReportB04DTO createReport(CreateReportRequest request);
 
-    ReportB04 getReportById(UUID reportId);
+    ReportB04DTO getReportById(UUID reportId);
 
     /**
      * Lấy draft data từ CACHE
@@ -21,7 +21,7 @@ public interface  ReportB04Service {
     /**
      * Submit draft từ CACHE xuống DATABASE
      */
-    ReportB04 submitDraftToDatabase(UUID reportId, UUID userAccountId);
+    ReportB04DTO submitDraftToDatabase(UUID reportId, UUID userAccountId);
 
     // /**
     //  * Cập nhật completion percentage cho draft dựa trên dữ liệu hiện tại

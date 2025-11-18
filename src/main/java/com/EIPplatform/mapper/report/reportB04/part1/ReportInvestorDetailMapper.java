@@ -7,7 +7,7 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping; // <-- THÊM IMPORT NÀY
 import org.mapstruct.MappingTarget;
 import org.mapstruct.NullValuePropertyMappingStrategy;
-
+import com.EIPplatform.model.dto.report.reportB04.part1.ReportInvestorDetailDTO;
 import com.EIPplatform.model.dto.report.reportB04.part1.request.ReportInvestorDetailCreateRequest;
 import com.EIPplatform.model.dto.report.reportB04.part1.request.ReportInvestorDetailUpdateRequest;
 import com.EIPplatform.model.dto.report.reportB04.part1.response.ReportInvestorDetailResponse;
@@ -48,6 +48,27 @@ public interface ReportInvestorDetailMapper {
 
     @Mapping(source = "investor", target = "investor", qualifiedByName = "toInvestorResponse")
     ReportInvestorDetailResponse toResponse(ReportInvestorDetail entity);
+
+    @Mapping(target = "ridId", ignore = true)
+    @Mapping(target = "investor", ignore = true)
+    @Mapping(target = "legalDoc", ignore = true) 
+    @Mapping(target = "thirdPartyImplementer", ignore = true)
+    ReportInvestorDetailDTO toDTO(ReportInvestorDetail entity);
+
+    @Mapping(target = "ridId", ignore = true)
+    @Mapping(target = "reportB04", ignore = true)
+    @Mapping(target = "investor", ignore = true)
+    @Mapping(target = "legalDoc", ignore = true) 
+    @Mapping(target = "thirdPartyImplementer", ignore = true)
+    ReportInvestorDetail dtoToEntity(ReportInvestorDetailDTO dto);
+
+    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+    @Mapping(target = "ridId", ignore = true)
+    @Mapping(target = "reportB04", ignore = true)
+    @Mapping(target = "investor", ignore = true)
+    @Mapping(target = "legalDoc", ignore = true) 
+    @Mapping(target = "thirdPartyImplementer", ignore = true)
+    void updateEntityFromDto(ReportInvestorDetailDTO dto, @MappingTarget ReportInvestorDetail entity);
 
     List<ReportInvestorDetailResponse> toResponseList(List<ReportInvestorDetail> entities);
 

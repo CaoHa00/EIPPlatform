@@ -22,8 +22,8 @@ import com.EIPplatform.service.report.reportCache.reportCacheA05.ReportCacheServ
 
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import lombok.experimental.NonFinal;
 import lombok.extern.slf4j.Slf4j;
-import lombok.AccessLevel;
 
 @Service
 @Slf4j

@@ -1,6 +1,7 @@
 package com.EIPplatform.model.dto.businessInformation.investors;
 
 import java.time.LocalDate;
+import java.util.UUID;
 
 import com.EIPplatform.model.enums.Gender;
 
@@ -55,4 +56,7 @@ public class InvestorIndividualCreationRequest {
 
     @Email(message = "Invalid email format")
     String email;
+
+    @NotNull(message = "FIELD_REQUIRED")
+    UUID businessDetailId;
 }

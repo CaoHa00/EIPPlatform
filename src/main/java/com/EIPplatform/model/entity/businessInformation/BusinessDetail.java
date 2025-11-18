@@ -48,11 +48,7 @@ public class BusinessDetail {
     @Nationalized
     @Column(nullable = false, unique = true, columnDefinition = "NVARCHAR(255)")
     String facilityName;
-
-    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-    @JoinColumn(name = "legal_representative_id", referencedColumnName = "legal_representative_id", nullable = false, foreignKey = @ForeignKey(name = "fk_business_detail_legal_representative"))
-    LegalRepresentative legalRepresentative;
-
+    
     @Column(nullable = false, length = 20, columnDefinition = "NVARCHAR(255)")
     String phoneNumber;
 
@@ -76,13 +72,18 @@ public class BusinessDetail {
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
+    @Builder.Default
     OperationType operationType = OperationType.REGULAR;
 
     @Column(length = 500, columnDefinition = "NVARCHAR(500)")
     String seasonalDescription;
 
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-    @JoinColumn(name = "investor_id", referencedColumnName = "investor_id", foreignKey = @ForeignKey(name = "fk_business_detail_investor"))
+    @JoinColumn(name = "legal_representative_id")
+    LegalRepresentative legalRepresentative;
+
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @JoinColumn(name = "investor_id")
     Investor investor;
 
     @OneToMany(mappedBy = "businessDetail", fetch = FetchType.LAZY)
@@ -108,6 +109,7 @@ public class BusinessDetail {
     EnvPermits envPermits;
 
     @OneToMany(mappedBy = "businessDetail", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default
     @JsonManagedReference(value = "businessDetail-componentPermits")
     List<EnvComponentPermit> envComponentPermits = new ArrayList<>();
 
@@ -137,7 +139,7 @@ public class BusinessDetail {
     @OneToMany(mappedBy = "businessDetail", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference(value = "businessDetail-products")
     @Builder.Default
-    private List<Product> products = new ArrayList<>();
+    List<Product> products = new ArrayList<>();
 
     public LocalDateTime getCreatedAt() {
         return auditMetaData.getCreatedAt();

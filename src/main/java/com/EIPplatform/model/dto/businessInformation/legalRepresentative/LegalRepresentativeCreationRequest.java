@@ -1,6 +1,7 @@
 package com.EIPplatform.model.dto.businessInformation.legalRepresentative;
 
 import java.time.LocalDate;
+import java.util.UUID;
 
 import com.EIPplatform.model.enums.Gender;
 
@@ -43,8 +44,10 @@ public class LegalRepresentativeCreationRequest {
     @NotBlank(message = "FIELD_REQUIRED")
     String nationality;
 
+    @NotNull(message = "FIELD_REQUIRED")
     String address;
 
+    @NotNull(message = "FIELD_REQUIRED")
     String taxCode;
 
     @NotBlank(message = "FIELD_REQUIRED")
@@ -52,6 +55,10 @@ public class LegalRepresentativeCreationRequest {
 
     String fax;
 
+    @NotNull(message = "FIELD_REQUIRED")
     @Email(message = "Invalid email format")
     String email;
+
+    @NotNull(message = "FIELD_REQUIRED")
+    UUID BusinessDetailId;
 }

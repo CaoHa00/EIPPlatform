@@ -51,10 +51,12 @@ public class UserAccount {
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(columnDefinition = "uniqueidentifier")
     UUID userAccountId;
+    
     @Nationalized
     @Email
     @Column(nullable = false, unique = true, columnDefinition = "NVARCHAR(255)")
     String email;
+
     @Nationalized
     @Column(nullable = false, columnDefinition = "NVARCHAR(255)")
     String password;

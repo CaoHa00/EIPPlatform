@@ -5,7 +5,8 @@ import java.util.UUID;
 
 import com.EIPplatform.model.dto.businessInformation.products.ProductDTO;
 import com.EIPplatform.model.dto.report.reportB04.part1.ReportInvestorDetailDTO;
-
+import com.EIPplatform.model.dto.report.reportB04.part3.ResourcesSavingAndReductionDTO;
+import com.EIPplatform.model.dto.report.reportB04.part4.SymbiosisIndustryDTO;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -28,16 +29,16 @@ public class ReportB04DraftDTO implements Serializable{
     String reportingPeriod;
 
     // part1
-    ReportInvestorDetailDTO reportInvestorDetail;
+    ReportInvestorDetailDTO reportInvestorDetailDTO;
 
     // part2
     ProductDTO productDTO;
 
     //part3
-    // ResourcesSavingAndReductionDTO resourcesSavingAndReductionDTO;
+    ResourcesSavingAndReductionDTO resourcesSavingAndReductionDTO;
 
-    //part3
-    // SymbiosisIndustryDTO symbiosisIndustry;
+    //part4
+    SymbiosisIndustryDTO symbiosisIndustryDTO;
 
     // Metadata
     LocalDateTime lastModified;

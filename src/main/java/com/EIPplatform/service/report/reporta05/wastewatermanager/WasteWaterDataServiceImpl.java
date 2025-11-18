@@ -23,9 +23,11 @@ import com.EIPplatform.model.dto.report.report05.ReportA05DraftDTO;
 import com.EIPplatform.model.entity.report.report05.ReportA05;
 import com.EIPplatform.repository.report.ReportA05Repository;
 
+import jakarta.annotation.PostConstruct;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import lombok.experimental.NonFinal;
 import lombok.extern.slf4j.Slf4j;
 
 @Service
@@ -72,8 +74,7 @@ public class WasteWaterDataServiceImpl implements WasteWaterDataService {
                         "ReportA05",
                         "reportId",
                         reportId,
-                        WasteWaterError.REPORT_NOT_FOUND
-                ));
+                        WasteWaterError.REPORT_NOT_FOUND));
 
         ReportA05DraftDTO draft = reportCacheService.getDraftReport(reportId, userAccountId);
         WasteWaterDataDTO oldDto = (draft != null) ? draft.getWasteWaterData() : null;
@@ -140,7 +141,8 @@ public class WasteWaterDataServiceImpl implements WasteWaterDataService {
             if (dto != null) {
                 deleteFiles(dto);
                 reportCacheService.updateSectionData(reportId, userAccountId, null, "wasteWaterData");
-                log.info("Deleted WasteWaterData from cache - reportId: {}, userAccountId: {}", reportId, userAccountId);
+                log.info("Deleted WasteWaterData from cache - reportId: {}, userAccountId: {}", reportId,
+                        userAccountId);
             } else {
                 log.warn("No WasteWaterData found in cache - reportId: {}, userAccountId: {}", reportId, userAccountId);
             }
@@ -158,15 +160,13 @@ public class WasteWaterDataServiceImpl implements WasteWaterDataService {
                     "WasteWaterData",
                     "reportId",
                     reportId,
-                    WasteWaterError.NOT_FOUND
-            );
+                    WasteWaterError.NOT_FOUND);
         }
 
         WasteWaterDataDTO dto = draft.getWasteWaterData();
         if (dto.getConnectionDiagram() == null) {
             throw exceptionFactory.createNotFoundException(
-                    "ConnectionDiagramFile", "wasteWaterData", reportId.toString(), WasteWaterError.NOT_FOUND
-            );
+                    "ConnectionDiagramFile", "wasteWaterData", reportId.toString(), WasteWaterError.NOT_FOUND);
         }
 
         fileStorageService.deleteFile(dto.getConnectionDiagram());
@@ -185,15 +185,13 @@ public class WasteWaterDataServiceImpl implements WasteWaterDataService {
                     "WasteWaterData",
                     "reportId",
                     reportId,
-                    WasteWaterError.NOT_FOUND
-            );
+                    WasteWaterError.NOT_FOUND);
         }
 
         WasteWaterDataDTO dto = draft.getWasteWaterData();
         if (dto.getAutoStationMap() == null) {
             throw exceptionFactory.createNotFoundException(
-                    "AutoStationMapFile", "wasteWaterData", reportId.toString(), WasteWaterError.NOT_FOUND
-            );
+                    "AutoStationMapFile", "wasteWaterData", reportId.toString(), WasteWaterError.NOT_FOUND);
         }
 
         fileStorageService.deleteFile(dto.getAutoStationMap());
@@ -212,15 +210,13 @@ public class WasteWaterDataServiceImpl implements WasteWaterDataService {
                     "WasteWaterData",
                     "reportId",
                     reportId,
-                    WasteWaterError.NOT_FOUND
-            );
+                    WasteWaterError.NOT_FOUND);
         }
 
         WasteWaterDataDTO dto = draft.getWasteWaterData();
         if (dto.getConnectionDiagram() == null) {
             throw exceptionFactory.createNotFoundException(
-                    "ConnectionDiagramFile", "wasteWaterData", reportId.toString(), WasteWaterError.NOT_FOUND
-            );
+                    "ConnectionDiagramFile", "wasteWaterData", reportId.toString(), WasteWaterError.NOT_FOUND);
         }
 
         return fileStorageService.downloadFile(dto.getConnectionDiagram());
@@ -235,15 +231,13 @@ public class WasteWaterDataServiceImpl implements WasteWaterDataService {
                     "WasteWaterData",
                     "reportId",
                     reportId,
-                    WasteWaterError.NOT_FOUND
-            );
+                    WasteWaterError.NOT_FOUND);
         }
 
         WasteWaterDataDTO dto = draft.getWasteWaterData();
         if (dto.getAutoStationMap() == null) {
             throw exceptionFactory.createNotFoundException(
-                    "AutoStationMapFile", "wasteWaterData", reportId.toString(), WasteWaterError.NOT_FOUND
-            );
+                    "AutoStationMapFile", "wasteWaterData", reportId.toString(), WasteWaterError.NOT_FOUND);
         }
 
         return fileStorageService.downloadFile(dto.getAutoStationMap());
@@ -253,7 +247,8 @@ public class WasteWaterDataServiceImpl implements WasteWaterDataService {
     @Transactional(readOnly = true)
     public boolean hasWasteWaterDataConnectionFile(UUID reportId, UUID userAccountId) {
         ReportA05DraftDTO draft = reportCacheService.getDraftReport(reportId, userAccountId);
-        if (draft == null || draft.getWasteWaterData() == null || draft.getWasteWaterData().getConnectionDiagram() == null) {
+        if (draft == null || draft.getWasteWaterData() == null
+                || draft.getWasteWaterData().getConnectionDiagram() == null) {
             return false;
         }
 
@@ -264,7 +259,8 @@ public class WasteWaterDataServiceImpl implements WasteWaterDataService {
     @Transactional(readOnly = true)
     public boolean hasWasteWaterDataMapFile(UUID reportId, UUID userAccountId) {
         ReportA05DraftDTO draft = reportCacheService.getDraftReport(reportId, userAccountId);
-        if (draft == null || draft.getWasteWaterData() == null || draft.getWasteWaterData().getAutoStationMap() == null) {
+        if (draft == null || draft.getWasteWaterData() == null
+                || draft.getWasteWaterData().getAutoStationMap() == null) {
             return false;
         }
 

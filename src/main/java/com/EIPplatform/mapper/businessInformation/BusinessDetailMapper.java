@@ -1,5 +1,12 @@
 package com.EIPplatform.mapper.businessInformation;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+
+import com.EIPplatform.mapper.authentication.UserAccountMapper;
 import com.EIPplatform.model.dto.businessInformation.BusinessDetailDTO;
 import com.EIPplatform.model.dto.businessInformation.BusinessDetailResponse;
 import com.EIPplatform.model.entity.businessInformation.BusinessDetail;
@@ -13,6 +20,9 @@ import java.util.stream.Collectors;
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public interface BusinessDetailMapper {
 
+    // @Mapping(target = "userAccounts", source = "userAccounts")
+    @Mapping(source = "ISO_certificate_14001", target = "ISO_certificate_14001")
+    @Mapping(source = "isoCertificateFilePath", target = "isoCertificateFilePath")
     @Mapping(target = "businessDetailId", source = "businessDetailId")
     @Mapping(target = "facilityName", source = "facilityName")
     @Mapping(target = "isoCertificateFilePath", source = "isoCertificateFilePath")
@@ -39,6 +49,11 @@ public interface BusinessDetailMapper {
     @Mapping(target = "reports", ignore = true)
     @Mapping(target = "envPermits", ignore = true)
     @Mapping(target = "envComponentPermits", ignore = true)
+    @Mapping(target = "userAccounts", ignore = true)
+    @Mapping(target = "investor", ignore = true)
+    @Mapping(target = "legalRepresentative", ignore = true)
+    @Mapping(source = "ISO_certificate_14001", target = "ISO_certificate_14001")
+    @Mapping(target = "isoCertificateFilePath", ignore = true)
     @Mapping(target = "businessHistoryConsumptions", ignore = true)
     @Mapping(target = "projects", ignore = true)
     @Mapping(target = "facilities", ignore = true)
