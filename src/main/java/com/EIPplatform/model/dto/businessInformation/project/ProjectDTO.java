@@ -1,17 +1,16 @@
 package com.EIPplatform.model.dto.businessInformation.project;
 
+import java.time.LocalDate;
+import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDate;
-import java.util.UUID;
-
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class ProjectResponseDto {
-      UUID projectId;
+public class ProjectDTO {
+    UUID projectId;
     String projectName;
     String projectLocation;
     String projectLegalDocType;

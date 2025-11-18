@@ -19,7 +19,6 @@ import com.EIPplatform.model.dto.businessInformation.legalRepresentative.LegalRe
 import com.EIPplatform.model.entity.businessInformation.BusinessDetail;
 import com.EIPplatform.model.entity.businessInformation.Equipment;
 import com.EIPplatform.model.entity.businessInformation.Facility;
-import com.EIPplatform.model.entity.businessInformation.Process;
 import com.EIPplatform.model.entity.businessInformation.Project;
 import com.EIPplatform.model.entity.businessInformation.legalRepresentative.LegalRepresentative;
 import com.EIPplatform.model.entity.user.authentication.UserAccount;
@@ -115,10 +114,6 @@ public class BusinessDetailImplementation implements BusinessDetailInterface {
                 UserError.NOT_FOUND));
 
         BusinessDetail entity = businessDetailMapper.toEntity(dto);
-
-        // LegalRepresentative
-        LegalRepresentative legalRep = businessDetailUtils.fetchLegalRepresentative(dto.getLegalRepresentative());
-        entity.setLegalRepresentative(legalRep);
 
         // Projects
         List<Project> projects = businessDetailUtils.mapProjects(dto.getProjects(), entity);

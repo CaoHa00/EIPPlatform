@@ -2,6 +2,7 @@ package com.EIPplatform.model.entity.report.reportB04.part01;
 
 import org.hibernate.annotations.Nationalized;
 
+import com.EIPplatform.model.entity.businessInformation.Project;
 import com.EIPplatform.model.entity.businessInformation.investors.Investor;
 import com.EIPplatform.model.entity.legalDoc.LegalDoc;
 import com.EIPplatform.model.entity.report.reportB04.ReportB04;
@@ -77,5 +78,9 @@ public class ReportInvestorDetail {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "third_party_implementer_id")
     ThirdPartyImplementer thirdPartyImplementer;
+
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "project_id")
+    Project project;
 
 }

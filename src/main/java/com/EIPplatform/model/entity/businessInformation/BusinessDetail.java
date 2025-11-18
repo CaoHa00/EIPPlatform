@@ -19,7 +19,6 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import com.EIPplatform.configuration.AuditMetaData;
 import com.EIPplatform.model.entity.report.report05.ReportA05;
 import com.EIPplatform.model.entity.user.authentication.UserAccount;
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import lombok.AccessLevel;

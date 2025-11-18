@@ -1,6 +1,7 @@
 package com.EIPplatform.model.dto.report.reportB04.part1;
 
 import com.EIPplatform.model.dto.businessInformation.investors.InvestorResponse;
+import com.EIPplatform.model.dto.businessInformation.project.ProjectDTO;
 import com.EIPplatform.model.dto.legalDoc.LegalDocDTO;
 
 import lombok.AccessLevel;
@@ -24,5 +25,5 @@ public class ReportInvestorDetailDTO {
     InvestorResponse investor;
     LegalDocDTO legalDoc;
     ThirdPartyImplementerDTO thirdPartyImplementer;
-
+    ProjectDTO project;
 }

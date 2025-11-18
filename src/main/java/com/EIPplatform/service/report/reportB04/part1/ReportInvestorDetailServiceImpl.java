@@ -1,120 +1,109 @@
 package com.EIPplatform.service.report.reportB04.part1;
 
-import java.util.List;
+import java.time.LocalDateTime;
+import java.util.UUID;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import com.EIPplatform.exception.ExceptionFactory;
+import com.EIPplatform.exception.errorCategories.AirEmissionError;
+import com.EIPplatform.exception.errorCategories.ReportError;
+import com.EIPplatform.mapper.businessInformation.ProductMapper;
 import com.EIPplatform.mapper.report.reportB04.part1.ReportInvestorDetailMapper;
+import com.EIPplatform.mapper.report.reportB04.part3.ResourcesSavingAndReductionMapper;
+import com.EIPplatform.mapper.report.reportB04.part4.SymbiosisIndustryMapper;
+import com.EIPplatform.model.dto.report.report05.ReportA05DraftDTO;
+import com.EIPplatform.model.dto.report.report05.airemmissionmanagement.airemissiondata.AirEmissionDataDTO;
+import com.EIPplatform.model.dto.report.reportB04.ReportB04DraftDTO;
+import com.EIPplatform.model.dto.report.reportB04.part1.ReportInvestorDetailDTO;
 import com.EIPplatform.model.dto.report.reportB04.part1.request.ReportInvestorDetailCreateRequest;
-import com.EIPplatform.model.dto.report.reportB04.part1.request.ReportInvestorDetailUpdateRequest;
-import com.EIPplatform.model.dto.report.reportB04.part1.response.ReportInvestorDetailResponse;
-import com.EIPplatform.model.entity.businessInformation.investors.Investor;
-import com.EIPplatform.model.entity.legalDoc.LegalDoc;
+import com.EIPplatform.model.entity.report.report05.ReportA05;
+import com.EIPplatform.model.entity.report.report05.airemmissionmanagement.AirEmissionData;
+import com.EIPplatform.model.entity.report.reportB04.ReportB04;
 import com.EIPplatform.model.entity.report.reportB04.part01.ReportInvestorDetail;
-import com.EIPplatform.model.entity.report.reportB04.part01.ThirdPartyImplementer;
-import com.EIPplatform.repository.businessInformation.InvestorRepository;
+import com.EIPplatform.repository.businessInformation.BusinessDetailRepository;
+import com.EIPplatform.repository.businessInformation.ProductRepository;
+import com.EIPplatform.repository.report.reportB04.ReportB04Repository;
 import com.EIPplatform.repository.report.reportB04.part1.ReportInvestorDetailRepository;
-// Giả định bạn đã có các Repository này
-import com.EIPplatform.repository.report.reportB04.part1.ThirdPartyImplementerRepository;
-import com.EIPplatform.repository.user.LegalDocRepository;
+import com.EIPplatform.service.fileStorage.FileStorageService;
+import com.EIPplatform.service.report.reportCache.reportCacheA05.ReportCacheFactory;
+import com.EIPplatform.service.report.reportCache.reportCacheA05.ReportCacheService;
+import com.EIPplatform.util.StringNormalizerUtil;
 
-import jakarta.persistence.EntityNotFoundException; // Dùng exception chuẩn
+import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
+import lombok.experimental.NonFinal;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor // Tự động tiêm (inject) các trường 'final'
-@Transactional // Nên thêm Transactional cho các Service
-public class ReportInvestorDetailServiceImpl implements ReportInvestorDetailService {
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+public class ReportInvestorDetailServiceImpl implements ReportInvestorDetailService{
+    ReportB04Repository reportB04Repository;
+    BusinessDetailRepository businessDetailRepository;
+    ReportInvestorDetailRepository reportInvestorDetailRepository;
+    ReportInvestorDetailMapper reportInvestorDetailMapper;
+    ProductRepository productRepository;
+    ProductMapper productMapper;
+    ExceptionFactory exceptionFactory;
+    FileStorageService fileStorageService;
+    ReportCacheFactory reportCacheFactory;
+    ResourcesSavingAndReductionMapper resourcesSavingAndReductionMapper;
+    SymbiosisIndustryMapper symbiosisIndustryMapper;
+    // Field khởi tạo trong @PostConstruct
+    @NonFinal
+    ReportCacheService<ReportB04DraftDTO> reportCacheService;
+
     
-    private final ReportInvestorDetailMapper reportMapper; 
-    
-    private final ReportInvestorDetailRepository reportRepository;
-    
-    private final InvestorRepository investorRepository;
-    private final LegalDocRepository legalDocRepository;
-    private final ThirdPartyImplementerRepository thirdPartyImplementerRepository;
-
     @Override
-    public ReportInvestorDetailResponse create(ReportInvestorDetailCreateRequest request) {
+    @Transactional
+    public ReportInvestorDetailDTO createReportInvestorDetailDTO(UUID reportId, UUID userAccountId,
+            ReportInvestorDetailCreateRequest request) {
+      request = StringNormalizerUtil.normalizeRequest(request);
 
-        ReportInvestorDetail entity = reportMapper.toEntityFromCreate(request);
-        Investor investor = investorRepository.findById(request.getInvestorId()) 
-                .orElseThrow(() -> new EntityNotFoundException("Investor not found: " + request.getInvestorId()));
-        entity.setInvestor(investor);
+        ReportB04 report = reportB04Repository.findById(reportId)
+                .orElseThrow(() -> exceptionFactory.createNotFoundException(
+                        "ReportB04",
+                        "reportId",
+                        reportId,
+                        ReportError.REPORT_NOT_FOUND));
 
-        // LegalDoc là tùy chọn
-        if (request.getLegalDocId() != null) {
-            LegalDoc legalDoc = legalDocRepository.findById(request.getLegalDocId()) 
-                    .orElseThrow(() -> new EntityNotFoundException("LegalDoc not found: " + request.getLegalDocId()));
-            entity.setLegalDoc(legalDoc);
+        ReportB04DraftDTO draft = reportCacheService.getDraftReport(reportId, userAccountId);
+        ReportInvestorDetail entity = reportInvestorDetailMapper.toEntityFromCreate(request);
+
+
+        ReportInvestorDetailDTO responseDto = reportInvestorDetailMapper.toDTO(entity);
+
+        if (draft == null) {
+            draft = ReportB04DraftDTO.builder()
+                    .reportId(reportId)
+                    .isDraft(true)
+                    .lastModified(LocalDateTime.now())
+                    .build();
+            reportCacheService.saveDraftReport(draft, userAccountId, reportId);
         }
 
-        // ThirdPartyImplementer là tùy chọn
-        if (request.getThirdPartyImplementerId() != null) {
-            ThirdPartyImplementer tpi = thirdPartyImplementerRepository.findById(request.getThirdPartyImplementerId()) 
-                    .orElseThrow(() -> new EntityNotFoundException("ThirdPartyImplementer not found: " + request.getThirdPartyImplementerId()));
-            entity.setThirdPartyImplementer(tpi);
-        }
-        ReportInvestorDetail savedEntity = reportRepository.save(entity);
+        reportCacheService.updateSectionData(reportId, userAccountId, responseDto, "airEmissionData");
 
-        return reportMapper.toResponse(savedEntity);
-    }
-
-    // --- HÀM UPDATE ĐÚNG LOGIC ---
-    @Override
-    public ReportInvestorDetailResponse update(Long id, ReportInvestorDetailUpdateRequest request) {
-        ReportInvestorDetail existingEntity = findEntityById(id);
-
-        reportMapper.updateEntityFromUpdate(request, existingEntity);
-        if (request.getInvestorId() != null) {
-            Investor investor = investorRepository.findById(request.getInvestorId()) 
-                    .orElseThrow(() -> new EntityNotFoundException("Investor not found: " + request.getInvestorId()));
-            existingEntity.setInvestor(investor);
-        }
-        
-        if (request.getLegalDocId() != null) {
-            LegalDoc legalDoc = legalDocRepository.findById(request.getLegalDocId())
-                    .orElseThrow(() -> new EntityNotFoundException("LegalDoc not found: " + request.getLegalDocId()));
-            existingEntity.setLegalDoc(legalDoc);
-        }
-        
-        if (request.getThirdPartyImplementerId() != null) {
-            ThirdPartyImplementer tpi = thirdPartyImplementerRepository.findById(request.getThirdPartyImplementerId())
-                    .orElseThrow(() -> new EntityNotFoundException("ThirdPartyImplementer not found: " + request.getThirdPartyImplementerId()));
-            existingEntity.setThirdPartyImplementer(tpi);
-        }
-
-        ReportInvestorDetail savedEntity = reportRepository.save(existingEntity);
-
-        return reportMapper.toResponse(savedEntity);
-    }
-
-    @Override
-    @Transactional(readOnly = true) 
-    public ReportInvestorDetailResponse getById(Long id) {
-        return reportRepository.findById(id)
-                .map(reportMapper::toResponse) 
-                .orElseThrow(() -> new EntityNotFoundException("ReportInvestorDetail not found with id: " + id));
+        log.info("Created AirEmissionData in cache - reportId: {}, userAccountId: {}", reportId, userAccountId);
+        return responseDto;
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<ReportInvestorDetailResponse> getAll() {
-        return reportMapper.toResponseList(reportRepository.findAll());
-    }
-
-    @Override
-    public void delete(Long id) {
-        if (!reportRepository.existsById(id)) {
-            throw new EntityNotFoundException("ReportInvestorDetail not found with id: " + id);
+    public ReportInvestorDetailDTO getReportInvestorDetailDTO(UUID reportId, UUID userAccountId) {
+         ReportB04DraftDTO draft = reportCacheService.getDraftReport(reportId, userAccountId);
+        if (draft != null && draft.getReportInvestorDetailDTO() != null) {
+            log.info("Found AirEmissionData in cache - reportId: {}, userAccountId: {}", reportId, userAccountId);
+            return draft.getReportInvestorDetailDTO();
         }
-        reportRepository.deleteById(id);
-    }
 
-    private ReportInvestorDetail findEntityById(Long id) {
-        return reportRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("ReportInvestorDetail not found with id: " + id));
+        log.warn("AirEmissionData not found in cache - reportId: {}, userAccountId: {}", reportId, userAccountId);
+        return null;
     }
+    
 }

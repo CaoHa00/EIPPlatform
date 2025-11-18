@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.EIPplatform.model.dto.api.ApiResponse;
-import com.EIPplatform.model.dto.api.UserAccountDTO;
 import com.EIPplatform.model.dto.userAccount.UserAccountCreateDTO;
 import com.EIPplatform.model.dto.userAccount.UserAccountResponseDTO;
 import com.EIPplatform.model.dto.userAccount.UserAccountUpdateDTO;

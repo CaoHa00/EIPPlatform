@@ -26,5 +26,4 @@ public interface ProcessMapper {
 //    @Mapping(target = "id", ignore = true) // thêm dòng này để an toàn tuyệt đối
     void updateFromDto(@MappingTarget Process entity, ProcessResponseDto dto);
 
-
 }
