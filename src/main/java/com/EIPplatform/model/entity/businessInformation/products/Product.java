@@ -1,6 +1,5 @@
 package com.EIPplatform.model.entity.businessInformation.products;
 
-import com.EIPplatform.model.entity.user.businessInformation.BusinessDetail;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.*;

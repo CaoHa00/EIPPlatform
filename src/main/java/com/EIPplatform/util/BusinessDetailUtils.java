@@ -12,22 +12,19 @@ import com.EIPplatform.model.dto.businessInformation.equipment.EquipmentResponse
 import com.EIPplatform.model.dto.businessInformation.facility.FacilityResponseDto;
 import com.EIPplatform.model.dto.businessInformation.process.ProcessResponseDto;
 import com.EIPplatform.model.dto.businessInformation.project.ProjectResponseDto;
-import com.EIPplatform.model.entity.user.businessInformation.BusinessDetail;
-import com.EIPplatform.model.entity.user.businessInformation.Equipment;
-import com.EIPplatform.model.entity.user.businessInformation.Facility;
-import com.EIPplatform.model.entity.user.businessInformation.Process;
-import com.EIPplatform.model.entity.user.businessInformation.Project;
-import com.EIPplatform.model.entity.user.legalRepresentative.LegalRepresentative;
+import com.EIPplatform.model.entity.businessInformation.BusinessDetail;
+import com.EIPplatform.model.entity.businessInformation.Equipment;
+import com.EIPplatform.model.entity.businessInformation.Facility;
+import com.EIPplatform.model.entity.businessInformation.Process;
+import com.EIPplatform.model.entity.businessInformation.Project;
+import com.EIPplatform.model.entity.businessInformation.legalRepresentative.LegalRepresentative;
 import com.EIPplatform.model.enums.OperationType;
-import com.EIPplatform.repository.user.BusinessDetailRepository;
+import com.EIPplatform.repository.businessInformation.BusinessDetailRepository;
 import com.EIPplatform.repository.user.LegalRepresentativeRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 @Component
 @RequiredArgsConstructor
@@ -101,10 +98,48 @@ public class BusinessDetailUtils {
         return list;
     }
 
-    public List<com.EIPplatform.model.entity.user.businessInformation.Process> mapProcesses(List<ProcessResponseDto> dtos, BusinessDetail parent) {
-        if (dtos == null) return new ArrayList<>();
-        List<Process> list = processMapper.toEntityList(dtos);
-        list.forEach(p -> p.setBusinessDetail(parent));
-        return list;
+    public void syncProcesses(List<ProcessResponseDto> dtos, BusinessDetail entity) {
+        if (entity == null) return;
+
+        List<Process> current = entity.getProcesses();
+
+        if (dtos == null || dtos.isEmpty()) {
+            current.clear();
+            return;
+        }
+
+        List<Process> updatedList = dtos.stream()
+                .map(dto -> {
+                    Process process;
+
+                    if (dto.getProcessId() != null) {
+                        process = current.stream()
+                                .filter(p -> dto.getProcessId().equals(p.getProcessId()))
+                                .findFirst()
+                                .orElseGet(() -> {
+                                    // Không tìm thấy → tạo mới
+                                    Process newProcess = processMapper.toEntity(dto);
+                                    newProcess.setBusinessDetail(entity);
+                                    return newProcess;
+                                });
+                    } else {
+                        process = processMapper.toEntity(dto);
+                        process.setBusinessDetail(entity);
+                    }
+                    processMapper.updateFromDto(process, dto);
+                    process.setBusinessDetail(entity);
+                    return process;
+                })
+                .toList();
+        current.removeIf(existing ->
+                updatedList.stream().noneMatch(newOne ->
+                        Objects.equals(existing.getProcessId(), newOne.getProcessId()))
+        );
+        for (Process updated : updatedList) {
+            if (updated.getProcessId() == null ||
+                    current.stream().noneMatch(p -> p.getProcessId().equals(updated.getProcessId()))) {
+                current.add(updated);
+            }
+        }
     }
 }

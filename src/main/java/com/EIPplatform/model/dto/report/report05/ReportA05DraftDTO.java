@@ -35,9 +35,6 @@ public class ReportA05DraftDTO implements Serializable {
     WasteManagementDataDTO wasteManagementData;
     AirEmissionDataDTO airEmissionData;
 
-    // AirEmissionDataDTO airEmissionData;  // Bước tiếp theo
-    // SolidWasteDataDTO solidWasteData;    // Bước tiếp theo (có thể hợp nhất với WasteManagementData nếu cần)
-
     // Metadata
     LocalDateTime lastModified;
     Integer currentStep; // Bước hiện tại user đang ở (e.g., 1 = WasteWater, 2 = WasteManagement, etc.)

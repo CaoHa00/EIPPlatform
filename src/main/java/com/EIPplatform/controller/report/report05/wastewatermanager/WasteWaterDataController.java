@@ -4,6 +4,7 @@ import com.EIPplatform.model.dto.api.ApiResponse;
 import com.EIPplatform.model.dto.report.report05.wastewatermanager.wastewatermanagement.WasteWaterDataCreateDTO;
 import com.EIPplatform.model.dto.report.report05.wastewatermanager.wastewatermanagement.WasteWaterDataDTO;
 import com.EIPplatform.service.report.reporta05.wastewatermanager.WasteWaterDataService;
+import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -30,7 +31,7 @@ public class WasteWaterDataController {
     public ApiResponse<WasteWaterDataDTO> createWasteWaterData(
             @PathVariable UUID reportId,
             @RequestParam UUID userAccountId,
-            @RequestPart("data") WasteWaterDataCreateDTO request,
+            @RequestPart("data")@Valid WasteWaterDataCreateDTO request,
             @RequestPart(value = "connectionFile", required = false) MultipartFile connectionFile,
             @RequestPart(value = "mapFile", required = false) MultipartFile mapFile) {
         var result = wasteWaterDataService.createWasteWaterData(reportId, userAccountId, request, connectionFile, mapFile);

@@ -1,31 +1,32 @@
 package com.EIPplatform.mapper.report.report06.part02;
-
-import com.EIPplatform.model.dto.report.report06.part2.EmissionSourceDto;
+import com.EIPplatform.model.dto.report.report06.part02.emissionSource.EmissionSourceCreateDTO;
+import com.EIPplatform.model.dto.report.report06.part02.emissionSource.EmissionSourceDTO;
+import com.EIPplatform.model.dto.report.report06.part02.emissionSource.EmissionSourceUpdateDTO;
 import com.EIPplatform.model.entity.report.report06.part02.EmissionSource;
 import org.mapstruct.*;
+import org.mapstruct.factory.Mappers;
 
 import java.util.List;
 
 @Mapper(componentModel = "spring")
 public interface EmissionSourceMapper {
 
-    // ENTITY → DTO
-    @Mapping(source = "operationalActivityData.operationalActivityDataId", target = "operationalActivityDataId")
-    @Mapping(target = "sourceScope", expression = "java(String.valueOf(entity.getSourceScope()))")
-    EmissionSourceDto toDto(EmissionSource entity);
-    List<EmissionSourceDto> toDtoList(List<EmissionSource> entities);
+    EmissionSourceMapper INSTANCE = Mappers.getMapper(EmissionSourceMapper.class);
 
-    // DTO → ENTITY
     @Mapping(target = "emissionSourceId", ignore = true)
     @Mapping(target = "operationalActivityData", ignore = true)
-    @Mapping(target = "sourceScope", expression = "java(Integer.valueOf(dto.getSourceScope()))")
-    EmissionSource toEntity(EmissionSourceDto dto);
+    @Mapping(target = "ghgEmitted", ignore = true)
+    EmissionSource toEntity(EmissionSourceCreateDTO createDTO);
 
-    List<EmissionSource> toEntityList(List<EmissionSourceDto> dtos);
+    EmissionSourceDTO toDTO(EmissionSource entity);
 
-    // PATCH UPDATE
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+    @Mapping(target = "emissionSourceId", ignore = true)
     @Mapping(target = "operationalActivityData", ignore = true)
-    @Mapping(target = "sourceScope", expression = "java(dto.getSourceScope() != null ? Integer.valueOf(dto.getSourceScope()) : entity.getSourceScope())")
-    void updateEntity(@MappingTarget EmissionSource entity, EmissionSourceDto dto);
+    @Mapping(target = "ghgEmitted", ignore = true)
+    void updateEntityFromDTO(EmissionSourceUpdateDTO updateDTO, @MappingTarget EmissionSource entity);
+
+    List<EmissionSource> toEntityList(List<EmissionSourceCreateDTO> createDTOList);
+
+    List<EmissionSourceDTO> toDTOList(List<EmissionSource> entityList);
 }

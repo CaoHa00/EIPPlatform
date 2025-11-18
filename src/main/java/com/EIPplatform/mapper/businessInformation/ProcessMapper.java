@@ -1,7 +1,7 @@
 package com.EIPplatform.mapper.businessInformation;
+import com.EIPplatform.model.entity.businessInformation.Process;
 
 import com.EIPplatform.model.dto.businessInformation.process.ProcessResponseDto;
-import com.EIPplatform.model.entity.user.businessInformation.Process;
 import org.mapstruct.*;
 import java.util.List;
 
@@ -9,13 +9,12 @@ import java.util.List;
 public interface ProcessMapper {
 
     // ENTITY → RESPONSE
-    @Mapping(source = "businessDetail.businessDetailId", target = "businessId")
+    @Mapping(source = "businessDetail.businessDetailId", target = "businessDetailId")
     ProcessResponseDto toResponse(Process entity);
 
     List<ProcessResponseDto> toResponseList(List<Process> entities);
 
     // DTO → ENTITY
-    @Mapping(target = "processId", ignore = true)
     @Mapping(target = "businessDetail", ignore = true)
     Process toEntity(ProcessResponseDto dto);
 
@@ -24,5 +23,8 @@ public interface ProcessMapper {
     // PARTIAL UPDATE
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     @Mapping(target = "businessDetail", ignore = true)
-    void updateEntity(@MappingTarget Process entity, ProcessResponseDto dto);
+//    @Mapping(target = "id", ignore = true) // thêm dòng này để an toàn tuyệt đối
+    void updateFromDto(@MappingTarget Process entity, ProcessResponseDto dto);
+
+
 }

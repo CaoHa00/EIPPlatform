@@ -1,11 +1,11 @@
 package com.EIPplatform.model.entity.report.report06;
 
+import com.EIPplatform.model.entity.businessInformation.BusinessDetail;
 import com.EIPplatform.model.entity.report.ReportStatus;
 import com.EIPplatform.model.entity.report.report06.part01.BusinessInformation;
 import com.EIPplatform.model.entity.report.report06.part02.OperationalActivityData;
 import com.EIPplatform.model.entity.report.report06.part03.InventoryResultData;
 import com.EIPplatform.model.entity.user.authentication.UserAccount;
-import com.EIPplatform.model.entity.user.businessInformation.BusinessDetail;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;

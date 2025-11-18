@@ -13,7 +13,7 @@ import java.util.UUID;
 @AllArgsConstructor
 public class EquipmentResponseDto {
     UUID equipmentId;
-    UUID businessId;
+    UUID businessDetailId;
     String equipmentName;
     String equipmentSpecifications;
     Integer equipmentQuantity;

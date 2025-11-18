@@ -1,6 +1,6 @@
 package com.EIPplatform.model.dto.businessInformation.project;
 
-import com.EIPplatform.model.dto.legalDocs.LegalDocsResponse;
+import com.EIPplatform.model.dto.legalDoc.LegalDocResponse;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -15,6 +15,6 @@ public class ProjectResponseDto {
     UUID projectId;
     String projectName;
     String projectLocation;
-    UUID businessId;
-    List<LegalDocsResponse> legalDocsList;
+    UUID businessDetailId;
+    List<LegalDocResponse> legalDocsList;
 }

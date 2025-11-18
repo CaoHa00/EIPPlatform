@@ -1,4 +1,4 @@
-package com.EIPplatform.model.entity.user.businessInformation;
+package com.EIPplatform.model.entity.businessInformation;
 
 
 import com.fasterxml.jackson.annotation.JsonBackReference;

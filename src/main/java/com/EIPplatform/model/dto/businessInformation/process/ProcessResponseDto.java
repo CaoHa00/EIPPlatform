@@ -13,7 +13,7 @@ import java.util.UUID;
 @AllArgsConstructor
 public class ProcessResponseDto {
     UUID processId;
-    UUID businessId;
+    UUID businessDetailId;
     String processName;
     String processDescription;
     String processFlowchart;

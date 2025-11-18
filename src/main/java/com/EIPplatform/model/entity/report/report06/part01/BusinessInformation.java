@@ -1,8 +1,7 @@
 package com.EIPplatform.model.entity.report.report06.part01;
-import com.EIPplatform.model.entity.products.Product;
+import com.EIPplatform.model.entity.businessInformation.products.Product;
 import com.EIPplatform.model.entity.report.report06.Report06;
 import com.EIPplatform.model.entity.user.authentication.UserAccount;
-import com.EIPplatform.model.entity.user.legalDocs.LegalDocs;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.*;
@@ -40,10 +39,10 @@ public class BusinessInformation {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "legal_rep_user_id")
     UserAccount legalRepUser; // New: legal_rep_user_id (FK user_account_id), replaces legalRepTitle
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "legal_doc_id")
-    LegalDocs legalDoc; // New: legal_doc_id (FK)
+//
+//    @ManyToOne(fetch = FetchType.LAZY)
+//    @JoinColumn(name = "legal_doc_id")
+//    LegalDocs legalDoc; // New: legal_doc_id (FK)
 
     @Column(name = "activity_type", columnDefinition = "NVARCHAR(255)") // New: activity_type (from BD)
     String activityType; // Pulled from report06.businessDetail.activityType
