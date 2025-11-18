@@ -9,7 +9,6 @@ import org.springframework.stereotype.Repository;
 import java.util.Optional;
 import java.util.UUID;
 
-
 @Repository
 public interface ReportB04Repository extends JpaRepository<ReportB04, UUID> {
 
@@ -18,3 +17,4 @@ public interface ReportB04Repository extends JpaRepository<ReportB04, UUID> {
             "WHERE r.reportId = :reportId")
     Optional<ReportB04> findByReportIdWithBasic(@Param("reportId") UUID reportId);
 }
+

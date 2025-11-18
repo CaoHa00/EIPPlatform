@@ -17,6 +17,10 @@ import com.EIPplatform.model.dto.businessInformation.BusinessDetailDTO;
 import com.EIPplatform.model.dto.businessInformation.BusinessDetailResponse;
 import com.EIPplatform.model.dto.businessInformation.legalRepresentative.LegalRepresentativeCreationNameOnly;
 import com.EIPplatform.model.entity.businessInformation.BusinessDetail;
+import com.EIPplatform.model.entity.businessInformation.Equipment;
+import com.EIPplatform.model.entity.businessInformation.Facility;
+import com.EIPplatform.model.entity.businessInformation.Process;
+import com.EIPplatform.model.entity.businessInformation.Project;
 import com.EIPplatform.model.entity.businessInformation.legalRepresentative.LegalRepresentative;
 import com.EIPplatform.model.entity.user.authentication.UserAccount;
 import com.EIPplatform.repository.authentication.UserAccountRepository;
@@ -95,10 +99,14 @@ public class BusinessDetailImplementation implements BusinessDetailInterface {
     }
 
     @Override
-    public BusinessDetailResponse createBusinessDetail(UUID userAccountId, BusinessDetailDTO dto,
+    public BusinessDetailResponse createBusinessDetail(
+            UUID userAccountId,
+            BusinessDetailDTO dto,
             MultipartFile isoFile) {
+
         businessDetailUtils.validateOperationDetails(dto.getOperationType(), dto.getSeasonalDescription());
         businessDetailUtils.validateUniqueFields(dto, null);
+
         UserAccount userAccount = userAccountRepository.findByUserAccountId(userAccountId)
                 .orElseThrow(() -> exceptionFactory.createNotFoundException(
                 "UserAccount",
@@ -107,73 +115,114 @@ public class BusinessDetailImplementation implements BusinessDetailInterface {
                 UserError.NOT_FOUND));
 
         BusinessDetail entity = businessDetailMapper.toEntity(dto);
+
+        // LegalRepresentative
+        LegalRepresentative legalRep = businessDetailUtils.fetchLegalRepresentative(dto.getLegalRepresentative());
+        entity.setLegalRepresentative(legalRep);
+
+        // Projects
+        List<Project> projects = businessDetailUtils.mapProjects(dto.getProjects(), entity);
+        entity.setProjects(projects);
+
+        // Facilities
+        List<Facility> facilities = businessDetailUtils.mapFacilities(dto.getFacilities(), entity);
+        entity.setFacilities(facilities);
+
+        // Equipments
+        List<Equipment> equipments = businessDetailUtils.mapEquipments(dto.getEquipments(), entity);
+        entity.setEquipments(equipments);
+
+        // Processes
+        businessDetailUtils.syncProcesses(dto.getProcesses(), entity); // ĐÚNG
+
+        // Attach UserAccount
         entity.getUserAccounts().add(userAccount);
         userAccount.setBusinessDetail(entity);
+
         if (isoFile != null && !isoFile.isEmpty()) {
             String filePath = uploadIsoCertFile(entity, isoFile);
             entity.setIsoCertificateFilePath(filePath);
         }
+
         LegalRepresentativeCreationNameOnly legalRepresentativeCreationNameOnly= new LegalRepresentativeCreationNameOnly();
         legalRepresentativeCreationNameOnly.setName(dto.getLegalRepresentative());
         LegalRepresentative legalRep = legalRepresentativeMapper
                 .nameToDraftEntity(legalRepresentativeCreationNameOnly);
         entity.setLegalRepresentative(legalRep);
         legalRep.setBusinessDetail(entity);
+
         entity = businessDetailRepository.saveAndFlush(entity);
-        if (entity.getBusinessDetailId() == null) {
-            throw exceptionFactory.createCustomException(
-                    "BusinessDetail",
-                    List.of("operation", "companyName"),
-                    List.of("save", dto.getFacilityName()),
-                    UserError.ID_GENERATION_FAILED);
-        }
         userAccountRepository.flush();
-        BusinessDetailResponse response = businessDetailMapper.toResponse(entity);
-        log.info("Created BusinessDetail - ID: {}, Company: {}, TaxCode: {}",
-                entity.getBusinessDetailId(), entity.getFacilityName(), entity.getTaxCode());
-        return response;
+
+        return businessDetailMapper.toResponse(entity);
     }
 
+
     @Override
-    public BusinessDetailResponse updateBusinessDetail(UUID userAccountId, BusinessDetailDTO dto,
+    public BusinessDetailResponse updateBusinessDetail(
+            UUID userAccountId,
+            BusinessDetailDTO dto,
             MultipartFile isoFile) {
+
         BusinessDetail entity = businessDetailRepository.findByUserAccountId(userAccountId)
                 .orElseThrow(() -> exceptionFactory.createNotFoundException(
                 "BusinessDetail",
                 "userAccountId",
                 userAccountId,
                 BusinessDetailError.NOT_FOUND));
+
         businessDetailUtils.validateOperationDetails(dto.getOperationType(), dto.getSeasonalDescription());
         businessDetailUtils.validateUniqueFields(dto, entity.getBusinessDetailId());
-        entity.setFacilityName(dto.getFacilityName());
-        // entity.setLegalRepresentative(dto.getLegalRepresentative());
-        entity.setPhoneNumber(dto.getPhoneNumber());
-        entity.setAddress(dto.getAddress());
-        entity.setActivityType(dto.getActivityType());
-        entity.setScaleCapacity(dto.getScaleCapacity());
-        entity.setISO_certificate_14001(dto.getISO_certificate_14001());
-        entity.setBusinessRegistrationNumber(dto.getBusinessRegistrationNumber());
-        entity.setTaxCode(dto.getTaxCode());
-        entity.setOperationType(dto.getOperationType());
-        entity.setSeasonalDescription(dto.getSeasonalDescription());
-        // Handle ISO file update if provided
+
+        // =======================
+        // 1. BASIC FIELD UPDATE
+        // =======================
+        businessDetailMapper.updateEntity(entity, dto);
+
+        // =======================
+        // 2. RELATIONS UPDATE
+        // =======================
+
+        // LegalRepresentative update
+        LegalRepresentative legalRep = businessDetailUtils.fetchLegalRepresentative(dto.getLegalRepresentative());
+        entity.setLegalRepresentative(legalRep);
+
+        // Projects update
+        List<Project> updatedProjects = businessDetailUtils.mapProjects(dto.getProjects(), entity);
+        entity.setProjects(updatedProjects);
+
+        // Facilities update
+        List<Facility> updatedFacilities = businessDetailUtils.mapFacilities(dto.getFacilities(), entity);
+        entity.setFacilities(updatedFacilities);
+
+        // Equipments update
+        List<Equipment> updatedEquipments = businessDetailUtils.mapEquipments(dto.getEquipments(), entity);
+        entity.setEquipments(updatedEquipments);
+
+        // Processes update
+        businessDetailUtils.syncProcesses(dto.getProcesses(), entity); // ĐÚNG
+
+        // =======================
+        // 3. ISO FILE UPDATE
+        // =======================
         if (isoFile != null && !isoFile.isEmpty()) {
+
             if (entity.getIsoCertificateFilePath() != null) {
                 try {
                     fileStorageService.deleteFile(entity.getIsoCertificateFilePath());
                 } catch (Exception e) {
-                    log.warn("Failed to delete old ISO cert file: {}", entity.getIsoCertificateFilePath(), e);
+                    log.warn("Failed to delete existing ISO cert file: {}", entity.getIsoCertificateFilePath(), e);
                 }
             }
-            String filePath = uploadIsoCertFile(entity, isoFile);
-            entity.setIsoCertificateFilePath(filePath);
+
+            String newFilePath = uploadIsoCertFile(entity, isoFile);
+            entity.setIsoCertificateFilePath(newFilePath);
         }
+
         entity = businessDetailRepository.save(entity);
-        BusinessDetailResponse response = businessDetailMapper.toResponse(entity);
-        log.info("Updated BusinessDetail - ID: {}, Company: {}, TaxCode: {}",
-                entity.getBusinessDetailId(), entity.getFacilityName(), entity.getTaxCode());
-        return response;
+        return businessDetailMapper.toResponse(entity);
     }
+
 
     @Override
     public UUID findByBusinessDetailId(UUID userAccountId) {

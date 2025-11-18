@@ -63,6 +63,34 @@ import lombok.experimental.FieldDefaults;
 import lombok.experimental.NonFinal;
 import lombok.extern.slf4j.Slf4j;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.UUID;
+
+import org.apache.poi.xwpf.usermodel.XWPFDocument;
+import org.apache.poi.xwpf.usermodel.XWPFParagraph;
+import org.apache.poi.xwpf.usermodel.XWPFRun;
+import org.apache.poi.xwpf.usermodel.XWPFTable;
+import org.apache.poi.xwpf.usermodel.XWPFTableCell;
+import org.apache.poi.xwpf.usermodel.XWPFTableRow;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
+import org.springframework.stereotype.Service;
+import org.springframework.validation.annotation.Validated;
+
 @Service
 @Slf4j
 @RequiredArgsConstructor
@@ -70,26 +98,44 @@ import lombok.extern.slf4j.Slf4j;
 @Validated
 public class ReportA05ServiceImpl implements ReportA05Service {
 
-        ReportA05Repository reportA05Repository;
-        BusinessDetailRepository businessDetailRepository;
-        ReportCacheFactory reportCacheFactory;
-        WasteManagementDataMapper wasteManagementDataMapper;
-        AirEmissionDataMapper airEmissionDataMapper;
-        WasteWaterDataMapper wasteWaterDataMapper;
-        ExceptionFactory exceptionFactory;
-        WasteManagementDataRepository wasteManagementDataRepository;
-        AirEmissionDataRepository airEmissionDataRepository;
-        WasteWaterRepository wasteWaterDataRepository;
+        private final ReportA05Repository reportA05Repository;
+        private final BusinessDetailRepository businessDetailRepository;
+        private final ReportCacheFactory reportCacheFactory;
+        private final ReportCacheService<ReportA05DraftDTO> reportCacheService;
+        private final WasteManagementDataMapper wasteManagementDataMapper;
+        private final AirEmissionDataMapper airEmissionDataMapper;
+        private final WasteWaterDataMapper wasteWaterDataMapper;
+        private final ExceptionFactory exceptionFactory;
+        private final WasteManagementDataRepository wasteManagementDataRepository;
+        private final AirEmissionDataRepository airEmissionDataRepository;
+        private final WasteWaterRepository wasteWaterDataRepository;
 
-        @NonFinal
-        ReportCacheService<ReportA05DraftDTO> reportCacheService;
+        @Autowired
+        public ReportA05ServiceImpl(
+                ReportA05Repository reportA05Repository,
+                BusinessDetailRepository businessDetailRepository,
+                ReportCacheFactory reportCacheFactory,
+                WasteManagementDataMapper wasteManagementDataMapper,
+                AirEmissionDataMapper airEmissionDataMapper,
+                WasteWaterDataMapper wasteWaterDataMapper,
+                ExceptionFactory exceptionFactory,
+                WasteManagementDataRepository wasteManagementDataRepository,
+                AirEmissionDataRepository airEmissionDataRepository,
+                WasteWaterRepository wasteWaterDataRepository) {
 
-        @PostConstruct
-        @SuppressWarnings("unused")
-        void init() {
+                this.reportA05Repository = reportA05Repository;
+                this.businessDetailRepository = businessDetailRepository;
+                this.reportCacheFactory = reportCacheFactory;
+                this.wasteManagementDataMapper = wasteManagementDataMapper;
+                this.airEmissionDataMapper = airEmissionDataMapper;
+                this.wasteWaterDataMapper = wasteWaterDataMapper;
+                this.exceptionFactory = exceptionFactory;
+                this.wasteManagementDataRepository = wasteManagementDataRepository;
+                this.airEmissionDataRepository = airEmissionDataRepository;
+                this.wasteWaterDataRepository = wasteWaterDataRepository;
+
                 this.reportCacheService = reportCacheFactory.getCacheService(ReportA05DraftDTO.class);
         }
-
         @NonFinal
         @Value("${app.storage.local.upload-dir:/app/uploads}")
         private String uploadDir;
@@ -436,7 +482,7 @@ public class ReportA05ServiceImpl implements ReportA05Service {
                 data.put("phone_number", business.getPhoneNumber());
                 // data.put("legal_representative", business.getLegalRepresentative());
                 data.put("activity_type", business.getActivityType());
-                data.put("scale_capacity", business.getScaleCapacity());
+//                data.put("scale_capacity", business.getScaleCapacity());
                 data.put("iso_14001_certificate",
                                 business.getISO_certificate_14001() != null ? business.getISO_certificate_14001() : "");
                 data.put("business_license_number", business.getBusinessRegistrationNumber());

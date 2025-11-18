@@ -3,24 +3,25 @@ package com.EIPplatform.service.report.reporta05.wastewatermanager;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+import com.EIPplatform.exception.errorCategories.WasteWaterError;
+import com.EIPplatform.mapper.report.report05.wastewatermanager.WasteWaterDataMapper;
+import com.EIPplatform.model.dto.report.report05.wastewatermanager.wastewatermanagement.WasteWaterDataCreateDTO;
+import com.EIPplatform.model.dto.report.report05.wastewatermanager.wastewatermanagement.WasteWaterDataDTO;
+import com.EIPplatform.model.entity.report.report05.wastewatermanager.WasteWaterData;
+import com.EIPplatform.service.fileStorage.FileStorageService;
+import com.EIPplatform.service.report.reportCache.reportCacheA05.ReportCacheFactory;
+import com.EIPplatform.service.report.reportCache.reportCacheA05.ReportCacheService;
+import com.EIPplatform.util.StringNormalizerUtil;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.EIPplatform.exception.ExceptionFactory;
-import com.EIPplatform.exception.errorCategories.WasteWaterError;
-import com.EIPplatform.mapper.report.report05.wastewatermanager.WasteWaterDataMapper;
 import com.EIPplatform.model.dto.report.report05.ReportA05DraftDTO;
-import com.EIPplatform.model.dto.report.report05.wastewatermanager.wastewatermanagement.WasteWaterDataCreateDTO;
-import com.EIPplatform.model.dto.report.report05.wastewatermanager.wastewatermanagement.WasteWaterDataDTO;
-import com.EIPplatform.model.dto.report.reportB04.ReportB04DraftDTO;
 import com.EIPplatform.model.entity.report.report05.ReportA05;
-import com.EIPplatform.model.entity.report.report05.wastewatermanager.WasteWaterData;
 import com.EIPplatform.repository.report.ReportA05Repository;
-import com.EIPplatform.service.fileStorage.FileStorageService;
-import com.EIPplatform.service.report.reportCache.reportCacheA05.ReportCacheFactory;
-import com.EIPplatform.service.report.reportCache.reportCacheA05.ReportCacheService;
 
 import jakarta.annotation.PostConstruct;
 import lombok.AccessLevel;
@@ -38,17 +39,25 @@ public class WasteWaterDataServiceImpl implements WasteWaterDataService {
     ReportA05Repository reportA05Repository;
     WasteWaterDataMapper wasteWaterDataMapper;
     ReportCacheFactory reportCacheFactory;
+    ReportCacheService<ReportA05DraftDTO> reportCacheService;
     FileStorageService fileStorageService;
     ExceptionFactory exceptionFactory;
 
-    @NonFinal
-    ReportCacheService<ReportA05DraftDTO> reportCacheService;
+    @Autowired
+    public WasteWaterDataServiceImpl(ReportA05Repository reportA05Repository,
+                                     WasteWaterDataMapper wasteWaterDataMapper,
+                                     ReportCacheFactory reportCacheFactory,
+                                     FileStorageService fileStorageService,
+                                     ExceptionFactory exceptionFactory) {
+        this.reportA05Repository = reportA05Repository;
+        this.wasteWaterDataMapper = wasteWaterDataMapper;
+        this.reportCacheFactory = reportCacheFactory;
+        this.fileStorageService = fileStorageService;
+        this.exceptionFactory = exceptionFactory;
 
-    @PostConstruct
-    @SuppressWarnings("unused")
-    void init() {
         this.reportCacheService = reportCacheFactory.getCacheService(ReportA05DraftDTO.class);
     }
+
     @Override
     @Transactional
     public WasteWaterDataDTO createWasteWaterData(
@@ -57,6 +66,8 @@ public class WasteWaterDataServiceImpl implements WasteWaterDataService {
             WasteWaterDataCreateDTO request,
             MultipartFile connectionFile,
             MultipartFile mapFile) {
+
+        request = StringNormalizerUtil.normalizeRequest(request);
 
         ReportA05 report = reportA05Repository.findById(reportId)
                 .orElseThrow(() -> exceptionFactory.createNotFoundException(
@@ -70,7 +81,6 @@ public class WasteWaterDataServiceImpl implements WasteWaterDataService {
 
         WasteWaterData entity = wasteWaterDataMapper.toEntity(request);
 
-        // Handle connection diagram file
         if (connectionFile != null && !connectionFile.isEmpty()) {
             if (oldDto != null && oldDto.getConnectionDiagram() != null) {
                 fileStorageService.deleteFile(oldDto.getConnectionDiagram());
@@ -79,11 +89,8 @@ public class WasteWaterDataServiceImpl implements WasteWaterDataService {
             String filePath = uploadConnectionDiagramFile(report, connectionFile);
             entity.setConnectionDiagram(filePath);
         } else if (oldDto != null && oldDto.getConnectionDiagram() != null) {
-            // Keep old file path if no new file provided
             entity.setConnectionDiagram(oldDto.getConnectionDiagram());
         }
-
-        // Handle auto station map file
         if (mapFile != null && !mapFile.isEmpty()) {
             if (oldDto != null && oldDto.getAutoStationMap() != null) {
                 fileStorageService.deleteFile(oldDto.getAutoStationMap());
@@ -92,13 +99,11 @@ public class WasteWaterDataServiceImpl implements WasteWaterDataService {
             String filePath = uploadAutoStationMapFile(report, mapFile);
             entity.setAutoStationMap(filePath);
         } else if (oldDto != null && oldDto.getAutoStationMap() != null) {
-            // Keep old file path if no new file provided
             entity.setAutoStationMap(oldDto.getAutoStationMap());
         }
 
         WasteWaterDataDTO responseDto = wasteWaterDataMapper.toDto(entity);
 
-        // Create draft if it doesn't exist
         if (draft == null) {
             draft = ReportA05DraftDTO.builder()
                     .reportId(reportId)
@@ -108,7 +113,6 @@ public class WasteWaterDataServiceImpl implements WasteWaterDataService {
             reportCacheService.saveDraftReport(draft, userAccountId, reportId);
         }
 
-        // Update the section using the cache service
         reportCacheService.updateSectionData(reportId, userAccountId, responseDto, "wasteWaterData");
 
         log.info("Created WasteWaterData in cache - reportId: {}, userAccountId: {}", reportId, userAccountId);
@@ -301,6 +305,26 @@ public class WasteWaterDataServiceImpl implements WasteWaterDataService {
                 log.info("Deleted auto station map file: {}", dto.getAutoStationMap());
             } catch (Exception e) {
                 log.warn("Failed to delete auto station map file", e);
+            }
+        }
+    }
+
+    private void deleteOldFiles(WasteWaterDataDTO oldDto, MultipartFile connectionFile, MultipartFile mapFile) {
+        if (oldDto.getConnectionDiagram() != null && connectionFile != null) {
+            try {
+                fileStorageService.deleteFile(oldDto.getConnectionDiagram());
+                log.info("Deleted old connection diagram file: {}", oldDto.getConnectionDiagram());
+            } catch (Exception e) {
+                log.warn("Failed to delete old connection diagram file", e);
+            }
+        }
+
+        if (oldDto.getAutoStationMap() != null && mapFile != null) {
+            try {
+                fileStorageService.deleteFile(oldDto.getAutoStationMap());
+                log.info("Deleted old auto station map file: {}", oldDto.getAutoStationMap());
+            } catch (Exception e) {
+                log.warn("Failed to delete old auto station map file", e);
             }
         }
     }

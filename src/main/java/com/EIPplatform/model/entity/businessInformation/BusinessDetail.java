@@ -5,37 +5,23 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import com.EIPplatform.model.enums.OperationType;
-import org.hibernate.annotations.Nationalized;
-import org.springframework.data.jpa.domain.support.AuditingEntityListener;
-
-import com.EIPplatform.configuration.AuditMetaData;
 import com.EIPplatform.model.entity.businessInformation.investors.Investor;
 import com.EIPplatform.model.entity.businessInformation.legalRepresentative.LegalRepresentative;
 import com.EIPplatform.model.entity.businessInformation.permitshistory.EnvComponentPermit;
 import com.EIPplatform.model.entity.businessInformation.permitshistory.EnvPermits;
 import com.EIPplatform.model.entity.businessInformation.products.Product;
+import com.EIPplatform.model.enums.OperationType;
+import jakarta.persistence.*;
+
+import org.hibernate.annotations.Nationalized;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+
+import com.EIPplatform.configuration.AuditMetaData;
 import com.EIPplatform.model.entity.report.report05.ReportA05;
 import com.EIPplatform.model.entity.user.authentication.UserAccount;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Column;
-import jakarta.persistence.Embedded;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EntityListeners;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.ForeignKey;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.OneToOne;
-import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -49,7 +35,7 @@ import lombok.experimental.FieldDefaults;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "business_detail")
+@Table(name = "[business_detail]")
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @EntityListeners(AuditingEntityListener.class)
@@ -59,7 +45,7 @@ public class BusinessDetail {
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "business_detail_id", columnDefinition = "uniqueidentifier")
     UUID businessDetailId;
-
+    @Nationalized
     @Column(nullable = false, unique = true, columnDefinition = "NVARCHAR(255)")
     String facilityName;
     
@@ -72,19 +58,16 @@ public class BusinessDetail {
     @Column(nullable = false, columnDefinition = "NVARCHAR(255)")
     String activityType;
 
-    @Column(nullable = false, columnDefinition = "NVARCHAR(255)")
-    String scaleCapacity;
-    @Nationalized
     @Column(length = 100, columnDefinition = "NVARCHAR(255)")
     String ISO_certificate_14001;
-    @Nationalized
+
     @Column(name = "iso_certificate_file_path", length = 255, columnDefinition = "NVARCHAR(255)")
     String isoCertificateFilePath;
-    @Nationalized
+
     @Column(nullable = false, length = 50, columnDefinition = "NVARCHAR(255)")
     String businessRegistrationNumber;
 
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false, unique = true, length = 50)
     String taxCode;
 
     @Column(nullable = false)
@@ -122,20 +105,41 @@ public class BusinessDetail {
     List<ReportA05> reports;
 
     @OneToOne(mappedBy = "businessDetail", fetch = FetchType.LAZY, optional = true, cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonBackReference(value = "businessDetail-mainPermit")
+    @JsonManagedReference(value = "businessDetail-mainPermit")
     EnvPermits envPermits;
 
     @OneToMany(mappedBy = "businessDetail", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonBackReference(value = "businessDetail-componentPermits")
     @Builder.Default
+    @JsonManagedReference(value = "businessDetail-componentPermits")
     List<EnvComponentPermit> envComponentPermits = new ArrayList<>();
 
-    @OneToMany(mappedBy = "businessDetail", fetch = FetchType.LAZY, cascade = CascadeType.PERSIST, orphanRemoval = true)
+    @OneToMany(mappedBy = "businessDetail", fetch =  FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference(value = "businessDetail-projects")
+    @Builder.Default
+    private List<Project> projects = new ArrayList<>();
+
+    @OneToMany(mappedBy = "businessDetail", fetch =  FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference(value = "businessDetail-facilities")
+    @Builder.Default
+    private List<Facility> facilities = new ArrayList<>();
+
+    @OneToOne(mappedBy = "businessDetail", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    private ScaleCapacity scaleCapacity;
+
+    @OneToMany(mappedBy = "businessDetail", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference(value = "businessDetail-processes")
+    @Builder.Default
+    private List<Process> processes = new ArrayList<>();
+
+    @OneToMany(mappedBy = "businessDetail", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference(value = "businessDetail-equipments")
+    @Builder.Default
+    private List<Equipment> equipments = new ArrayList<>();
+
+    @OneToMany(mappedBy = "businessDetail", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference(value = "businessDetail-products")
     @Builder.Default
     List<Product> products = new ArrayList<>();
-
-
 
     public LocalDateTime getCreatedAt() {
         return auditMetaData.getCreatedAt();

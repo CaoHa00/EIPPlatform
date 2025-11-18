@@ -47,10 +47,10 @@ public class Product {
     @Column(name = "product_image", columnDefinition = "NVARCHAR(MAX)")
     String productImage;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "business_detail_id", nullable = false)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "business_detail_id")
     @JsonBackReference(value = "businessDetail-products")
-    BusinessDetail businessDetail;
+    private BusinessDetail businessDetail;
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "report_b04_id", nullable = true, unique = true)
