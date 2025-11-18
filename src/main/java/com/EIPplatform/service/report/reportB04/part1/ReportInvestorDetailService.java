@@ -9,5 +9,4 @@ public interface ReportInvestorDetailService {
     ReportInvestorDetailDTO getReportInvestorDetailDTO(UUID reportId, UUID userAccountId);
     // void deleteReportInvestorDetailDTO(UUID reportId, UUID userAccountId);
     // boolean hasAirEmissionDataFile(UUID reportId, UUID userAccountId);
-
 }
