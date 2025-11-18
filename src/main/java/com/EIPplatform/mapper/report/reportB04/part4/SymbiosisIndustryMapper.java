@@ -1,13 +1,13 @@
 package com.EIPplatform.mapper.report.reportB04.part4;
 
-import com.EIPplatform.model.dto.report.reportB04.part4.SymbiosisIndustryDTO;
-import com.EIPplatform.model.entity.report.reportB04.part04.SymbiosisIndustry;
-
 import org.mapstruct.BeanMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 import org.mapstruct.NullValuePropertyMappingStrategy;
+
+import com.EIPplatform.model.dto.report.reportB04.part4.SymbiosisIndustryDTO;
+import com.EIPplatform.model.entity.report.reportB04.part04.SymbiosisIndustry;
 
 @Mapper(
         componentModel = "spring",

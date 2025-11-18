@@ -55,20 +55,20 @@ public class LegalRepresentative {
     @Column(name = "gender", columnDefinition = "NVARCHAR(20)")
     Gender gender;
 
-    @Column(name = "is_native", nullable = false)
+    @Column(name = "is_native", nullable = true)
     @Builder.Default
     Boolean isNativeResident = false;
 
-    @Column(name = "date_of_birth", nullable = false)
+    @Column(name = "date_of_birth", nullable = true )
     LocalDate dateOfBirth;
 
-    @Column(name = "identification_number", columnDefinition = "NVARCHAR(50)", nullable = false)
+    @Column(name = "identification_number", columnDefinition = "NVARCHAR(50)", nullable = true)
     String identificationNumber;
 
-    @Column(name = "passport_id", columnDefinition = "NVARCHAR(50)", nullable = false)
+    @Column(name = "passport_id", columnDefinition = "NVARCHAR(50)", nullable = true)
     String passportId;
 
-    @Column(name = "nationality", columnDefinition = "NVARCHAR(100)", nullable = false)
+    @Column(name = "nationality", columnDefinition = "NVARCHAR(100)", nullable = true)
     String nationality;
 
     @Column(name = "address", columnDefinition = "NVARCHAR(500)")
@@ -77,7 +77,7 @@ public class LegalRepresentative {
     @Column(name = "tax_code", columnDefinition = "VARCHAR(50)", unique = true)
     String taxCode;
 
-    @Column(name = "phone", columnDefinition = "NVARCHAR(20)", nullable = false)
+    @Column(name = "phone", columnDefinition = "NVARCHAR(20)", nullable = true)
     String phone;
 
     @Column(name = "fax", columnDefinition = "NVARCHAR(20)")
@@ -86,9 +86,7 @@ public class LegalRepresentative {
     @Column(name = "email", columnDefinition = "NVARCHAR(255)")
     String email;
 
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "business_detail_id", nullable = false)
-    @JsonBackReference(value = "businessDetail-legalRep-ref")
+    @OneToOne(mappedBy = "legalRepresentative")
     BusinessDetail businessDetail;
     
     @Embedded

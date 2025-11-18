@@ -53,7 +53,7 @@ public class Product {
     BusinessDetail businessDetail;
 
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "report_b04_id", nullable = false, unique = true)
+    @JoinColumn(name = "report_b04_id", nullable = true, unique = true)
     @JsonBackReference(value = "report-productId-ref")
     ReportB04 reportB04;
 

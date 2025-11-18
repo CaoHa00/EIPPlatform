@@ -11,6 +11,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import com.EIPplatform.configuration.AuditMetaData;
 import com.EIPplatform.model.entity.businessInformation.investors.Investor;
+import com.EIPplatform.model.entity.businessInformation.legalRepresentative.LegalRepresentative;
 import com.EIPplatform.model.entity.businessInformation.permitshistory.EnvComponentPermit;
 import com.EIPplatform.model.entity.businessInformation.permitshistory.EnvPermits;
 import com.EIPplatform.model.entity.businessInformation.products.Product;
@@ -61,17 +62,7 @@ public class BusinessDetail {
 
     @Column(nullable = false, unique = true, columnDefinition = "NVARCHAR(255)")
     String facilityName;
-
-    // @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true, fetch =
-    // FetchType.LAZY)
-    // @JoinColumn(name = "legal_representative_id", referencedColumnName =
-    // "legal_representative_id", nullable = false, foreignKey = @ForeignKey(name =
-    // "fk_business_detail_legal_representative"))
-    // LegalRepresentative legalRepresentative;
-
-    @Column(nullable = false, columnDefinition = "NVARCHAR(255)")
-    String legalRepresentative;
-
+    
     @Column(nullable = false, length = 20, columnDefinition = "NVARCHAR(255)")
     String phoneNumber;
 
@@ -105,7 +96,11 @@ public class BusinessDetail {
     String seasonalDescription;
 
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-    @JoinColumn(name = "investor_id", referencedColumnName = "investor_id", foreignKey = @ForeignKey(name = "fk_business_detail_investor"))
+    @JoinColumn(name = "legal_representative_id")
+    LegalRepresentative legalRepresentative;
+
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @JoinColumn(name = "investor_id")
     Investor investor;
 
     @OneToMany(mappedBy = "businessDetail", fetch = FetchType.LAZY)
@@ -139,6 +134,8 @@ public class BusinessDetail {
     @JsonManagedReference(value = "businessDetail-products")
     @Builder.Default
     List<Product> products = new ArrayList<>();
+
+
 
     public LocalDateTime getCreatedAt() {
         return auditMetaData.getCreatedAt();
