@@ -11,7 +11,6 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import com.EIPplatform.configuration.AuditMetaData;
 import com.EIPplatform.model.entity.businessInformation.investors.Investor;
-import com.EIPplatform.model.entity.businessInformation.legalRepresentative.LegalRepresentative;
 import com.EIPplatform.model.entity.businessInformation.permitshistory.EnvComponentPermit;
 import com.EIPplatform.model.entity.businessInformation.permitshistory.EnvPermits;
 import com.EIPplatform.model.entity.businessInformation.products.Product;
@@ -63,11 +62,14 @@ public class BusinessDetail {
     @Column(nullable = false, unique = true, columnDefinition = "NVARCHAR(255)")
     String facilityName;
 
-    // @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-    // @JoinColumn(name = "legal_representative_id", referencedColumnName = "legal_representative_id", nullable = false, foreignKey = @ForeignKey(name = "fk_business_detail_legal_representative"))
+    // @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true, fetch =
+    // FetchType.LAZY)
+    // @JoinColumn(name = "legal_representative_id", referencedColumnName =
+    // "legal_representative_id", nullable = false, foreignKey = @ForeignKey(name =
+    // "fk_business_detail_legal_representative"))
     // LegalRepresentative legalRepresentative;
 
-     @Column(nullable = false, columnDefinition = "NVARCHAR(255)")
+    @Column(nullable = false, columnDefinition = "NVARCHAR(255)")
     String legalRepresentative;
 
     @Column(nullable = false, length = 20, columnDefinition = "NVARCHAR(255)")
@@ -96,6 +98,7 @@ public class BusinessDetail {
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
+    @Builder.Default
     OperationType operationType = OperationType.REGULAR;
 
     @Column(length = 500, columnDefinition = "NVARCHAR(500)")
@@ -129,10 +132,12 @@ public class BusinessDetail {
 
     @OneToMany(mappedBy = "businessDetail", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonBackReference(value = "businessDetail-componentPermits")
+    @Builder.Default
     List<EnvComponentPermit> envComponentPermits = new ArrayList<>();
 
     @OneToMany(mappedBy = "businessDetail", fetch = FetchType.LAZY, cascade = CascadeType.PERSIST, orphanRemoval = true)
     @JsonManagedReference(value = "businessDetail-products")
+    @Builder.Default
     List<Product> products = new ArrayList<>();
 
     public LocalDateTime getCreatedAt() {
