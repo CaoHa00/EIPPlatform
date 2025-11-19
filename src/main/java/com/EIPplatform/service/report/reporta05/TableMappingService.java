@@ -1,5 +1,7 @@
 package com.EIPplatform.service.report.reporta05;
 
+import com.EIPplatform.model.dto.report.report05.wastewatermanager.wastewatermonitoringexceedances.DomMonitoringExceedancesCreateDTO;
+import com.EIPplatform.model.dto.report.report05.wastewatermanager.wastewatermonitoringexceedances.IndMonitoringExceedancesCreateDTO;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.xwpf.usermodel.*;
 
@@ -43,6 +45,99 @@ public class TableMappingService {
      * Cấu trúc: TT | Tên điểm | Ký hiệu | Thời gian | Vị trí | Chỉ tiêu | Kết quả |
      * QCVN
      */
+    // ==================== BẢNG 1.1: MONITORING EXCEEDANCES - DOMESTIC ====================
+
+    /**
+     * Bảng 1.1: Waste Water Monitoring Exceedances - DOMESTIC (9 cột)
+     * Template marker: {{TEMPLATE_ROW}}
+     *
+     * Cấu trúc: TT | Tên điểm | Ký hiệu | Thời gian | Kinh độ | Vĩ độ | Chỉ tiêu | Kết quả | QCVN
+     */
+    public static void fillDomesticWasteWaterMonitoringTable(
+            XWPFDocument doc,
+            List<DomMonitoringExceedancesCreateDTO> exceedances) {
+
+        if (exceedances == null || exceedances.isEmpty()) {
+            log.info("No DOMESTIC monitoring exceedances data to fill");
+            return;
+        }
+
+        // Tìm bảng với marker {{TEMPLATE_ROW}}
+        TableInfo tableInfo = findTemplateRow(doc, "{{TEMPLATE_ROW}}");
+        if (tableInfo == null) {
+            log.warn("Template row with {{TEMPLATE_ROW}} marker not found!");
+            return;
+        }
+
+        // Clone và fill cho mỗi item
+        for (int i = 0; i < exceedances.size(); i++) {
+            DomMonitoringExceedancesCreateDTO item = exceedances.get(i);
+            XWPFTableRow newRow = cloneRow(tableInfo.table, tableInfo.templateRow, tableInfo.rowIndex + 1 + i);
+
+            // Fill 9 cells
+            setCellText(newRow.getCell(0), String.valueOf(i + 1)); // TT
+            setCellText(newRow.getCell(1), item.getPointName()); // Tên điểm
+            setCellText(newRow.getCell(2), item.getPointSymbol()); // Ký hiệu
+            setCellText(newRow.getCell(3), item.getMonitoringDate()); // Thời gian
+            setCellText(newRow.getCell(4), item.getLongitude()); // Kinh độ
+            setCellText(newRow.getCell(5), item.getLatitude()); // Vĩ độ
+            setCellText(newRow.getCell(6), item.getExceededParam()); // Chỉ tiêu
+            setCellText(newRow.getCell(7), formatDouble(item.getResultValue())); // Kết quả
+            setCellText(newRow.getCell(8), formatDouble(item.getQcvnLimit())); // QCVN
+        }
+
+        // Xóa template row
+        tableInfo.table.removeRow(tableInfo.rowIndex);
+
+        log.info("✓ Filled {} DOMESTIC monitoring exceedance records", exceedances.size());
+    }
+
+// ==================== BẢNG 1.2: MONITORING EXCEEDANCES - INDUSTRIAL ====================
+
+    /**
+     * Bảng 1.2: Waste Water Monitoring Exceedances - INDUSTRIAL (9 cột)
+     * Template marker: {{TEMPLATE_ROW_2}}
+     *
+     * Cấu trúc: TT | Tên điểm | Ký hiệu | Thời gian | Kinh độ | Vĩ độ | Chỉ tiêu | Kết quả | QCVN
+     */
+    public static void fillIndustrialWasteWaterMonitoringTable(
+            XWPFDocument doc,
+            List<IndMonitoringExceedancesCreateDTO> exceedances) {
+
+        if (exceedances == null || exceedances.isEmpty()) {
+            log.info("No INDUSTRIAL monitoring exceedances data to fill");
+            return;
+        }
+
+        // Tìm bảng với marker {{TEMPLATE_ROW_2}}
+        TableInfo tableInfo = findTemplateRow(doc, "{{TEMPLATE_ROW_2}}");
+        if (tableInfo == null) {
+            log.warn("Template row with {{TEMPLATE_ROW_2}} marker not found!");
+            return;
+        }
+
+        // Clone và fill cho mỗi item
+        for (int i = 0; i < exceedances.size(); i++) {
+            IndMonitoringExceedancesCreateDTO item = exceedances.get(i);
+            XWPFTableRow newRow = cloneRow(tableInfo.table, tableInfo.templateRow, tableInfo.rowIndex + 1 + i);
+
+            // Fill 9 cells
+            setCellText(newRow.getCell(0), String.valueOf(i + 1)); // TT
+            setCellText(newRow.getCell(1), item.getPointName()); // Tên điểm
+            setCellText(newRow.getCell(2), item.getPointSymbol()); // Ký hiệu
+            setCellText(newRow.getCell(3), item.getMonitoringDate()); // Thời gian
+            setCellText(newRow.getCell(4), item.getLongitude()); // Kinh độ
+            setCellText(newRow.getCell(5), item.getLatitude()); // Vĩ độ
+            setCellText(newRow.getCell(6), item.getExceededParam()); // Chỉ tiêu
+            setCellText(newRow.getCell(7), formatDouble(item.getResultValue())); // Kết quả
+            setCellText(newRow.getCell(8), formatDouble(item.getQcvnLimit())); // QCVN
+        }
+
+        // Xóa template row
+        tableInfo.table.removeRow(tableInfo.rowIndex);
+
+        log.info("✓ Filled {} INDUSTRIAL monitoring exceedance records", exceedances.size());
+    }
     public static void fillWasteWaterMonitoringTable(
             XWPFDocument doc,
             List<WasteWaterMonitoringExceedancesDTO> exceedances) {

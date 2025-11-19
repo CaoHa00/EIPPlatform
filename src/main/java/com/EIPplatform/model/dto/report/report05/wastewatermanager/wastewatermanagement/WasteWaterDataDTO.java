@@ -3,6 +3,8 @@ package com.EIPplatform.model.dto.report.report05.wastewatermanager.wastewaterma
 import com.EIPplatform.model.dto.report.report05.wastewatermanager.autowwmonitoringincidents.AutoWWMonitoringIncidentsDTO;
 import com.EIPplatform.model.dto.report.report05.wastewatermanager.autowwmonitoringstats.AutoWWMonitoringStatsDTO;
 import com.EIPplatform.model.dto.report.report05.wastewatermanager.autowwqcvnexceedances.AutoWWQcvnExceedancesDTO;
+import com.EIPplatform.model.dto.report.report05.wastewatermanager.wastewatermonitoringexceedances.DomMonitoringExceedancesCreateDTO;
+import com.EIPplatform.model.dto.report.report05.wastewatermanager.wastewatermonitoringexceedances.IndMonitoringExceedancesCreateDTO;
 import com.EIPplatform.model.dto.report.report05.wastewatermanager.wastewatermonitoringexceedances.WasteWaterMonitoringExceedancesDTO;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -44,7 +46,8 @@ public class WasteWaterDataDTO {
     String indQcvnStandard;
     String indAgencyName;
     String indAgencyVimcerts;
-    List<WasteWaterMonitoringExceedancesDTO> monitoringExceedances;
+    List<DomMonitoringExceedancesCreateDTO> domMonitoringExceedances;
+    List<IndMonitoringExceedancesCreateDTO> indMonitoringExceedances;
     String autoStationLocation;
     String autoStationGps;
     String autoStationMap;

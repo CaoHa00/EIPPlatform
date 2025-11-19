@@ -773,43 +773,57 @@ public class ReportA05ServiceImpl implements ReportA05Service {
                                 }
                         }
                         if (wasteWaterDataDTO != null) {
-                                // Bảng 1.1, 1.2 Thống Kê Vị Trí & Kết Quả Vượt Quy Chuẩn (QCVN) (nếu có)
-                                if (wasteWaterDataDTO.getMonitoringExceedances() != null
-                                                && !wasteWaterDataDTO.getMonitoringExceedances().isEmpty()) {
-                                        log.info(" Filling Monitoring Exceedances table ({} records)",
-                                                        wasteWaterDataDTO.getMonitoringExceedances().size());
-                                        TableMappingService.fillWasteWaterMonitoringTable(doc,
-                                                        wasteWaterDataDTO.getMonitoringExceedances());
+                                // Bảng 1.1: Thống Kê Vị Trí & Kết Quả Vượt Quy Chuẩn (QCVN) - DOMESTIC
+                                if (wasteWaterDataDTO.getDomMonitoringExceedances() != null
+                                        && !wasteWaterDataDTO.getDomMonitoringExceedances().isEmpty()) {
+                                        log.info("Filling Domestic Monitoring Exceedances table ({} records)",
+                                                wasteWaterDataDTO.getDomMonitoringExceedances().size());
+                                        TableMappingService.fillDomesticWasteWaterMonitoringTable(doc,
+                                                wasteWaterDataDTO.getDomMonitoringExceedances());
                                 } else {
-                                        log.info("No Monitoring Exceedances data to fill.");
+                                        log.info("No Domestic Monitoring Exceedances data to fill.");
                                 }
-                                // bảng 1.3 Thống kê kết quả quan trắc tự động
+
+                                // Bảng 1.2: Thống Kê Vị Trí & Kết Quả Vượt Quy Chuẩn (QCVN) - INDUSTRIAL
+                                if (wasteWaterDataDTO.getIndMonitoringExceedances() != null
+                                        && !wasteWaterDataDTO.getIndMonitoringExceedances().isEmpty()) {
+                                        log.info("Filling Industrial Monitoring Exceedances table ({} records)",
+                                                wasteWaterDataDTO.getIndMonitoringExceedances().size());
+                                        TableMappingService.fillIndustrialWasteWaterMonitoringTable(doc,
+                                                wasteWaterDataDTO.getIndMonitoringExceedances());
+                                } else {
+                                        log.info("No Industrial Monitoring Exceedances data to fill.");
+                                }
+
+                                // Bảng 1.3: Thống kê kết quả quan trắc tự động
                                 if (wasteWaterDataDTO.getMonitoringStats() != null
-                                                && !wasteWaterDataDTO.getMonitoringStats().isEmpty()) {
-                                        log.info(" Filling Monitoring Stats table ({} records)",
-                                                        wasteWaterDataDTO.getMonitoringStats().size());
+                                        && !wasteWaterDataDTO.getMonitoringStats().isEmpty()) {
+                                        log.info("Filling Monitoring Stats table ({} records)",
+                                                wasteWaterDataDTO.getMonitoringStats().size());
                                         TableMappingService.fillAutoMonitoringStatsTable(doc,
-                                                        wasteWaterDataDTO.getMonitoringStats());
+                                                wasteWaterDataDTO.getMonitoringStats());
                                 } else {
                                         log.info("No Monitoring Stats data to fill.");
                                 }
-                                // bảng 1.4 Thống kê các sự cố của trạm
+
+                                // Bảng 1.4: Thống kê các sự cố của trạm
                                 if (wasteWaterDataDTO.getMonitoringIncidents() != null
-                                                && !wasteWaterDataDTO.getMonitoringIncidents().isEmpty()) {
-                                        log.info(" Filling Monitoring Incidents table ({} records)",
-                                                        wasteWaterDataDTO.getMonitoringIncidents().size());
+                                        && !wasteWaterDataDTO.getMonitoringIncidents().isEmpty()) {
+                                        log.info("Filling Monitoring Incidents table ({} records)",
+                                                wasteWaterDataDTO.getMonitoringIncidents().size());
                                         TableMappingService.fillAutoMonitoringIncidentsTable(doc,
-                                                        wasteWaterDataDTO.getMonitoringIncidents());
+                                                wasteWaterDataDTO.getMonitoringIncidents());
                                 } else {
                                         log.info("No Monitoring Incidents data to fill.");
                                 }
+
                                 // Bảng 1.5: Thống kê vượt QCVN (theo từng thông số)
                                 if (wasteWaterDataDTO.getQcvnExceedances() != null
-                                                && !wasteWaterDataDTO.getQcvnExceedances().isEmpty()) {
-                                        log.info(" Filling QCVN Exceedances table ({} records)",
-                                                        wasteWaterDataDTO.getQcvnExceedances().size());
+                                        && !wasteWaterDataDTO.getQcvnExceedances().isEmpty()) {
+                                        log.info("Filling QCVN Exceedances table ({} records)",
+                                                wasteWaterDataDTO.getQcvnExceedances().size());
                                         TableMappingService.fillQcvnExceedancesTable(doc,
-                                                        wasteWaterDataDTO.getQcvnExceedances());
+                                                wasteWaterDataDTO.getQcvnExceedances());
                                 } else {
                                         log.info("No QCVN Exceedances data to fill.");
                                 }
