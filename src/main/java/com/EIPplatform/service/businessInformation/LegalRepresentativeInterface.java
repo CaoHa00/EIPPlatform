@@ -14,6 +14,10 @@ public interface LegalRepresentativeInterface {
 
     LegalRepresentativeResponse getLegalRepresentativeById(UUID legalRepresentativeId);
 
+    
+    LegalRepresentativeResponse getLegalRepresentativeByBusinessDetailId(UUID businessDetailId);
+
+
     List<LegalRepresentativeResponse> getAllLegalRepresentatives();
 
     void deleteLegalRepresentative(UUID legalRepresentativeId);

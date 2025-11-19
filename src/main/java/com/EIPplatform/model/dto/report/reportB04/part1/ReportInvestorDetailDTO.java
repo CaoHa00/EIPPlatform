@@ -20,10 +20,19 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class ReportInvestorDetailDTO {
     Long ridId;
-    String reportInvestorType;
 
+    // General detail from businessDetail
+    String taxCode;
+    String phoneNumber;
+    String fax;
+    String email;
+
+    // Investor from businessDetail
     InvestorResponse investor;
-    LegalDocDTO legalDoc;
+
+    // Bên thứ 3 thực hiện
     ThirdPartyImplementerDTO thirdPartyImplementer;
+
+    // tên dự án
     ProjectDTO project;
 }

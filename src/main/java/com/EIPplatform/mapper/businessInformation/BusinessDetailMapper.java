@@ -6,8 +6,8 @@ import java.util.stream.Collectors;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
-import com.EIPplatform.model.dto.businessInformation.BusinessDetailDTO;
 import com.EIPplatform.model.dto.businessInformation.BusinessDetailResponse;
+import com.EIPplatform.model.dto.businessInformation.BusinessDetailDTO;
 import com.EIPplatform.model.entity.businessInformation.BusinessDetail;
 import com.EIPplatform.model.entity.businessInformation.legalRepresentative.LegalRepresentative;
 import com.EIPplatform.model.entity.user.authentication.UserAccount;
@@ -25,6 +25,8 @@ public interface BusinessDetailMapper {
     @Mapping(target = "scaleCapacity", source = "scaleCapacity.totalArea")
     @Mapping(target = "legalRepresentative", ignore = true)
     BusinessDetailResponse toResponse(BusinessDetail entity);
+
+    // BusinessDetailDTO toDTO(BusinessDetail entity);
 
     default List<BusinessDetailResponse> toResponseList(List<BusinessDetail> entities) {
         if (entities == null) return null;

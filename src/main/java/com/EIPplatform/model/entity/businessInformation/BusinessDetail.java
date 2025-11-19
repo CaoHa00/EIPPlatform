@@ -12,6 +12,7 @@ import com.EIPplatform.model.entity.businessInformation.permitshistory.EnvPermit
 import com.EIPplatform.model.entity.businessInformation.products.Product;
 import com.EIPplatform.model.enums.OperationType;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
 
 import org.hibernate.annotations.Nationalized;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
@@ -68,6 +69,14 @@ public class BusinessDetail {
 
     @Column(nullable = false, unique = true, length = 50)
     String taxCode;
+
+    @Column(nullable = true, length = 50)
+    String fax;
+
+    @Nationalized
+    @Email
+    @Column(nullable = true, columnDefinition = "NVARCHAR(255)")
+    String email;
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)

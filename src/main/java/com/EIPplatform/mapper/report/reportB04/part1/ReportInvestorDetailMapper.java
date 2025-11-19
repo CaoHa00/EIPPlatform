@@ -43,7 +43,6 @@ public interface ReportInvestorDetailMapper {
 
     @Mapping(target = "ridId", ignore = true)
     @Mapping(target = "investor", ignore = true)
-    @Mapping(target = "legalDoc", ignore = true)
     @Mapping(target = "thirdPartyImplementer", ignore = true)
     @Mapping(target = "project", ignore = true)
     ReportInvestorDetailDTO toDTO(ReportInvestorDetail entity);

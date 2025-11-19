@@ -3,15 +3,6 @@ package com.EIPplatform.service.report.reporta05.airemmissionmanagement;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-import com.EIPplatform.exception.errorCategories.AirEmissionError;
-import com.EIPplatform.mapper.report.report05.airemmissionmanagement.AirEmissionDataMapper;
-import com.EIPplatform.model.dto.report.report05.airemmissionmanagement.airemissiondata.AirEmissionDataCreateDTO;
-import com.EIPplatform.model.dto.report.report05.airemmissionmanagement.airemissiondata.AirEmissionDataDTO;
-import com.EIPplatform.model.entity.report.report05.airemmissionmanagement.AirEmissionData;
-import com.EIPplatform.service.fileStorage.FileStorageService;
-import com.EIPplatform.service.report.reportCache.reportCacheA05.ReportCacheFactory;
-import com.EIPplatform.service.report.reportCache.reportCacheA05.ReportCacheService;
-import com.EIPplatform.util.StringNormalizerUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
@@ -19,15 +10,22 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.EIPplatform.exception.ExceptionFactory;
+import com.EIPplatform.exception.errorCategories.AirEmissionError;
+import com.EIPplatform.mapper.report.report05.airemmissionmanagement.AirEmissionDataMapper;
 import com.EIPplatform.model.dto.report.report05.ReportA05DraftDTO;
+import com.EIPplatform.model.dto.report.report05.airemmissionmanagement.airemissiondata.AirEmissionDataCreateDTO;
+import com.EIPplatform.model.dto.report.report05.airemmissionmanagement.airemissiondata.AirEmissionDataDTO;
 import com.EIPplatform.model.entity.report.report05.ReportA05;
+import com.EIPplatform.model.entity.report.report05.airemmissionmanagement.AirEmissionData;
 import com.EIPplatform.repository.report.ReportA05Repository;
+import com.EIPplatform.service.fileStorage.FileStorageService;
+import com.EIPplatform.service.report.reportCache.reportCacheA05.ReportCacheFactory;
+import com.EIPplatform.service.report.reportCache.reportCacheA05.ReportCacheService;
+import com.EIPplatform.util.StringNormalizerUtil;
 
-import jakarta.annotation.PostConstruct;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import lombok.experimental.NonFinal;
 import lombok.extern.slf4j.Slf4j;
 
 @Service
@@ -54,7 +52,6 @@ public class AirEmissionDataServiceImpl implements AirEmissionDataService {
         this.reportCacheFactory = reportCacheFactory;
         this.fileStorageService = fileStorageService;
         this.exceptionFactory = exceptionFactory;
-
         this.reportCacheService = reportCacheFactory.getCacheService(ReportA05DraftDTO.class);
     }
 

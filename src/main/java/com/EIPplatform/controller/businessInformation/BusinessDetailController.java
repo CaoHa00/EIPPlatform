@@ -1,8 +1,8 @@
 package com.EIPplatform.controller.businessInformation;
 
 import com.EIPplatform.model.dto.api.ApiResponse;
-import com.EIPplatform.model.dto.businessInformation.BusinessDetailDTO;
 import com.EIPplatform.model.dto.businessInformation.BusinessDetailResponse;
+import com.EIPplatform.model.dto.businessInformation.BusinessDetailDTO;
 import com.EIPplatform.service.businessInformation.BusinessDetailInterface;
 
 import lombok.AccessLevel;

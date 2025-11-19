@@ -1,7 +1,5 @@
 package com.EIPplatform.model.entity.report.reportB04.part01;
 
-import org.hibernate.annotations.Nationalized;
-
 import com.EIPplatform.model.entity.businessInformation.Project;
 import com.EIPplatform.model.entity.businessInformation.investors.Investor;
 import com.EIPplatform.model.entity.legalDoc.LegalDoc;
@@ -31,7 +29,6 @@ import lombok.experimental.FieldDefaults;
 @Builder
 @Entity
 @Table(name = "report_investor_detail", indexes = {
-        @Index(name = "idx_report_investor_type", columnList = "report_investor_type"),
         @Index(name = "idx_investor_id", columnList = "investor_id")
 })
 @Getter
@@ -45,10 +42,6 @@ public class ReportInvestorDetail {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "rid_id", updatable = false, nullable = false)
     Long ridId;
-
-    @Nationalized
-    @Column(name = "report_investor_type", nullable = false, columnDefinition = "NVARCHAR(100)")
-    String reportInvestorType;
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "report_b04_id", nullable = false, unique = true)

@@ -4,8 +4,8 @@ import java.util.List;
 import java.util.UUID;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.EIPplatform.model.dto.businessInformation.BusinessDetailDTO;
 import com.EIPplatform.model.dto.businessInformation.BusinessDetailResponse;
+import com.EIPplatform.model.dto.businessInformation.BusinessDetailDTO;
 
 public interface BusinessDetailInterface {
     BusinessDetailResponse findByUserAccountId(UUID userAccountId);
