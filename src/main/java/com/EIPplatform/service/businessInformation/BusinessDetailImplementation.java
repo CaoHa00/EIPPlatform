@@ -13,13 +13,12 @@ import com.EIPplatform.exception.errorCategories.BusinessDetailError;
 import com.EIPplatform.exception.errorCategories.UserError;
 import com.EIPplatform.mapper.businessInformation.BusinessDetailMapper;
 import com.EIPplatform.mapper.businessInformation.LegalRepresentativeMapper;
-import com.EIPplatform.model.dto.businessInformation.BusinessDetailDTO;
 import com.EIPplatform.model.dto.businessInformation.BusinessDetailResponse;
 import com.EIPplatform.model.dto.businessInformation.legalRepresentative.LegalRepresentativeCreationNameOnly;
+import com.EIPplatform.model.dto.businessInformation.BusinessDetailDTO;
 import com.EIPplatform.model.entity.businessInformation.BusinessDetail;
 import com.EIPplatform.model.entity.businessInformation.Equipment;
 import com.EIPplatform.model.entity.businessInformation.Facility;
-import com.EIPplatform.model.entity.businessInformation.Process;
 import com.EIPplatform.model.entity.businessInformation.Project;
 import com.EIPplatform.model.entity.businessInformation.legalRepresentative.LegalRepresentative;
 import com.EIPplatform.model.entity.user.authentication.UserAccount;
@@ -115,10 +114,6 @@ public class BusinessDetailImplementation implements BusinessDetailInterface {
                 UserError.NOT_FOUND));
 
         BusinessDetail entity = businessDetailMapper.toEntity(dto);
-
-        // LegalRepresentative
-        LegalRepresentative legalRep = businessDetailUtils.fetchLegalRepresentative(dto.getLegalRepresentative());
-        entity.setLegalRepresentative(legalRep);
 
         // Projects
         List<Project> projects = businessDetailUtils.mapProjects(dto.getProjects(), entity);

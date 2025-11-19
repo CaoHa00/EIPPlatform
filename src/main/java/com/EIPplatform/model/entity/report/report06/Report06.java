@@ -1,7 +1,6 @@
 package com.EIPplatform.model.entity.report.report06;
 
 import com.EIPplatform.model.entity.businessInformation.BusinessDetail;
-import com.EIPplatform.model.entity.report.ReportStatus;
 import com.EIPplatform.model.entity.report.report06.part01.BusinessInformation;
 import com.EIPplatform.model.entity.report.report06.part02.OperationalActivityData;
 import com.EIPplatform.model.entity.report.report06.part03.InventoryResultData;

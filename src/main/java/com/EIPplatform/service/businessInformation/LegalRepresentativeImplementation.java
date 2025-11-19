@@ -13,6 +13,7 @@ import com.EIPplatform.mapper.businessInformation.LegalRepresentativeMapper;
 import com.EIPplatform.model.dto.businessInformation.legalRepresentative.LegalRepresentativeCreationRequest;
 import com.EIPplatform.model.dto.businessInformation.legalRepresentative.LegalRepresentativeResponse;
 import com.EIPplatform.model.dto.businessInformation.legalRepresentative.LegalRepresentativeUpdationRequest;
+import com.EIPplatform.model.entity.businessInformation.BusinessDetail;
 import com.EIPplatform.model.entity.businessInformation.legalRepresentative.LegalRepresentative;
 import com.EIPplatform.repository.businessInformation.BusinessDetailRepository;
 import com.EIPplatform.repository.user.LegalRepresentativeRepository;
@@ -28,6 +29,7 @@ import lombok.extern.slf4j.Slf4j;
 @Transactional
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class LegalRepresentativeImplementation implements LegalRepresentativeInterface {
+
     LegalRepresentativeRepository legalRepresentativeRepository;
     LegalRepresentativeMapper legalRepresentativeMapper;
     BusinessDetailRepository businessDetailRepository;
@@ -66,7 +68,7 @@ public class LegalRepresentativeImplementation implements LegalRepresentativeInt
 
         LegalRepresentative existingEntity = legalRepresentativeRepository.findById(request.getLegalRepresentativeId())
                 .orElseThrow(() -> exceptionFactory.createNotFoundException("Legal Representative",
-                        request.getLegalRepresentativeId(), LegalRepresentativeError.LEGAL_REPRESENTATIVE_NOT_FOUND));
+                request.getLegalRepresentativeId(), LegalRepresentativeError.LEGAL_REPRESENTATIVE_NOT_FOUND));
 
         if (request.getTaxCode() != null && !request.getTaxCode().isBlank()) {
             if (legalRepresentativeRepository.existsByTaxCodeAndLegalRepresentativeIdNot(
@@ -88,7 +90,7 @@ public class LegalRepresentativeImplementation implements LegalRepresentativeInt
         LegalRepresentative entity = legalRepresentativeRepository
                 .findById(legalRepresentativeId)
                 .orElseThrow(() -> exceptionFactory.createNotFoundException("Legal Representative",
-                        legalRepresentativeId, LegalRepresentativeError.LEGAL_REPRESENTATIVE_NOT_FOUND));
+                legalRepresentativeId, LegalRepresentativeError.LEGAL_REPRESENTATIVE_NOT_FOUND));
 
         return legalRepresentativeMapper.toResponse(entity);
     }
@@ -111,6 +113,26 @@ public class LegalRepresentativeImplementation implements LegalRepresentativeInt
 
         legalRepresentativeRepository.deleteById(legalRepresentativeId);
 
+    }
+
+    @Override
+    public LegalRepresentativeResponse getLegalRepresentativeByBusinessDetailId(UUID businessDetailId) {
+        BusinessDetail businessDetail = businessDetailRepository.findById(businessDetailId)
+                .orElseThrow(() -> exceptionFactory.createNotFoundException(
+                "BusinessDetail",
+                "id",
+                businessDetailId,
+                LegalRepresentativeError.BUSINESS_DETAIL_NOT_FOUND));
+        LegalRepresentative legalRep = businessDetail.getLegalRepresentative();
+        if (legalRep == null) {
+            throw exceptionFactory.createNotFoundException(
+                    "LegalRepresentative",
+                    "businessDetailId",
+                    businessDetailId,
+                    LegalRepresentativeError.LEGAL_REPRESENTATIVE_NOT_FOUND);
+        }
+
+        return legalRepresentativeMapper.toResponse(legalRep);
     }
 
 }

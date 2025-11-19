@@ -7,9 +7,6 @@ import org.hibernate.annotations.UuidGenerator;
 
 import com.EIPplatform.model.entity.businessInformation.BusinessDetail;
 import com.EIPplatform.model.entity.businessInformation.products.Product;
-import com.EIPplatform.model.entity.report.report05.airemmissionmanagement.AirEmissionData;
-import com.EIPplatform.model.entity.report.report05.wastemanagement.WasteManagementData;
-import com.EIPplatform.model.entity.report.report05.wastewatermanager.WasteWaterData;
 import com.EIPplatform.model.entity.report.reportB04.part01.ReportInvestorDetail;
 import com.EIPplatform.model.entity.report.reportB04.part03.ResourcesSavingAndReduction;
 import com.EIPplatform.model.entity.report.reportB04.part04.SymbiosisIndustry;

@@ -1,5 +1,6 @@
 package com.EIPplatform.model.dto.report.reportB04.part1.response;
 import com.EIPplatform.model.dto.businessInformation.investors.InvestorResponse;
+import com.EIPplatform.model.dto.businessInformation.project.ProjectDTO;
 import com.EIPplatform.model.dto.legalDoc.LegalDocDTO;
 import com.EIPplatform.model.dto.report.reportB04.part1.ThirdPartyImplementerDTO;
 
@@ -23,4 +24,5 @@ public class ReportInvestorDetailResponse {
     InvestorResponse investor;
     LegalDocDTO legalDoc;
     ThirdPartyImplementerDTO thirdPartyImplementer;
+    ProjectDTO project;
 }

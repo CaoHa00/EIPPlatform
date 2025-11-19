@@ -21,4 +21,5 @@ public class ReportInvestorDetailUpdateRequest {
     UUID investorId;
     UUID legalDocId;
     Long thirdPartyImplementerId;
+    UUID projectId;
 }

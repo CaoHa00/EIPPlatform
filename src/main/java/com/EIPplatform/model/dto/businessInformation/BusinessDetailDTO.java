@@ -5,6 +5,8 @@ import com.EIPplatform.model.dto.businessInformation.facility.FacilityResponseDt
 import com.EIPplatform.model.dto.businessInformation.process.ProcessResponseDto;
 import com.EIPplatform.model.dto.businessInformation.project.ProjectResponseDto;
 import com.EIPplatform.model.enums.OperationType;
+
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -40,6 +42,10 @@ public class BusinessDetailDTO {
 
     @NotBlank(message = "FIELD_REQUIRED")
     String taxCode;
+
+    @Email
+    @Size(max = 255)
+    String email;
 
     @NotNull(message = "Operation type is required")
     OperationType operationType = OperationType.REGULAR;

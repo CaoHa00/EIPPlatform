@@ -16,7 +16,6 @@ public interface ProjectMapper {
 
     // DTO → ENTITY
     @Mapping(target = "businessDetail", ignore = true)
-    @Mapping(target = "legalDocs", ignore = true)
     Project toEntity(ProjectResponseDto dto);
 
     List<Project> toEntityList(List<ProjectResponseDto> dtos);
@@ -24,6 +23,5 @@ public interface ProjectMapper {
     // PARTIAL UPDATE
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     @Mapping(target = "businessDetail", ignore = true)
-    @Mapping(target = "legalDocs", ignore = true)
     void updateEntity(@MappingTarget Project entity, ProjectResponseDto dto);
 }

@@ -1,14 +1,14 @@
 package com.EIPplatform.model.entity.businessInformation;
 
-import com.EIPplatform.model.entity.legalDoc.LegalDoc;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+
+import org.hibernate.annotations.UuidGenerator;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.time.LocalDate;
 import java.util.UUID;
 
 @Entity
@@ -16,29 +16,39 @@ import java.util.UUID;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "projects")
 @Builder
+@Table(name = "projects")
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @EntityListeners(AuditingEntityListener.class)
 public class Project {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    private UUID projectId;
+   @Id
+    @GeneratedValue
+    @UuidGenerator
+    @Column(name = "project_id", updatable = false, nullable = false)
+    UUID projectId;
+    
+    @Column(name = "project_name", nullable = false, columnDefinition = "NVARCHAR(255)")
+    String projectName; 
+    
+    @Column(name = "project_location", columnDefinition = "NVARCHAR(500)")
+    String projectLocation;
 
-    @Column(nullable = false)
-    private String projectName;
+    @Column(name = "project_legal_doc_type", columnDefinition = "NVARCHAR(255)")
+    String projectLegalDocType; 
+    
+    @Column(name = "project_issuer_org", columnDefinition = "NVARCHAR(255)")
+    String projectIssuerOrg; 
+    
+    @Column(name = "project_issue_date")
+    LocalDate projectIssueDate; 
 
-    private String projectLocation;
-
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-    @JoinColumn(name = "project_id")
-    @Builder.Default
-    private List<LegalDoc> legalDocs = new ArrayList<>();
+    @Column(name = "project_issue_date_latest")
+    LocalDate projectIssueDateLatest; 
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JsonBackReference(value = "businessDetail-projects")
-    @JoinColumn(name = "business_detail_id")
-    private BusinessDetail businessDetail;
+    @JoinColumn(name = "business_detail_id", insertable = false, updatable = false)
+    BusinessDetail businessDetail; // relationship với BusinessDetail
 
 }

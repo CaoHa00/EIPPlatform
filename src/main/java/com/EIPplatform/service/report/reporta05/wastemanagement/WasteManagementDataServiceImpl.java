@@ -20,6 +20,7 @@ import com.EIPplatform.repository.report.ReportA05Repository;
 import com.EIPplatform.service.report.reportCache.reportCacheA05.ReportCacheFactory;
 import com.EIPplatform.service.report.reportCache.reportCacheA05.ReportCacheService;
 
+import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.experimental.NonFinal;

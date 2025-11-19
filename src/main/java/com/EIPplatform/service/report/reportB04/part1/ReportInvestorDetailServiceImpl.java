@@ -1,120 +1,140 @@
 package com.EIPplatform.service.report.reportB04.part1;
 
-import java.util.List;
+import java.time.LocalDateTime;
+import java.util.UUID;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.EIPplatform.exception.ExceptionFactory;
+import com.EIPplatform.exception.errorCategories.LegalRepresentativeError;
+import com.EIPplatform.exception.errorCategories.ReportError;
+import com.EIPplatform.mapper.businessInformation.BusinessDetailMapper;
+import com.EIPplatform.mapper.businessInformation.InvestorMapper;
 import com.EIPplatform.mapper.report.reportB04.part1.ReportInvestorDetailMapper;
+import com.EIPplatform.model.dto.businessInformation.investors.InvestorResponse;
+import com.EIPplatform.model.dto.businessInformation.BusinessDetailDTO;
+import com.EIPplatform.model.dto.report.reportB04.ReportB04DraftDTO;
+import com.EIPplatform.model.dto.report.reportB04.part1.ReportInvestorDetailDTO;
 import com.EIPplatform.model.dto.report.reportB04.part1.request.ReportInvestorDetailCreateRequest;
-import com.EIPplatform.model.dto.report.reportB04.part1.request.ReportInvestorDetailUpdateRequest;
-import com.EIPplatform.model.dto.report.reportB04.part1.response.ReportInvestorDetailResponse;
+import com.EIPplatform.model.entity.businessInformation.BusinessDetail;
 import com.EIPplatform.model.entity.businessInformation.investors.Investor;
-import com.EIPplatform.model.entity.legalDoc.LegalDoc;
+import com.EIPplatform.model.entity.report.reportB04.ReportB04;
 import com.EIPplatform.model.entity.report.reportB04.part01.ReportInvestorDetail;
-import com.EIPplatform.model.entity.report.reportB04.part01.ThirdPartyImplementer;
-import com.EIPplatform.repository.businessInformation.InvestorRepository;
-import com.EIPplatform.repository.report.reportB04.part1.ReportInvestorDetailRepository;
-// Giả định bạn đã có các Repository này
-import com.EIPplatform.repository.report.reportB04.part1.ThirdPartyImplementerRepository;
-import com.EIPplatform.repository.user.LegalDocRepository;
+import com.EIPplatform.repository.businessInformation.BusinessDetailRepository;
+import com.EIPplatform.repository.report.reportB04.ReportB04Repository;
+import com.EIPplatform.service.report.reportCache.reportCacheA05.ReportCacheService;
+import com.EIPplatform.util.StringNormalizerUtil;
 
-import jakarta.persistence.EntityNotFoundException; // Dùng exception chuẩn
+import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
+import lombok.experimental.NonFinal;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor // Tự động tiêm (inject) các trường 'final'
-@Transactional // Nên thêm Transactional cho các Service
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class ReportInvestorDetailServiceImpl implements ReportInvestorDetailService {
-    
-    private final ReportInvestorDetailMapper reportMapper; 
-    
-    private final ReportInvestorDetailRepository reportRepository;
-    
-    private final InvestorRepository investorRepository;
-    private final LegalDocRepository legalDocRepository;
-    private final ThirdPartyImplementerRepository thirdPartyImplementerRepository;
+
+    ReportB04Repository reportB04Repository;
+    ReportInvestorDetailMapper reportInvestorDetailMapper;
+    ExceptionFactory exceptionFactory;
+    BusinessDetailRepository businessDetailRepository;
+    InvestorMapper investorMapper;
+    BusinessDetailMapper businessDetailMapper;
+    // Field khởi tạo trong @PostConstruct
+    @NonFinal
+    ReportCacheService<ReportB04DraftDTO> reportCacheService;
 
     @Override
-    public ReportInvestorDetailResponse create(ReportInvestorDetailCreateRequest request) {
+    @Transactional
+    public ReportInvestorDetailDTO createReportInvestorDetailDTO(UUID reportId, UUID userAccountId,
+            ReportInvestorDetailCreateRequest request) {
+        request = StringNormalizerUtil.normalizeRequest(request);
 
-        ReportInvestorDetail entity = reportMapper.toEntityFromCreate(request);
-        Investor investor = investorRepository.findById(request.getInvestorId()) 
-                .orElseThrow(() -> new EntityNotFoundException("Investor not found: " + request.getInvestorId()));
-        entity.setInvestor(investor);
+        ReportB04 report = reportB04Repository.findById(reportId)
+                .orElseThrow(() -> exceptionFactory.createNotFoundException(
+                "ReportB04",
+                "reportId",
+                reportId,
+                ReportError.REPORT_NOT_FOUND));
 
-        // LegalDoc là tùy chọn
-        if (request.getLegalDocId() != null) {
-            LegalDoc legalDoc = legalDocRepository.findById(request.getLegalDocId()) 
-                    .orElseThrow(() -> new EntityNotFoundException("LegalDoc not found: " + request.getLegalDocId()));
-            entity.setLegalDoc(legalDoc);
+        ReportB04DraftDTO draft = reportCacheService.getDraftReport(reportId, userAccountId);
+        ReportInvestorDetail entity = reportInvestorDetailMapper.toEntityFromCreate(request);
+
+        ReportInvestorDetailDTO responseDto = reportInvestorDetailMapper.toDTO(entity);
+
+        if (draft == null) {
+            draft = ReportB04DraftDTO.builder()
+                    .reportId(reportId)
+                    .isDraft(true)
+                    .lastModified(LocalDateTime.now())
+                    .build();
+            reportCacheService.saveDraftReport(draft, userAccountId, reportId);
         }
 
-        // ThirdPartyImplementer là tùy chọn
-        if (request.getThirdPartyImplementerId() != null) {
-            ThirdPartyImplementer tpi = thirdPartyImplementerRepository.findById(request.getThirdPartyImplementerId()) 
-                    .orElseThrow(() -> new EntityNotFoundException("ThirdPartyImplementer not found: " + request.getThirdPartyImplementerId()));
-            entity.setThirdPartyImplementer(tpi);
-        }
-        ReportInvestorDetail savedEntity = reportRepository.save(entity);
+        reportCacheService.updateSectionData(reportId, userAccountId, responseDto, "airEmissionData");
 
-        return reportMapper.toResponse(savedEntity);
-    }
-
-    // --- HÀM UPDATE ĐÚNG LOGIC ---
-    @Override
-    public ReportInvestorDetailResponse update(Long id, ReportInvestorDetailUpdateRequest request) {
-        ReportInvestorDetail existingEntity = findEntityById(id);
-
-        reportMapper.updateEntityFromUpdate(request, existingEntity);
-        if (request.getInvestorId() != null) {
-            Investor investor = investorRepository.findById(request.getInvestorId()) 
-                    .orElseThrow(() -> new EntityNotFoundException("Investor not found: " + request.getInvestorId()));
-            existingEntity.setInvestor(investor);
-        }
-        
-        if (request.getLegalDocId() != null) {
-            LegalDoc legalDoc = legalDocRepository.findById(request.getLegalDocId())
-                    .orElseThrow(() -> new EntityNotFoundException("LegalDoc not found: " + request.getLegalDocId()));
-            existingEntity.setLegalDoc(legalDoc);
-        }
-        
-        if (request.getThirdPartyImplementerId() != null) {
-            ThirdPartyImplementer tpi = thirdPartyImplementerRepository.findById(request.getThirdPartyImplementerId())
-                    .orElseThrow(() -> new EntityNotFoundException("ThirdPartyImplementer not found: " + request.getThirdPartyImplementerId()));
-            existingEntity.setThirdPartyImplementer(tpi);
-        }
-
-        ReportInvestorDetail savedEntity = reportRepository.save(existingEntity);
-
-        return reportMapper.toResponse(savedEntity);
+        log.info("Created AirEmissionData in cache - reportId: {}, userAccountId: {}", reportId, userAccountId);
+        return responseDto;
     }
 
     @Override
-    @Transactional(readOnly = true) 
-    public ReportInvestorDetailResponse getById(Long id) {
-        return reportRepository.findById(id)
-                .map(reportMapper::toResponse) 
-                .orElseThrow(() -> new EntityNotFoundException("ReportInvestorDetail not found with id: " + id));
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public List<ReportInvestorDetailResponse> getAll() {
-        return reportMapper.toResponseList(reportRepository.findAll());
-    }
-
-    @Override
-    public void delete(Long id) {
-        if (!reportRepository.existsById(id)) {
-            throw new EntityNotFoundException("ReportInvestorDetail not found with id: " + id);
+    @Transactional(readOnly = true) // hàm này lấy tiếp dữ liệu từ cache report
+    public ReportInvestorDetailDTO getReportInvestorDetailDTO(UUID reportId, UUID userAccountId) {
+        ReportB04DraftDTO draft = reportCacheService.getDraftReport(reportId, userAccountId);
+        if (draft != null && draft.getReportInvestorDetailDTO() != null) {
+            log.info("getReportInvestorDetailDTO- reportId: {}, userAccountId: {}", reportId, userAccountId);
+            return draft.getReportInvestorDetailDTO();
         }
-        reportRepository.deleteById(id);
+
+        log.warn("getReportInvestorDetailDTO not found in cache - reportId: {}, userAccountId: {}", reportId, userAccountId);
+        return null;
     }
 
-    private ReportInvestorDetail findEntityById(Long id) {
-        return reportRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("ReportInvestorDetail not found with id: " + id));
+    @Override // hàm này fetch auto lên các dữ liệu chỗ business detail đã có
+    public ReportInvestorDetailDTO getInitialReportInvestorDetailDTO(UUID reportId, UUID businessDetailId) {
+        // part1: general detail - investor - third-party - projects
+        BusinessDetail businessDetail = businessDetailRepository.findById(businessDetailId)
+                .orElseThrow(() -> exceptionFactory.createNotFoundException(
+                "BusinessDetail",
+                "id",
+                businessDetailId,
+                LegalRepresentativeError.BUSINESS_DETAIL_NOT_FOUND));
+
+        ReportInvestorDetailDTO dto = new ReportInvestorDetailDTO();
+        dto.setEmail(businessDetail.getEmail());
+        dto.setPhoneNumber(businessDetail.getPhoneNumber());
+        dto.setFax(businessDetail.getFax());
+        dto.setTaxCode(businessDetail.getTaxCode());
+
+        Investor investorEntity = businessDetail.getInvestor();
+        if (investorEntity != null) {
+            InvestorResponse investorResponse = investorMapper.toResponse(investorEntity);
+            dto.setInvestor(investorResponse);
+        }
+
+        // Legal Documents (nếu có)
+        // if (businessDetail.getLegalDoc() != null) {
+        //     dto.setLegalDoc(legalDocMapper.toDto(businessDetail.getLegalDoc()));
+        // }
+
+        // Third Party Implementer (nếu có)
+        // if (businessDetail.getThirdPartyImplementer() != null) {
+        //     dto.setThirdPartyImplementer(
+        //             thirdPartyImplementerMapper.toDto(businessDetail.getThirdPartyImplementer()));
+        // }
+
+        // Project (nếu có)
+        // if (businessDetail.getProject() != null) {
+        //     dto.setProject(projectMapper.toDto(businessDetail.getProject()));
+        // }
+
+
+        return dto;
+       
     }
+
 }

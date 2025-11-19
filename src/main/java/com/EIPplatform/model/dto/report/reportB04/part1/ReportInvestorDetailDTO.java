@@ -1,6 +1,7 @@
 package com.EIPplatform.model.dto.report.reportB04.part1;
 
 import com.EIPplatform.model.dto.businessInformation.investors.InvestorResponse;
+import com.EIPplatform.model.dto.businessInformation.project.ProjectDTO;
 import com.EIPplatform.model.dto.legalDoc.LegalDocDTO;
 
 import lombok.AccessLevel;
@@ -19,10 +20,19 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class ReportInvestorDetailDTO {
     Long ridId;
-    String reportInvestorType;
 
+    // General detail from businessDetail
+    String taxCode;
+    String phoneNumber;
+    String fax;
+    String email;
+
+    // Investor from businessDetail
     InvestorResponse investor;
-    LegalDocDTO legalDoc;
+
+    // Bên thứ 3 thực hiện
     ThirdPartyImplementerDTO thirdPartyImplementer;
 
+    // tên dự án
+    ProjectDTO project;
 }
