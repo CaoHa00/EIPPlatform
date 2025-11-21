@@ -2,9 +2,6 @@ package com.EIPplatform.model.dto.report.report05.wastemanagement.othersolidwast
 
 import lombok.*;
 import lombok.experimental.FieldDefaults;
-
-import java.lang.Double;
-
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -14,7 +11,9 @@ public class OtherSolidWasteStatDTO {
     Long otherId;
     String wasteGroupOther;
     Double volumeCy;
+    String unitCy;
     String selfTreatmentMethod;
     String receiverOrg;
     Double volumePy;
+    String unitPy;
 }

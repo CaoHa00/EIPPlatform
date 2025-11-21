@@ -11,13 +11,13 @@ public interface WasteWaterDataService {
     /**
      * Tạo WasteWaterData mới từ request và lưu vào draft cache
      * @param reportId ID của báo cáo
-     * @param userAccountId ID của người dùng
+     * @param businessDetailId ID của người dùng
      * @param request Dữ liệu tạo mới
      * @param connectionFile File sơ đồ đấu nối (optional)
      * @param mapFile File bản đồ trạm tự động (optional)
      * @return DTO của WasteWaterData đã tạo
      */
-    WasteWaterDataDTO createWasteWaterData(UUID reportId, UUID userAccountId, WasteWaterDataCreateDTO request,
+    WasteWaterDataDTO createWasteWaterData(UUID reportId, UUID businessDetailId, WasteWaterDataCreateDTO request,
                                            MultipartFile connectionFile, MultipartFile mapFile);
 
     /**

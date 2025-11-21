@@ -3,7 +3,7 @@ package com.EIPplatform.model.dto.report.report05.wastemanagement.exportedhwstat
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
-import java.lang.Double;
+
 
 @Data
 @Builder
@@ -12,14 +12,10 @@ import java.lang.Double;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class ExportedHwStatUpdateDTO {
     String wasteName;
-
     String hwCode;
-
     String baselCode;
-
-    Double volumeKg;
-
+    Double volume;
+    String unit;
     String transporterOrg;
-
     String overseasProcessorOrg;
 }

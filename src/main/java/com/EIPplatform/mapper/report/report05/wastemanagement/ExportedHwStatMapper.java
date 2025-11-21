@@ -2,9 +2,11 @@ package com.EIPplatform.mapper.report.report05.wastemanagement;
 
 import com.EIPplatform.model.dto.report.report05.wastemanagement.exportedhwstat.ExportedHwStatCreateDTO;
 import com.EIPplatform.model.dto.report.report05.wastemanagement.exportedhwstat.ExportedHwStatDTO;
+import com.EIPplatform.model.dto.report.report05.wastemanagement.exportedhwstat.ExportedHwStatUpdateDTO;
 import com.EIPplatform.model.entity.report.report05.wastemanagement.ExportedHwStat;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.MappingTarget;
 import org.mapstruct.factory.Mappers;
 
 import java.util.List;
@@ -15,19 +17,35 @@ public interface ExportedHwStatMapper {
 
     @Mapping(target = "exportedId", ignore = true)
     @Mapping(target = "wasteManagementData", ignore = true)
-    @Mapping(source = "baselCode", target = "baselCode")
     ExportedHwStat toEntity(ExportedHwStatCreateDTO dto);
 
-    @Mapping(source = "exportedId", target = "exportedId")
     ExportedHwStatDTO toDto(ExportedHwStat entity);
 
     List<ExportedHwStatDTO> toDtoList(List<ExportedHwStat> entities);
 
-    default void updateFromDto(ExportedHwStatCreateDTO dto, @org.mapstruct.MappingTarget ExportedHwStat entity) {
-        entity.setWasteName(dto.getWasteName());
-        entity.setHwCode(dto.getHwCode());
-        entity.setVolumeKg(dto.getVolumeKg());
-        entity.setTransporterOrg(dto.getTransporterOrg());
-        entity.setOverseasProcessorOrg(dto.getOverseasProcessorOrg());
+    default void updateFromDto(
+            ExportedHwStatUpdateDTO dto,
+            @MappingTarget ExportedHwStat entity
+    ) {
+        if (dto.getWasteName() != null)
+            entity.setWasteName(dto.getWasteName());
+
+        if (dto.getHwCode() != null)
+            entity.setHwCode(dto.getHwCode());
+
+        if (dto.getBaselCode() != null)
+            entity.setBaselCode(dto.getBaselCode());
+
+        if (dto.getVolume() != null)
+            entity.setVolume(dto.getVolume());
+
+        if (dto.getUnit() != null)
+            entity.setUnit(dto.getUnit());
+
+        if (dto.getTransporterOrg() != null)
+            entity.setTransporterOrg(dto.getTransporterOrg());
+
+        if (dto.getOverseasProcessorOrg() != null)
+            entity.setOverseasProcessorOrg(dto.getOverseasProcessorOrg());
     }
 }

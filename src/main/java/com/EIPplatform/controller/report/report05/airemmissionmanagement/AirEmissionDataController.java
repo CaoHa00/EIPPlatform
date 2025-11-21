@@ -29,10 +29,10 @@ public class AirEmissionDataController {
     @PostMapping(value = "/{reportId}/draft/air-emission", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ApiResponse<AirEmissionDataDTO> createAirEmissionData(
             @PathVariable UUID reportId,
-            @RequestParam UUID userAccountId,
+            @RequestParam UUID businessDetailId,
             @RequestPart("data") AirEmissionDataCreateDTO request,
             @RequestPart(value = "file", required = false) MultipartFile file) {
-        var result = airEmissionDataService.createAirEmissionData(reportId, userAccountId, request, file);
+        var result = airEmissionDataService.createAirEmissionData(reportId, businessDetailId, request, file);
         return ApiResponse.<AirEmissionDataDTO>builder()
                 .result(result)
                 .build();

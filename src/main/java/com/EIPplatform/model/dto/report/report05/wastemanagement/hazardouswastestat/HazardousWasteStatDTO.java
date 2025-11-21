@@ -2,9 +2,6 @@ package com.EIPplatform.model.dto.report.report05.wastemanagement.hazardouswaste
 
 import lombok.*;
 import lombok.experimental.FieldDefaults;
-
-import java.lang.Double;
-
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -15,7 +12,9 @@ public class HazardousWasteStatDTO {
     String wasteName;
     String hwCode;
     Double volumeCy;
+    String unitCy;
     String treatmentMethod;
     String receiverOrg;
     Double volumePy;
+    String unitPy;
 }

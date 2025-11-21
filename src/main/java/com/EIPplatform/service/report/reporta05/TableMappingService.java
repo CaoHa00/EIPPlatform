@@ -1,10 +1,5 @@
 package com.EIPplatform.service.report.reporta05;
 
-import com.EIPplatform.model.dto.report.report05.wastewatermanager.wastewatermonitoringexceedances.DomMonitoringExceedancesCreateDTO;
-import com.EIPplatform.model.dto.report.report05.wastewatermanager.wastewatermonitoringexceedances.IndMonitoringExceedancesCreateDTO;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.poi.xwpf.usermodel.*;
-
 import com.EIPplatform.model.dto.report.report05.airemmissionmanagement.airautomonitoringstat.AirAutoMonitoringIncidentDTO;
 import com.EIPplatform.model.dto.report.report05.airemmissionmanagement.airautomonitoringstat.AirAutoMonitoringStatDTO;
 import com.EIPplatform.model.dto.report.report05.airemmissionmanagement.airautoqcvnexceedance.AirAutoQcvnExceedanceDTO;
@@ -20,7 +15,11 @@ import com.EIPplatform.model.dto.report.report05.wastemanagement.selftreatedhwst
 import com.EIPplatform.model.dto.report.report05.wastewatermanager.autowwmonitoringincidents.AutoWWMonitoringIncidentsDTO;
 import com.EIPplatform.model.dto.report.report05.wastewatermanager.autowwmonitoringstats.AutoWWMonitoringStatsDTO;
 import com.EIPplatform.model.dto.report.report05.wastewatermanager.autowwqcvnexceedances.AutoWWQcvnExceedancesDTO;
+import com.EIPplatform.model.dto.report.report05.wastewatermanager.wastewatermonitoringexceedances.DomMonitoringExceedancesCreateDTO;
+import com.EIPplatform.model.dto.report.report05.wastewatermanager.wastewatermonitoringexceedances.IndMonitoringExceedancesCreateDTO;
 import com.EIPplatform.model.dto.report.report05.wastewatermanager.wastewatermonitoringexceedances.WasteWaterMonitoringExceedancesDTO;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.poi.xwpf.usermodel.*;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -41,7 +40,7 @@ public class TableMappingService {
     /**
      * Bảng 1: Waste Water Monitoring Exceedances (8 cột)
      * Template marker: {{TEMPLATE_ROW}}
-     * 
+     *
      * Cấu trúc: TT | Tên điểm | Ký hiệu | Thời gian | Vị trí | Chỉ tiêu | Kết quả |
      * QCVN
      */
@@ -220,7 +219,7 @@ public class TableMappingService {
     /**
      * Bảng 3: Auto Monitoring Stats (6 cột)
      * Template marker: {{TEMPLATE_AUTO_STATS}}
-     * 
+     *
      * Cấu trúc: TT | Thông số | Giá trị TB | Min | Max | Đơn vị
      */
     public static void fillAutoMonitoringStatsTable(
@@ -309,7 +308,7 @@ public class TableMappingService {
     /**
      * Bảng 3: Auto Monitoring Incidents (5 cột)
      * Template marker: {{TEMPLATE_AUTO_INCIDENTS}}
-     * 
+     *
      * Cấu trúc: TT | Ngày sự cố | Mô tả | Thời gian | Biện pháp xử lý
      */
     public static void fillAutoMonitoringIncidentsTable(
@@ -347,7 +346,7 @@ public class TableMappingService {
     /**
      * Bảng 4: QCVN Exceedances (6 cột)
      * Template marker: {{TEMPLATE_QCVN_EXCEED}}
-     * 
+     *
      * Cấu trúc: TT | Ngày vượt | Thông số | Giá trị đo | Giới hạn QCVN | Nguyên
      * nhân
      */
@@ -673,7 +672,7 @@ public class TableMappingService {
             setCellText(newRow.getCell(1), item.getWasteName());
             setCellText(newRow.getCell(2), item.getHwCode());
             setCellText(newRow.getCell(3), item.getBaselCode());
-            setCellText(newRow.getCell(4), formatDouble(item.getVolumeKg()));
+            setCellText(newRow.getCell(4), formatDouble(item.getVolume()));
             setCellText(newRow.getCell(5), item.getTransporterOrg());
             setCellText(newRow.getCell(6), item.getOverseasProcessorOrg());
         }
@@ -700,7 +699,7 @@ public class TableMappingService {
             setCellText(newRow.getCell(0), String.valueOf(i + 1));
             setCellText(newRow.getCell(1), item.getWasteName());
             setCellText(newRow.getCell(2), item.getHwCode());
-            setCellText(newRow.getCell(3), formatDouble(item.getVolumeKg()));
+            setCellText(newRow.getCell(3), formatDouble(item.getVolume()));
             setCellText(newRow.getCell(4), item.getSelfTreatmentMethod());
 
         }

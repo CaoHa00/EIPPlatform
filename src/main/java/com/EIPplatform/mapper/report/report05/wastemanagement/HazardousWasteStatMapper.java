@@ -5,6 +5,7 @@ import com.EIPplatform.model.dto.report.report05.wastemanagement.hazardouswastes
 import com.EIPplatform.model.entity.report.report05.wastemanagement.HazardousWasteStat;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.MappingTarget;
 import org.mapstruct.factory.Mappers;
 
 import java.util.List;
@@ -17,17 +18,38 @@ public interface HazardousWasteStatMapper {
     @Mapping(target = "wasteManagementData", ignore = true)
     HazardousWasteStat toEntity(HazardousWasteStatCreateDTO dto);
 
-    @Mapping(source = "hazardousId", target = "hazardousId")
     HazardousWasteStatDTO toDto(HazardousWasteStat entity);
 
     List<HazardousWasteStatDTO> toDtoList(List<HazardousWasteStat> entities);
 
-    default void updateFromDto(HazardousWasteStatCreateDTO dto, @org.mapstruct.MappingTarget HazardousWasteStat entity) {
-        entity.setWasteName(dto.getWasteName());
-        entity.setHwCode(dto.getHwCode());
-        entity.setVolumeCy(dto.getVolumeCy());
-        entity.setTreatmentMethod(dto.getTreatmentMethod());
-        entity.setReceiverOrg(dto.getReceiverOrg());
-        entity.setVolumePy(dto.getVolumePy());
+
+
+    default void updateFromDto(
+            HazardousWasteStatCreateDTO dto,
+            @MappingTarget HazardousWasteStat entity
+    ) {
+        if (dto.getWasteName() != null)
+            entity.setWasteName(dto.getWasteName());
+
+        if (dto.getHwCode() != null)
+            entity.setHwCode(dto.getHwCode());
+
+        if (dto.getUnitCy() != null)
+            entity.setUnitCy(dto.getUnitCy());
+
+        if (dto.getVolumePy() != null)
+            entity.setVolumeCy(dto.getVolumePy());
+
+        if (dto.getTreatmentMethod() != null)
+            entity.setTreatmentMethod(dto.getTreatmentMethod());
+
+        if (dto.getReceiverOrg() != null)
+            entity.setReceiverOrg(dto.getReceiverOrg());
+
+        if (dto.getVolumePy() != null)
+            entity.setVolumePy(dto.getVolumePy());
+
+        if (dto.getUnitPy() != null)
+            entity.setUnitPy(dto.getUnitPy());
     }
 }

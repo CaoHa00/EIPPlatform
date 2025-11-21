@@ -3,7 +3,7 @@ package com.EIPplatform.model.dto.report.report05.wastemanagement.othersolidwast
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
-import java.lang.Double;
+
 
 @Data
 @Builder
@@ -15,9 +15,13 @@ public class OtherSolidWasteStatUpdateDTO {
 
     Double volumeCy;
 
+    String unitCy;
+
     String selfTreatmentMethod;
 
     String receiverOrg;
 
     Double volumePy;
+
+    String unitPy;
 }
