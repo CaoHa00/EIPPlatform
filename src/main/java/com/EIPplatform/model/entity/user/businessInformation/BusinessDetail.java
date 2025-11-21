@@ -60,13 +60,13 @@ public class BusinessDetail {
 
     @Column(nullable = false, columnDefinition = "NVARCHAR(255)")
     String scaleCapacity;
-    @Nationalized
+
     @Column(length = 100, columnDefinition = "NVARCHAR(255)")
     String ISO_certificate_14001;
-    @Nationalized
+
     @Column(name = "iso_certificate_file_path", length = 255, columnDefinition = "NVARCHAR(255)")
     String isoCertificateFilePath;
-    @Nationalized
+
     @Column(nullable = false, length = 50, columnDefinition = "NVARCHAR(255)")
     String businessRegistrationNumber;
 

@@ -1,8 +1,5 @@
 package com.EIPplatform.service.report.reporta05;
 
-import lombok.extern.slf4j.Slf4j;
-import org.apache.poi.xwpf.usermodel.*;
-
 import com.EIPplatform.model.dto.report.report05.airemmissionmanagement.airautomonitoringstat.AirAutoMonitoringIncidentDTO;
 import com.EIPplatform.model.dto.report.report05.airemmissionmanagement.airautomonitoringstat.AirAutoMonitoringStatDTO;
 import com.EIPplatform.model.dto.report.report05.airemmissionmanagement.airautoqcvnexceedance.AirAutoQcvnExceedanceDTO;
@@ -18,7 +15,11 @@ import com.EIPplatform.model.dto.report.report05.wastemanagement.selftreatedhwst
 import com.EIPplatform.model.dto.report.report05.wastewatermanager.autowwmonitoringincidents.AutoWWMonitoringIncidentsDTO;
 import com.EIPplatform.model.dto.report.report05.wastewatermanager.autowwmonitoringstats.AutoWWMonitoringStatsDTO;
 import com.EIPplatform.model.dto.report.report05.wastewatermanager.autowwqcvnexceedances.AutoWWQcvnExceedancesDTO;
+import com.EIPplatform.model.dto.report.report05.wastewatermanager.wastewatermonitoringexceedances.DomMonitoringExceedancesCreateDTO;
+import com.EIPplatform.model.dto.report.report05.wastewatermanager.wastewatermonitoringexceedances.IndMonitoringExceedancesCreateDTO;
 import com.EIPplatform.model.dto.report.report05.wastewatermanager.wastewatermonitoringexceedances.WasteWaterMonitoringExceedancesDTO;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.poi.xwpf.usermodel.*;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -180,6 +181,106 @@ public class TableMappingService {
 
     /** ==================== 1.1 & 1.2 – Wastewater Monitoring Exceedances ==================== */
 
+    /**
+     * Bảng 1: Waste Water Monitoring Exceedances (8 cột)
+     * Template marker: {{TEMPLATE_ROW}}
+     *
+     * Cấu trúc: TT | Tên điểm | Ký hiệu | Thời gian | Vị trí | Chỉ tiêu | Kết quả |
+     * QCVN
+     */
+    // ==================== BẢNG 1.1: MONITORING EXCEEDANCES - DOMESTIC ====================
+
+    /**
+     * Bảng 1.1: Waste Water Monitoring Exceedances - DOMESTIC (9 cột)
+     * Template marker: {{TEMPLATE_ROW}}
+     *
+     * Cấu trúc: TT | Tên điểm | Ký hiệu | Thời gian | Kinh độ | Vĩ độ | Chỉ tiêu | Kết quả | QCVN
+     */
+    public static void fillDomesticWasteWaterMonitoringTable(
+            XWPFDocument doc,
+            List<DomMonitoringExceedancesCreateDTO> exceedances) {
+
+        if (exceedances == null || exceedances.isEmpty()) {
+            log.info("No DOMESTIC monitoring exceedances data to fill");
+            return;
+        }
+
+        // Tìm bảng với marker {{TEMPLATE_ROW}}
+        TableInfo tableInfo = findTemplateRow(doc, "{{TEMPLATE_ROW}}");
+        if (tableInfo == null) {
+            log.warn("Template row with {{TEMPLATE_ROW}} marker not found!");
+            return;
+        }
+
+        // Clone và fill cho mỗi item
+        for (int i = 0; i < exceedances.size(); i++) {
+            DomMonitoringExceedancesCreateDTO item = exceedances.get(i);
+            XWPFTableRow newRow = cloneRow(tableInfo.table, tableInfo.templateRow, tableInfo.rowIndex + 1 + i);
+
+            // Fill 9 cells
+            setCellText(newRow.getCell(0), String.valueOf(i + 1)); // TT
+            setCellText(newRow.getCell(1), item.getPointName()); // Tên điểm
+            setCellText(newRow.getCell(2), item.getPointSymbol()); // Ký hiệu
+            setCellText(newRow.getCell(3), item.getMonitoringDate()); // Thời gian
+            setCellText(newRow.getCell(4), item.getLongitude()); // Kinh độ
+            setCellText(newRow.getCell(5), item.getLatitude()); // Vĩ độ
+            setCellText(newRow.getCell(6), item.getExceededParam()); // Chỉ tiêu
+            setCellText(newRow.getCell(7), formatDouble(item.getResultValue())); // Kết quả
+            setCellText(newRow.getCell(8), formatDouble(item.getQcvnLimit())); // QCVN
+        }
+
+        // Xóa template row
+        tableInfo.table.removeRow(tableInfo.rowIndex);
+
+        log.info("✓ Filled {} DOMESTIC monitoring exceedance records", exceedances.size());
+    }
+
+// ==================== BẢNG 1.2: MONITORING EXCEEDANCES - INDUSTRIAL ====================
+
+    /**
+     * Bảng 1.2: Waste Water Monitoring Exceedances - INDUSTRIAL (9 cột)
+     * Template marker: {{TEMPLATE_ROW_2}}
+     *
+     * Cấu trúc: TT | Tên điểm | Ký hiệu | Thời gian | Kinh độ | Vĩ độ | Chỉ tiêu | Kết quả | QCVN
+     */
+    public static void fillIndustrialWasteWaterMonitoringTable(
+            XWPFDocument doc,
+            List<IndMonitoringExceedancesCreateDTO> exceedances) {
+
+        if (exceedances == null || exceedances.isEmpty()) {
+            log.info("No INDUSTRIAL monitoring exceedances data to fill");
+            return;
+        }
+
+        // Tìm bảng với marker {{TEMPLATE_ROW_2}}
+        TableInfo tableInfo = findTemplateRow(doc, "{{TEMPLATE_ROW_2}}");
+        if (tableInfo == null) {
+            log.warn("Template row with {{TEMPLATE_ROW_2}} marker not found!");
+            return;
+        }
+
+        // Clone và fill cho mỗi item
+        for (int i = 0; i < exceedances.size(); i++) {
+            IndMonitoringExceedancesCreateDTO item = exceedances.get(i);
+            XWPFTableRow newRow = cloneRow(tableInfo.table, tableInfo.templateRow, tableInfo.rowIndex + 1 + i);
+
+            // Fill 9 cells
+            setCellText(newRow.getCell(0), String.valueOf(i + 1)); // TT
+            setCellText(newRow.getCell(1), item.getPointName()); // Tên điểm
+            setCellText(newRow.getCell(2), item.getPointSymbol()); // Ký hiệu
+            setCellText(newRow.getCell(3), item.getMonitoringDate()); // Thời gian
+            setCellText(newRow.getCell(4), item.getLongitude()); // Kinh độ
+            setCellText(newRow.getCell(5), item.getLatitude()); // Vĩ độ
+            setCellText(newRow.getCell(6), item.getExceededParam()); // Chỉ tiêu
+            setCellText(newRow.getCell(7), formatDouble(item.getResultValue())); // Kết quả
+            setCellText(newRow.getCell(8), formatDouble(item.getQcvnLimit())); // QCVN
+        }
+
+        // Xóa template row
+        tableInfo.table.removeRow(tableInfo.rowIndex);
+
+        log.info("✓ Filled {} INDUSTRIAL monitoring exceedance records", exceedances.size());
+    }
     public static void fillWasteWaterMonitoringTable(
             XWPFDocument doc,
             List<WasteWaterMonitoringExceedancesDTO> exceedances) {
@@ -250,6 +351,12 @@ public class TableMappingService {
 
     /** ==================== 1.3 – Auto Monitoring Stats (wastewater) ==================== */
 
+    /**
+     * Bảng 3: Auto Monitoring Stats (6 cột)
+     * Template marker: {{TEMPLATE_AUTO_STATS}}
+     *
+     * Cấu trúc: TT | Thông số | Giá trị TB | Min | Max | Đơn vị
+     */
     public static void fillAutoMonitoringStatsTable(
             XWPFDocument doc,
             List<AutoWWMonitoringStatsDTO> stats) {
@@ -296,6 +403,12 @@ public class TableMappingService {
 
     /** ==================== 1.4 – Auto Monitoring Incidents (wastewater) ==================== */
 
+    /**
+     * Bảng 3: Auto Monitoring Incidents (5 cột)
+     * Template marker: {{TEMPLATE_AUTO_INCIDENTS}}
+     *
+     * Cấu trúc: TT | Ngày sự cố | Mô tả | Thời gian | Biện pháp xử lý
+     */
     public static void fillAutoMonitoringIncidentsTable(
             XWPFDocument doc,
             List<AutoWWMonitoringIncidentsDTO> incidents) {
@@ -327,6 +440,13 @@ public class TableMappingService {
 
     /** ==================== 1.5 – QCVN Exceedances (wastewater) ==================== */
 
+    /**
+     * Bảng 4: QCVN Exceedances (6 cột)
+     * Template marker: {{TEMPLATE_QCVN_EXCEED}}
+     *
+     * Cấu trúc: TT | Ngày vượt | Thông số | Giá trị đo | Giới hạn QCVN | Nguyên
+     * nhân
+     */
     public static void fillQcvnExceedancesTable(
             XWPFDocument doc,
             List<AutoWWQcvnExceedancesDTO> exceedances) {
@@ -672,7 +792,7 @@ public class TableMappingService {
             setCellText(newRow.getCell(1), item.getWasteName());
             setCellText(newRow.getCell(2), item.getHwCode());
             setCellText(newRow.getCell(3), item.getBaselCode());
-            setCellText(newRow.getCell(4), formatDouble(item.getVolumeKg()));
+            setCellText(newRow.getCell(4), formatDouble(item.getVolume()));
             setCellText(newRow.getCell(5), item.getTransporterOrg());
             setCellText(newRow.getCell(6), item.getOverseasProcessorOrg());
         }
@@ -704,7 +824,7 @@ public class TableMappingService {
             setCellText(newRow.getCell(0), String.valueOf(i + 1));
             setCellText(newRow.getCell(1), item.getWasteName());
             setCellText(newRow.getCell(2), item.getHwCode());
-            setCellText(newRow.getCell(3), formatDouble(item.getVolumeKg()));
+            setCellText(newRow.getCell(3), formatDouble(item.getVolume()));
             setCellText(newRow.getCell(4), item.getSelfTreatmentMethod());
         }
         tableInfo.table.removeRow(tableInfo.rowIndex);

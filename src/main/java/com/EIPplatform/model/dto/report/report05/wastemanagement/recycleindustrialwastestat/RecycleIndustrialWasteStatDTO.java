@@ -2,9 +2,6 @@ package com.EIPplatform.model.dto.report.report05.wastemanagement.recycleindustr
 
 import lombok.*;
 import lombok.experimental.FieldDefaults;
-
-import java.lang.Double;
-
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -14,6 +11,8 @@ public class RecycleIndustrialWasteStatDTO {
     Long recycleId;
     String transferOrg;
     Double volumeCy;
+    String unitCy;
     String wasteTypeDesc;
     Double volumePy;
+    String unitPy;
 }

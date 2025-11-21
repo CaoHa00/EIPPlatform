@@ -51,4 +51,8 @@ public class WasteWaterMonitoringExceedances {
 
     @Column(name = "qcvn_limit")
     Double qcvnLimit; // Giá trị QCVN
+    @Enumerated(EnumType.STRING)
+    @Column(name = "wastewater_type", nullable = false, length = 20)
+    private WasteWaterType wasteWaterType;
+
 }

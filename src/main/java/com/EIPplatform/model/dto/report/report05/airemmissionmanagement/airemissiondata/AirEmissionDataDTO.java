@@ -7,7 +7,6 @@ import com.EIPplatform.model.dto.report.report05.airemmissionmanagement.airmonit
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
-import java.lang.Double;
 import java.time.LocalDateTime;
 import java.util.List;
 

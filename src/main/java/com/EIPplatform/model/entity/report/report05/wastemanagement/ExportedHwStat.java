@@ -3,11 +3,6 @@ package com.EIPplatform.model.entity.report.report05.wastemanagement;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
-
-import java.lang.Double;
-
-import org.hibernate.annotations.Nationalized;
-
 @Entity
 @Table(name = "exported_hw_stats", indexes = {
         @Index(name = "idx_wm_id", columnList = "wm_id")
@@ -37,8 +32,11 @@ public class ExportedHwStat {
     @Column(name = "basel_code", columnDefinition = "NVARCHAR(50)")
     String baselCode;
 
-    @Column(name = "volume_kg", nullable = false)
-    Double volumeKg;
+    @Column(name = "volume", nullable = false)
+    Double volume;
+
+    @Column(name = "unit", nullable = false)
+    String unit;
     
     @Column(name = "transporter_org", columnDefinition = "NVARCHAR(MAX)", nullable = false)
     String transporterOrg;
