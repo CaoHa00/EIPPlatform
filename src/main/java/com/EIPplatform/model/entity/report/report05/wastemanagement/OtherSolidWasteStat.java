@@ -29,6 +29,9 @@ public class OtherSolidWasteStat {
 
     @Column(name = "volume_cy", nullable = false)
     Double volumeCy;
+
+    @Column(name = "unit_cy", nullable = false)
+    String unitCy;
     
     @Column(name = "self_treatment_method", columnDefinition = "NVARCHAR(255)")
     String selfTreatmentMethod;
@@ -38,4 +41,7 @@ public class OtherSolidWasteStat {
 
     @Column(name = "volume_py", nullable = false)
     Double volumePy;
+
+    @Column(name = "unit_py", nullable = false)
+    String unitPy;
 }

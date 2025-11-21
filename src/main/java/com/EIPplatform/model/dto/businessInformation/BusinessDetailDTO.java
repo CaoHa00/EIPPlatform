@@ -3,7 +3,9 @@ package com.EIPplatform.model.dto.businessInformation;
 import com.EIPplatform.model.dto.businessInformation.equipment.EquipmentResponseDto;
 import com.EIPplatform.model.dto.businessInformation.facility.FacilityResponseDto;
 import com.EIPplatform.model.dto.businessInformation.process.ProcessResponseDto;
+import com.EIPplatform.model.dto.businessInformation.products.ProductResponse;
 import com.EIPplatform.model.dto.businessInformation.project.ProjectResponseDto;
+import com.EIPplatform.model.entity.businessInformation.products.Product;
 import com.EIPplatform.model.enums.OperationType;
 
 import jakarta.validation.constraints.Email;
@@ -60,4 +62,6 @@ public class BusinessDetailDTO {
     List<EquipmentResponseDto> equipments;
 
     List<ProcessResponseDto> processes;
+
+    List<ProductResponse> products;
 }

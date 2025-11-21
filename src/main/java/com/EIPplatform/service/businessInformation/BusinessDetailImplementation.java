@@ -4,6 +4,10 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
+import com.EIPplatform.mapper.businessInformation.*;
+import com.EIPplatform.model.entity.businessInformation.Process;
+import com.EIPplatform.model.entity.businessInformation.products.Product;
+import com.EIPplatform.repository.user.LegalRepresentativeRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -11,8 +15,6 @@ import org.springframework.web.multipart.MultipartFile;
 import com.EIPplatform.exception.ExceptionFactory;
 import com.EIPplatform.exception.errorCategories.BusinessDetailError;
 import com.EIPplatform.exception.errorCategories.UserError;
-import com.EIPplatform.mapper.businessInformation.BusinessDetailMapper;
-import com.EIPplatform.mapper.businessInformation.LegalRepresentativeMapper;
 import com.EIPplatform.model.dto.businessInformation.BusinessDetailResponse;
 import com.EIPplatform.model.dto.businessInformation.legalRepresentative.LegalRepresentativeCreationNameOnly;
 import com.EIPplatform.model.dto.businessInformation.BusinessDetailDTO;
@@ -46,6 +48,13 @@ public class BusinessDetailImplementation implements BusinessDetailInterface {
     ExceptionFactory exceptionFactory;
     BusinessDetailUtils businessDetailUtils;
     LegalRepresentativeMapper legalRepresentativeMapper;
+    LegalRepresentativeRepository legalRepresentativeRepository;
+    EquipmentMapper equipmentMapper;
+    ProjectMapper projectMapper;
+    FacilityMapper facilityMapper;
+    ProcessMapper processMapper;
+    ProductMapper productMapper;
+
 
 
     @Override
@@ -116,19 +125,19 @@ public class BusinessDetailImplementation implements BusinessDetailInterface {
         BusinessDetail entity = businessDetailMapper.toEntity(dto);
 
         // Projects
-        List<Project> projects = businessDetailUtils.mapProjects(dto.getProjects(), entity);
-        entity.setProjects(projects);
+//        List<Project> projects = businessDetailUtils.mapProjects(dto.getProjects(), entity);
+//        entity.setProjects(projects);
 
         // Facilities
-        List<Facility> facilities = businessDetailUtils.mapFacilities(dto.getFacilities(), entity);
-        entity.setFacilities(facilities);
+//        List<Facility> facilities = businessDetailUtils.mapFacilities(dto.getFacilities(), entity);
+//        entity.setFacilities(facilities);
 
         // Equipments
-        List<Equipment> equipments = businessDetailUtils.mapEquipments(dto.getEquipments(), entity);
-        entity.setEquipments(equipments);
+//        List<Equipment> equipments = businessDetailUtils.mapEquipments(dto.getEquipments(), entity);
+//        entity.setEquipments(equipments);
 
-        // Processes
-        businessDetailUtils.syncProcesses(dto.getProcesses(), entity); // ĐÚNG
+//        // Processes
+//        businessDetailUtils.syncProcesses(dto.getProcesses(), entity); // ĐÚNG
 
         // Attach UserAccount
         entity.getUserAccounts().add(userAccount);
@@ -139,12 +148,11 @@ public class BusinessDetailImplementation implements BusinessDetailInterface {
             entity.setIsoCertificateFilePath(filePath);
         }
 
-        LegalRepresentativeCreationNameOnly legalRepresentativeCreationNameOnly= new LegalRepresentativeCreationNameOnly();
-        legalRepresentativeCreationNameOnly.setName(dto.getLegalRepresentative());
-        LegalRepresentative legalRep = legalRepresentativeMapper
-                .nameToDraftEntity(legalRepresentativeCreationNameOnly);
-        entity.setLegalRepresentative(legalRep);
-        legalRep.setBusinessDetail(entity);
+//        LegalRepresentative legalRep = new LegalRepresentative();
+//        legalRep.setName(dto.getLegalRepresentative());
+//
+//        entity.setLegalRepresentative(legalRep);
+//        legalRep.setBusinessDetail(entity);
 
         entity = businessDetailRepository.saveAndFlush(entity);
         userAccountRepository.flush();
@@ -179,20 +187,51 @@ public class BusinessDetailImplementation implements BusinessDetailInterface {
         // =======================
 
         // LegalRepresentative update
-        LegalRepresentative legalRep = businessDetailUtils.fetchLegalRepresentative(dto.getLegalRepresentative());
-        entity.setLegalRepresentative(legalRep);
+//        LegalRepresentative legalRep = businessDetailUtils.fetchLegalRepresentative(dto.getLegalRepresentative());
+//        entity.setLegalRepresentative(legalRep);
 
-        // Projects update
-        List<Project> updatedProjects = businessDetailUtils.mapProjects(dto.getProjects(), entity);
-        entity.setProjects(updatedProjects);
+        BusinessDetail finalEntity = entity; // giữ lại để dùng trong lambda
 
-        // Facilities update
-        List<Facility> updatedFacilities = businessDetailUtils.mapFacilities(dto.getFacilities(), entity);
-        entity.setFacilities(updatedFacilities);
+// ==================== PROJECTS ====================
+        entity.getProjects().clear();
+        if (dto.getProjects() != null && !dto.getProjects().isEmpty()) {
+            List<Project> newProjects = projectMapper.toEntityList(dto.getProjects());
+            newProjects.forEach(p -> p.setBusinessDetail(finalEntity));
+            entity.getProjects().addAll(newProjects);
+        }
 
-        // Equipments update
-        List<Equipment> updatedEquipments = businessDetailUtils.mapEquipments(dto.getEquipments(), entity);
-        entity.setEquipments(updatedEquipments);
+// ==================== FACILITIES ====================
+        entity.getFacilities().clear();
+        if (dto.getFacilities() != null && !dto.getFacilities().isEmpty()) {
+            List<Facility> newFacilities = facilityMapper.toEntityList(dto.getFacilities());
+            newFacilities.forEach(f -> f.setBusinessDetail(finalEntity));
+            entity.getFacilities().addAll(newFacilities);
+        }
+
+// ==================== EQUIPMENTS ====================
+// (bạn đã làm gần đúng, chỉ thiếu clear() thôi)
+        entity.getEquipments().clear();
+        if (dto.getEquipments() != null && !dto.getEquipments().isEmpty()) {
+            List<Equipment> newEquipments = equipmentMapper.toEntityList(dto.getEquipments());
+            newEquipments.forEach(e -> e.setBusinessDetail(finalEntity));
+            entity.getEquipments().addAll(newEquipments);
+        }
+
+// ==================== PROCESSES ====================
+        entity.getProcesses().clear();
+        if (dto.getProcesses() != null && !dto.getProcesses().isEmpty()) {
+            List<Process> newProcesses = processMapper.toEntityList(dto.getProcesses());
+            newProcesses.forEach(p -> p.setBusinessDetail(finalEntity));
+            entity.getProcesses().addAll(newProcesses);
+        }
+
+// ==================== PRODUCTS ====================
+        entity.getProducts().clear();
+        if (dto.getProducts() != null && !dto.getProducts().isEmpty()) {
+            List<Product> newProducts = productMapper.toEntityList(dto.getProducts());
+            newProducts.forEach(p -> p.setBusinessDetail(finalEntity));
+            entity.getProducts().addAll(newProducts);
+        }
 
         // Processes update
         businessDetailUtils.syncProcesses(dto.getProcesses(), entity); // ĐÚNG

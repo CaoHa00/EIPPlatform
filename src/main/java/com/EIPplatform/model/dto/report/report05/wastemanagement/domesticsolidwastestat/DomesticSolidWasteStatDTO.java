@@ -7,14 +7,16 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
 @Data
-@NoArgsConstructor
-@AllArgsConstructor
 @Builder
+@AllArgsConstructor
+@NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class DomesticSolidWasteStatDTO {
     Long domesticId;
     String wasteTypeName;
     Double volumeCy;
+    String unitCy;
     String receiverOrg;
     Double volumePy;
+    String unitPy;
 }

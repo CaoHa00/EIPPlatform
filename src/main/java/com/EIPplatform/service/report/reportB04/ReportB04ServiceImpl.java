@@ -16,8 +16,8 @@ import com.EIPplatform.model.entity.report.reportB04.ReportB04;
 import com.EIPplatform.repository.businessInformation.BusinessDetailRepository;
 import com.EIPplatform.repository.report.reportB04.ReportB04Repository;
 import com.EIPplatform.service.fileStorage.FileStorageService;
-import com.EIPplatform.service.report.reportCache.reportCacheA05.ReportCacheFactory;
-import com.EIPplatform.service.report.reportCache.reportCacheA05.ReportCacheService;
+import com.EIPplatform.service.report.reportCache.ReportCacheFactory;
+import com.EIPplatform.service.report.reportCache.ReportCacheService;
 import com.EIPplatform.repository.businessInformation.ProductRepository;
 
 import jakarta.annotation.PostConstruct;

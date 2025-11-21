@@ -2,9 +2,11 @@ package com.EIPplatform.mapper.report.report05.wastemanagement;
 
 import com.EIPplatform.model.dto.report.report05.wastemanagement.othersolidwastestat.OtherSolidWasteStatCreateDTO;
 import com.EIPplatform.model.dto.report.report05.wastemanagement.othersolidwastestat.OtherSolidWasteStatDTO;
+import com.EIPplatform.model.dto.report.report05.wastemanagement.othersolidwastestat.OtherSolidWasteStatUpdateDTO;
 import com.EIPplatform.model.entity.report.report05.wastemanagement.OtherSolidWasteStat;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.MappingTarget;
 import org.mapstruct.factory.Mappers;
 
 import java.util.List;
@@ -24,9 +26,30 @@ public interface OtherSolidWasteStatMapper {
 
     List<OtherSolidWasteStatDTO> toDtoList(List<OtherSolidWasteStat> entities);
 
-    default void updateFromDto(OtherSolidWasteStatCreateDTO dto, @org.mapstruct.MappingTarget OtherSolidWasteStat entity) {
-        entity.setWasteGroupOther(dto.getWasteGroupOther());
-        entity.setVolumeCy(dto.getVolumeCy());
-        entity.setVolumePy(dto.getVolumePy());
+    default void updateFromDto(
+            OtherSolidWasteStatUpdateDTO dto,
+            @MappingTarget OtherSolidWasteStat entity
+    ) {
+        if (dto.getWasteGroupOther() != null)
+            entity.setWasteGroupOther(dto.getWasteGroupOther());
+
+        if (dto.getVolumeCy() != null)
+            entity.setVolumeCy(dto.getVolumeCy());
+
+        if (dto.getUnitCy() != null)
+            entity.setUnitCy(dto.getUnitCy());
+
+        if (dto.getSelfTreatmentMethod() != null)
+            entity.setSelfTreatmentMethod(dto.getSelfTreatmentMethod());
+
+        if (dto.getReceiverOrg() != null)
+            entity.setReceiverOrg(dto.getReceiverOrg());
+
+        if (dto.getVolumePy() != null)
+            entity.setVolumePy(dto.getVolumePy());
+
+        if (dto.getUnitPy() != null)
+            entity.setUnitPy(dto.getUnitPy());
     }
+
 }

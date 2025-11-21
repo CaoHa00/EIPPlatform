@@ -1,4 +1,4 @@
-package com.EIPplatform.service.report.reportCache.reportCacheA05;
+package com.EIPplatform.service.report.reportCache;
 
 import java.util.List;
 import java.util.UUID;
@@ -12,35 +12,35 @@ public interface ReportCacheService<T> {
     /**
      * Save draft report to cache
      */
-    void saveDraftReport(T draft, UUID userAccountId, UUID reportId);
+    void saveDraftReport(T draft, UUID businessDetailId, UUID reportId);
 
     /**
      * Get draft report from cache
      */
-    T getDraftReport(UUID reportId, UUID userAccountId);
+    T getDraftReport(UUID reportId, UUID businessDetailId);
 
     /**
      * Update specific section data in draft report
      */
-    <S> void updateSectionData(UUID reportId, UUID userAccountId, S sectionData, String sectionName);
+    <S> void updateSectionData(UUID reportId, UUID businessDetailId, S sectionData, String sectionName);
 
     /**
      * Delete draft report from cache
      */
-    void deleteDraftReport(UUID reportId, UUID userAccountId);
+    void deleteDraftReport(UUID reportId, UUID businessDetailId);
 
     /**
      * Delete all draft reports for a specific user
      */
-    void deleteAllDraftsByUser(UUID userAccountId);
+    void deleteAllDraftsByUser(UUID businessDetailId);
 
     /**
      * Get all draft reports for a specific user
      */
-    List<T> getAllDraftsByUser(UUID userAccountId);
+    List<T> getAllDraftsByUser(UUID businessDetailId);
 
     /**
      * Check if draft exists in cache
      */
-    boolean draftExists(UUID reportId, UUID userAccountId);
+    boolean draftExists(UUID reportId, UUID businessDetailId);
 }

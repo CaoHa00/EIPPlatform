@@ -62,49 +62,70 @@ public class WasteManagementDataCreateDTO {
 
     @NotNull(message = "IS_REQUIRED")
     @DecimalMin(value = "0.0", inclusive = true)
-    Double waterTotalVolumeKg;
+    Double waterTotalVolume;
+
+    @NotBlank(message = "IS_REQUIRED")
+    String waterTotalUnit;
 
     @NotBlank(message = "IS_REQUIRED")
     String waterEstimationMethod;
 
     @NotNull(message = "IS_REQUIRED")
     @DecimalMin(value = "0.0", inclusive = true)
-    Double airTotalVolumeKg;
+    Double airTotalVolume;
+
+    @NotBlank(message = "IS_REQUIRED")
+    String airTotalUnit;
 
     @NotBlank(message = "IS_REQUIRED")
     String airEstimationMethod;
 
     @NotNull(message = "IS_REQUIRED")
     @DecimalMin(value = "0.0", inclusive = true)
-    Double soilTotalVolumeKg;
+    Double soilTotalVolume;
+
+    @NotBlank(message = "IS_REQUIRED")
+    String soilTotalUnit;
 
     @NotBlank(message = "IS_REQUIRED")
     String soilEstimationMethod;
 
     @NotNull(message = "IS_REQUIRED")
     @DecimalMin(value = "0.0", inclusive = true)
-    Double sewageSludgeTotalVolumeKg;
+    Double sewageSludgeTotalVolume;
+
+    @NotBlank(message = "IS_REQUIRED")
+    String sewageSludgeTotalUnit;
 
     @NotBlank(message = "IS_REQUIRED")
     String sewageSludgeEstimationMethod;
 
     @NotNull(message = "IS_REQUIRED")
     @DecimalMin(value = "0.0", inclusive = true)
-    Double hwOnsiteTotalVolumeKg;
+    Double hwOnsiteTotalVolume;
+
+    @NotBlank(message = "IS_REQUIRED")
+    String hwOnsiteTotalUnit;
 
     @NotBlank(message = "IS_REQUIRED")
     String hwOnsiteEstimationMethod;
 
     @NotNull(message = "IS_REQUIRED")
     @DecimalMin(value = "0.0", inclusive = true)
-    Double hwRecycleTotalVolumeKg;
+    Double hwRecycleTotalVolume;
+
+    @NotBlank(message = "IS_REQUIRED")
+    String hwRecycleTotalUnit;
 
     @NotBlank(message = "IS_REQUIRED")
     String hwRecycleEstimationMethod;
 
     @NotNull(message = "IS_REQUIRED")
     @DecimalMin(value = "0.0", inclusive = true)
-    Double hwDisposalTotalVolumeKg;
+    Double hwDisposalTotalVolume;
+
+    @NotBlank(message = "IS_REQUIRED")
+    String hwDisposalTotalUnit;
 
     @NotBlank(message = "IS_REQUIRED")
     String hwDisposalEstimationMethod;

@@ -18,8 +18,11 @@ public class PopInventoryStatDTO {
     String casCode;
     String importDate;
     Double importVolume;
+    String importUnit;
     String concentration;
     Double volumeUsed;
+    String usedUnit;
     Double volumeStocked;
+    String stockedUnit;
     String complianceResult;
 }
