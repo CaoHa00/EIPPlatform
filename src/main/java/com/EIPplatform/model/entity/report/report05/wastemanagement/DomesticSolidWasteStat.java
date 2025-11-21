@@ -28,10 +28,16 @@ public class DomesticSolidWasteStat {
 
     @Column(name = "volume_cy", nullable = false)
     Double volumeCy;
+
+    @Column(name = "unit_cy", nullable = false)
+    String unitCy;
     
     @Column(name = "receiver_org", columnDefinition = "NVARCHAR(255)", nullable = false)
     String receiverOrg;
 
     @Column(name = "volume_py", nullable = false)
     Double volumePy;
+
+    @Column(name = "unit_py", nullable = false)
+    String unitPy;
 }

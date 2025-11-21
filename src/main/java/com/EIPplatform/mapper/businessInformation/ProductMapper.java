@@ -13,6 +13,8 @@ import com.EIPplatform.model.dto.businessInformation.products.ProductResponse;
 import com.EIPplatform.model.dto.businessInformation.products.ProductUpdateRequest;
 import com.EIPplatform.model.entity.businessInformation.products.Product;
 
+import java.util.List;
+
 @Mapper(componentModel = "spring", nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
 public interface ProductMapper {
 
@@ -44,4 +46,6 @@ public interface ProductMapper {
     void updateEntityFromDto (ProductDTO dto, @MappingTarget Product entity);
 
     ProductDTO toDTO (Product entity);
+
+    List<Product> toEntityList(List<ProductResponse> dtos);
 }

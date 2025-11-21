@@ -9,8 +9,8 @@ import com.EIPplatform.model.dto.report.report05.wastewatermanager.wastewaterman
 import com.EIPplatform.model.dto.report.report05.wastewatermanager.wastewatermanagement.WasteWaterDataDTO;
 import com.EIPplatform.model.entity.report.report05.wastewatermanager.WasteWaterData;
 import com.EIPplatform.service.fileStorage.FileStorageService;
-import com.EIPplatform.service.report.reportCache.reportCacheA05.ReportCacheFactory;
-import com.EIPplatform.service.report.reportCache.reportCacheA05.ReportCacheService;
+import com.EIPplatform.service.report.reportCache.ReportCacheFactory;
+import com.EIPplatform.service.report.reportCache.ReportCacheService;
 import com.EIPplatform.util.StringNormalizerUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
@@ -23,11 +23,9 @@ import com.EIPplatform.model.dto.report.report05.ReportA05DraftDTO;
 import com.EIPplatform.model.entity.report.report05.ReportA05;
 import com.EIPplatform.repository.report.ReportA05Repository;
 
-import jakarta.annotation.PostConstruct;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import lombok.experimental.NonFinal;
 import lombok.extern.slf4j.Slf4j;
 
 @Service
@@ -60,12 +58,8 @@ public class WasteWaterDataServiceImpl implements WasteWaterDataService {
 
     @Override
     @Transactional
-    public WasteWaterDataDTO createWasteWaterData(
-            UUID reportId,
-            UUID userAccountId,
-            WasteWaterDataCreateDTO request,
-            MultipartFile connectionFile,
-            MultipartFile mapFile) {
+    public WasteWaterDataDTO createWasteWaterData(UUID reportId, UUID businessDetailId,
+                                                  WasteWaterDataCreateDTO request, MultipartFile connectionFile, MultipartFile mapFile) {
 
         request = StringNormalizerUtil.normalizeRequest(request);
 
@@ -76,7 +70,7 @@ public class WasteWaterDataServiceImpl implements WasteWaterDataService {
                         reportId,
                         WasteWaterError.REPORT_NOT_FOUND));
 
-        ReportA05DraftDTO draft = reportCacheService.getDraftReport(reportId, userAccountId);
+        ReportA05DraftDTO draft = reportCacheService.getDraftReport(reportId, businessDetailId);
         WasteWaterDataDTO oldDto = (draft != null) ? draft.getWasteWaterData() : null;
 
         WasteWaterData entity = wasteWaterDataMapper.toEntity(request);
@@ -91,6 +85,7 @@ public class WasteWaterDataServiceImpl implements WasteWaterDataService {
         } else if (oldDto != null && oldDto.getConnectionDiagram() != null) {
             entity.setConnectionDiagram(oldDto.getConnectionDiagram());
         }
+
         if (mapFile != null && !mapFile.isEmpty()) {
             if (oldDto != null && oldDto.getAutoStationMap() != null) {
                 fileStorageService.deleteFile(oldDto.getAutoStationMap());
@@ -104,18 +99,10 @@ public class WasteWaterDataServiceImpl implements WasteWaterDataService {
 
         WasteWaterDataDTO responseDto = wasteWaterDataMapper.toDto(entity);
 
-        if (draft == null) {
-            draft = ReportA05DraftDTO.builder()
-                    .reportId(reportId)
-                    .isDraft(true)
-                    .lastModified(LocalDateTime.now())
-                    .build();
-            reportCacheService.saveDraftReport(draft, userAccountId, reportId);
-        }
+        reportCacheService.updateSectionData(reportId, businessDetailId, responseDto, "wasteWaterData");
 
-        reportCacheService.updateSectionData(reportId, userAccountId, responseDto, "wasteWaterData");
-
-        log.info("Created WasteWaterData in cache - reportId: {}, userAccountId: {}", reportId, userAccountId);
+        log.info("Created WasteWaterData in cache - reportId: {}, businessDetailId: {}",
+                reportId, businessDetailId);
         return responseDto;
     }
 

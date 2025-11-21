@@ -32,8 +32,11 @@ public class ExportedHwStat {
     @Column(name = "basel_code", columnDefinition = "NVARCHAR(50)")
     String baselCode;
 
-    @Column(name = "volume_kg", nullable = false)
-    Double volumeKg;
+    @Column(name = "volume", nullable = false)
+    Double volume;
+
+    @Column(name = "unit", nullable = false)
+    String unit;
     
     @Column(name = "transporter_org", columnDefinition = "NVARCHAR(MAX)", nullable = false)
     String transporterOrg;

@@ -14,17 +14,24 @@ import lombok.experimental.FieldDefaults;
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class PopInventoryStatCreateDTO {
+
     @NotBlank(message = "IS_REQUIRED")
     String popName;
 
     @DecimalMin(value = "0.0", inclusive = true)
     Double importVolume;
 
+    String importUnit;
+
     @DecimalMin(value = "0.0", inclusive = true)
     Double volumeUsed;
 
+    String usedUnit;
+
     @DecimalMin(value = "0.0", inclusive = true)
     Double volumeStocked;
+
+    String stockedUnit;
 
     @Size(max = 50)
     String casCode;

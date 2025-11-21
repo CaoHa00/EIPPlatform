@@ -12,10 +12,9 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class DomesticSolidWasteStatUpdateDTO {
     String wasteTypeName;
-
     Double volumeCy;
-
+    String unitCy;
     String receiverOrg;
-
     Double volumePy;
+    String unitPy;
 }

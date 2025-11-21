@@ -4,6 +4,10 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
+import com.EIPplatform.mapper.businessInformation.*;
+import com.EIPplatform.model.entity.businessInformation.Process;
+import com.EIPplatform.model.entity.businessInformation.products.Product;
+import com.EIPplatform.repository.user.LegalRepresentativeRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -11,8 +15,6 @@ import org.springframework.web.multipart.MultipartFile;
 import com.EIPplatform.exception.ExceptionFactory;
 import com.EIPplatform.exception.errorCategories.BusinessDetailError;
 import com.EIPplatform.exception.errorCategories.UserError;
-import com.EIPplatform.mapper.businessInformation.BusinessDetailMapper;
-import com.EIPplatform.mapper.businessInformation.LegalRepresentativeMapper;
 import com.EIPplatform.model.dto.businessInformation.BusinessDetailResponse;
 import com.EIPplatform.model.dto.businessInformation.legalRepresentative.LegalRepresentativeCreationNameOnly;
 import com.EIPplatform.model.dto.businessInformation.BusinessDetailDTO;
@@ -46,6 +48,13 @@ public class BusinessDetailImplementation implements BusinessDetailInterface {
     ExceptionFactory exceptionFactory;
     BusinessDetailUtils businessDetailUtils;
     LegalRepresentativeMapper legalRepresentativeMapper;
+    LegalRepresentativeRepository legalRepresentativeRepository;
+    EquipmentMapper equipmentMapper;
+    ProjectMapper projectMapper;
+    FacilityMapper facilityMapper;
+    ProcessMapper processMapper;
+    ProductMapper productMapper;
+
 
 
     @Override
@@ -129,7 +138,6 @@ public class BusinessDetailImplementation implements BusinessDetailInterface {
 
         // // Processes
         // businessDetailUtils.syncProcesses(dto.getProcesses(), entity); // ĐÚNG
-
         // Attach UserAccount
         entity.getUserAccounts().add(userAccount);
         userAccount.setBusinessDetail(entity);
@@ -145,6 +153,11 @@ public class BusinessDetailImplementation implements BusinessDetailInterface {
         //         .nameToDraftEntity(legalRepresentativeCreationNameOnly);
         // entity.setLegalRepresentative(legalRep);
         // legalRep.setBusinessDetail(entity);
+//        LegalRepresentative legalRep = new LegalRepresentative();
+//        legalRep.setName(dto.getLegalRepresentative());
+//
+//        entity.setLegalRepresentative(legalRep);
+//        legalRep.setBusinessDetail(entity);
 
         entity = businessDetailRepository.saveAndFlush(entity);
         userAccountRepository.flush();
@@ -179,6 +192,7 @@ public class BusinessDetailImplementation implements BusinessDetailInterface {
         // =======================
 
         // LegalRepresentative update
+
         // LegalRepresentative legalRep = businessDetailUtils.fetchLegalRepresentative(dto.getLegalRepresentative());
         // entity.setLegalRepresentative(legalRep);
 

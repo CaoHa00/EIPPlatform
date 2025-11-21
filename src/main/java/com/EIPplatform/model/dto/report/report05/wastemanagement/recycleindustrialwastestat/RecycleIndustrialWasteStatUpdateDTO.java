@@ -11,11 +11,16 @@ import lombok.experimental.FieldDefaults;
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class RecycleIndustrialWasteStatUpdateDTO {
+
     String transferOrg;
 
     Double volumeCy;
 
+    String unitCy;
+
     String wasteTypeDesc;
 
     Double volumePy;
+
+    String unitPy;
 }

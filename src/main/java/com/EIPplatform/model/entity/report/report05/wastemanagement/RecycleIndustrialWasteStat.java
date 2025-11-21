@@ -29,10 +29,16 @@ public class RecycleIndustrialWasteStat {
 
     @Column(name = "volume_cy", nullable = false)
     Double volumeCy;
+
+    @Column(name = "unit_cy", nullable = false)
+    String unitCy;
     
     @Column(name = "waste_type_desc", columnDefinition = "NVARCHAR(255)", nullable = false)
     String wasteTypeDesc;
 
     @Column(name = "volume_py", nullable = false)
     Double volumePy;
+
+    @Column(name = "unit_py", nullable = false)
+    String unitPy;
 }

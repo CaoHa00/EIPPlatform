@@ -25,6 +25,9 @@ public class HazardousWasteStatCreateDTO {
     Double volumeCy;
 
     @NotBlank(message = "IS_REQUIRED")
+    String unitCy;
+
+    @NotBlank(message = "IS_REQUIRED")
     String treatmentMethod;
 
     @NotBlank(message = "IS_REQUIRED")
@@ -33,4 +36,7 @@ public class HazardousWasteStatCreateDTO {
     @NotNull(message = "IS_REQUIRED")
     @DecimalMin(value = "0.0", inclusive = true)
     Double volumePy;
+
+    @NotBlank(message = "IS_REQUIRED")
+    String unitPy;
 }

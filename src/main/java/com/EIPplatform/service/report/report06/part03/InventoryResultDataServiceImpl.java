@@ -10,8 +10,8 @@ import com.EIPplatform.model.dto.report.report06.part03.inventoryResultData.Inve
 import com.EIPplatform.model.dto.report.report06.part03.inventoryResultData.InventoryResultDataDTO;
 import com.EIPplatform.model.entity.report.report06.part03.InventoryResultData;
 import com.EIPplatform.repository.report.report06.Report06Repository;
-import com.EIPplatform.service.report.reportCache.reportCacheA05.ReportCacheFactory;
-import com.EIPplatform.service.report.reportCache.reportCacheA05.ReportCacheService;
+import com.EIPplatform.service.report.reportCache.ReportCacheFactory;
+import com.EIPplatform.service.report.reportCache.ReportCacheService;
 import com.EIPplatform.util.StringNormalizerUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

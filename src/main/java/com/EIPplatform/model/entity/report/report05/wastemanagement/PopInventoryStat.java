@@ -36,14 +36,23 @@ public class PopInventoryStat {
     @Column(name = "import_volume")
     Double importVolume;
 
+    @Column(name = "import_unit")
+    String importUnit;
+
     @Column(name = "concentration", columnDefinition = "NVARCHAR(100)")
     String concentration;
 
     @Column(name = "volume_used")
     Double volumeUsed;
 
+    @Column(name = "used_unit")
+    String usedUnit;
+
     @Column(name = "volume_stocked")
     Double volumeStocked;
+
+    @Column(name = "stocked_unit")
+    String stockedUnit;
 
     @Column(name = "compliance_result", columnDefinition = "NVARCHAR(255)")
     String complianceResult;
