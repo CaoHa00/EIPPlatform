@@ -293,6 +293,7 @@ public class ReportA05ServiceImpl implements ReportA05Service {
                 }
 
                 BusinessDetail bd = saved.getBusinessDetail();
+
                 return ReportA05DTO.builder()
                                 .reportId(saved.getReportId())
                                 .reportCode(saved.getReportCode())

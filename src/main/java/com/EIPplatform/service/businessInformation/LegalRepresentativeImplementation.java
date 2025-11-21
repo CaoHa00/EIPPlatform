@@ -70,14 +70,14 @@ public class LegalRepresentativeImplementation implements LegalRepresentativeInt
                 .orElseThrow(() -> exceptionFactory.createNotFoundException("Legal Representative",
                 request.getLegalRepresentativeId(), LegalRepresentativeError.LEGAL_REPRESENTATIVE_NOT_FOUND));
 
-        if (request.getTaxCode() != null && !request.getTaxCode().isBlank()) {
-            if (legalRepresentativeRepository.existsByTaxCodeAndLegalRepresentativeIdNot(
-                    request.getTaxCode(),
-                    request.getLegalRepresentativeId())) {
-                throw exceptionFactory.createAlreadyExistsException("Legal Representative", "tax code",
-                        request.getTaxCode(), LegalRepresentativeError.TAX_CODE_ALREADY_EXISTS);
-            }
-        }
+        // if (request.getTaxCode() != null && !request.getTaxCode().isBlank()) {
+        //     if (legalRepresentativeRepository.existsByTaxCodeAndLegalRepresentativeIdNot(
+        //             request.getTaxCode(),
+        //             request.getLegalRepresentativeId())) {
+        //         throw exceptionFactory.createAlreadyExistsException("Legal Representative", "tax code",
+        //                 request.getTaxCode(), LegalRepresentativeError.TAX_CODE_ALREADY_EXISTS);
+        //     }
+        // }
 
         legalRepresentativeMapper.updateEntityFromRequest(request, existingEntity);
         LegalRepresentative updatedEntity = legalRepresentativeRepository.save(existingEntity);

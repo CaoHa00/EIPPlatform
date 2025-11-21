@@ -11,7 +11,10 @@ import com.EIPplatform.exception.errorCategories.LegalRepresentativeError;
 import com.EIPplatform.exception.errorCategories.ReportError;
 import com.EIPplatform.mapper.businessInformation.BusinessDetailMapper;
 import com.EIPplatform.mapper.businessInformation.InvestorMapper;
+import com.EIPplatform.mapper.businessInformation.LegalDocMapper;
+import com.EIPplatform.mapper.businessInformation.ProjectMapper;
 import com.EIPplatform.mapper.report.reportB04.part1.ReportInvestorDetailMapper;
+import com.EIPplatform.mapper.report.reportB04.part1.ThirdPartyImplementerMapper;
 import com.EIPplatform.model.dto.businessInformation.investors.InvestorResponse;
 import com.EIPplatform.model.dto.report.reportB04.ReportB04DraftDTO;
 import com.EIPplatform.model.dto.report.reportB04.part1.ReportInvestorDetailDTO;
@@ -42,6 +45,9 @@ public class ReportInvestorDetailServiceImpl implements ReportInvestorDetailServ
     ExceptionFactory exceptionFactory;
     BusinessDetailRepository businessDetailRepository;
     InvestorMapper investorMapper;
+    LegalDocMapper legalDocMapper;
+    ThirdPartyImplementerMapper thirdPartyImplementerMapper;    
+    ProjectMapper projectMapper;
     BusinessDetailMapper businessDetailMapper;
     // Field khởi tạo trong @PostConstruct
     @NonFinal
@@ -60,19 +66,9 @@ public class ReportInvestorDetailServiceImpl implements ReportInvestorDetailServ
                 reportId,
                 ReportError.REPORT_NOT_FOUND));
 
-        ReportB04DraftDTO draft = reportCacheService.getDraftReport(reportId, userAccountId);
         ReportInvestorDetail entity = reportInvestorDetailMapper.toEntityFromCreate(request);
 
         ReportInvestorDetailDTO responseDto = reportInvestorDetailMapper.toDTO(entity);
-
-        if (draft == null) {
-            draft = ReportB04DraftDTO.builder()
-                    .reportId(reportId)
-                    .isDraft(true)
-                    .lastModified(LocalDateTime.now())
-                    .build();
-            reportCacheService.saveDraftReport(draft, userAccountId, reportId);
-        }
 
         reportCacheService.updateSectionData(reportId, userAccountId, responseDto, "airEmissionData");
 
@@ -115,18 +111,18 @@ public class ReportInvestorDetailServiceImpl implements ReportInvestorDetailServ
             dto.setInvestor(investorResponse);
         }
 
-        // Legal Documents (nếu có)
+        // // Legal Documents (nếu có)
         // if (businessDetail.getLegalDoc() != null) {
         //     dto.setLegalDoc(legalDocMapper.toDto(businessDetail.getLegalDoc()));
         // }
 
-        // Third Party Implementer (nếu có)
+        // // Third Party Implementer (nếu có)
         // if (businessDetail.getThirdPartyImplementer() != null) {
         //     dto.setThirdPartyImplementer(
         //             thirdPartyImplementerMapper.toDto(businessDetail.getThirdPartyImplementer()));
         // }
 
-        // Project (nếu có)
+        // // Project (nếu có)
         // if (businessDetail.getProject() != null) {
         //     dto.setProject(projectMapper.toDto(businessDetail.getProject()));
         // }

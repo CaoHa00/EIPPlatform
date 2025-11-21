@@ -35,7 +35,6 @@ public class LegalRepresentativeCreationRequest {
     @Past(message = "DATE_INVALID")
     LocalDate dateOfBirth;
 
-    @NotBlank(message = "FIELD_REQUIRED")
     String identificationNumber;
 
     @NotBlank(message = "FIELD_REQUIRED")

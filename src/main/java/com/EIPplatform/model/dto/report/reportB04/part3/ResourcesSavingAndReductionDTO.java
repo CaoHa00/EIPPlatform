@@ -66,5 +66,4 @@ public class ResourcesSavingAndReductionDTO {
     String chemicalCostSaving;
     String chemicalUnit;
 
-
 }

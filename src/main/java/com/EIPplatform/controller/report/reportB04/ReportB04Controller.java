@@ -31,12 +31,11 @@ public class ReportB04Controller {
     ReportB04Service reportB04Service;
 
 
-    @PostMapping
+    @GetMapping
     public ApiResponse<ReportB04DTO> createReport(
-            @Valid @RequestBody CreateReportRequest request) {
+            @Valid @RequestParam UUID businessDetailId) {
 
-        log.info("POST /api/v1/reports - Creating report");
-        ReportB04DTO response = reportB04Service.createReport(request);
+        ReportB04DTO response = reportB04Service.getOrCreateReportByBusinessDetailId(businessDetailId);
         return ApiResponse.<ReportB04DTO>builder()
                 .message("Report B04 created successfully")
                 .result(response)
