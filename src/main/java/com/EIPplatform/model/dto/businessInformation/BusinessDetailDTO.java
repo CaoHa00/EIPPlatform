@@ -12,6 +12,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class BusinessDetailDTO {
     @NotBlank(message = "FIELD_REQUIRED")
+
     String facilityName;
 
     @NotBlank(message = "FIELD_REQUIRED")

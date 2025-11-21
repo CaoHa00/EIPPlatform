@@ -16,7 +16,7 @@ public class AirAutoMonitoringIncidentCreateDTO {
     @Size(max = 255)
     String incidentName;
 
-    @NotNull(message = "IS_REQUIRED")
+    @NotBlank(message = "IS_REQUIRED")
     String incidentTime;
 
     @NotBlank(message = "IS_REQUIRED")

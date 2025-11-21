@@ -25,17 +25,161 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
-/**
- * Service xử lý NHIỀU BẢNG KHÁC NHAU
- * Mỗi bảng có:
- * - Template marker riêng
- * - Method fill riêng
- * - Cấu trúc cột riêng
- */
 @Slf4j
 public class TableMappingService {
 
-    // ==================== BẢNG 1: MONITORING EXCEEDANCES ====================
+    /** ==================== Helper record ==================== */
+    private static class TableInfo {
+        XWPFTable table;
+        XWPFTableRow templateRow;
+        int rowIndex;
+        int colIndex;
+
+        TableInfo(XWPFTable table, XWPFTableRow templateRow, int rowIndex, int colIndex) {
+            this.table = table;
+            this.templateRow = templateRow;
+            this.rowIndex = rowIndex;
+            this.colIndex = colIndex;
+        }
+    }
+
+    /** ==================== COMMON HELPERS ==================== */
+
+    private static TableInfo findTemplateRow(XWPFDocument doc, String marker) {
+        for (XWPFTable table : doc.getTables()) {
+            for (int i = 0; i < table.getRows().size(); i++) {
+                XWPFTableRow row = table.getRow(i);
+
+                for (int j = 0; j < row.getTableCells().size(); j++) {
+                    String text = getCellText(row.getCell(j));
+                    if (text != null && text.contains(marker)) {
+                        log.info("Found marker '{}' at row {}, col {}", marker, i, j);
+                        return new TableInfo(table, row, i, j);
+                    }
+                }
+            }
+        }
+        return null;
+    }
+
+    private static XWPFTableRow cloneRow(XWPFTable table, XWPFTableRow templateRow, int position) {
+        XWPFTableRow newRow = table.insertNewTableRow(position);
+
+        for (int i = 0; i < templateRow.getTableCells().size(); i++) {
+            XWPFTableCell templateCell = templateRow.getCell(i);
+            XWPFTableCell newCell = newRow.addNewTableCell();
+            copyCell(templateCell, newCell);
+        }
+
+        return newRow;
+    }
+
+    private static void copyCell(XWPFTableCell source, XWPFTableCell target) {
+        // Clear target
+        while (target.getParagraphs().size() > 0) {
+            target.removeParagraph(0);
+        }
+
+        for (XWPFParagraph para : source.getParagraphs()) {
+            XWPFParagraph newPara = target.addParagraph();
+            copyParagraph(para, newPara);
+        }
+    }
+
+    private static void copyParagraph(XWPFParagraph source, XWPFParagraph target) {
+        target.setAlignment(source.getAlignment());
+        target.setVerticalAlignment(source.getVerticalAlignment());
+
+        for (XWPFRun run : source.getRuns()) {
+            XWPFRun newRun = target.createRun();
+            String text = run.getText(0);
+            if (text != null) {
+                newRun.setText(text);
+            }
+            copyRunFormatting(run, newRun);
+        }
+    }
+
+    private static void copyRunFormatting(XWPFRun source, XWPFRun target) {
+        try {
+            if (source.getFontFamily() != null) {
+                target.setFontFamily(source.getFontFamily());
+            }
+            if (source.getFontSize() != -1) {
+                target.setFontSize(source.getFontSize());
+            }
+            target.setBold(source.isBold());
+            target.setItalic(source.isItalic());
+            target.setUnderline(source.getUnderline());
+            if (source.getColor() != null) {
+                target.setColor(source.getColor());
+            }
+        } catch (Exception e) {
+            log.warn("Could not copy all formatting: {}", e.getMessage());
+        }
+    }
+
+    private static String getCellText(XWPFTableCell cell) {
+        if (cell == null) return null;
+        return cell.getText();
+    }
+
+    private static void setCellText(XWPFTableCell cell, String text) {
+        if (cell == null) return;
+
+        while (cell.getParagraphs().size() > 0) {
+            cell.removeParagraph(0);
+        }
+
+        XWPFParagraph para = cell.addParagraph();
+        XWPFRun run = para.createRun();
+        run.setText(text != null ? text : "");
+    }
+
+    private static String formatDate(LocalDate date) {
+        if (date == null) {
+            return "";
+        }
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        return date.format(formatter);
+    }
+
+    private static String formatDouble(Double value) {
+        if (value == null) {
+            return "";
+        }
+        return String.format("%.2f", value);
+    }
+
+    private static String formatInteger(Integer value) {
+        if (value == null) {
+            return "";
+        }
+        return String.valueOf(value);
+    }
+
+    /** For table 1.3 auto stats – insert column dynamically */
+    private static void insertColumnAtIndex(XWPFTable table, int colIndex) {
+        for (XWPFTableRow row : table.getRows()) {
+
+            int totalCols = row.getTableCells().size();
+            XWPFTableCell newCell = row.addNewTableCell();
+
+            for (int i = totalCols - 1; i > colIndex; i--) {
+                XWPFTableCell src = row.getCell(i - 1);
+                XWPFTableCell dest = row.getCell(i);
+                copyCell(src, dest);
+            }
+
+            XWPFTableCell inserted = row.getCell(colIndex);
+            while (inserted.getParagraphs().size() > 0) {
+                inserted.removeParagraph(0);
+            }
+            inserted.addParagraph().createRun().setText("");
+        }
+    }
+
+    /** ==================== 1.1 & 1.2 – Wastewater Monitoring Exceedances ==================== */
 
     /**
      * Bảng 1: Waste Water Monitoring Exceedances (8 cột)
@@ -146,36 +290,31 @@ public class TableMappingService {
             return;
         }
 
-        // Tìm bảng với marker {{TEMPLATE_ROW}}
         TableInfo tableInfo = findTemplateRow(doc, "{{TEMPLATE_ROW}}");
         if (tableInfo == null) {
             log.warn("Template row with {{TEMPLATE_ROW}} marker not found!");
             return;
         }
 
-        // Clone và fill cho mỗi item
         for (int i = 0; i < exceedances.size(); i++) {
             WasteWaterMonitoringExceedancesDTO item = exceedances.get(i);
             XWPFTableRow newRow = cloneRow(tableInfo.table, tableInfo.templateRow, tableInfo.rowIndex + 1 + i);
-            // Fill 8 cells
-            setCellText(newRow.getCell(0), String.valueOf(i + 1)); // TT
-            setCellText(newRow.getCell(1), item.getPointName()); // Tên điểm
-            setCellText(newRow.getCell(2), item.getPointSymbol()); // Ký hiệu
-            setCellText(newRow.getCell(3), item.getMonitoringDate()); // Thời gian
-            setCellText(newRow.getCell(4), item.getLongitude()); // kinh do
-            setCellText(newRow.getCell(5), item.getLatitude()); // vi do
-            setCellText(newRow.getCell(6), item.getExceededParam()); // Chỉ tiêu
-            setCellText(newRow.getCell(7), formatDouble(item.getResultValue())); // Kết quả
-            setCellText(newRow.getCell(8), formatDouble(item.getQcvnLimit())); // QCVN
-            setCellText(newRow.getCell(8), formatDouble(item.getQcvnLimit())); // QCVN
+
+            setCellText(newRow.getCell(0), String.valueOf(i + 1));
+            setCellText(newRow.getCell(1), item.getPointName());
+            setCellText(newRow.getCell(2), item.getPointSymbol());
+            setCellText(newRow.getCell(3), item.getMonitoringDate());
+            setCellText(newRow.getCell(4), item.getLongitude());
+            setCellText(newRow.getCell(5), item.getLatitude());
+            setCellText(newRow.getCell(6), item.getExceededParam());
+            setCellText(newRow.getCell(7), formatDouble(item.getResultValue()));
+            setCellText(newRow.getCell(8), formatDouble(item.getQcvnLimit()));
         }
-        // Xóa template row
         tableInfo.table.removeRow(tableInfo.rowIndex);
 
-        log.info(" Filled {} monitoring exceedance records", exceedances.size());
+        log.info("Filled {} monitoring exceedance records (table 1.1)", exceedances.size());
     }
 
-    // bang 1.2
     public static void fillWasteWaterMonitoringTable2(
             XWPFDocument doc,
             List<WasteWaterMonitoringExceedancesDTO> exceedances) {
@@ -185,36 +324,32 @@ public class TableMappingService {
             return;
         }
 
-        // Tìm bảng với marker {{TEMPLATE_ROW}}
         TableInfo tableInfo = findTemplateRow(doc, "{{TEMPLATE_ROW_2}}");
         if (tableInfo == null) {
-            log.warn("Template row with {{TEMPLATE_ROW}} marker not found!");
+            log.warn("Template row with {{TEMPLATE_ROW_2}} marker not found!");
             return;
         }
 
-        // Clone và fill cho mỗi item
         for (int i = 0; i < exceedances.size(); i++) {
             WasteWaterMonitoringExceedancesDTO item = exceedances.get(i);
             XWPFTableRow newRow = cloneRow(tableInfo.table, tableInfo.templateRow, tableInfo.rowIndex + 1 + i);
-            // Fill 8 cells
-            setCellText(newRow.getCell(0), String.valueOf(i + 1)); // TT
-            setCellText(newRow.getCell(1), item.getPointName()); // Tên điểm
-            setCellText(newRow.getCell(2), item.getPointSymbol()); // Ký hiệu
-            setCellText(newRow.getCell(3), item.getMonitoringDate()); // Thời gian
-            setCellText(newRow.getCell(4), item.getLongitude()); // kinh do
-            setCellText(newRow.getCell(5), item.getLatitude()); // vi do
-            setCellText(newRow.getCell(6), item.getExceededParam()); // Chỉ tiêu
-            setCellText(newRow.getCell(7), formatDouble(item.getResultValue())); // Kết quả
-            setCellText(newRow.getCell(8), formatDouble(item.getQcvnLimit())); // QCVN
-            setCellText(newRow.getCell(8), formatDouble(item.getQcvnLimit())); // QCVN
+
+            setCellText(newRow.getCell(0), String.valueOf(i + 1));
+            setCellText(newRow.getCell(1), item.getPointName());
+            setCellText(newRow.getCell(2), item.getPointSymbol());
+            setCellText(newRow.getCell(3), item.getMonitoringDate());
+            setCellText(newRow.getCell(4), item.getLongitude());
+            setCellText(newRow.getCell(5), item.getLatitude());
+            setCellText(newRow.getCell(6), item.getExceededParam());
+            setCellText(newRow.getCell(7), formatDouble(item.getResultValue()));
+            setCellText(newRow.getCell(8), formatDouble(item.getQcvnLimit()));
         }
-        // Xóa template row
         tableInfo.table.removeRow(tableInfo.rowIndex);
 
-        log.info(" Filled {} monitoring exceedance records", exceedances.size());
+        log.info("Filled {} monitoring exceedance records (table 1.2)", exceedances.size());
     }
 
-    // ==================== BẢNG 3: AUTO MONITORING STATS ====================
+    /** ==================== 1.3 – Auto Monitoring Stats (wastewater) ==================== */
 
     /**
      * Bảng 3: Auto Monitoring Stats (6 cột)
@@ -226,18 +361,21 @@ public class TableMappingService {
             XWPFDocument doc,
             List<AutoWWMonitoringStatsDTO> stats) {
 
-        if (stats == null || stats.isEmpty())
+        if (stats == null || stats.isEmpty()) {
+            log.info("No auto monitoring stats data to fill");
             return;
+        }
 
         TableInfo info = findTemplateRow(doc, "{{TEMPLATE_AUTO_STATS}}");
-        if (info == null)
+        if (info == null) {
+            log.warn("Template row with {{TEMPLATE_AUTO_STATS}} marker not found!");
             return;
+        }
 
         XWPFTable table = info.table;
         int markerRow = info.rowIndex;
         int markerCol = info.colIndex;
 
-        // Get all predefined rows
         XWPFTableRow headerRow = table.getRow(markerRow);
         XWPFTableRow rowDesign = table.getRow(markerRow + 1);
         XWPFTableRow rowReceived = table.getRow(markerRow + 2);
@@ -245,15 +383,10 @@ public class TableMappingService {
         XWPFTableRow rowRD = table.getRow(markerRow + 4);
         XWPFTableRow rowRE = table.getRow(markerRow + 5);
 
-        // Replace marker cell text
         setCellText(headerRow.getCell(markerCol), "Thông số");
 
-        // Loop columns
         for (AutoWWMonitoringStatsDTO item : stats) {
-
-            // INSERT COLUMN BEFORE markerCol+1 (so new col is added after header)
             insertColumnAtIndex(table, markerCol + 1);
-
             int col = markerCol + 1;
 
             setCellText(headerRow.getCell(col), item.getParamName());
@@ -263,47 +396,12 @@ public class TableMappingService {
             setCellText(rowRD.getCell(col), formatDouble(item.getRatioReceivedDesign()));
             setCellText(rowRE.getCell(col), formatDouble(item.getRatioErrorReceived()));
         }
+
         headerRow.removeCell(markerCol);
-        log.info("Filled {} auto monitoring stats columns", stats.size());
+        log.info("Filled {} auto monitoring stats columns (table 1.3)", stats.size());
     }
 
-    /**
-     * Insert a new column at given index for ALL ROWS in the table
-     */
-    private static void insertColumnAtIndex(XWPFTable table, int colIndex) {
-
-        for (XWPFTableRow row : table.getRows()) {
-
-            int totalCols = row.getTableCells().size();
-
-            // Add 1 new cell at END
-            XWPFTableCell newCell = row.addNewTableCell();
-
-            // Shift cells from end → colIndex + 1
-            for (int i = totalCols - 1; i > colIndex; i--) {
-                XWPFTableCell src = row.getCell(i - 1);
-                XWPFTableCell dest = row.getCell(i);
-
-                copyCell(src, dest);
-            }
-
-            // Clear the inserted (empty) cell at correct colIndex
-            XWPFTableCell inserted = row.getCell(colIndex);
-            clearCell(inserted);
-        }
-    }
-
-    /**
-     * Clear cell content
-     */
-    private static void clearCell(XWPFTableCell cell) {
-        while (cell.getParagraphs().size() > 0)
-            cell.removeParagraph(0);
-
-        cell.addParagraph().createRun().setText("");
-    }
-
-    // ==================== BẢNG 4: AUTO MONITORING INCIDENTS ====================
+    /** ==================== 1.4 – Auto Monitoring Incidents (wastewater) ==================== */
 
     /**
      * Bảng 3: Auto Monitoring Incidents (5 cột)
@@ -330,18 +428,17 @@ public class TableMappingService {
             AutoWWMonitoringIncidentsDTO item = incidents.get(i);
             XWPFTableRow newRow = cloneRow(tableInfo.table, tableInfo.templateRow, tableInfo.rowIndex + 1 + i);
 
-            // Fill 5 cells
-            setCellText(newRow.getCell(0), String.valueOf(i + 1)); // TT
-            setCellText(newRow.getCell(1), item.getIncidentName()); // Ngày sự cố
-            setCellText(newRow.getCell(2), item.getIncidentTime()); // Mô tả
-            setCellText(newRow.getCell(3), item.getIncidentRemedy()); // Thời gian
+            setCellText(newRow.getCell(0), String.valueOf(i + 1));
+            setCellText(newRow.getCell(1), item.getIncidentName());
+            setCellText(newRow.getCell(2), item.getIncidentTime());
+            setCellText(newRow.getCell(3), item.getIncidentRemedy());
         }
         tableInfo.table.removeRow(tableInfo.rowIndex);
 
-        log.info(" Filled {} auto monitoring incidents records", incidents.size());
+        log.info("Filled {} auto monitoring incidents records (table 1.4)", incidents.size());
     }
 
-    // ==================== BẢNG 5: QCVN EXCEEDANCES ====================
+    /** ==================== 1.5 – QCVN Exceedances (wastewater) ==================== */
 
     /**
      * Bảng 4: QCVN Exceedances (6 cột)
@@ -369,65 +466,61 @@ public class TableMappingService {
             AutoWWQcvnExceedancesDTO item = exceedances.get(i);
             XWPFTableRow newRow = cloneRow(tableInfo.table, tableInfo.templateRow, tableInfo.rowIndex + 1 + i);
 
-            // Fill 6 cells
-            setCellText(newRow.getCell(0), String.valueOf(i + 1)); // TT
-            setCellText(newRow.getCell(1), item.getParamName()); // Ngày vượt
-            setCellText(newRow.getCell(2), formatInteger(item.getExceedDaysCount())); // Thông số
-            setCellText(newRow.getCell(3), formatDouble(item.getQcvnLimitValue())); // Giá
-            setCellText(newRow.getCell(4), formatDouble(item.getExceedRatioPercent())); // Giới
-
+            setCellText(newRow.getCell(0), String.valueOf(i + 1));
+            setCellText(newRow.getCell(1), item.getParamName());
+            setCellText(newRow.getCell(2), formatInteger(item.getExceedDaysCount()));
+            setCellText(newRow.getCell(3), formatDouble(item.getQcvnLimitValue()));
+            setCellText(newRow.getCell(4), formatDouble(item.getExceedRatioPercent()));
         }
         tableInfo.table.removeRow(tableInfo.rowIndex);
 
-        log.info(" Filled {} QCVN exceedances records", exceedances.size());
+        log.info("Filled {} QCVN exceedances records (table 1.5)", exceedances.size());
     }
 
-    // Bảng 2.1
+    /** ==================== 2.1 – Air Monitoring Exceedances ==================== */
+
     public static void fillAirMonitoringTable(
             XWPFDocument doc,
             List<AirMonitoringExceedanceDTO> exceedances) {
 
         if (exceedances == null || exceedances.isEmpty()) {
-            log.info("No monitoring exceedances data to fill");
+            log.info("No air monitoring exceedances data to fill");
             return;
         }
 
-        // Tìm bảng với marker {{TEMPLATE_AIR_ROW}}
         TableInfo tableInfo = findTemplateRow(doc, "{{TEMPLATE_AIR_ROW}}");
         if (tableInfo == null) {
-            log.warn("Template row with {{TEMPLATE_ROW}} marker not found!");
+            log.warn("Template row with {{TEMPLATE_AIR_ROW}} marker not found!");
             return;
         }
 
-        // Clone và fill cho mỗi item
         for (int i = 0; i < exceedances.size(); i++) {
             AirMonitoringExceedanceDTO item = exceedances.get(i);
             XWPFTableRow newRow = cloneRow(tableInfo.table, tableInfo.templateRow, tableInfo.rowIndex + 1 + i);
 
-            // Fill 8 cells
-            setCellText(newRow.getCell(0), String.valueOf(i + 1)); // TT
-            setCellText(newRow.getCell(1), item.getPointName()); // Tên điểm
-            setCellText(newRow.getCell(2), item.getPointSymbol()); // Ký hiệu
-            setCellText(newRow.getCell(3), item.getMonitoringDate());// Thời gian
-            setCellText(newRow.getCell(4), item.getLongitude()); // kinh do
-            setCellText(newRow.getCell(5), item.getLatitude()); // vi do
-            setCellText(newRow.getCell(6), item.getExceededParam()); // Chỉ tiêu
-            setCellText(newRow.getCell(7), formatDouble(item.getResultValue())); // Kết quả
-            setCellText(newRow.getCell(8), formatDouble(item.getQcvnLimit())); // QCVN
+            setCellText(newRow.getCell(0), String.valueOf(i + 1));
+            setCellText(newRow.getCell(1), item.getPointName());
+            setCellText(newRow.getCell(2), item.getPointSymbol());
+            setCellText(newRow.getCell(3), item.getMonitoringDate());
+            setCellText(newRow.getCell(4), item.getLongitude());
+            setCellText(newRow.getCell(5), item.getLatitude());
+            setCellText(newRow.getCell(6), item.getExceededParam());
+            setCellText(newRow.getCell(7), formatDouble(item.getResultValue()));
+            setCellText(newRow.getCell(8), formatDouble(item.getQcvnLimit()));
         }
-        // Xóa template row
         tableInfo.table.removeRow(tableInfo.rowIndex);
 
-        log.info(" Filled {} monitoring exceedance records", exceedances.size());
+        log.info("Filled {} air monitoring exceedance records (table 2.1)", exceedances.size());
     }
 
-    // bảng 2.2 Thống kê số liệu quan trắc khí thải
+    /** ==================== 2.2 – Air Auto Monitoring Stats ==================== */
+
     public static void fillAirAutoMonitoringTable(
             XWPFDocument doc,
             List<AirAutoMonitoringStatDTO> stats) {
 
         if (stats == null || stats.isEmpty()) {
-            log.info("No auto monitoring stats data to fill");
+            log.info("No air auto monitoring stats data to fill");
             return;
         }
 
@@ -441,9 +534,8 @@ public class TableMappingService {
             AirAutoMonitoringStatDTO item = stats.get(i);
             XWPFTableRow newRow = cloneRow(tableInfo.table, tableInfo.templateRow, tableInfo.rowIndex + 1 + i);
 
-            // Fill 6 cells (adjust theo cấu trúc bảng thực tế của bạn)
-            setCellText(newRow.getCell(0), String.valueOf(i + 1)); // TT
-            setCellText(newRow.getCell(1), item.getParamName()); // Thông số
+            setCellText(newRow.getCell(0), String.valueOf(i + 1));
+            setCellText(newRow.getCell(1), item.getParamName());
             setCellText(newRow.getCell(2), formatInteger(item.getValDesign()));
             setCellText(newRow.getCell(3), formatInteger(item.getValReceived()));
             setCellText(newRow.getCell(4), formatInteger(item.getValError()));
@@ -452,16 +544,17 @@ public class TableMappingService {
         }
         tableInfo.table.removeRow(tableInfo.rowIndex);
 
-        log.info(" Filled {} auto monitoring stats records", stats.size());
+        log.info("Filled {} air auto monitoring stats records (table 2.2)", stats.size());
     }
 
-    // Bảng 2.3 Sự cố quan trắc khí thải tự động
+    /** ==================== 2.3 – Air Auto Monitoring Incidents ==================== */
+
     public static void fillAirAutoMonitoringIncidentsTable(
             XWPFDocument doc,
             List<AirAutoMonitoringIncidentDTO> incidents) {
 
         if (incidents == null || incidents.isEmpty()) {
-            log.info("No auto monitoring incidents data to fill");
+            log.info("No air auto monitoring incidents data to fill");
             return;
         }
 
@@ -475,24 +568,24 @@ public class TableMappingService {
             AirAutoMonitoringIncidentDTO item = incidents.get(i);
             XWPFTableRow newRow = cloneRow(tableInfo.table, tableInfo.templateRow, tableInfo.rowIndex + 1 + i);
 
-            // Fill 5 cells
-            setCellText(newRow.getCell(0), String.valueOf(i + 1)); // TT
-            setCellText(newRow.getCell(1), item.getIncidentName()); // Ngày sự cố
-            setCellText(newRow.getCell(2), item.getIncidentTime()); // Mô tả
-            setCellText(newRow.getCell(3), item.getIncidentRemedy()); // Thời gian
+            setCellText(newRow.getCell(0), String.valueOf(i + 1));
+            setCellText(newRow.getCell(1), item.getIncidentName());
+            setCellText(newRow.getCell(2), item.getIncidentTime());
+            setCellText(newRow.getCell(3), item.getIncidentRemedy());
         }
         tableInfo.table.removeRow(tableInfo.rowIndex);
 
-        log.info(" Filled {} auto monitoring incidents records", incidents.size());
+        log.info("Filled {} air auto monitoring incidents records (table 2.3)", incidents.size());
     }
 
-    // bảng 2.4 Các chỉ tiêu vượt QCVN
+    /** ==================== 2.4 – Air QCVN Exceedances ==================== */
+
     public static void fillAirQcvnExceedancesTable(
             XWPFDocument doc,
             List<AirAutoQcvnExceedanceDTO> exceedances) {
 
         if (exceedances == null || exceedances.isEmpty()) {
-            log.info("No QCVN exceedances data to fill");
+            log.info("No air QCVN exceedances data to fill");
             return;
         }
 
@@ -506,31 +599,34 @@ public class TableMappingService {
             AirAutoQcvnExceedanceDTO item = exceedances.get(i);
             XWPFTableRow newRow = cloneRow(tableInfo.table, tableInfo.templateRow, tableInfo.rowIndex + 1 + i);
 
-            // Fill 6 cells
-            setCellText(newRow.getCell(0), String.valueOf(i + 1)); // TT
-            setCellText(newRow.getCell(1), item.getParamName()); // Ngày vượt
-            setCellText(newRow.getCell(2), formatInteger(item.getExceedDaysCount())); // Thông số
-            setCellText(newRow.getCell(3), formatInteger(item.getQcvnLimitValue())); // Giá
-            setCellText(newRow.getCell(4), formatDouble(item.getExceedRatioPercent())); // Giới
-
+            setCellText(newRow.getCell(0), String.valueOf(i + 1));
+            setCellText(newRow.getCell(1), item.getParamName());
+            setCellText(newRow.getCell(2), formatInteger(item.getExceedDaysCount()));
+            setCellText(newRow.getCell(3), formatInteger(item.getQcvnLimitValue()));
+            setCellText(newRow.getCell(4), formatDouble(item.getExceedRatioPercent()));
         }
         tableInfo.table.removeRow(tableInfo.rowIndex);
 
+        log.info("Filled {} air QCVN exceedances records (table 2.4)", exceedances.size());
     }
 
-    // Bảng 3.1 Thống
+    /** ==================== 3.1 – Domestic Solid Waste ==================== */
+
     public static void fillDomesticSolidWasteStatsTable(
             XWPFDocument doc,
             List<DomesticSolidWasteStatDTO> exceedances) {
+
         if (exceedances == null || exceedances.isEmpty()) {
             log.info("No domestic solid waste stats data to fill");
             return;
         }
+
         TableInfo tableInfo = findTemplateRow(doc, "{{TEMPLATE_DOMESTIC_SOLID_WASTE_STATS}}");
         if (tableInfo == null) {
             log.warn("Template row with {{TEMPLATE_DOMESTIC_SOLID_WASTE_STATS}} marker not found!");
             return;
         }
+
         for (int i = 0; i < exceedances.size(); i++) {
             DomesticSolidWasteStatDTO item = exceedances.get(i);
             XWPFTableRow newRow = cloneRow(tableInfo.table, tableInfo.templateRow, tableInfo.rowIndex + 1 + i);
@@ -542,21 +638,26 @@ public class TableMappingService {
         }
         tableInfo.table.removeRow(tableInfo.rowIndex);
 
+        log.info("Filled {} domestic solid waste stats records (table 3.1)", exceedances.size());
     }
 
-    // Bảng 3.2 Thống kê chất thải rắn công nghiệp
+    /** ==================== 3.2 – Industrial Solid Waste ==================== */
+
     public static void fillIndustrialSolidWasteStatsTable(
             XWPFDocument doc,
             List<IndustrialSolidWasteStatDTO> exceedances) {
+
         if (exceedances == null || exceedances.isEmpty()) {
-            log.info("No domestic solid waste stats data to fill");
+            log.info("No industrial solid waste stats data to fill");
             return;
         }
+
         TableInfo tableInfo = findTemplateRow(doc, "{{TEMPLATE_INDUSTRIAL_SOLID_WASTE_STATS}}");
         if (tableInfo == null) {
             log.warn("Template row with {{TEMPLATE_INDUSTRIAL_SOLID_WASTE_STATS}} marker not found!");
             return;
         }
+
         for (int i = 0; i < exceedances.size(); i++) {
             IndustrialSolidWasteStatDTO item = exceedances.get(i);
             XWPFTableRow newRow = cloneRow(tableInfo.table, tableInfo.templateRow, tableInfo.rowIndex + 1 + i);
@@ -568,21 +669,26 @@ public class TableMappingService {
         }
         tableInfo.table.removeRow(tableInfo.rowIndex);
 
+        log.info("Filled {} industrial solid waste stats records (table 3.2)", exceedances.size());
     }
 
-    // Bảng 3.3 Thống kê sử dụng CTRCNTT
+    /** ==================== 3.3 – Recycle Industrial Waste ==================== */
+
     public static void fillRecycleIndustrialWasteTable(
             XWPFDocument doc,
             List<RecycleIndustrialWasteStatDTO> exceedances) {
+
         if (exceedances == null || exceedances.isEmpty()) {
-            log.info("No domestic solid waste stats data to fill");
+            log.info("No recycle industrial waste stats data to fill");
             return;
         }
+
         TableInfo tableInfo = findTemplateRow(doc, "{{TEMPLATE_RECYCLE_INDUSTRIAL_WASTE_STATS}}");
         if (tableInfo == null) {
             log.warn("Template row with {{TEMPLATE_RECYCLE_INDUSTRIAL_WASTE_STATS}} marker not found!");
             return;
         }
+
         for (int i = 0; i < exceedances.size(); i++) {
             RecycleIndustrialWasteStatDTO item = exceedances.get(i);
             XWPFTableRow newRow = cloneRow(tableInfo.table, tableInfo.templateRow, tableInfo.rowIndex + 1 + i);
@@ -594,21 +700,26 @@ public class TableMappingService {
         }
         tableInfo.table.removeRow(tableInfo.rowIndex);
 
+        log.info("Filled {} recycle industrial waste stats records (table 3.3)", exceedances.size());
     }
 
-    // bảng 3.4 Thống kê các loại CTRTT khác (nếu có) do doanh nghiệp tự xử lý
+    /** ==================== 3.4 – Other Solid Waste ==================== */
+
     public static void fillOtherSolidWasteStatsTable(
             XWPFDocument doc,
             List<OtherSolidWasteStatDTO> exceedances) {
+
         if (exceedances == null || exceedances.isEmpty()) {
             log.info("No other solid waste stats data to fill");
             return;
         }
+
         TableInfo tableInfo = findTemplateRow(doc, "{{TEMPLATE_OTHER_SOLID_WASTE_STATS}}");
         if (tableInfo == null) {
             log.warn("Template row with {{TEMPLATE_OTHER_SOLID_WASTE_STATS}} marker not found!");
             return;
         }
+
         for (int i = 0; i < exceedances.size(); i++) {
             OtherSolidWasteStatDTO item = exceedances.get(i);
             XWPFTableRow newRow = cloneRow(tableInfo.table, tableInfo.templateRow, tableInfo.rowIndex + 1 + i);
@@ -621,21 +732,26 @@ public class TableMappingService {
         }
         tableInfo.table.removeRow(tableInfo.rowIndex);
 
+        log.info("Filled {} other solid waste stats records (table 3.4)", exceedances.size());
     }
 
-    // bảng 4.1 Thống kê CTNH
+    /** ==================== 4.1 – Hazardous Waste ==================== */
+
     public static void fillHazardousWasteStatsTable(
             XWPFDocument doc,
             List<HazardousWasteStatDTO> exceedances) {
+
         if (exceedances == null || exceedances.isEmpty()) {
-            log.info("No other solid waste stats data to fill");
+            log.info("No hazardous waste stats data to fill");
             return;
         }
+
         TableInfo tableInfo = findTemplateRow(doc, "{{TEMPLATE_HAZARDOUS_WASTE_STATS}}");
         if (tableInfo == null) {
             log.warn("Template row with {{TEMPLATE_HAZARDOUS_WASTE_STATS}} marker not found!");
             return;
         }
+
         for (int i = 0; i < exceedances.size(); i++) {
             HazardousWasteStatDTO item = exceedances.get(i);
             XWPFTableRow newRow = cloneRow(tableInfo.table, tableInfo.templateRow, tableInfo.rowIndex + 1 + i);
@@ -646,25 +762,29 @@ public class TableMappingService {
             setCellText(newRow.getCell(4), item.getTreatmentMethod());
             setCellText(newRow.getCell(5), item.getReceiverOrg());
             setCellText(newRow.getCell(6), formatDouble(item.getVolumePy()));
-
         }
         tableInfo.table.removeRow(tableInfo.rowIndex);
 
+        log.info("Filled {} hazardous waste stats records (table 4.1)", exceedances.size());
     }
-    // bảng 4.2 Thống kê CTNH được nhập khẩ
+
+    /** ==================== 4.2 – Exported Hazardous Waste ==================== */
 
     public static void fillExportedHwStatsTable(
             XWPFDocument doc,
             List<ExportedHwStatDTO> exceedances) {
+
         if (exceedances == null || exceedances.isEmpty()) {
-            log.info("No other solid waste stats data to fill");
+            log.info("No exported HW stats data to fill");
             return;
         }
+
         TableInfo tableInfo = findTemplateRow(doc, "{{TEMPLATE_EXPORTED_HW_STATS}}");
         if (tableInfo == null) {
             log.warn("Template row with {{TEMPLATE_EXPORTED_HW_STATS}} marker not found!");
             return;
         }
+
         for (int i = 0; i < exceedances.size(); i++) {
             ExportedHwStatDTO item = exceedances.get(i);
             XWPFTableRow newRow = cloneRow(tableInfo.table, tableInfo.templateRow, tableInfo.rowIndex + 1 + i);
@@ -678,21 +798,26 @@ public class TableMappingService {
         }
         tableInfo.table.removeRow(tableInfo.rowIndex);
 
+        log.info("Filled {} exported HW stats records (table 4.2)", exceedances.size());
     }
 
-    // bảng 4.3 Thống kê CTNH tự xử lý tại cơ sở (nếu có)
-    public static void fillSeftTreatedHwStatsTable(
+    /** ==================== 4.3 – Self Treated Hazardous Waste ==================== */
+
+    public static void fillSelfTreatedHwStatsTable(
             XWPFDocument doc,
             List<SelfTreatedHwStatDTO> exceedances) {
+
         if (exceedances == null || exceedances.isEmpty()) {
-            log.info("No other solid waste stats data to fill");
+            log.info("No self-treated HW stats data to fill");
             return;
         }
+
         TableInfo tableInfo = findTemplateRow(doc, "{{TEMPLATE_SELF_TREATED_HW_STATS}}");
         if (tableInfo == null) {
             log.warn("Template row with {{TEMPLATE_SELF_TREATED_HW_STATS}} marker not found!");
             return;
         }
+
         for (int i = 0; i < exceedances.size(); i++) {
             SelfTreatedHwStatDTO item = exceedances.get(i);
             XWPFTableRow newRow = cloneRow(tableInfo.table, tableInfo.templateRow, tableInfo.rowIndex + 1 + i);
@@ -701,25 +826,29 @@ public class TableMappingService {
             setCellText(newRow.getCell(2), item.getHwCode());
             setCellText(newRow.getCell(3), formatDouble(item.getVolume()));
             setCellText(newRow.getCell(4), item.getSelfTreatmentMethod());
-
         }
         tableInfo.table.removeRow(tableInfo.rowIndex);
 
+        log.info("Filled {} self-treated HW stats records (table 4.3)", exceedances.size());
     }
-    // bảng 7.1 Thôn tin về chủng loại và khối lượn
+
+    /** ==================== 7.1 – POP Inventory ==================== */
 
     public static void fillPopInventoryStatsTable(
             XWPFDocument doc,
             List<PopInventoryStatDTO> exceedances) {
+
         if (exceedances == null || exceedances.isEmpty()) {
-            log.info("No other solid waste stats data to fill");
+            log.info("No POP inventory stats data to fill");
             return;
         }
+
         TableInfo tableInfo = findTemplateRow(doc, "{{TEMPLATE_POP_INVENTORY_STATS}}");
         if (tableInfo == null) {
             log.warn("Template row with {{TEMPLATE_POP_INVENTORY_STATS}} marker not found!");
             return;
         }
+
         for (int i = 0; i < exceedances.size(); i++) {
             PopInventoryStatDTO item = exceedances.get(i);
             XWPFTableRow newRow = cloneRow(tableInfo.table, tableInfo.templateRow, tableInfo.rowIndex + 1 + i);
@@ -734,211 +863,6 @@ public class TableMappingService {
         }
         tableInfo.table.removeRow(tableInfo.rowIndex);
 
-    }
-    // bảng 7.2 ước tính chất ô nhiễm phát thải vào môi trường
-    // public static void fillPopEmissionStatsTable(
-    // XWPFDocument doc,
-    // List<PopInventoryStatDTO> exceedances) {
-    // if (exceedances == null || exceedances.isEmpty()) {
-    // log.info("No other solid waste stats data to fill");
-    // return;
-    // }
-    // TableInfo tableInfo = findTemplateRow(doc,
-    // "{{TEMPLATE_POP_EMISSION_ESTIMATION}}");
-    // if (tableInfo == null) {
-    // log.warn("Template row with {{TEMPLATE_POP_EMISSION_ESTIMATION}} marker not
-    // found!");
-    // return;
-    // }
-    // for (int i = 0; i < exceedances.size(); i++) {
-    // PopInventoryStatDTO item = exceedances.get(i);
-    // XWPFTableRow newRow = cloneRow(tableInfo.table, tableInfo.templateRow,
-    // tableInfo.rowIndex + 1 + i);
-    // setCellText(newRow.getCell(0), String.valueOf(i + 1));
-    // setCellText(newRow.getCell(1), item.getPopName());
-    // setCellText(newRow.getCell(2), item.getCasCode());
-    // setCellText(newRow.getCell(3), formatDouble(item.getAirEmission()));
-    // setCellText(newRow.getCell(4), formatDouble(item.getWaterEmission()));
-    // setCellText(newRow.getCell(5), formatDouble(item.getSoilEmission()));
-    // }
-    // }
-    // ==================== HELPER CLASS & METHODS ====================
-
-    /**
-     * Class lưu thông tin về template row tìm được
-     */
-    private static class TableInfo {
-        XWPFTable table;
-        XWPFTableRow templateRow;
-        int rowIndex;
-        int colIndex;
-
-        TableInfo(XWPFTable table, XWPFTableRow templateRow, int rowIndex, int colIndex) {
-            this.table = table;
-            this.templateRow = templateRow;
-            this.rowIndex = rowIndex;
-            this.colIndex = colIndex;
-        }
-    }
-
-    /**
-     * Tìm template row theo marker (refactored để tái sử dụng)
-     */
-    private static TableInfo findTemplateRow(XWPFDocument doc, String marker) {
-        for (XWPFTable table : doc.getTables()) {
-            for (int i = 0; i < table.getRows().size(); i++) {
-                XWPFTableRow row = table.getRow(i);
-
-                for (int j = 0; j < row.getTableCells().size(); j++) {
-                    String text = getCellText(row.getCell(j));
-
-                    if (text != null && text.contains(marker)) {
-                        log.info("Found marker '{}' at row {}, col {}", marker, i, j);
-                        return new TableInfo(table, row, i, j);
-                    }
-                }
-            }
-        }
-        return null;
-    }
-
-    /**
-     * Clone một hàng trong bảng với đầy đủ formatting
-     */
-    private static XWPFTableRow cloneRow(XWPFTable table, XWPFTableRow templateRow, int position) {
-        XWPFTableRow newRow = table.insertNewTableRow(position);
-
-        for (int i = 0; i < templateRow.getTableCells().size(); i++) {
-            XWPFTableCell templateCell = templateRow.getCell(i);
-            XWPFTableCell newCell = newRow.addNewTableCell();
-            copyCell(templateCell, newCell);
-        }
-
-        return newRow;
-    }
-
-    /**
-     * Copy cell với formatting
-     */
-    private static void copyCell(XWPFTableCell source, XWPFTableCell target) {
-        for (XWPFParagraph para : source.getParagraphs()) {
-            XWPFParagraph newPara = target.addParagraph();
-            copyParagraph(para, newPara);
-        }
-    }
-
-    /**
-     * Copy paragraph với formatting
-     */
-    private static void copyParagraph(XWPFParagraph source, XWPFParagraph target) {
-        target.setAlignment(source.getAlignment());
-
-        for (XWPFRun run : source.getRuns()) {
-            XWPFRun newRun = target.createRun();
-            String text = run.getText(0);
-            if (text != null) {
-                newRun.setText(text);
-            }
-            copyRunFormatting(run, newRun);
-        }
-    }
-
-    /**
-     * Copy run formatting
-     */
-    private static void copyRunFormatting(XWPFRun source, XWPFRun target) {
-        try {
-            if (source.getFontFamily() != null) {
-                target.setFontFamily(source.getFontFamily());
-            }
-            if (source.getFontSize() != -1) {
-                target.setFontSize(source.getFontSize());
-            }
-            target.setBold(source.isBold());
-            target.setItalic(source.isItalic());
-            target.setUnderline(source.getUnderline());
-            if (source.getColor() != null) {
-                target.setColor(source.getColor());
-            }
-        } catch (Exception e) {
-            log.warn("Could not copy all formatting: {}", e.getMessage());
-        }
-    }
-
-    /**
-     * Lấy text từ cell
-     */
-    private static String getCellText(XWPFTableCell cell) {
-        if (cell == null)
-            return null;
-        return cell.getText();
-    }
-
-    /**
-     * Set text cho cell
-     */
-    private static void setCellText(XWPFTableCell cell, String text) {
-        if (cell == null)
-            return;
-
-        while (cell.getParagraphs().size() > 0) {
-            cell.removeParagraph(0);
-        }
-
-        XWPFParagraph para = cell.addParagraph();
-        XWPFRun run = para.createRun();
-        run.setText(text != null ? text : "");
-    }
-
-    /**
-     * Format location (kinh độ + vĩ độ)
-     */
-    private static String formatLocation(String longitude, String latitude) {
-        if (longitude == null && latitude == null) {
-            return "";
-        }
-
-        StringBuilder sb = new StringBuilder();
-        if (longitude != null && !longitude.isEmpty()) {
-            sb.append(longitude);
-        }
-        if (latitude != null && !latitude.isEmpty()) {
-            if (sb.length() > 0) {
-                sb.append(" ");
-            }
-            sb.append(latitude);
-        }
-        return sb.toString();
-    }
-
-    /**
-     * Format LocalDate thành String theo pattern yyyy-MM-dd
-     */
-    private static String formatDate(LocalDate date) {
-        if (date == null) {
-            return "";
-        }
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-        return date.format(formatter);
-    }
-
-    /**
-     * Format Double thành String (2 chữ số thập phân)
-     */
-    private static String formatDouble(Double value) {
-        if (value == null) {
-            return "";
-        }
-        return String.format("%.2f", value);
-    }
-
-    /**
-     * Format Integer thành String (không có chữ số thập phân)
-     */
-    private static String formatInteger(Integer value) {
-        if (value == null) {
-            return "";
-        }
-        return String.valueOf(value);
+        log.info("Filled {} POP inventory stats records (table 7.1)", exceedances.size());
     }
 }

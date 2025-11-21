@@ -1,12 +1,9 @@
 package com.EIPplatform.model.entity.report.report05.airemmissionmanagement;
 
 import jakarta.persistence.*;
+
 import lombok.*;
 import lombok.experimental.FieldDefaults;
-
-import java.time.LocalDateTime;
-
-import org.hibernate.annotations.Nationalized;
 
 @Entity
 @Table(name = "air_auto_monitoring_incident")

@@ -61,6 +61,8 @@ public class AirEmissionDataServiceImpl implements AirEmissionDataService {
 
         request = StringNormalizerUtil.normalizeRequest(request);
 
+        request = StringNormalizerUtil.normalizeRequest(request);
+
         ReportA05 report = reportA05Repository.findById(reportId)
                 .orElseThrow(() -> exceptionFactory.createNotFoundException(
                         "ReportA05",

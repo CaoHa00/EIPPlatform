@@ -31,9 +31,11 @@ public class AirAutoMonitoringStatCreateDTO {
 
     @NotNull(message = "IS_REQUIRED")
     @DecimalMin(value = "0.0", inclusive = true)
+    @DecimalMax(value = "100.0", inclusive = true)
     Double ratioReceivedDesign;
 
     @NotNull(message = "IS_REQUIRED")
+    @DecimalMax(value = "100.0", inclusive = true)
     @DecimalMin(value = "0.0", inclusive = true)
     Double ratioErrorReceived;
 }

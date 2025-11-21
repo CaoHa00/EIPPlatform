@@ -10,6 +10,7 @@ import com.EIPplatform.exception.errorCategories.UserError;
 import com.EIPplatform.mapper.businessInformation.BusinessDetailMapper;
 import com.EIPplatform.model.dto.businessInformation.BusinessDetailDTO;
 import com.EIPplatform.model.dto.businessInformation.BusinessDetailResponse;
+import com.EIPplatform.model.dto.businessInformation.BusinessDetailUpdateDTO;
 import com.EIPplatform.model.entity.user.authentication.UserAccount;
 import com.EIPplatform.model.entity.user.businessInformation.BusinessDetail;
 import com.EIPplatform.repository.authentication.UserAccountRepository;
@@ -17,6 +18,7 @@ import com.EIPplatform.repository.user.BusinessDetailRepository;
 import com.EIPplatform.service.fileStorage.FileStorageService;
 import com.EIPplatform.util.BusinessDetailUtils;
 
+import com.EIPplatform.util.StringNormalizerUtil;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -93,6 +95,7 @@ public class BusinessDetailImplementation implements BusinessDetailInterface {
 
     @Override
     public BusinessDetailResponse createBusinessDetail(UUID userAccountId, BusinessDetailDTO dto, MultipartFile isoFile) {
+        dto = StringNormalizerUtil.normalizeRequest(dto);
         businessDetailUtils.validateOperationDetails(dto.getOperationType(), dto.getSeasonalDescription());
         businessDetailUtils.validateUniqueFields(dto, null);
         UserAccount userAccount = userAccountRepository.findByUserAccountId(userAccountId)
@@ -126,7 +129,8 @@ public class BusinessDetailImplementation implements BusinessDetailInterface {
     }
 
     @Override
-    public BusinessDetailResponse updateBusinessDetail(UUID userAccountId, BusinessDetailDTO dto, MultipartFile isoFile) {
+    public BusinessDetailResponse updateBusinessDetail(UUID userAccountId, BusinessDetailUpdateDTO dto, MultipartFile isoFile) {
+        dto = StringNormalizerUtil.normalizeRequest(dto);
         BusinessDetail entity = businessDetailRepository.findByUserAccountId(userAccountId)
                 .orElseThrow(() -> exceptionFactory.createNotFoundException(
                         "BusinessDetail",
@@ -134,19 +138,44 @@ public class BusinessDetailImplementation implements BusinessDetailInterface {
                         userAccountId,
                         BusinessDetailError.NOT_FOUND
                 ));
+
         businessDetailUtils.validateOperationDetails(dto.getOperationType(), dto.getSeasonalDescription());
         businessDetailUtils.validateUniqueFields(dto, entity.getBusinessDetailId());
-        entity.setFacilityName(dto.getFacilityName());
-        entity.setLegalRepresentative(dto.getLegalRepresentative());
-        entity.setPhoneNumber(dto.getPhoneNumber());
-        entity.setAddress(dto.getAddress());
-        entity.setActivityType(dto.getActivityType());
-        entity.setScaleCapacity(dto.getScaleCapacity());
-        entity.setISO_certificate_14001(dto.getISO_certificate_14001());
-        entity.setBusinessRegistrationNumber(dto.getBusinessRegistrationNumber());
-        entity.setTaxCode(dto.getTaxCode());
-        entity.setOperationType(dto.getOperationType());
-        entity.setSeasonalDescription(dto.getSeasonalDescription());
+
+        if (dto.getFacilityName() != null) {
+            entity.setFacilityName(dto.getFacilityName().trim());
+        }
+        if (dto.getLegalRepresentative() != null) {
+            entity.setLegalRepresentative(dto.getLegalRepresentative().trim());
+        }
+        if (dto.getPhoneNumber() != null) {
+            entity.setPhoneNumber(dto.getPhoneNumber().trim());
+        }
+        if (dto.getAddress() != null) {
+            entity.setAddress(dto.getAddress().trim());
+        }
+        if (dto.getActivityType() != null) {
+            entity.setActivityType(dto.getActivityType().trim());
+        }
+        if (dto.getScaleCapacity() != null) {
+            entity.setScaleCapacity(dto.getScaleCapacity().trim());
+        }
+        if (dto.getISO_certificate_14001() != null) {
+            entity.setISO_certificate_14001(dto.getISO_certificate_14001().trim());
+        }
+        if (dto.getBusinessRegistrationNumber() != null) {
+            entity.setBusinessRegistrationNumber(dto.getBusinessRegistrationNumber().trim());
+        }
+        if (dto.getTaxCode() != null) {
+            entity.setTaxCode(dto.getTaxCode().trim());
+        }
+        if (dto.getOperationType() != null) {
+            entity.setOperationType(dto.getOperationType());
+        }
+        if (dto.getSeasonalDescription() != null) {
+            entity.setSeasonalDescription(dto.getSeasonalDescription().trim());
+        }
+
         // Handle ISO file update if provided
         if (isoFile != null && !isoFile.isEmpty()) {
             if (entity.getIsoCertificateFilePath() != null) {
@@ -159,6 +188,7 @@ public class BusinessDetailImplementation implements BusinessDetailInterface {
             String filePath = uploadIsoCertFile(entity, isoFile);
             entity.setIsoCertificateFilePath(filePath);
         }
+
         entity = businessDetailRepository.save(entity);
         BusinessDetailResponse response = businessDetailMapper.toResponse(entity);
         log.info("Updated BusinessDetail - ID: {}, Company: {}, TaxCode: {}",
