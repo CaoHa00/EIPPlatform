@@ -87,10 +87,10 @@ public class BusinessDetail {
     String seasonalDescription;
 
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-    @JoinColumn(name = "legal_representative_id")
+    @JoinColumn(name = "legal_representative_id", nullable = true)
     LegalRepresentative legalRepresentative;
 
-    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "investor_id")
     Investor investor;
 

@@ -29,7 +29,7 @@ public class BusinessDetailResponse {
     String taxCode;
     OperationType operationType;
     String seasonalDescription;
-
+    String email;
     // List<String> userAccounts;
 
     // LocalDateTime createdAt;

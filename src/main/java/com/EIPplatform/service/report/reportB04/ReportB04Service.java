@@ -11,7 +11,7 @@ public interface  ReportB04Service {
     
     ReportB04DTO createReport(CreateReportRequest request);
 
-    ReportB04DTO getReportById(UUID reportId);
+    ReportB04DTO getOrCreateReportByBusinessDetailId(UUID businessDetailId);
 
     /**
      * Lấy draft data từ CACHE

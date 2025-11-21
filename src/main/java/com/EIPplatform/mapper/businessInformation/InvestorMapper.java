@@ -41,7 +41,6 @@ public interface InvestorMapper {
      */
     @Mapping(target = "investorId", ignore = true)
     @Mapping(target = "auditMetaData", ignore = true)
-    @Mapping(target = "legalDocs", ignore = true) // DTO create không có list này
     InvestorOrganizationDetail toEntity(InvestorOrganizationCreationRequest request);
 
     // =================================================================
@@ -67,7 +66,6 @@ public interface InvestorMapper {
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     @Mapping(target = "investorId", ignore = true)
     @Mapping(target = "auditMetaData", ignore = true)
-    @Mapping(target = "legalDocs", ignore = true) // BẮT BUỘC IGNORE
     void updateEntity(InvestorOrganizationUpdateRequest request, @MappingTarget InvestorOrganizationDetail entity);
 
     // =================================================================

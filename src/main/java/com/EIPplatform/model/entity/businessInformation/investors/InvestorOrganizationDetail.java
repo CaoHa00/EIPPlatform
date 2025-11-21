@@ -1,15 +1,10 @@
 package com.EIPplatform.model.entity.businessInformation.investors;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.time.LocalDate;
 
-import com.EIPplatform.model.entity.legalDoc.LegalDoc;
-
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
-import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -33,19 +28,19 @@ public class InvestorOrganizationDetail extends Investor {
     @Column(name = "organization_name", nullable = false, columnDefinition = "NVARCHAR(255)")
     String organizationName;
 
-    @OneToMany(mappedBy = "investorOrganization", cascade = CascadeType.ALL, orphanRemoval = true)
-    List<LegalDoc> legalDocs;
+    @Column(name = "organization_legaldoc_type", nullable = false, columnDefinition = "NVARCHAR(255)")
+    String organizationLegalDocType;
 
-    public void addLegalDoc(LegalDoc legalDoc) {
-        if (legalDocs == null) {
-            legalDocs = new ArrayList<>();
-        }
-        legalDocs.add(legalDoc);
-        legalDoc.setInvestorOrganization(this);
-    }
+    @Column(name = "organization_issue_date", nullable = false)
+    LocalDate organizationIssueDate;
 
-    public void removeLegalDoc(LegalDoc legalDoc) {
-        legalDocs.remove(legalDoc);
-        legalDoc.setInvestorOrganization(null);
-    }
+    @Column(name = "organization_issuer_org", nullable = false, columnDefinition = "NVARCHAR(255)")
+    String organizationIssuerOrg;
+
+    @Column(name = "organization_address", nullable = true, columnDefinition = "NVARCHAR(255)")
+    String organizationAddress;
+
+    @Column(name = "organization_website", nullable = true, columnDefinition = "NVARCHAR(255)")
+    String organizationWebsite;
+
 }

@@ -69,6 +69,7 @@ public class InvestorIndividualImplementation implements InvestorIndividualInter
 
         InvestorIndividualDetail entity = investorIndividualMapper.toEntity(request);
         entity.setBusinessDetail(businessDetail);
+        entity.setNative(request.getIsNative());
         InvestorIndividualDetail savedEntity = investorIndividualRepository.save(entity);
         businessDetail.setInvestor(entity);
         return investorIndividualMapper.toResponse(savedEntity);
@@ -114,7 +115,7 @@ public class InvestorIndividualImplementation implements InvestorIndividualInter
                 investorId,
                 InvestorError.INVESTOR_NOT_FOUND
         ));
-
+        
         return investorIndividualMapper.toResponse(entity);
     }
 

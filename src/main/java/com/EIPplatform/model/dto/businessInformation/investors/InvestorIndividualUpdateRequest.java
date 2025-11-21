@@ -40,7 +40,6 @@ public class InvestorIndividualUpdateRequest {
     @NotNull(message = "FIELD_REQUIRED")
     Boolean isNative;
 
-    @NotBlank(message = "FIELD_REQUIRED")
     String identificationNumber;
 
     String passportId;

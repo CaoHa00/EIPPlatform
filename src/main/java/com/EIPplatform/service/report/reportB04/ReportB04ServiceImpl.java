@@ -29,6 +29,7 @@ import lombok.experimental.NonFinal;
 import lombok.extern.slf4j.Slf4j;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
@@ -41,6 +42,7 @@ import org.springframework.validation.annotation.Validated;
 import com.EIPplatform.mapper.report.reportB04.part1.ReportInvestorDetailMapper;
 import com.EIPplatform.mapper.report.reportB04.part3.ResourcesSavingAndReductionMapper;
 import com.EIPplatform.mapper.report.reportB04.part4.SymbiosisIndustryMapper;
+
 @Service
 @Slf4j
 @RequiredArgsConstructor
@@ -100,7 +102,12 @@ public class ReportB04ServiceImpl implements ReportB04Service {
                 .build();
 
         ReportB04 saved = reportB04Repository.save(report);
-
+        ReportB04DraftDTO draft = ReportB04DraftDTO.builder()
+                    .reportId(saved.getReportId())
+                    .isDraft(true)
+                    .lastModified(LocalDateTime.now())
+                    .build();
+        reportCacheService.saveDraftReport(draft, request.getBusinessDetailId(), saved.getReportId());
         return ReportB04DTO.builder()
                 .reportId(saved.getReportId())
                 .reportCode(saved.getReportCode())
@@ -115,54 +122,39 @@ public class ReportB04ServiceImpl implements ReportB04Service {
 
     @Override
     @Transactional
-    public ReportB04DTO getReportById(UUID reportId) {
+    public ReportB04DTO getOrCreateReportByBusinessDetailId(UUID businessDetailId) {
 
         // 1. Fetch basic report
-        ReportB04 report = reportB04Repository.findByReportIdWithBasic(reportId)
-                .orElseThrow(() -> exceptionFactory.createNotFoundException(
-                "ReportB04", reportId, ReportError.REPORT_NOT_FOUND));
+        Optional<ReportB04> optionalReport = reportB04Repository.findByBusinessDetailId(businessDetailId);
+         ReportB04DTO draft = new ReportB04DTO();
+        if (optionalReport.isEmpty()) {
+            draft = createReport(
+                CreateReportRequest.builder()
+                        .businessDetailId(businessDetailId)
+                        .reportYear(LocalDateTime.now().getYear())
+                        .reportingPeriod("ANNUAL")
+                        .build()
+            );
+        }
 
-        // 2. Fetch reportInvestorDetail với collections
-        BusinessDetail businessDetail = report.getBusinessDetail();
+         BusinessDetail businessDetail = businessDetailRepository
+                    .findById(businessDetailId)
+                    .orElseThrow(() -> exceptionFactory.createNotFoundException("BusinessDetail",
+                    businessDetailId, ReportError.BUSINESS_NOT_FOUND));
 
-        ReportInvestorDetailDTO reportInvestorDetailDTO = reportInvestorDetailRepository
-                .findByReportIdWithCollections(reportId)
-                .map(reportInvestorDetailMapper::toDTO)
-                .orElse(null);
-
-        ProductDTO productDTO = productRepository
-                .findByBusinessDetailId(businessDetail.getBusinessDetailId())
-                .map(productMapper::toDTO)
-                .orElse(null);
-        // 3. Fetch WasteManagementData với collections
-        // WasteManagementDataDTO wasteManagementDataDTO = wasteManagementDataRepository
-        // .findByReportIdWithCollections(reportId)
-        // .map(wasteManagementDataMapper::toDto)
-        // .orElse(null);
-
-        // // 4. Fetch AirEmissionData với collections
-        // AirEmissionDataDTO airEmissionDataDTO = airEmissionDataRepository
-        // .findByReportIdWithCollections(reportId)
-        // .map(airEmissionDataMapper::toDto)
-        // .orElse(null);
-        // 5. Build DTO
         return ReportB04DTO.builder()
-                .reportId(report.getReportId())
-                .reportCode(report.getReportCode())
-                .businessDetailId(report.getBusinessDetail() != null
-                        ? report.getBusinessDetail().getBusinessDetailId()
+                .reportId(draft.getReportId())
+                .reportCode(draft.getReportCode())
+                .businessDetailId(businessDetailId)
+                .facilityName(businessDetail != null
+                        ? businessDetail.getFacilityName()
                         : null)
-                .facilityName(report.getBusinessDetail() != null
-                        ? report.getBusinessDetail().getFacilityName()
-                        : null)
-                .reportYear(report.getReportYear())
-                .reportingPeriod(report.getReportingPeriod())
-                .reviewNotes(report.getReviewNotes())
-                .reportInvestorDetail(reportInvestorDetailDTO)
-                .product(productDTO)
-                .inspectionRemedyReport(report.getInspectionRemedyReport())
-                .completionPercentage(report.getCompletionPercentage())
-                .createdAt(report.getCreatedAt())
+                .reportYear(draft.getReportYear())
+                .reportingPeriod(draft.getReportingPeriod())
+                .reviewNotes(draft.getReviewNotes())
+                .inspectionRemedyReport(draft.getInspectionRemedyReport())
+                .completionPercentage(draft.getCompletionPercentage())
+                .createdAt(draft.getCreatedAt())
                 .build();
     }
 
@@ -252,7 +244,7 @@ public class ReportB04ServiceImpl implements ReportB04Service {
                 ReportB04::setResourcesSavingAndReduction
         );
 
-         // part 4 
+        // part 4 
         saveOrUpdatePart(
                 report,
                 draftData.getSymbiosisIndustryDTO(),
@@ -292,7 +284,7 @@ public class ReportB04ServiceImpl implements ReportB04Service {
         }
 
         // part 4
-         SymbiosisIndustryDTO symbiosisIndustryDTO = null;
+        SymbiosisIndustryDTO symbiosisIndustryDTO = null;
         if (saved.getSymbiosisIndustry() != null) {
             symbiosisIndustryDTO = symbiosisIndustryMapper.toDTO(saved.getSymbiosisIndustry());
         }
@@ -968,56 +960,44 @@ public class ReportB04ServiceImpl implements ReportB04Service {
 //             Integer reportYear = report.getReportYear() != null ? report.getReportYear()
 //                     : LocalDateTime.now().getYear();
 //             Path reportDir = Paths.get(uploadDir, "reporta05", String.valueOf(reportYear));
-
 //             // Tạo folder nếu chưa có
 //             Files.createDirectories(reportDir);
 //             log.info("📁 Report directory: {}", reportDir);
-
 //             // Tạo tên file
 //             String timestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss"));
 //             String facilityName = business.getFacilityName() != null
 //                     ? sanitizeFileName(business.getFacilityName())
 //                     : "Unknown";
-
 //             String fileName = String.format("BaoCaoA05_%s_%s_%s.docx",
 //                     facilityName,
 //                     reportId.toString().substring(0, 8),
 //                     timestamp);
-
 //             // Lưu file
 //             Path filePath = reportDir.resolve(fileName);
 //             Files.write(filePath, fileBytes);
-
 //             // Return relative path
 //             String relativePath = String.format("reporta05/%d/%s", reportYear, fileName);
 //             log.info(" File saved successfully: {}", relativePath);
-
 //             return relativePath;
-
 //         } catch (IOException e) {
 //             log.error("⚠️ Could not save report file: {}", e.getMessage(), e);
 //             throw new RuntimeException("Failed to save report file", e);
 //         }
 //     }
-
 //     private String sanitizeFileName(String input) {
 //         if (input == null || input.isEmpty()) {
 //             return "Unknown";
 //         }
-
 //         String sanitized = input
 //                 .replaceAll("[/\\\\:*?\"<>|]", "") // Loại bỏ ký tự không hợp lệ
 //                 .replaceAll("\\s+", "_") // Thay space = underscore
 //                 .trim();
-
 //         // Giới hạn độ dài
 //         if (sanitized.length() > 50) {
 //             sanitized = sanitized.substring(0, 50);
 //         }
-
 //         return sanitized;
 //     }
-
     /**
      * Format LocalDate to dd/MM/yyyy or return empty if null
      */
@@ -1028,7 +1008,6 @@ public class ReportB04ServiceImpl implements ReportB04Service {
 //         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 //         return date.format(formatter);
 //     }
-
 //     /**
 //      * PHƯƠNG THỨC ĐÃ SỬA - Xử lý placeholder bị tách thành nhiều runs
 //      */
@@ -1038,7 +1017,6 @@ public class ReportB04ServiceImpl implements ReportB04Service {
 //         if (fullText == null || fullText.isEmpty()) {
 //             return;
 //         }
-
 //         // Thay thế tất cả placeholders
 //         boolean modified = false;
 //         for (Map.Entry<String, String> entry : data.entrySet()) {
@@ -1052,29 +1030,24 @@ public class ReportB04ServiceImpl implements ReportB04Service {
 //                 modified = true;
 //             }
 //         }
-
 //         // Nếu có thay đổi, xóa hết runs cũ và tạo run mới
 //         if (modified) {
 //             // Lưu formatting của run đầu tiên (nếu có)
 //             XWPFRun firstRun = paragraph.getRuns().isEmpty() ? null : paragraph.getRuns().get(0);
-
 //             // Xóa tất cả runs cũ
 //             int runCount = paragraph.getRuns().size();
 //             for (int i = runCount - 1; i >= 0; i--) {
 //                 paragraph.removeRun(i);
 //             }
-
 //             // Tạo run mới với text đã thay thế
 //             XWPFRun newRun = paragraph.createRun();
 //             newRun.setText(fullText);
-
 //             // Copy formatting từ run cũ nếu có
 //             if (firstRun != null) {
 //                 copyRunFormatting(firstRun, newRun);
 //             }
 //         }
 //     }
-
     /**
      * PHƯƠNG THỨC MỚI - Copy formatting từ run cũ sang run mới
      */

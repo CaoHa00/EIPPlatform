@@ -115,20 +115,20 @@ public class BusinessDetailImplementation implements BusinessDetailInterface {
 
         BusinessDetail entity = businessDetailMapper.toEntity(dto);
 
-        // Projects
-        List<Project> projects = businessDetailUtils.mapProjects(dto.getProjects(), entity);
-        entity.setProjects(projects);
+        // // Projects
+        // List<Project> projects = businessDetailUtils.mapProjects(dto.getProjects(), entity);
+        // entity.setProjects(projects);
 
-        // Facilities
-        List<Facility> facilities = businessDetailUtils.mapFacilities(dto.getFacilities(), entity);
-        entity.setFacilities(facilities);
+        // // Facilities
+        // List<Facility> facilities = businessDetailUtils.mapFacilities(dto.getFacilities(), entity);
+        // entity.setFacilities(facilities);
 
-        // Equipments
-        List<Equipment> equipments = businessDetailUtils.mapEquipments(dto.getEquipments(), entity);
-        entity.setEquipments(equipments);
+        // // Equipments
+        // List<Equipment> equipments = businessDetailUtils.mapEquipments(dto.getEquipments(), entity);
+        // entity.setEquipments(equipments);
 
-        // Processes
-        businessDetailUtils.syncProcesses(dto.getProcesses(), entity); // ĐÚNG
+        // // Processes
+        // businessDetailUtils.syncProcesses(dto.getProcesses(), entity); // ĐÚNG
 
         // Attach UserAccount
         entity.getUserAccounts().add(userAccount);
@@ -139,12 +139,12 @@ public class BusinessDetailImplementation implements BusinessDetailInterface {
             entity.setIsoCertificateFilePath(filePath);
         }
 
-        LegalRepresentativeCreationNameOnly legalRepresentativeCreationNameOnly= new LegalRepresentativeCreationNameOnly();
-        legalRepresentativeCreationNameOnly.setName(dto.getLegalRepresentative());
-        LegalRepresentative legalRep = legalRepresentativeMapper
-                .nameToDraftEntity(legalRepresentativeCreationNameOnly);
-        entity.setLegalRepresentative(legalRep);
-        legalRep.setBusinessDetail(entity);
+        // LegalRepresentativeCreationNameOnly legalRepresentativeCreationNameOnly= new LegalRepresentativeCreationNameOnly();
+        // legalRepresentativeCreationNameOnly.setName(dto.getLegalRepresentative());
+        // LegalRepresentative legalRep = legalRepresentativeMapper
+        //         .nameToDraftEntity(legalRepresentativeCreationNameOnly);
+        // entity.setLegalRepresentative(legalRep);
+        // legalRep.setBusinessDetail(entity);
 
         entity = businessDetailRepository.saveAndFlush(entity);
         userAccountRepository.flush();
@@ -179,23 +179,23 @@ public class BusinessDetailImplementation implements BusinessDetailInterface {
         // =======================
 
         // LegalRepresentative update
-        LegalRepresentative legalRep = businessDetailUtils.fetchLegalRepresentative(dto.getLegalRepresentative());
-        entity.setLegalRepresentative(legalRep);
+        // LegalRepresentative legalRep = businessDetailUtils.fetchLegalRepresentative(dto.getLegalRepresentative());
+        // entity.setLegalRepresentative(legalRep);
 
-        // Projects update
-        List<Project> updatedProjects = businessDetailUtils.mapProjects(dto.getProjects(), entity);
-        entity.setProjects(updatedProjects);
+        // // Projects update
+        // List<Project> updatedProjects = businessDetailUtils.mapProjects(dto.getProjects(), entity);
+        // entity.setProjects(updatedProjects);
 
-        // Facilities update
-        List<Facility> updatedFacilities = businessDetailUtils.mapFacilities(dto.getFacilities(), entity);
-        entity.setFacilities(updatedFacilities);
+        // // Facilities update
+        // List<Facility> updatedFacilities = businessDetailUtils.mapFacilities(dto.getFacilities(), entity);
+        // entity.setFacilities(updatedFacilities);
 
-        // Equipments update
-        List<Equipment> updatedEquipments = businessDetailUtils.mapEquipments(dto.getEquipments(), entity);
-        entity.setEquipments(updatedEquipments);
+        // // Equipments update
+        // List<Equipment> updatedEquipments = businessDetailUtils.mapEquipments(dto.getEquipments(), entity);
+        // entity.setEquipments(updatedEquipments);
 
-        // Processes update
-        businessDetailUtils.syncProcesses(dto.getProcesses(), entity); // ĐÚNG
+        // // Processes update
+        // businessDetailUtils.syncProcesses(dto.getProcesses(), entity); // ĐÚNG
 
         // =======================
         // 3. ISO FILE UPDATE

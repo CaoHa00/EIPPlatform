@@ -6,10 +6,8 @@ import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
-import java.util.List;
+import java.time.LocalDate;
 import java.util.UUID;
-
-import com.EIPplatform.model.entity.legalDoc.LegalDoc;
 
 @Getter
 @Setter
@@ -24,11 +22,21 @@ public class InvestorOrganizationUpdateRequest {
 
     @NotBlank(message = "FIELD_REQUIRED")
     String organizationName;
+    
+    @NotBlank(message = "FIELD_REQUIRED")
+    String organizationLegalDocType;
 
-    List<LegalDoc> legalDocs;
+    @NotNull(message = "FIELD_REQUIRED")
+    LocalDate organizationIssueDate;
 
-    String address;
+    @NotBlank(message = "FIELD_REQUIRED")
+    String organizationIssuerOrg;
 
+    String organizationAddress;
+
+    String organizationWebsite;
+    
+    @NotBlank(message = "FIELD_REQUIRED")
     String taxCode;
 
     @NotBlank(message = "FIELD_REQUIRED")
@@ -38,4 +46,6 @@ public class InvestorOrganizationUpdateRequest {
 
     @Email(message = "Invalid email format")
     String email;
+
+    String address;
 }
