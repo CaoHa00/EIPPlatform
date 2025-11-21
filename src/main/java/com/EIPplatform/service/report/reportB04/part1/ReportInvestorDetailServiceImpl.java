@@ -13,7 +13,6 @@ import com.EIPplatform.mapper.businessInformation.BusinessDetailMapper;
 import com.EIPplatform.mapper.businessInformation.InvestorMapper;
 import com.EIPplatform.mapper.report.reportB04.part1.ReportInvestorDetailMapper;
 import com.EIPplatform.model.dto.businessInformation.investors.InvestorResponse;
-import com.EIPplatform.model.dto.businessInformation.BusinessDetailDTO;
 import com.EIPplatform.model.dto.report.reportB04.ReportB04DraftDTO;
 import com.EIPplatform.model.dto.report.reportB04.part1.ReportInvestorDetailDTO;
 import com.EIPplatform.model.dto.report.reportB04.part1.request.ReportInvestorDetailCreateRequest;
@@ -23,7 +22,7 @@ import com.EIPplatform.model.entity.report.reportB04.ReportB04;
 import com.EIPplatform.model.entity.report.reportB04.part01.ReportInvestorDetail;
 import com.EIPplatform.repository.businessInformation.BusinessDetailRepository;
 import com.EIPplatform.repository.report.reportB04.ReportB04Repository;
-import com.EIPplatform.service.report.reportCache.reportCacheA05.ReportCacheService;
+import com.EIPplatform.service.report.reportCache.ReportCacheService;
 import com.EIPplatform.util.StringNormalizerUtil;
 
 import lombok.AccessLevel;

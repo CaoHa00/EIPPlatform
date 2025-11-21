@@ -15,9 +15,13 @@ public class OtherSolidWasteStatUpdateDTO {
 
     Double volumeCy;
 
+    String unitCy;
+
     String selfTreatmentMethod;
 
     String receiverOrg;
 
     Double volumePy;
+
+    String unitPy;
 }

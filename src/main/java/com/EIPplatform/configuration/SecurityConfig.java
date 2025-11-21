@@ -37,6 +37,7 @@ public class SecurityConfig {
         List<String> endPointsCORS = List.of(
                         "https://eip-bcm.eiu.vn",
                         "http://localhost:3000",
+                        "http://10.60.237.101:3000/",
                         "http://10.10.115.20:3000");
 
         @Bean

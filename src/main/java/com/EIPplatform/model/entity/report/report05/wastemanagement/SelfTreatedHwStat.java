@@ -30,8 +30,11 @@ public class SelfTreatedHwStat {
     @Column(name = "hw_code", length = 50, nullable = false)
     String hwCode;
 
-    @Column(name = "volume_kg", nullable = false)
-    Double volumeKg;
+    @Column(name = "volume", nullable = false)
+    Double volume;
+
+    @Column(name = "unit", nullable = false)
+    String unit;
     
     @Column(name = "self_treatment_method", columnDefinition = "NVARCHAR(255)", nullable = false)
     String selfTreatmentMethod;

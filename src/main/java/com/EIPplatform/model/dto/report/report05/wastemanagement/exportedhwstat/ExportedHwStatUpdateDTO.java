@@ -12,14 +12,10 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class ExportedHwStatUpdateDTO {
     String wasteName;
-
     String hwCode;
-
     String baselCode;
-
-    Double volumeKg;
-
+    Double volume;
+    String unit;
     String transporterOrg;
-
     String overseasProcessorOrg;
 }

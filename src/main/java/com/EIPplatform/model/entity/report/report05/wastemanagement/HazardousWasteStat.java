@@ -32,6 +32,9 @@ public class HazardousWasteStat {
 
     @Column(name = "volume_cy", nullable = false)
     Double volumeCy;
+
+    @Column(name = "unit_cy", nullable = false)
+    String unitCy;
     
     @Column(name = "treatment_method", columnDefinition = "NVARCHAR(255)", nullable = false)
     String treatmentMethod;
@@ -41,4 +44,7 @@ public class HazardousWasteStat {
 
     @Column(name = "volume_py", nullable = false)
     Double volumePy;
+
+    @Column(name = "unit_py", nullable = false)
+    String unitPy;
 }

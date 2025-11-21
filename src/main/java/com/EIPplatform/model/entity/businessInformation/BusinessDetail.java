@@ -45,8 +45,8 @@ public class BusinessDetail {
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "business_detail_id", columnDefinition = "uniqueidentifier")
     UUID businessDetailId;
-    @Nationalized
-    @Column(nullable = false, unique = true, columnDefinition = "NVARCHAR(255)")
+
+    @Column( columnDefinition = "NVARCHAR(255)")
     String facilityName;
     
     @Column(nullable = false, length = 20, columnDefinition = "NVARCHAR(255)")

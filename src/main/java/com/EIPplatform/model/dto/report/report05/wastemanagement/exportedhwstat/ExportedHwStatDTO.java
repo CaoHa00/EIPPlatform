@@ -7,16 +7,17 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
 @Data
-@NoArgsConstructor
-@AllArgsConstructor
 @Builder
+@AllArgsConstructor
+@NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class ExportedHwStatDTO {
     Long exportedId;
     String wasteName;
     String hwCode;
     String baselCode;
-    Double volumeKg;
+    Double volume;
+    String unit;
     String transporterOrg;
     String overseasProcessorOrg;
 }

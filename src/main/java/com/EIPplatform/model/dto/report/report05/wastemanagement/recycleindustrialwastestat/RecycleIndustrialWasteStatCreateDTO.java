@@ -14,6 +14,7 @@ import lombok.experimental.FieldDefaults;
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class RecycleIndustrialWasteStatCreateDTO {
+
     @NotBlank(message = "IS_REQUIRED")
     String transferOrg;
 
@@ -22,9 +23,15 @@ public class RecycleIndustrialWasteStatCreateDTO {
     Double volumeCy;
 
     @NotBlank(message = "IS_REQUIRED")
+    String unitCy;
+
+    @NotBlank(message = "IS_REQUIRED")
     String wasteTypeDesc;
 
     @NotNull(message = "IS_REQUIRED")
     @DecimalMin(value = "0.0", inclusive = true)
     Double volumePy;
+
+    @NotBlank(message = "IS_REQUIRED")
+    String unitPy;
 }

@@ -22,50 +22,49 @@ import java.util.List;
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class WasteManagementDataDTO {
+
     Long wmId;
     String swGeneralNote;
 
-    @Valid
-    List<@Valid DomesticSolidWasteStatDTO> domesticSolidWasteStats;
-
-    @Valid
-    List<@Valid IndustrialSolidWasteStatDTO> industrialSolidWasteStats;
-
-    @Valid
-    List<@Valid RecycleIndustrialWasteStatDTO> recycleIndustrialWasteStats;
-
-    @Valid
-    List<@Valid OtherSolidWasteStatDTO> otherSolidWasteStats;
-
-    @Valid
-    List<@Valid HazardousWasteStatDTO> hazardousWasteStats;
-
-    @Valid
-    List<@Valid ExportedHwStatDTO> exportedHwStats;
-
-    @Valid
-    List<@Valid SelfTreatedHwStatDTO> selfTreatedHwStats;
+    @Valid List<@Valid DomesticSolidWasteStatDTO> domesticSolidWasteStats;
+    @Valid List<@Valid IndustrialSolidWasteStatDTO> industrialSolidWasteStats;
+    @Valid List<@Valid RecycleIndustrialWasteStatDTO> recycleIndustrialWasteStats;
+    @Valid List<@Valid OtherSolidWasteStatDTO> otherSolidWasteStats;
+    @Valid List<@Valid HazardousWasteStatDTO> hazardousWasteStats;
+    @Valid List<@Valid ExportedHwStatDTO> exportedHwStats;
+    @Valid List<@Valid SelfTreatedHwStatDTO> selfTreatedHwStats;
+    @Valid List<@Valid PopInventoryStatDTO> popInventoryStats;
 
     String incidentPlanDevelopment;
     String incidentPreventionMeasures;
     String incidentResponseReport;
 
-    @Valid
-    List<@Valid PopInventoryStatDTO> popInventoryStats;
-
-    Double waterTotalVolumeKg;
+    Double waterTotalVolume;
+    String waterTotalUnit;
     String waterEstimationMethod;
-    Double airTotalVolumeKg;
+
+    Double airTotalVolume;
+    String airTotalUnit;
     String airEstimationMethod;
-    Double soilTotalVolumeKg;
+
+    Double soilTotalVolume;
+    String soilTotalUnit;
     String soilEstimationMethod;
-    Double sewageSludgeTotalVolumeKg;
+
+    Double sewageSludgeTotalVolume;
+    String sewageSludgeTotalUnit;
     String sewageSludgeEstimationMethod;
-    Double hwOnsiteTotalVolumeKg;
+
+    Double hwOnsiteTotalVolume;
+    String hwOnsiteTotalUnit;
     String hwOnsiteEstimationMethod;
-    Double hwRecycleTotalVolumeKg;
+
+    Double hwRecycleTotalVolume;
+    String hwRecycleTotalUnit;
     String hwRecycleEstimationMethod;
-    Double hwDisposalTotalVolumeKg;
+
+    Double hwDisposalTotalVolume;
+    String hwDisposalTotalUnit;
     String hwDisposalEstimationMethod;
 
     LocalDateTime createdAt;

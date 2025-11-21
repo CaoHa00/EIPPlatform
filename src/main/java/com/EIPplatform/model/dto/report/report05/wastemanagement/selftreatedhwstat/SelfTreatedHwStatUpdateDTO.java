@@ -11,11 +11,14 @@ import lombok.experimental.FieldDefaults;
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class SelfTreatedHwStatUpdateDTO {
+
     String wasteName;
 
     String hwCode;
 
-    Double volumeKg;
+    Double volume;
+
+    String unit;
 
     String selfTreatmentMethod;
 }

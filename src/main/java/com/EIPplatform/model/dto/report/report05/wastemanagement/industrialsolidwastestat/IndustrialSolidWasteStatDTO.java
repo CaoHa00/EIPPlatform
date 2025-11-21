@@ -16,6 +16,8 @@ public class IndustrialSolidWasteStatDTO {
     Long industrialId;
     String wasteGroup;
     Double volumeCy;
+    String unitCy;
     String receiverOrg;
     Double volumePy;
+    String unitPy;
 }
