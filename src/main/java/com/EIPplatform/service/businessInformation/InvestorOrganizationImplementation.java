@@ -47,7 +47,8 @@ public class InvestorOrganizationImplementation implements InvestorOrganizationI
 
         InvestorOrganizationDetail entity = investorOrganizationMapper.toEntity(request);
         InvestorOrganizationDetail savedEntity = investorOrganizationRepository.save(entity);
-        return investorOrganizationMapper.toResponse(savedEntity);
+        InvestorOrganizationResponse response = investorOrganizationMapper.toResponse(savedEntity);
+        return response;
     }
 
     @Override

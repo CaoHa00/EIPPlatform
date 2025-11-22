@@ -17,6 +17,6 @@ public interface ReportB04Repository extends JpaRepository<ReportB04, UUID> {
             "WHERE r.reportId = :reportId")
     Optional<ReportB04> findByReportIdWithBasic(@Param("reportId") UUID reportId);
 
-    Optional<ReportB04> findByBusinessDetailId(@Param("businessDetailId") UUID businessDetailId);
+    Optional<ReportB04> findByBusinessDetailBusinessDetailId(@Param("businessDetailId") UUID businessDetailId);
 }
 

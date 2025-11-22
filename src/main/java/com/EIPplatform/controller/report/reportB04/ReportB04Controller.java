@@ -37,7 +37,7 @@ public class ReportB04Controller {
 
         ReportB04DTO response = reportB04Service.getOrCreateReportByBusinessDetailId(businessDetailId);
         return ApiResponse.<ReportB04DTO>builder()
-                .message("Report B04 created successfully")
+                .message("get template report B04 successfully")
                 .result(response)
                 .build();
     }

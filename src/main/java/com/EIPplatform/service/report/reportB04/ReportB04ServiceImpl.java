@@ -39,6 +39,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
+import com.EIPplatform.mapper.report.reportB04.ReportB04Mapper;
 import com.EIPplatform.mapper.report.reportB04.part1.ReportInvestorDetailMapper;
 import com.EIPplatform.mapper.report.reportB04.part3.ResourcesSavingAndReductionMapper;
 import com.EIPplatform.mapper.report.reportB04.part4.SymbiosisIndustryMapper;
@@ -50,7 +51,7 @@ import com.EIPplatform.mapper.report.reportB04.part4.SymbiosisIndustryMapper;
 @Validated // Để enable method-level validation nếu cần
 public class ReportB04ServiceImpl implements ReportB04Service {
     // Dependencies inject qua constructor (final)
-
+    ReportB04Mapper reportB04Mapper;
     ReportB04Repository reportB04Repository;
     BusinessDetailRepository businessDetailRepository;
     ReportInvestorDetailRepository reportInvestorDetailRepository;
@@ -125,8 +126,8 @@ public class ReportB04ServiceImpl implements ReportB04Service {
     public ReportB04DTO getOrCreateReportByBusinessDetailId(UUID businessDetailId) {
 
         // 1. Fetch basic report
-        Optional<ReportB04> optionalReport = reportB04Repository.findByBusinessDetailId(businessDetailId);
-         ReportB04DTO draft = new ReportB04DTO();
+        Optional<ReportB04> optionalReport = reportB04Repository.findByBusinessDetailBusinessDetailId(businessDetailId);
+        ReportB04DTO draft = reportB04Mapper.toDTO(optionalReport.orElse(null));
         if (optionalReport.isEmpty()) {
             draft = createReport(
                 CreateReportRequest.builder()
