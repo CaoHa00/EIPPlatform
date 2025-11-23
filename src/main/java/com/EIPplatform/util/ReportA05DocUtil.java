@@ -24,8 +24,7 @@ import java.util.*;
 @Slf4j
 public class ReportA05DocUtil {
 
-    private static final String TEMPLATE_PATH =
-            "templates/reportA05/ReportA05_template_ver2.docx";
+    private static final String TEMPLATE_PATH = "templates/reportA05/ReportA05_template_ver2.docx";
 
     public byte[] generateReportDocument(ReportA05 report) {
 
@@ -62,8 +61,8 @@ public class ReportA05DocUtil {
         log.info("Loading ReportA05 template from: {}", TEMPLATE_PATH);
 
         try (InputStream fis = resource.getInputStream();
-             XWPFDocument doc = new XWPFDocument(fis);
-             ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
+                XWPFDocument doc = new XWPFDocument(fis);
+                ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
 
             // 5. Replace placeholders in top-level paragraphs (normal lines)
             for (XWPFParagraph paragraph : doc.getParagraphs()) {
@@ -99,13 +98,13 @@ public class ReportA05DocUtil {
     // ---------------------------------------------------------------------
 
     private void buildGeneralInfoData(Map<String, String> data,
-                                      BusinessDetail business,
-                                      EnvPermits envPermits,
-                                      List<BusinessHistoryConsumption> historyList,
-                                      String day,
-                                      String month,
-                                      String year,
-                                      ReportA05 report) {
+            BusinessDetail business,
+            EnvPermits envPermits,
+            List<BusinessHistoryConsumption> historyList,
+            String day,
+            String month,
+            String year,
+            ReportA05 report) {
 
         data.put("facility_name", defaultString(business.getFacilityName()));
         data.put("address", defaultString(business.getAddress()));
@@ -147,7 +146,7 @@ public class ReportA05DocUtil {
     }
 
     private void fillBusinessHistoryData(Map<String, String> data,
-                                         List<BusinessHistoryConsumption> historyList) {
+            List<BusinessHistoryConsumption> historyList) {
 
         if (historyList == null || historyList.isEmpty()) {
             data.put("product_volume_cy", "");
@@ -199,11 +198,12 @@ public class ReportA05DocUtil {
     }
 
     // ---------------------------------------------------------------------
-    // 2. Waste water placeholders  (section 1.x)
+    // 2. Waste water placeholders (section 1.x)
     // ---------------------------------------------------------------------
 
     private void buildWasteWaterPlaceholders(Map<String, String> data, WasteWaterData ww) {
-        if (ww == null) return;
+        if (ww == null)
+            return;
 
         data.put("ww_treatment_desc", defaultString(ww.getTreatmentWwDesc()));
         data.put("connection_status_desc", defaultString(ww.getConnectionStatusDesc()));
@@ -238,7 +238,7 @@ public class ReportA05DocUtil {
 
         // Auto monitoring (template key có 1 cái dùng GPS hoa)
         data.put("auto_station_location", defaultString(ww.getAutoStationLocation()));
-        data.put("auto_station_GPS", defaultString(ww.getAutoStationGps()));     // khớp {{auto_station_GPS}}
+        data.put("auto_station_GPS", defaultString(ww.getAutoStationGps())); // khớp {{auto_station_GPS}}
         data.put("auto_station_map", defaultString(ww.getAutoStationMap()));
         data.put("auto_source_desc", defaultString(ww.getAutoSourceDesc()));
         data.put("auto_data_frequency", defaultString(ww.getAutoDataFrequency()));
@@ -252,11 +252,12 @@ public class ReportA05DocUtil {
     }
 
     // ---------------------------------------------------------------------
-    // 3. Air emission placeholders  (section 2.x)
+    // 3. Air emission placeholders (section 2.x)
     // ---------------------------------------------------------------------
 
     private void buildAirEmissionPlaceholders(Map<String, String> data, AirEmissionData air) {
-        if (air == null) return;
+        if (air == null)
+            return;
 
         data.put("air_treatment_desc", defaultString(air.getAirTreatmentDesc()));
         data.put("air_emission_cy", fmt(air.getAirEmissionCy()));
@@ -289,11 +290,12 @@ public class ReportA05DocUtil {
     }
 
     // ---------------------------------------------------------------------
-    // 4. Waste management placeholders  (sections 3.x, 4.x, 7.x)
+    // 4. Waste management placeholders (sections 3.x, 4.x, 7.x)
     // ---------------------------------------------------------------------
 
     private void buildWasteManagementPlaceholders(Map<String, String> data, WasteManagementData wm) {
-        if (wm == null) return;
+        if (wm == null)
+            return;
 
         data.put("sw_general_note", defaultString(wm.getSwGeneralNote()));
         data.put("incident_plan_development", defaultString(wm.getIncidentPlanDevelopment()));
@@ -331,8 +333,7 @@ public class ReportA05DocUtil {
             XWPFDocument doc,
             WasteWaterData ww,
             AirEmissionData air,
-            WasteManagementData wm
-    ) {
+            WasteManagementData wm) {
 
         // -------------------- 1.x WASTEWATER --------------------
 
@@ -349,10 +350,8 @@ public class ReportA05DocUtil {
                         item.getLatitude(),
                         item.getExceededParam(),
                         fmt(item.getResultValue()),
-                        fmt(item.getQcvnLimit())
-                ),
-                true
-        );
+                        fmt(item.getQcvnLimit())),
+                true);
 
         // 1.2 Duplicate exceedance table
         TableMappingService.mapTable(
@@ -367,25 +366,27 @@ public class ReportA05DocUtil {
                         item.getLatitude(),
                         item.getExceededParam(),
                         fmt(item.getResultValue()),
-                        fmt(item.getQcvnLimit())
-                ),
-                true
-        );
+                        fmt(item.getQcvnLimit())),
+                true);
 
         // 1.3 Auto Stats (VERTICAL)
         TableMappingService.mapVerticalTable(
                 doc,
                 "{{TEMPLATE_AUTO_STATS}}",
-                ww == null ? null : List.of(
-                        // Order must match template rows exactly
-                        ww.getMonitoringStats().isEmpty() ? "" : ww.getMonitoringStats().get(0).getParamName(),
-                        ww.getMonitoringStats().isEmpty() ? "" : fmt(ww.getMonitoringStats().get(0).getValDesign()),
-                        ww.getMonitoringStats().isEmpty() ? "" : fmt(ww.getMonitoringStats().get(0).getValReceived()),
-                        ww.getMonitoringStats().isEmpty() ? "" : fmt(ww.getMonitoringStats().get(0).getValError()),
-                        ww.getMonitoringStats().isEmpty() ? "" : fmt(ww.getMonitoringStats().get(0).getRatioReceivedDesign()),
-                        ww.getMonitoringStats().isEmpty() ? "" : fmt(ww.getMonitoringStats().get(0).getRatioErrorReceived())
-                )
-        );
+                ww == null ? null
+                        : List.of(
+                                // Order must match template rows exactly
+                                ww.getMonitoringStats().isEmpty() ? "" : ww.getMonitoringStats().get(0).getParamName(),
+                                ww.getMonitoringStats().isEmpty() ? ""
+                                        : fmt(ww.getMonitoringStats().get(0).getValDesign()),
+                                ww.getMonitoringStats().isEmpty() ? ""
+                                        : fmt(ww.getMonitoringStats().get(0).getValReceived()),
+                                ww.getMonitoringStats().isEmpty() ? ""
+                                        : fmt(ww.getMonitoringStats().get(0).getValError()),
+                                ww.getMonitoringStats().isEmpty() ? ""
+                                        : fmt(ww.getMonitoringStats().get(0).getRatioReceivedDesign()),
+                                ww.getMonitoringStats().isEmpty() ? ""
+                                        : fmt(ww.getMonitoringStats().get(0).getRatioErrorReceived())));
 
         // 1.4 Auto Incidents
         TableMappingService.mapTable(
@@ -395,10 +396,8 @@ public class ReportA05DocUtil {
                 (item, row) -> row.cols(
                         item.getIncidentName(),
                         item.getIncidentTime(),
-                        item.getIncidentRemedy()
-                ),
-                true
-        );
+                        item.getIncidentRemedy()),
+                true);
 
         // 1.5 QCVN Exceed
         TableMappingService.mapTable(
@@ -409,11 +408,8 @@ public class ReportA05DocUtil {
                         item.getParamName(),
                         fmt(item.getExceedDaysCount()),
                         fmt(item.getQcvnLimitValue()),
-                        fmt(item.getExceedRatioPercent())
-                ),
-                false
-        );
-
+                        fmt(item.getExceedRatioPercent())),
+                false);
 
         // -------------------- 2.x AIR EMISSION --------------------
 
@@ -430,24 +426,27 @@ public class ReportA05DocUtil {
                         item.getLatitude(),
                         item.getExceededParam(),
                         fmt(item.getResultValue()),
-                        fmt(item.getQcvnLimit())
-                ),
-                true
-        );
+                        fmt(item.getQcvnLimit())),
+                true);
 
         // 2.2 Auto Stats (VERTICAL)
         TableMappingService.mapVerticalTable(
                 doc,
                 "{{TEMPLATE_AIR_AUTO_STATS}}",
-                air == null ? null : List.of(
-                        air.getAirAutoMonitoringStats().isEmpty() ? "" : air.getAirAutoMonitoringStats().get(0).getParamName(),
-                        air.getAirAutoMonitoringStats().isEmpty() ? "" : fmt(air.getAirAutoMonitoringStats().get(0).getValDesign()),
-                        air.getAirAutoMonitoringStats().isEmpty() ? "" : fmt(air.getAirAutoMonitoringStats().get(0).getValReceived()),
-                        air.getAirAutoMonitoringStats().isEmpty() ? "" : fmt(air.getAirAutoMonitoringStats().get(0).getValError()),
-                        air.getAirAutoMonitoringStats().isEmpty() ? "" : fmt(air.getAirAutoMonitoringStats().get(0).getRatioReceivedDesign()),
-                        air.getAirAutoMonitoringStats().isEmpty() ? "" : fmt(air.getAirAutoMonitoringStats().get(0).getRatioErrorReceived())
-                )
-        );
+                air == null ? null
+                        : List.of(
+                                air.getAirAutoMonitoringStats().isEmpty() ? ""
+                                        : air.getAirAutoMonitoringStats().get(0).getParamName(),
+                                air.getAirAutoMonitoringStats().isEmpty() ? ""
+                                        : fmt(air.getAirAutoMonitoringStats().get(0).getValDesign()),
+                                air.getAirAutoMonitoringStats().isEmpty() ? ""
+                                        : fmt(air.getAirAutoMonitoringStats().get(0).getValReceived()),
+                                air.getAirAutoMonitoringStats().isEmpty() ? ""
+                                        : fmt(air.getAirAutoMonitoringStats().get(0).getValError()),
+                                air.getAirAutoMonitoringStats().isEmpty() ? ""
+                                        : fmt(air.getAirAutoMonitoringStats().get(0).getRatioReceivedDesign()),
+                                air.getAirAutoMonitoringStats().isEmpty() ? ""
+                                        : fmt(air.getAirAutoMonitoringStats().get(0).getRatioErrorReceived())));
 
         // 2.3 Auto Incidents
         TableMappingService.mapTable(
@@ -457,10 +456,8 @@ public class ReportA05DocUtil {
                 (item, row) -> row.cols(
                         item.getIncidentName(),
                         item.getIncidentTime(),
-                        item.getIncidentRemedy()
-                ),
-                false
-        );
+                        item.getIncidentRemedy()),
+                false);
 
         // 2.4 QCVN Exceed
         TableMappingService.mapTable(
@@ -471,14 +468,12 @@ public class ReportA05DocUtil {
                         item.getParamName(),
                         fmt(item.getExceedDaysCount()),
                         fmt(item.getQcvnLimitValue()),
-                        fmt(item.getExceedRatioPercent())
-                ),
-                false
-        );
-
+                        fmt(item.getExceedRatioPercent())),
+                false);
 
         // -------------------- 3–4–7. WASTE MANAGEMENT --------------------
-        if (wm == null) return;
+        if (wm == null)
+            return;
 
         // Domestic solid waste
         TableMappingService.mapTable(
@@ -489,10 +484,8 @@ public class ReportA05DocUtil {
                         item.getWasteTypeName(),
                         fmt(item.getVolumeCy()),
                         item.getReceiverOrg(),
-                        fmt(item.getVolumePy())
-                ),
-                true
-        );
+                        fmt(item.getVolumePy())),
+                true);
 
         // Industrial solid waste
         TableMappingService.mapTable(
@@ -503,10 +496,8 @@ public class ReportA05DocUtil {
                         item.getWasteGroup(),
                         fmt(item.getVolumeCy()),
                         item.getReceiverOrg(),
-                        fmt(item.getVolumePy())
-                ),
-                true
-        );
+                        fmt(item.getVolumePy())),
+                true);
 
         // Recycle waste
         TableMappingService.mapTable(
@@ -517,10 +508,8 @@ public class ReportA05DocUtil {
                         item.getTransferOrg(),
                         fmt(item.getVolumeCy()),
                         item.getWasteTypeDesc(),
-                        fmt(item.getVolumePy())
-                ),
-                true
-        );
+                        fmt(item.getVolumePy())),
+                true);
 
         // Other solid waste
         TableMappingService.mapTable(
@@ -532,10 +521,8 @@ public class ReportA05DocUtil {
                         fmt(item.getVolumeCy()),
                         item.getSelfTreatmentMethod(),
                         item.getReceiverOrg(),
-                        fmt(item.getVolumePy())
-                ),
-                true
-        );
+                        fmt(item.getVolumePy())),
+                true);
 
         // Hazardous waste
         TableMappingService.mapTable(
@@ -548,10 +535,8 @@ public class ReportA05DocUtil {
                         fmt(item.getVolumeCy()),
                         item.getTreatmentMethod(),
                         item.getReceiverOrg(),
-                        fmt(item.getVolumePy())
-                ),
-                false
-        );
+                        fmt(item.getVolumePy())),
+                false);
 
         // Exported waste
         TableMappingService.mapTable(
@@ -564,10 +549,8 @@ public class ReportA05DocUtil {
                         item.getBaselCode(),
                         fmt(item.getVolumeKg()),
                         item.getTransporterOrg(),
-                        item.getOverseasProcessorOrg()
-                ),
-                false
-        );
+                        item.getOverseasProcessorOrg()),
+                false);
 
         // Self-treated HW
         TableMappingService.mapTable(
@@ -578,10 +561,8 @@ public class ReportA05DocUtil {
                         item.getWasteName(),
                         item.getHwCode(),
                         fmt(item.getVolumeKg()),
-                        item.getSelfTreatmentMethod()
-                ),
-                false
-        );
+                        item.getSelfTreatmentMethod()),
+                false);
 
         // POP stats
         TableMappingService.mapTable(
@@ -596,19 +577,19 @@ public class ReportA05DocUtil {
                         item.getConcentration(),
                         fmt(item.getVolumeUsed()),
                         fmt(item.getVolumeStocked()),
-                        item.getComplianceResult()
-                ),
-                true
-        );
+                        item.getComplianceResult()),
+                true);
     }
 
     private void replacePlaceholders(XWPFParagraph paragraph,
-                                     Map<String, String> data,
-                                     boolean inTable) {
-        if (paragraph == null) return;
+            Map<String, String> data,
+            boolean inTable) {
+        if (paragraph == null)
+            return;
 
         String text = paragraph.getText();
-        if (text == null || text.isEmpty()) return;
+        if (text == null || text.isEmpty())
+            return;
 
         String original = text;
 
@@ -619,14 +600,15 @@ public class ReportA05DocUtil {
             if (text.contains(placeholder)) {
                 String rawValue = entry.getValue();
                 String filledValue = inTable
-                        ? defaultString(rawValue)          // tables: "" nếu null/empty
+                        ? defaultString(rawValue) // tables: "" nếu null/empty
                         : defaultParagraphValue(rawValue); // paragraphs: "....." nếu null/empty
 
                 text = text.replace(placeholder, filledValue);
             }
         }
 
-        // 2. Remove stray / unknown placeholders nhưng giữ lại TEMPLATE_ cho TableMappingService
+        // 2. Remove stray / unknown placeholders nhưng giữ lại TEMPLATE_ cho
+        // TableMappingService
         text = text.replaceAll("\\{\\{(?!TEMPLATE_)[^}]+\\}\\}", "");
 
         // 3. If nothing changed, do nothing
@@ -653,9 +635,12 @@ public class ReportA05DocUtil {
     }
 
     private String fmt(Object v) {
-        if (v == null) return "";
-        if (v instanceof Double d) return String.format("%.2f", d);
-        if (v instanceof Integer i) return String.valueOf(i);
+        if (v == null)
+            return "";
+        if (v instanceof Double d)
+            return String.format("%.2f", d);
+        if (v instanceof Integer i)
+            return String.valueOf(i);
         return v.toString();
     }
 
