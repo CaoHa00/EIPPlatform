@@ -7,6 +7,7 @@ import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 import org.mapstruct.NullValuePropertyMappingStrategy;
 
+import com.EIPplatform.model.dto.businessInformation.products.ProductCreationListRequest;
 import com.EIPplatform.model.dto.businessInformation.products.ProductCreationRequest;
 import com.EIPplatform.model.dto.businessInformation.products.ProductDTO;
 import com.EIPplatform.model.dto.businessInformation.products.ProductResponse;
@@ -43,9 +44,11 @@ public interface ProductMapper {
     @Mapping(target = "auditMetaData", ignore = true)
     @Mapping(target = "businessDetail", ignore = true)
     @Mapping (target = "reportB04", ignore = true)
-    void updateEntityFromDto (ProductDTO dto, @MappingTarget Product entity);
+    void updateEntityFromDto (ProductCreationRequest dto, @MappingTarget Product entity);
 
     ProductDTO toDTO (Product entity);
 
-    List<Product> toEntityList(List<ProductResponse> dtos);
+    List<Product> toEntityList(List<ProductCreationRequest> dtos);
+
+     List<ProductCreationRequest> toDTOList(List<Product> entities);
 }

@@ -3,8 +3,11 @@ package com.EIPplatform.service.report.reportB04.part1;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+import org.aspectj.weaver.ast.Or;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.validation.annotation.Validated;
 
 import com.EIPplatform.exception.ExceptionFactory;
 import com.EIPplatform.exception.errorCategories.LegalRepresentativeError;
@@ -12,19 +15,29 @@ import com.EIPplatform.exception.errorCategories.ReportError;
 import com.EIPplatform.mapper.businessInformation.BusinessDetailMapper;
 import com.EIPplatform.mapper.businessInformation.InvestorMapper;
 import com.EIPplatform.mapper.businessInformation.LegalDocMapper;
+import com.EIPplatform.mapper.businessInformation.ProductMapper;
 import com.EIPplatform.mapper.businessInformation.ProjectMapper;
+import com.EIPplatform.mapper.report.reportB04.ReportB04Mapper;
 import com.EIPplatform.mapper.report.reportB04.part1.ReportInvestorDetailMapper;
 import com.EIPplatform.mapper.report.reportB04.part1.ThirdPartyImplementerMapper;
+import com.EIPplatform.mapper.report.reportB04.part3.ResourcesSavingAndReductionMapper;
+import com.EIPplatform.mapper.report.reportB04.part4.SymbiosisIndustryMapper;
 import com.EIPplatform.model.dto.businessInformation.investors.InvestorResponse;
 import com.EIPplatform.model.dto.report.reportB04.ReportB04DraftDTO;
 import com.EIPplatform.model.dto.report.reportB04.part1.ReportInvestorDetailDTO;
 import com.EIPplatform.model.dto.report.reportB04.part1.request.ReportInvestorDetailCreateRequest;
 import com.EIPplatform.model.entity.businessInformation.BusinessDetail;
 import com.EIPplatform.model.entity.businessInformation.investors.Investor;
+import com.EIPplatform.model.entity.businessInformation.investors.InvestorOrganizationDetail;
 import com.EIPplatform.model.entity.report.reportB04.ReportB04;
 import com.EIPplatform.model.entity.report.reportB04.part01.ReportInvestorDetail;
+import com.EIPplatform.model.enums.InvestorType;
 import com.EIPplatform.repository.businessInformation.BusinessDetailRepository;
+import com.EIPplatform.repository.businessInformation.ProductRepository;
 import com.EIPplatform.repository.report.reportB04.ReportB04Repository;
+import com.EIPplatform.repository.report.reportB04.part1.ReportInvestorDetailRepository;
+import com.EIPplatform.service.fileStorage.FileStorageService;
+import com.EIPplatform.service.report.reportCache.ReportCacheFactory;
 import com.EIPplatform.service.report.reportCache.ReportCacheService;
 import com.EIPplatform.util.StringNormalizerUtil;
 
@@ -36,8 +49,9 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Service
-@RequiredArgsConstructor // Tự động tiêm (inject) các trường 'final'
+@RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+@Validated
 public class ReportInvestorDetailServiceImpl implements ReportInvestorDetailService {
 
     ReportB04Repository reportB04Repository;
@@ -45,47 +59,78 @@ public class ReportInvestorDetailServiceImpl implements ReportInvestorDetailServ
     ExceptionFactory exceptionFactory;
     BusinessDetailRepository businessDetailRepository;
     InvestorMapper investorMapper;
-    LegalDocMapper legalDocMapper;
-    ThirdPartyImplementerMapper thirdPartyImplementerMapper;    
+    ThirdPartyImplementerMapper thirdPartyImplementerMapper;
     ProjectMapper projectMapper;
-    BusinessDetailMapper businessDetailMapper;
+    private final ReportCacheService<ReportB04DraftDTO> reportCacheService;
+
     // Field khởi tạo trong @PostConstruct
-    @NonFinal
-    ReportCacheService<ReportB04DraftDTO> reportCacheService;
+    @Autowired
+    public ReportInvestorDetailServiceImpl(
+            ReportB04Repository reportB04Repository,
+            BusinessDetailRepository businessDetailRepository,
+            ReportInvestorDetailMapper reportInvestorDetailMapper,
+            ExceptionFactory exceptionFactory,
+            FileStorageService fileStorageService,
+            ReportCacheFactory reportCacheFactory, InvestorMapper investorMapper,
+            ThirdPartyImplementerMapper thirdPartyImplementerMapper, ProjectMapper projectMapper) {
+
+        this.reportB04Repository = reportB04Repository;
+        this.businessDetailRepository = businessDetailRepository;
+        this.reportInvestorDetailMapper = reportInvestorDetailMapper;
+        this.exceptionFactory = exceptionFactory;
+        this.investorMapper = investorMapper;
+        this.thirdPartyImplementerMapper = thirdPartyImplementerMapper;
+        this.projectMapper = projectMapper;
+        // Lấy cache service qua factory
+        this.reportCacheService = reportCacheFactory.getCacheService(ReportB04DraftDTO.class);
+    }
 
     @Override
     @Transactional
-    public ReportInvestorDetailDTO createReportInvestorDetailDTO(UUID reportId, UUID userAccountId,
+    public ReportInvestorDetailDTO createReportInvestorDetailDTO(UUID reportB04Id, UUID businessDetailId,
             ReportInvestorDetailCreateRequest request) {
         request = StringNormalizerUtil.normalizeRequest(request);
 
-        ReportB04 report = reportB04Repository.findById(reportId)
+        ReportB04 report = reportB04Repository.findById(reportB04Id)
                 .orElseThrow(() -> exceptionFactory.createNotFoundException(
-                "ReportB04",
-                "reportId",
-                reportId,
-                ReportError.REPORT_NOT_FOUND));
-
+                        "ReportB04",
+                        "reportB04Id",
+                        reportB04Id,
+                        ReportError.REPORT_NOT_FOUND));
         ReportInvestorDetail entity = reportInvestorDetailMapper.toEntityFromCreate(request);
 
+        Investor investorEntity = null;
+        if (request.getInvestorIndividual() != null) {
+            investorEntity = investorMapper.toEntity(request.getInvestorIndividual());
+        } else if (request.getInvestorOrganization() != null) {
+            investorEntity = investorMapper.toEntity(request.getInvestorOrganization());
+        }
+        entity.setInvestor(investorEntity);
+        entity.setThirdPartyImplementer(
+                thirdPartyImplementerMapper.toEntityFromCreate(request.getThirdPartyImplementer()));
+        entity.setProject(projectMapper.toEntityFromCreate(request.getProject()));
+
+        // Map entity sang DTO response
         ReportInvestorDetailDTO responseDto = reportInvestorDetailMapper.toDTO(entity);
+        reportCacheService.updateSectionData(reportB04Id, businessDetailId, responseDto,
+                "ReportInvestorDetailDTO");
 
-        reportCacheService.updateSectionData(reportId, userAccountId, responseDto, "airEmissionData");
-
-        log.info("Created AirEmissionData in cache - reportId: {}, userAccountId: {}", reportId, userAccountId);
-        return responseDto;
+        log.info("created reportInvestorDetail in cache - reportB04Id: {}, businessDetailId: {}", reportB04Id,
+                businessDetailId);
+        return responseDto; // FE phải lưu reportId để lần sau gửi tiếp các phần khác
     }
 
     @Override
     @Transactional(readOnly = true) // hàm này lấy tiếp dữ liệu từ cache report
-    public ReportInvestorDetailDTO getReportInvestorDetailDTO(UUID reportId, UUID userAccountId) {
-        ReportB04DraftDTO draft = reportCacheService.getDraftReport(reportId, userAccountId);
+    public ReportInvestorDetailDTO getReportInvestorDetailDTO(UUID reportId, UUID businessDetailId) {
+        ReportB04DraftDTO draft = reportCacheService.getDraftReport(reportId, businessDetailId);
         if (draft != null && draft.getReportInvestorDetailDTO() != null) {
-            log.info("getReportInvestorDetailDTO- reportId: {}, userAccountId: {}", reportId, userAccountId);
+            log.info("getReportInvestorDetailDTO- reportId: {}, businessDetailId: {}", reportId, businessDetailId);
             return draft.getReportInvestorDetailDTO();
         }
 
-        log.warn("getReportInvestorDetailDTO not found in cache - reportId: {}, userAccountId: {}", reportId, userAccountId);
+        log.warn("getReportInvestorDetailDTO not found in cache - reportId: {}, businessDetailId: {}", reportId,
+                businessDetailId);
         return null;
     }
 
@@ -94,10 +139,10 @@ public class ReportInvestorDetailServiceImpl implements ReportInvestorDetailServ
         // part1: general detail - investor - third-party - projects
         BusinessDetail businessDetail = businessDetailRepository.findById(businessDetailId)
                 .orElseThrow(() -> exceptionFactory.createNotFoundException(
-                "BusinessDetail",
-                "id",
-                businessDetailId,
-                LegalRepresentativeError.BUSINESS_DETAIL_NOT_FOUND));
+                        "BusinessDetail",
+                        "id",
+                        businessDetailId,
+                        LegalRepresentativeError.BUSINESS_DETAIL_NOT_FOUND));
 
         ReportInvestorDetailDTO dto = new ReportInvestorDetailDTO();
         dto.setEmail(businessDetail.getEmail());
@@ -113,23 +158,22 @@ public class ReportInvestorDetailServiceImpl implements ReportInvestorDetailServ
 
         // // Legal Documents (nếu có)
         // if (businessDetail.getLegalDoc() != null) {
-        //     dto.setLegalDoc(legalDocMapper.toDto(businessDetail.getLegalDoc()));
+        // dto.setLegalDoc(legalDocMapper.toDto(businessDetail.getLegalDoc()));
         // }
 
         // // Third Party Implementer (nếu có)
         // if (businessDetail.getThirdPartyImplementer() != null) {
-        //     dto.setThirdPartyImplementer(
-        //             thirdPartyImplementerMapper.toDto(businessDetail.getThirdPartyImplementer()));
+        // dto.setThirdPartyImplementer(
+        // thirdPartyImplementerMapper.toDto(businessDetail.getThirdPartyImplementer()));
         // }
 
         // // Project (nếu có)
         // if (businessDetail.getProject() != null) {
-        //     dto.setProject(projectMapper.toDto(businessDetail.getProject()));
+        // dto.setProject(projectMapper.toDto(businessDetail.getProject()));
         // }
 
-
         return dto;
-       
+
     }
 
 }

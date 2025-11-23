@@ -1,4 +1,3 @@
-
 package com.EIPplatform.mapper.businessInformation;
 
 import org.mapstruct.BeanMapping;

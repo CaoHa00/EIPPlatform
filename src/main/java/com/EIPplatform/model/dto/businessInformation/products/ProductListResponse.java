@@ -10,7 +10,7 @@ import java.util.UUID;
 @AllArgsConstructor
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class ProductResponse {
+public class ProductListResponse {
 
     UUID productId;
     String productName;

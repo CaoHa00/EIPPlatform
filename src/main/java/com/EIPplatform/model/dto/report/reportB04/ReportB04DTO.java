@@ -3,6 +3,7 @@ package com.EIPplatform.model.dto.report.reportB04;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+import com.EIPplatform.model.dto.businessInformation.products.ProductCreationListRequest;
 import com.EIPplatform.model.dto.businessInformation.products.ProductDTO;
 import com.EIPplatform.model.dto.report.reportB04.part1.ReportInvestorDetailDTO;
 import com.EIPplatform.model.dto.report.reportB04.part3.ResourcesSavingAndReductionDTO;
@@ -41,7 +42,7 @@ public class ReportB04DTO {
     ReportInvestorDetailDTO reportInvestorDetail;
 
     // -- part 2 --
-    ProductDTO product;
+    ProductCreationListRequest products;
 
     // -- part 3 --
     ResourcesSavingAndReductionDTO resourcesSavingAndReduction;

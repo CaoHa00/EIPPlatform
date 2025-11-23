@@ -85,16 +85,16 @@ public class ReportA05ServiceImpl implements ReportA05Service {
 
         @Autowired
         public ReportA05ServiceImpl(
-                ReportA05Repository reportA05Repository,
-                BusinessDetailRepository businessDetailRepository,
-                ReportCacheFactory reportCacheFactory,
-                WasteManagementDataMapper wasteManagementDataMapper,
-                AirEmissionDataMapper airEmissionDataMapper,
-                WasteWaterDataMapper wasteWaterDataMapper,
-                ExceptionFactory exceptionFactory,
-                WasteManagementDataRepository wasteManagementDataRepository,
-                AirEmissionDataRepository airEmissionDataRepository,
-                WasteWaterRepository wasteWaterDataRepository) {
+                        ReportA05Repository reportA05Repository,
+                        BusinessDetailRepository businessDetailRepository,
+                        ReportCacheFactory reportCacheFactory,
+                        WasteManagementDataMapper wasteManagementDataMapper,
+                        AirEmissionDataMapper airEmissionDataMapper,
+                        WasteWaterDataMapper wasteWaterDataMapper,
+                        ExceptionFactory exceptionFactory,
+                        WasteManagementDataRepository wasteManagementDataRepository,
+                        AirEmissionDataRepository airEmissionDataRepository,
+                        WasteWaterRepository wasteWaterDataRepository) {
 
                 this.reportA05Repository = reportA05Repository;
                 this.businessDetailRepository = businessDetailRepository;
@@ -109,6 +109,7 @@ public class ReportA05ServiceImpl implements ReportA05Service {
 
                 this.reportCacheService = reportCacheFactory.getCacheService(ReportA05DraftDTO.class);
         }
+
         @NonFinal
         @Value("${app.storage.local.upload-dir:/app/uploads}")
         private String uploadDir;
@@ -140,10 +141,10 @@ public class ReportA05ServiceImpl implements ReportA05Service {
                 ReportA05 saved = reportA05Repository.save(report);
 
                 ReportA05DraftDTO emptyDraft = ReportA05DraftDTO.builder()
-                        .reportId(saved.getReportId())
-                        .isDraft(true)
-                        .lastModified(LocalDateTime.now())
-                        .build();
+                                .reportId(saved.getReportId())
+                                .isDraft(true)
+                                .lastModified(LocalDateTime.now())
+                                .build();
 
                 reportCacheService.saveDraftReport(emptyDraft, request.getBusinessDetailId(), saved.getReportId());
 
@@ -466,7 +467,7 @@ public class ReportA05ServiceImpl implements ReportA05Service {
                 data.put("phone_number", business.getPhoneNumber());
                 // data.put("legal_representative", business.getLegalRepresentative());
                 data.put("activity_type", business.getActivityType());
-//                data.put("scale_capacity", business.getScaleCapacity());
+                // data.put("scale_capacity", business.getScaleCapacity());
                 data.put("iso_14001_certificate",
                                 business.getISO_certificate_14001() != null ? business.getISO_certificate_14001() : "");
                 data.put("business_license_number", business.getBusinessRegistrationNumber());
@@ -818,162 +819,162 @@ public class ReportA05ServiceImpl implements ReportA05Service {
                         if (wasteWaterDataDTO != null) {
                                 log.debug("Log wasteWaterDATAdto");
                                 data.put("ww_treatment_desc",
-                                        wasteWaterDataDTO.getTreatmentWwDesc() != null
-                                                ? wasteWaterDataDTO.getTreatmentWwDesc()
-                                                : "");
+                                                wasteWaterDataDTO.getTreatmentWwDesc() != null
+                                                                ? wasteWaterDataDTO.getTreatmentWwDesc()
+                                                                : "");
                                 // Nước thải sinh hoạt
                                 data.put("domestic_ww_cy",
-                                        wasteWaterDataDTO.getDomWwCy() != null
-                                                ? wasteWaterDataDTO.getDomWwCy().toString()
-                                                : "");
+                                                wasteWaterDataDTO.getDomWwCy() != null
+                                                                ? wasteWaterDataDTO.getDomWwCy().toString()
+                                                                : "");
                                 data.put("domestic_ww_py",
-                                        wasteWaterDataDTO.getDomWwPy() != null
-                                                ? wasteWaterDataDTO.getDomWwPy().toString()
-                                                : "");
+                                                wasteWaterDataDTO.getDomWwPy() != null
+                                                                ? wasteWaterDataDTO.getDomWwPy().toString()
+                                                                : "");
                                 data.put("domestic_ww_design",
-                                        wasteWaterDataDTO.getDomWwDesign() != null
-                                                ? wasteWaterDataDTO.getDomWwDesign().toString()
-                                                : "");
+                                                wasteWaterDataDTO.getDomWwDesign() != null
+                                                                ? wasteWaterDataDTO.getDomWwDesign().toString()
+                                                                : "");
                                 // Nước thải công nghiệp
                                 data.put("industrial_ww_cy",
-                                        wasteWaterDataDTO.getIndustrialWwCy() != null
-                                                ? wasteWaterDataDTO.getIndustrialWwCy().toString()
-                                                : "");
+                                                wasteWaterDataDTO.getIndustrialWwCy() != null
+                                                                ? wasteWaterDataDTO.getIndustrialWwCy().toString()
+                                                                : "");
                                 data.put("industrial_ww_py",
-                                        wasteWaterDataDTO.getIndustrialWwPy() != null
-                                                ? wasteWaterDataDTO.getIndustrialWwPy().toString()
-                                                : "");
+                                                wasteWaterDataDTO.getIndustrialWwPy() != null
+                                                                ? wasteWaterDataDTO.getIndustrialWwPy().toString()
+                                                                : "");
                                 data.put("industrial_ww_design", wasteWaterDataDTO.getIndustrialWwDesign() != null
-                                        ? wasteWaterDataDTO.getIndustrialWwDesign().toString()
-                                        : "");
+                                                ? wasteWaterDataDTO.getIndustrialWwDesign().toString()
+                                                : "");
                                 // Nước làm mát
                                 data.put("cooling_water_cy",
-                                        wasteWaterDataDTO.getCoolingWaterCy() != null
-                                                ? wasteWaterDataDTO.getCoolingWaterCy().toString()
-                                                : "");
+                                                wasteWaterDataDTO.getCoolingWaterCy() != null
+                                                                ? wasteWaterDataDTO.getCoolingWaterCy().toString()
+                                                                : "");
                                 data.put("cooling_water_py",
-                                        wasteWaterDataDTO.getCoolingWaterPy() != null
-                                                ? wasteWaterDataDTO.getCoolingWaterPy().toString()
-                                                : "");
+                                                wasteWaterDataDTO.getCoolingWaterPy() != null
+                                                                ? wasteWaterDataDTO.getCoolingWaterPy().toString()
+                                                                : "");
                                 data.put("cooling_water_design",
-                                        wasteWaterDataDTO.getCoolingWaterDesign() != null
-                                                ? wasteWaterDataDTO.getCoolingWaterDesign().toString()
-                                                : "");
+                                                wasteWaterDataDTO.getCoolingWaterDesign() != null
+                                                                ? wasteWaterDataDTO.getCoolingWaterDesign().toString()
+                                                                : "");
                                 // Tình hình đầu nối hệ thống XLNT tập trung
                                 data.put("connection_status_desc",
-                                        wasteWaterDataDTO.getConnectionStatusDesc() != null
-                                                ? wasteWaterDataDTO.getConnectionStatusDesc()
-                                                : "");
+                                                wasteWaterDataDTO.getConnectionStatusDesc() != null
+                                                                ? wasteWaterDataDTO.getConnectionStatusDesc()
+                                                                : "");
                                 // kết quả quan trắc nước thải
                                 // nước thải sinh hoạt
                                 data.put("dom_monitor_period",
-                                        wasteWaterDataDTO.getDomMonitorPeriod() != null
-                                                ? wasteWaterDataDTO.getDomMonitorPeriod()
-                                                : "");
+                                                wasteWaterDataDTO.getDomMonitorPeriod() != null
+                                                                ? wasteWaterDataDTO.getDomMonitorPeriod()
+                                                                : "");
                                 data.put("dom_monitor_freq", wasteWaterDataDTO.getDomMonitorFreq() != null
-                                        ? wasteWaterDataDTO.getDomMonitorFreq()
-                                        : "");
+                                                ? wasteWaterDataDTO.getDomMonitorFreq()
+                                                : "");
                                 data.put("dom_monitor_locations",
-                                        wasteWaterDataDTO.getDomMonitorLocations() != null
-                                                ? wasteWaterDataDTO.getDomMonitorLocations()
-                                                : "");
+                                                wasteWaterDataDTO.getDomMonitorLocations() != null
+                                                                ? wasteWaterDataDTO.getDomMonitorLocations()
+                                                                : "");
                                 data.put("dom_sample_count", wasteWaterDataDTO.getDomSampleCount() != null
-                                        ? wasteWaterDataDTO.getDomSampleCount().toString()
-                                        : "");
+                                                ? wasteWaterDataDTO.getDomSampleCount().toString()
+                                                : "");
                                 data.put("dom_qcvn_standard",
-                                        wasteWaterDataDTO.getDomQcvnStandard() != null
-                                                ? wasteWaterDataDTO.getDomQcvnStandard()
-                                                : "");
+                                                wasteWaterDataDTO.getDomQcvnStandard() != null
+                                                                ? wasteWaterDataDTO.getDomQcvnStandard()
+                                                                : "");
                                 data.put("dom_agency_name",
-                                        wasteWaterDataDTO.getDomAgencyName() != null
-                                                ? wasteWaterDataDTO.getDomAgencyName()
-                                                : "");
+                                                wasteWaterDataDTO.getDomAgencyName() != null
+                                                                ? wasteWaterDataDTO.getDomAgencyName()
+                                                                : "");
                                 data.put("dom_agency_vimcerts",
-                                        wasteWaterDataDTO.getDomAgencyVimcerts() != null
-                                                ? wasteWaterDataDTO.getDomAgencyVimcerts()
-                                                : "");
+                                                wasteWaterDataDTO.getDomAgencyVimcerts() != null
+                                                                ? wasteWaterDataDTO.getDomAgencyVimcerts()
+                                                                : "");
                                 // nước thải công nghiệp
                                 data.put("ind_monitor_period",
-                                        wasteWaterDataDTO.getIndMonitorPeriod() != null
-                                                ? wasteWaterDataDTO.getIndMonitorPeriod()
-                                                : "");
+                                                wasteWaterDataDTO.getIndMonitorPeriod() != null
+                                                                ? wasteWaterDataDTO.getIndMonitorPeriod()
+                                                                : "");
                                 data.put("ind_monitor_freq",
-                                        wasteWaterDataDTO.getIndMonitorFreq() != null
-                                                ? wasteWaterDataDTO.getIndMonitorFreq()
-                                                : "");
+                                                wasteWaterDataDTO.getIndMonitorFreq() != null
+                                                                ? wasteWaterDataDTO.getIndMonitorFreq()
+                                                                : "");
                                 data.put("ind_monitor_locations",
-                                        wasteWaterDataDTO.getIndMonitorLocations() != null
-                                                ? wasteWaterDataDTO.getIndMonitorLocations()
-                                                : "");
+                                                wasteWaterDataDTO.getIndMonitorLocations() != null
+                                                                ? wasteWaterDataDTO.getIndMonitorLocations()
+                                                                : "");
                                 data.put("ind_sample_count",
-                                        wasteWaterDataDTO.getIndSampleCount() != null
-                                                ? wasteWaterDataDTO.getIndSampleCount().toString()
-                                                : "");
+                                                wasteWaterDataDTO.getIndSampleCount() != null
+                                                                ? wasteWaterDataDTO.getIndSampleCount().toString()
+                                                                : "");
                                 data.put("ind_qcvn_standard",
-                                        wasteWaterDataDTO.getIndQcvnStandard() != null
-                                                ? wasteWaterDataDTO.getIndQcvnStandard()
-                                                : "");
+                                                wasteWaterDataDTO.getIndQcvnStandard() != null
+                                                                ? wasteWaterDataDTO.getIndQcvnStandard()
+                                                                : "");
                                 data.put("ind_agency_name",
-                                        wasteWaterDataDTO.getIndAgencyName() != null
-                                                ? wasteWaterDataDTO.getIndAgencyName()
-                                                : "");
+                                                wasteWaterDataDTO.getIndAgencyName() != null
+                                                                ? wasteWaterDataDTO.getIndAgencyName()
+                                                                : "");
                                 data.put("ind_agency_vimcerts",
-                                        wasteWaterDataDTO.getIndAgencyVimcerts() != null
-                                                ? wasteWaterDataDTO.getIndAgencyVimcerts()
-                                                : "");
+                                                wasteWaterDataDTO.getIndAgencyVimcerts() != null
+                                                                ? wasteWaterDataDTO.getIndAgencyVimcerts()
+                                                                : "");
                                 // Quan trắc nước thải liên tục tự động (Nếu có
                                 // thông tin chung
                                 data.put("auto_station_location",
-                                        wasteWaterDataDTO.getAutoStationLocation() != null
-                                                ? wasteWaterDataDTO.getAutoStationLocation()
-                                                : "");
+                                                wasteWaterDataDTO.getAutoStationLocation() != null
+                                                                ? wasteWaterDataDTO.getAutoStationLocation()
+                                                                : "");
                                 data.put("auto_station_GPS",
-                                        wasteWaterDataDTO.getAutoStationGps() != null
-                                                ? wasteWaterDataDTO.getAutoStationGps()
-                                                : "");
+                                                wasteWaterDataDTO.getAutoStationGps() != null
+                                                                ? wasteWaterDataDTO.getAutoStationGps()
+                                                                : "");
                                 data.put("auto_station_map",
-                                        wasteWaterDataDTO.getAutoStationMap() != null
-                                                ? wasteWaterDataDTO.getAutoStationMap()
-                                                : "");
+                                                wasteWaterDataDTO.getAutoStationMap() != null
+                                                                ? wasteWaterDataDTO.getAutoStationMap()
+                                                                : "");
                                 data.put("auto_source_desc",
-                                        wasteWaterDataDTO.getAutoSourceDesc() != null
-                                                ? wasteWaterDataDTO.getAutoSourceDesc()
-                                                : "");
+                                                wasteWaterDataDTO.getAutoSourceDesc() != null
+                                                                ? wasteWaterDataDTO.getAutoSourceDesc()
+                                                                : "");
                                 data.put("auto_data_frequency",
-                                        wasteWaterDataDTO.getAutoDataFrequency() != null
-                                                ? wasteWaterDataDTO.getAutoDataFrequency()
-                                                : "");
+                                                wasteWaterDataDTO.getAutoDataFrequency() != null
+                                                                ? wasteWaterDataDTO.getAutoDataFrequency()
+                                                                : "");
                                 data.put("auto_calibration_info",
-                                        wasteWaterDataDTO.getAutoCalibrationInfo() != null
-                                                ? wasteWaterDataDTO.getAutoCalibrationInfo()
-                                                : "");
+                                                wasteWaterDataDTO.getAutoCalibrationInfo() != null
+                                                                ? wasteWaterDataDTO.getAutoCalibrationInfo()
+                                                                : "");
                                 // tình trangh haot động của trạm
                                 data.put("auto_incident_summary",
-                                        wasteWaterDataDTO.getAutoIncidentSummary() != null
-                                                ? wasteWaterDataDTO.getAutoIncidentSummary()
-                                                : "");
+                                                wasteWaterDataDTO.getAutoIncidentSummary() != null
+                                                                ? wasteWaterDataDTO.getAutoIncidentSummary()
+                                                                : "");
                                 data.put("auto_downtime_desc",
-                                        wasteWaterDataDTO.getAutoDowntimeDesc() != null
-                                                ? wasteWaterDataDTO.getAutoDowntimeDesc()
-                                                : "");
+                                                wasteWaterDataDTO.getAutoDowntimeDesc() != null
+                                                                ? wasteWaterDataDTO.getAutoDowntimeDesc()
+                                                                : "");
                                 // nhận xét kết quả quan trắc
                                 data.put("auto_exceed_days_summary",
-                                        wasteWaterDataDTO.getAutoExceedDaysSummary() != null
-                                                ? wasteWaterDataDTO.getAutoExceedDaysSummary()
-                                                : "");
+                                                wasteWaterDataDTO.getAutoExceedDaysSummary() != null
+                                                                ? wasteWaterDataDTO.getAutoExceedDaysSummary()
+                                                                : "");
                                 data.put("auto_abnormal_reason",
-                                        wasteWaterDataDTO.getAutoAbnormalReason() != null
-                                                ? wasteWaterDataDTO.getAutoAbnormalReason()
-                                                : "");
+                                                wasteWaterDataDTO.getAutoAbnormalReason() != null
+                                                                ? wasteWaterDataDTO.getAutoAbnormalReason()
+                                                                : "");
                                 // kết luận
                                 data.put("auto_completeness_review",
-                                        wasteWaterDataDTO.getAutoCompletenessReview() != null
-                                                ? wasteWaterDataDTO.getAutoCompletenessReview()
-                                                : "");
+                                                wasteWaterDataDTO.getAutoCompletenessReview() != null
+                                                                ? wasteWaterDataDTO.getAutoCompletenessReview()
+                                                                : "");
                                 data.put("auto_exceed_summary",
-                                        wasteWaterDataDTO.getAutoExceedSummary() != null
-                                                ? wasteWaterDataDTO.getAutoExceedSummary()
-                                                : "");
+                                                wasteWaterDataDTO.getAutoExceedSummary() != null
+                                                                ? wasteWaterDataDTO.getAutoExceedSummary()
+                                                                : "");
 
                         }
                         // Bảng 2

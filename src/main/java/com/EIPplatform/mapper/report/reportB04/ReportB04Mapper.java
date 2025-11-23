@@ -1,7 +1,4 @@
 package com.EIPplatform.mapper.report.reportB04;
-
-import java.util.List;
-
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
@@ -11,5 +8,6 @@ import com.EIPplatform.model.entity.report.reportB04.ReportB04;
 public interface ReportB04Mapper {
        // CreateRequest → Entity
     @Mapping(target = "reportInvestorDetail", ignore = true)
+    @Mapping(target = "products", ignore = true)
     ReportB04DTO toDTO(ReportB04 dto);
 }
