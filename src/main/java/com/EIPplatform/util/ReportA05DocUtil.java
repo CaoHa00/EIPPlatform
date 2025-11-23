@@ -1,11 +1,10 @@
 package com.EIPplatform.util;
 
-import com.EIPplatform.model.dto.report.report05.ReportA05DraftDTO;
-import com.EIPplatform.model.dto.report.report05.airemmissionmanagement.airemissiondata.AirEmissionDataDTO;
-import com.EIPplatform.model.dto.report.report05.wastemanagement.WasteManagementDataDTO;
-import com.EIPplatform.model.dto.report.report05.wastewatermanager.wastewatermanagement.WasteWaterDataDTO;
 import com.EIPplatform.model.entity.permitshistory.EnvPermits;
 import com.EIPplatform.model.entity.report.report05.ReportA05;
+import com.EIPplatform.model.entity.report.report05.airemmissionmanagement.AirEmissionData;
+import com.EIPplatform.model.entity.report.report05.wastemanagement.WasteManagementData;
+import com.EIPplatform.model.entity.report.report05.wastewatermanager.WasteWaterData;
 import com.EIPplatform.model.entity.user.businessInformation.BusinessDetail;
 import com.EIPplatform.model.entity.user.businessInformation.BusinessHistoryConsumption;
 import com.EIPplatform.service.report.reporta05.TableMappingService;
@@ -28,36 +27,37 @@ public class ReportA05DocUtil {
     private static final String TEMPLATE_PATH =
             "templates/reportA05/ReportA05_template_ver2.docx";
 
-    /**
-     * Main entry point:
-     * Build placeholder map + fill dynamic tables + return DOCX bytes.
-     */
-    public byte[] generateReportDocument(BusinessDetail business,
-                                         ReportA05DraftDTO draftData) {
+    public byte[] generateReportDocument(ReportA05 report) {
 
-        // 1. Extract draft sections (may be null)
-        WasteWaterDataDTO wasteWaterDataDTO = draftData != null ? draftData.getWasteWaterData() : null;
-        AirEmissionDataDTO airEmissionDataDTO = draftData != null ? draftData.getAirEmissionData() : null;
-        WasteManagementDataDTO wasteManagementDataDTO = draftData != null ? draftData.getWasteManagementData() : null;
+        BusinessDetail business = report.getBusinessDetail();
+        if (business == null) {
+            throw new IllegalArgumentException("ReportA05 has no BusinessDetail linked");
+        }
+
+        // Các section entity (có thể null)
+        WasteWaterData wasteWaterData = report.getWasteWaterData();
+        AirEmissionData airEmissionData = report.getAirEmissionData();
+        WasteManagementData wasteManagementData = report.getWasteManagementData();
 
         EnvPermits envPermits = business.getEnvPermits();
         List<BusinessHistoryConsumption> historyList = business.getBusinessHistoryConsumptions();
 
-        // 2. Date placeholders (header)
+        // Date placeholders (header)
         LocalDate today = LocalDate.now();
         String day = String.valueOf(today.getDayOfMonth());
         String month = String.valueOf(today.getMonthValue());
         String year = String.valueOf(today.getYear());
 
-        // 3. Build placeholder map
         Map<String, String> data = new HashMap<>();
 
-        buildGeneralInfoData(data, business, envPermits, historyList, day, month, year);
-        buildWasteWaterPlaceholders(data, wasteWaterDataDTO);
-        buildAirEmissionPlaceholders(data, airEmissionDataDTO);
-        buildWasteManagementPlaceholders(data, wasteManagementDataDTO);
+        // 1. General info (facility, permits, history, date)
+        buildGeneralInfoData(data, business, envPermits, historyList, day, month, year, report);
 
-        // 4. Load DOCX template
+        // 2. Section placeholders
+        buildWasteWaterPlaceholders(data, wasteWaterData);
+        buildAirEmissionPlaceholders(data, airEmissionData);
+        buildWasteManagementPlaceholders(data, wasteManagementData);
+
         Resource resource = new ClassPathResource(TEMPLATE_PATH);
         log.info("Loading ReportA05 template from: {}", TEMPLATE_PATH);
 
@@ -81,8 +81,8 @@ public class ReportA05DocUtil {
                 }
             }
 
-            // 7. Fill / remove dynamic tables
-            fillTables(doc, wasteWaterDataDTO, airEmissionDataDTO, wasteManagementDataDTO);
+            // 7. Fill dynamic tables from ENTITY lists
+            fillTables(doc, wasteWaterData, airEmissionData, wasteManagementData);
 
             // 8. Write to bytes
             doc.write(baos);
@@ -95,7 +95,7 @@ public class ReportA05DocUtil {
     }
 
     // ---------------------------------------------------------------------
-    // Placeholder builders
+    // 1. General info
     // ---------------------------------------------------------------------
 
     private void buildGeneralInfoData(Map<String, String> data,
@@ -104,7 +104,8 @@ public class ReportA05DocUtil {
                                       List<BusinessHistoryConsumption> historyList,
                                       String day,
                                       String month,
-                                      String year) {
+                                      String year,
+                                      ReportA05 report) {
 
         data.put("facility_name", defaultString(business.getFacilityName()));
         data.put("address", defaultString(business.getAddress()));
@@ -120,139 +121,29 @@ public class ReportA05DocUtil {
         data.put("seasonal_period",
                 business.getOperationType() != null ? business.getOperationType().name() : "");
 
+        data.put("operating_frequency", "");
+
         if (envPermits != null) {
             data.put("env_permit_number", defaultString(envPermits.getPermitNumber()));
             data.put("env_permit_issue_date", formatDate(envPermits.getIssueDate()));
             data.put("env_permit_issuer", defaultString(envPermits.getIssuerOrg()));
-            data.put("env_permit_file", defaultString(envPermits.getPermitFilePath()));
         } else {
             data.put("env_permit_number", "");
             data.put("env_permit_issue_date", "");
             data.put("env_permit_issuer", "");
-            data.put("env_permit_file", "");
         }
 
         fillBusinessHistoryData(data, historyList);
 
+        // Report info
+        data.put("report_year", report.getReportYear() != null ? report.getReportYear().toString() : "");
+        data.put("reporting_period", defaultString(report.getReportingPeriod()));
+        data.put("report_code", defaultString(report.getReportCode()));
+
+        // Date line
         data.put("dateStr", day);
         data.put("monthYearStr", month);
         data.put("yearStr", year);
-    }
-
-    private void buildWasteWaterPlaceholders(Map<String, String> data,
-                                             WasteWaterDataDTO wasteWaterDataDTO) {
-        if (wasteWaterDataDTO == null) {
-            return;
-        }
-
-        // Công trình xử lý nước thải
-        data.put("ww_treatment_desc",
-                defaultString(wasteWaterDataDTO.getTreatmentWwDesc()));
-
-        // Nước thải sinh hoạt
-        data.put("domestic_ww_cy", toStringOrEmpty(wasteWaterDataDTO.getDomWwCy()));
-        data.put("domestic_ww_py", toStringOrEmpty(wasteWaterDataDTO.getDomWwPy()));
-        data.put("domestic_ww_design", toStringOrEmpty(wasteWaterDataDTO.getDomWwDesign()));
-
-        // Nước thải công nghiệp
-        data.put("industrial_ww_cy", toStringOrEmpty(wasteWaterDataDTO.getIndustrialWwCy()));
-        data.put("industrial_ww_py", toStringOrEmpty(wasteWaterDataDTO.getIndustrialWwPy()));
-        data.put("industrial_ww_design", toStringOrEmpty(wasteWaterDataDTO.getIndustrialWwDesign()));
-
-        // Nước làm mát
-        data.put("cooling_water_cy", toStringOrEmpty(wasteWaterDataDTO.getCoolingWaterCy()));
-        data.put("cooling_water_py", toStringOrEmpty(wasteWaterDataDTO.getCoolingWaterPy()));
-        data.put("cooling_water_design", toStringOrEmpty(wasteWaterDataDTO.getCoolingWaterDesign()));
-
-        // Đấu nối XLNT tập trung
-        data.put("connection_status_desc", defaultString(wasteWaterDataDTO.getConnectionStatusDesc()));
-
-        // Quan trắc nước thải sinh hoạt
-        data.put("dom_monitor_period", defaultString(wasteWaterDataDTO.getDomMonitorPeriod()));
-        data.put("dom_monitor_freq", defaultString(wasteWaterDataDTO.getDomMonitorFreq()));
-        data.put("dom_monitor_locations", defaultString(wasteWaterDataDTO.getDomMonitorLocations()));
-        data.put("dom_sample_count", toStringOrEmpty(wasteWaterDataDTO.getDomSampleCount()));
-        data.put("dom_qcvn_standard", defaultString(wasteWaterDataDTO.getDomQcvnStandard()));
-        data.put("dom_agency_name", defaultString(wasteWaterDataDTO.getDomAgencyName()));
-        data.put("dom_agency_vimcerts", defaultString(wasteWaterDataDTO.getDomAgencyVimcerts()));
-
-        // Quan trắc nước thải công nghiệp
-        data.put("ind_monitor_period", defaultString(wasteWaterDataDTO.getIndMonitorPeriod()));
-        data.put("ind_monitor_freq", defaultString(wasteWaterDataDTO.getIndMonitorFreq()));
-        data.put("ind_monitor_locations", defaultString(wasteWaterDataDTO.getIndMonitorLocations()));
-        data.put("ind_sample_count", toStringOrEmpty(wasteWaterDataDTO.getIndSampleCount()));
-        data.put("ind_qcvn_standard", defaultString(wasteWaterDataDTO.getIndQcvnStandard()));
-        data.put("ind_agency_name", defaultString(wasteWaterDataDTO.getIndAgencyName()));
-        data.put("ind_agency_vimcerts", defaultString(wasteWaterDataDTO.getIndAgencyVimcerts()));
-
-        // Quan trắc nước thải tự động
-        data.put("auto_station_location", defaultString(wasteWaterDataDTO.getAutoStationLocation()));
-        data.put("auto_station_GPS", defaultString(wasteWaterDataDTO.getAutoStationGps()));
-        data.put("auto_station_map", defaultString(wasteWaterDataDTO.getAutoStationMap()));
-        data.put("auto_source_desc", defaultString(wasteWaterDataDTO.getAutoSourceDesc()));
-        data.put("auto_data_frequency", defaultString(wasteWaterDataDTO.getAutoDataFrequency()));
-        data.put("auto_calibration_info", defaultString(wasteWaterDataDTO.getAutoCalibrationInfo()));
-
-        // Tình trạng hoạt động trạm
-        data.put("auto_incident_summary", defaultString(wasteWaterDataDTO.getAutoIncidentSummary()));
-        data.put("auto_downtime_desc", defaultString(wasteWaterDataDTO.getAutoDowntimeDesc()));
-
-        // Nhận xét & kết luận
-        data.put("auto_exceed_days_summary", defaultString(wasteWaterDataDTO.getAutoExceedDaysSummary()));
-        data.put("auto_abnormal_reason", defaultString(wasteWaterDataDTO.getAutoAbnormalReason()));
-        data.put("auto_completeness_review", defaultString(wasteWaterDataDTO.getAutoCompletenessReview()));
-        data.put("auto_exceed_summary", defaultString(wasteWaterDataDTO.getAutoExceedSummary()));
-    }
-
-    private void buildAirEmissionPlaceholders(Map<String, String> data,
-                                              AirEmissionDataDTO airEmissionDataDTO) {
-        if (airEmissionDataDTO == null) {
-            return;
-        }
-
-        data.put("air_treatment_desc", defaultString(airEmissionDataDTO.getAirTreatmentDesc()));
-        data.put("air_emission_cy", toStringOrEmpty(airEmissionDataDTO.getAirEmissionCy()));
-        data.put("air_emission_py", toStringOrEmpty(airEmissionDataDTO.getAirEmissionPy()));
-
-        data.put("air_monitor_period", defaultString(airEmissionDataDTO.getAirMonitorPeriod()));
-        data.put("air_monitor_freq", defaultString(airEmissionDataDTO.getAirMonitorFreq()));
-        data.put("air_monitor_locations", defaultString(airEmissionDataDTO.getAirMonitorLocations()));
-        data.put("air_sample_count", toStringOrEmpty(airEmissionDataDTO.getAirSampleCount()));
-        data.put("air_qcvn_standard", defaultString(airEmissionDataDTO.getAirQcvnStandard()));
-        data.put("air_agency_name", defaultString(airEmissionDataDTO.getAirAgencyName()));
-        data.put("air_agency_vimcerts", defaultString(airEmissionDataDTO.getAirAgencyVimcerts()));
-
-        data.put("air_auto_station_location", defaultString(airEmissionDataDTO.getAirAutoStationLocation()));
-        data.put("air_auto_station_GPS", defaultString(airEmissionDataDTO.getAirAutoStationGps()));
-        data.put("air_auto_station_map", defaultString(airEmissionDataDTO.getAirAutoStationMapFilePath()));
-        data.put("air_auto_source_desc", defaultString(airEmissionDataDTO.getAirAutoSourceDesc()));
-        data.put("air_auto_data_frequency", defaultString(airEmissionDataDTO.getAirAutoDataFrequency()));
-        data.put("air_auto_param_list", defaultString(airEmissionDataDTO.getAirAutoParamList()));
-        data.put("air_auto_calibration_info", defaultString(airEmissionDataDTO.getAirAutoCalibrationInfo()));
-        data.put("air_auto_incident_summary", defaultString(airEmissionDataDTO.getAirAutoIncidentSummary()));
-        data.put("air_auto_downtime_desc", defaultString(airEmissionDataDTO.getAirAutoDowntimeDesc()));
-
-        data.put("air_auto_avg_calc_desc", defaultString(airEmissionDataDTO.getAirAutoAvgCalcDesc()));
-        data.put("air_auto_avg_compare_desc", defaultString(airEmissionDataDTO.getAirAutoAvgCompareDesc()));
-        data.put("air_auto_exceed_days_summary", defaultString(airEmissionDataDTO.getAirAutoExceedDaysSummary()));
-        data.put("air_auto_abnormal_reason", defaultString(airEmissionDataDTO.getAirAutoAbnormalReason()));
-        data.put("air_auto_completeness_review", defaultString(airEmissionDataDTO.getAirAutoCompletenessReview()));
-        data.put("air_auto_exceed_conclusion", defaultString(airEmissionDataDTO.getAirAutoExceedConclusion()));
-    }
-
-    private void buildWasteManagementPlaceholders(Map<String, String> data,
-                                                  WasteManagementDataDTO wasteManagementDataDTO) {
-        if (wasteManagementDataDTO == null) {
-            return;
-        }
-
-        data.put("sw_general_note", defaultString(wasteManagementDataDTO.getSwGeneralNote()));
-        data.put("incident_plan_development",
-                defaultString(wasteManagementDataDTO.getIncidentPlanDevelopment()));
-        data.put("incident_prevention_measures",
-                defaultString(wasteManagementDataDTO.getIncidentPreventionMeasures()));
-        data.put("incident_response_report",
-                defaultString(wasteManagementDataDTO.getIncidentResponseReport()));
     }
 
     private void fillBusinessHistoryData(Map<String, String> data,
@@ -308,327 +199,470 @@ public class ReportA05DocUtil {
     }
 
     // ---------------------------------------------------------------------
-    // Dynamic tables (water + air + basic waste removal)
+    // 2. Waste water placeholders  (section 1.x)
     // ---------------------------------------------------------------------
+
+    private void buildWasteWaterPlaceholders(Map<String, String> data, WasteWaterData ww) {
+        if (ww == null) return;
+
+        data.put("ww_treatment_desc", defaultString(ww.getTreatmentWwDesc()));
+        data.put("connection_status_desc", defaultString(ww.getConnectionStatusDesc()));
+        data.put("connection_diagram", defaultString(ww.getConnectionDiagram()));
+
+        data.put("domestic_ww_cy", fmt(ww.getDomWwCy()));
+        data.put("domestic_ww_py", fmt(ww.getDomWwPy()));
+
+        data.put("industrial_ww_cy", fmt(ww.getIndustrialWwCy()));
+        data.put("industrial_ww_py", fmt(ww.getIndustrialWwPy()));
+        data.put("industrial_ww_design", fmt(ww.getIndustrialWwDesign()));
+
+        data.put("cooling_water_cy", fmt(ww.getCoolingWaterCy()));
+        data.put("cooling_water_py", fmt(ww.getCoolingWaterPy()));
+        data.put("cooling_water_design", fmt(ww.getCoolingWaterDesign()));
+
+        data.put("dom_monitor_period", defaultString(ww.getDomMonitorPeriod()));
+        data.put("dom_monitor_freq", defaultString(ww.getDomMonitorFreq()));
+        data.put("dom_monitor_locations", defaultString(ww.getDomMonitorLocations()));
+        data.put("dom_sample_count", fmt(ww.getDomSampleCount()));
+        data.put("dom_qcvn_standard", defaultString(ww.getDomQcvnStandard()));
+        data.put("dom_agency_name", defaultString(ww.getDomAgencyName()));
+        data.put("dom_agency_vimcerts", defaultString(ww.getDomAgencyVimcerts()));
+
+        data.put("ind_monitor_period", defaultString(ww.getIndMonitorPeriod()));
+        data.put("ind_monitor_freq", defaultString(ww.getIndMonitorFreq()));
+        data.put("ind_monitor_locations", defaultString(ww.getIndMonitorLocations()));
+        data.put("ind_sample_count", fmt(ww.getIndSampleCount()));
+        data.put("ind_qcvn_standard", defaultString(ww.getIndQcvnStandard()));
+        data.put("ind_agency_name", defaultString(ww.getIndAgencyName()));
+        data.put("ind_agency_vimcerts", defaultString(ww.getIndAgencyVimcerts()));
+
+        // Auto monitoring (template key có 1 cái dùng GPS hoa)
+        data.put("auto_station_location", defaultString(ww.getAutoStationLocation()));
+        data.put("auto_station_GPS", defaultString(ww.getAutoStationGps()));     // khớp {{auto_station_GPS}}
+        data.put("auto_station_map", defaultString(ww.getAutoStationMap()));
+        data.put("auto_source_desc", defaultString(ww.getAutoSourceDesc()));
+        data.put("auto_data_frequency", defaultString(ww.getAutoDataFrequency()));
+        data.put("auto_calibration_info", defaultString(ww.getAutoCalibrationInfo()));
+        data.put("auto_incident_summary", defaultString(ww.getAutoIncidentSummary()));
+        data.put("auto_downtime_desc", defaultString(ww.getAutoDowntimeDesc()));
+        data.put("auto_exceed_days_summary", defaultString(ww.getAutoExceedDaysSummary()));
+        data.put("auto_abnormal_reason", defaultString(ww.getAutoAbnormalReason()));
+        data.put("auto_completeness_review", defaultString(ww.getAutoCompletenessReview()));
+        data.put("auto_exceed_summary", defaultString(ww.getAutoExceedSummary()));
+    }
+
+    // ---------------------------------------------------------------------
+    // 3. Air emission placeholders  (section 2.x)
+    // ---------------------------------------------------------------------
+
+    private void buildAirEmissionPlaceholders(Map<String, String> data, AirEmissionData air) {
+        if (air == null) return;
+
+        data.put("air_treatment_desc", defaultString(air.getAirTreatmentDesc()));
+        data.put("air_emission_cy", fmt(air.getAirEmissionCy()));
+        data.put("air_emission_py", fmt(air.getAirEmissionPy()));
+
+        data.put("air_monitor_period", defaultString(air.getAirMonitorPeriod()));
+        data.put("air_monitor_freq", defaultString(air.getAirMonitorFreq()));
+        data.put("air_monitor_locations", defaultString(air.getAirMonitorLocations()));
+        data.put("air_sample_count", fmt(air.getAirSampleCount()));
+        data.put("air_qcvn_standard", defaultString(air.getAirQcvnStandard()));
+        data.put("air_agency_name", defaultString(air.getAirAgencyName()));
+        data.put("air_agency_vimcerts", defaultString(air.getAirAgencyVimcerts()));
+
+        data.put("air_auto_station_location", defaultString(air.getAirAutoStationLocation()));
+        data.put("air_auto_station_GPS", defaultString(air.getAirAutoStationGps())); // khớp {{air_auto_station_GPS}}
+        data.put("air_auto_station_map", defaultString(air.getAirAutoStationMapFilePath()));
+        data.put("air_auto_source_desc", defaultString(air.getAirAutoSourceDesc()));
+        data.put("air_auto_data_frequency", defaultString(air.getAirAutoDataFrequency()));
+        data.put("air_auto_param_list", defaultString(air.getAirAutoParamList()));
+        data.put("air_auto_calibration_info", defaultString(air.getAirAutoCalibrationInfo()));
+        data.put("air_auto_incident_summary", defaultString(air.getAirAutoIncidentSummary()));
+        data.put("air_auto_downtime_desc", defaultString(air.getAirAutoDowntimeDesc()));
+
+        data.put("air_auto_avg_calc_desc", defaultString(air.getAirAutoAvgCalcDesc()));
+        data.put("air_auto_avg_compare_desc", defaultString(air.getAirAutoAvgCompareDesc()));
+        data.put("air_auto_exceed_days_summary", defaultString(air.getAirAutoExceedDaysSummary()));
+        data.put("air_auto_abnormal_reason", defaultString(air.getAirAutoAbnormalReason()));
+        data.put("air_auto_completeness_review", defaultString(air.getAirAutoCompletenessReview()));
+        data.put("air_auto_exceed_conclusion", defaultString(air.getAirAutoExceedConclusion()));
+    }
+
+    // ---------------------------------------------------------------------
+    // 4. Waste management placeholders  (sections 3.x, 4.x, 7.x)
+    // ---------------------------------------------------------------------
+
+    private void buildWasteManagementPlaceholders(Map<String, String> data, WasteManagementData wm) {
+        if (wm == null) return;
+
+        data.put("sw_general_note", defaultString(wm.getSwGeneralNote()));
+        data.put("incident_plan_development", defaultString(wm.getIncidentPlanDevelopment()));
+        data.put("incident_prevention_measures", defaultString(wm.getIncidentPreventionMeasures()));
+        data.put("incident_response_report", defaultString(wm.getIncidentResponseReport()));
+
+        data.put("water_total_volume", fmt(wm.getWaterTotalVolumeKg()));
+        data.put("water_estimation_method", defaultString(wm.getWaterEstimationMethod()));
+
+        data.put("air_total_volume", fmt(wm.getAirTotalVolumeKg()));
+        data.put("air_estimation_method", defaultString(wm.getAirEstimationMethod()));
+
+        data.put("soil_total_volume", fmt(wm.getSoilTotalVolumeKg()));
+        data.put("soil_estimation_method", defaultString(wm.getSoilEstimationMethod()));
+
+        data.put("sewage_sludge_total_volume", fmt(wm.getSewageSludgeTotalVolumeKg()));
+        data.put("sewage_sludge_estimation_method", defaultString(wm.getSewageSludgeEstimationMethod()));
+
+        data.put("hw_onsite_total_volume", fmt(wm.getHwOnsiteTotalVolumeKg()));
+        data.put("hw_onsite_estimation_method", defaultString(wm.getHwOnsiteEstimationMethod()));
+
+        data.put("hw_recycle_total_volume", fmt(wm.getHwRecycleTotalVolumeKg()));
+        data.put("hw_recycle_estimation_method", defaultString(wm.getHwRecycleEstimationMethod()));
+
+        data.put("hw_disposal_total_volume", fmt(wm.getHwDisposalTotalVolumeKg()));
+        data.put("hw_disposal_estimation_method", defaultString(wm.getHwDisposalEstimationMethod()));
+
+    }
+
+    // ---------------------------------------------------------------------
+    // 5. Table filling (dynamic lists)
+    // ---------------------------------------------------------------------
+
     private void fillTables(
             XWPFDocument doc,
-            WasteWaterDataDTO ww,
-            AirEmissionDataDTO air,
-            WasteManagementDataDTO wm
+            WasteWaterData ww,
+            AirEmissionData air,
+            WasteManagementData wm
     ) {
 
-        /* =========================================================
-         * 1. WASTEWATER (1.x)
-         * ========================================================= */
+        // -------------------- 1.x WASTEWATER --------------------
 
-        // 1.1 / 1.2 – Wastewater monitoring exceedances (shared template row)
+        // 1.1 Exceedance (duplicate table 1.1 and 1.2 use same data structure)
         TableMappingService.mapTable(
                 doc,
                 "{{TEMPLATE_ROW}}",
-                (ww == null) ? null : ww.getMonitoringExceedances(),
-                (item, row) -> {
-                    // WasteWaterMonitoringExceedancesDTO
-                    TableMappingService.setCell(row, 0, item.getPointName());
-                    TableMappingService.setCell(row, 1, item.getPointSymbol());
-                    TableMappingService.setCell(row, 2, item.getMonitoringDate());
-                    TableMappingService.setCell(row, 3, item.getLongitude());
-                    TableMappingService.setCell(row, 4, item.getLatitude());
-                    TableMappingService.setCell(row, 5, item.getExceededParam());
-                    TableMappingService.setCell(row, 6, TableMappingService.fmt(item.getResultValue()));
-                    TableMappingService.setCell(row, 7, TableMappingService.fmt(item.getQcvnLimit()));
-                }
+                ww == null ? null : ww.getMonitoringExceedances(),
+                (item, row) -> row.cols(
+                        item.getPointName(),
+                        item.getPointSymbol(),
+                        item.getMonitoringDate(),
+                        item.getLongitude(),
+                        item.getLatitude(),
+                        item.getExceededParam(),
+                        fmt(item.getResultValue()),
+                        fmt(item.getQcvnLimit())
+                ),
+                true
         );
 
-        // 1.3 – Auto wastewater monitoring stats
+        // 1.2 Duplicate exceedance table
         TableMappingService.mapTable(
                 doc,
-                "{{TEMPLATE_AUTO_STATS}}",
-                (ww == null) ? null : ww.getMonitoringStats(),
-                (item, row) -> {
-                    // AutoWWMonitoringStatsDTO
-                    TableMappingService.setCell(row, 0, item.getParamName());
-                    TableMappingService.setCell(row, 1, TableMappingService.fmt(item.getValDesign()));
-                    TableMappingService.setCell(row, 2, TableMappingService.fmt(item.getValReceived()));
-                    TableMappingService.setCell(row, 3, TableMappingService.fmt(item.getValError()));
-                    TableMappingService.setCell(row, 4, TableMappingService.fmt(item.getRatioReceivedDesign()));
-                    TableMappingService.setCell(row, 5, TableMappingService.fmt(item.getRatioErrorReceived()));
-                }
+                "{{TEMPLATE_ROW_2}}",
+                ww == null ? null : ww.getMonitoringExceedances(),
+                (item, row) -> row.cols(
+                        item.getPointName(),
+                        item.getPointSymbol(),
+                        item.getMonitoringDate(),
+                        item.getLongitude(),
+                        item.getLatitude(),
+                        item.getExceededParam(),
+                        fmt(item.getResultValue()),
+                        fmt(item.getQcvnLimit())
+                ),
+                true
         );
 
-        // 1.4 – Auto wastewater monitoring incidents
+        // 1.3 Auto Stats (VERTICAL)
+        TableMappingService.mapVerticalTable(
+                doc,
+                "{{TEMPLATE_AUTO_STATS}}",
+                ww == null ? null : List.of(
+                        // Order must match template rows exactly
+                        ww.getMonitoringStats().isEmpty() ? "" : ww.getMonitoringStats().get(0).getParamName(),
+                        ww.getMonitoringStats().isEmpty() ? "" : fmt(ww.getMonitoringStats().get(0).getValDesign()),
+                        ww.getMonitoringStats().isEmpty() ? "" : fmt(ww.getMonitoringStats().get(0).getValReceived()),
+                        ww.getMonitoringStats().isEmpty() ? "" : fmt(ww.getMonitoringStats().get(0).getValError()),
+                        ww.getMonitoringStats().isEmpty() ? "" : fmt(ww.getMonitoringStats().get(0).getRatioReceivedDesign()),
+                        ww.getMonitoringStats().isEmpty() ? "" : fmt(ww.getMonitoringStats().get(0).getRatioErrorReceived())
+                )
+        );
+
+        // 1.4 Auto Incidents
         TableMappingService.mapTable(
                 doc,
                 "{{TEMPLATE_AUTO_INCIDENTS}}",
-                (ww == null) ? null : ww.getMonitoringIncidents(),
-                (item, row) -> {
-                    // AutoWWMonitoringIncidentsDTO
-                    TableMappingService.setCell(row, 0, item.getIncidentName());
-                    TableMappingService.setCell(row, 1, item.getIncidentTime());
-                    TableMappingService.setCell(row, 2, item.getIncidentRemedy());
-                }
+                ww == null ? null : ww.getMonitoringIncidents(),
+                (item, row) -> row.cols(
+                        item.getIncidentName(),
+                        item.getIncidentTime(),
+                        item.getIncidentRemedy()
+                ),
+                true
         );
 
-        // 1.5 – Wastewater QCVN exceedances (auto station)
+        // 1.5 QCVN Exceed
         TableMappingService.mapTable(
                 doc,
                 "{{TEMPLATE_QCVN_EXCEED}}",
-                (ww == null) ? null : ww.getQcvnExceedances(),
-                (item, row) -> {
-                    // AutoWWQcvnExceedancesDTO
-                    TableMappingService.setCell(row, 0, item.getParamName());
-                    TableMappingService.setCell(row, 1, TableMappingService.fmt(item.getExceedDaysCount()));
-                    TableMappingService.setCell(row, 2, TableMappingService.fmt(item.getQcvnLimitValue()));
-                    TableMappingService.setCell(row, 3, TableMappingService.fmt(item.getExceedRatioPercent()));
-                }
+                ww == null ? null : ww.getQcvnExceedances(),
+                (item, row) -> row.cols(
+                        item.getParamName(),
+                        fmt(item.getExceedDaysCount()),
+                        fmt(item.getQcvnLimitValue()),
+                        fmt(item.getExceedRatioPercent())
+                ),
+                false
         );
 
 
-        /* =========================================================
-         * 2. AIR EMISSIONS (2.x)
-         * ========================================================= */
+        // -------------------- 2.x AIR EMISSION --------------------
 
-        // 2.1 – Manual air monitoring exceedances
+        // 2.1 Exceedances
         TableMappingService.mapTable(
                 doc,
                 "{{TEMPLATE_AIR_ROW}}",
-                (air == null) ? null : air.getAirMonitoringExceedances(),
-                (item, row) -> {
-                    // AirMonitoringExceedanceDTO
-                    TableMappingService.setCell(row, 0, item.getPointName());
-                    TableMappingService.setCell(row, 1, item.getPointSymbol());
-                    TableMappingService.setCell(row, 2, item.getMonitoringDate());
-                    TableMappingService.setCell(row, 3, item.getLongitude());
-                    TableMappingService.setCell(row, 4, item.getLatitude());
-                    TableMappingService.setCell(row, 5, item.getExceededParam());
-                    TableMappingService.setCell(row, 6, TableMappingService.fmt(item.getResultValue()));
-                    TableMappingService.setCell(row, 7, TableMappingService.fmt(item.getQcvnLimit()));
-                }
+                air == null ? null : air.getAirMonitoringExceedances(),
+                (item, row) -> row.cols(
+                        item.getPointName(),
+                        item.getPointSymbol(),
+                        fmt(item.getMonitoringDate()),
+                        item.getLongitude(),
+                        item.getLatitude(),
+                        item.getExceededParam(),
+                        fmt(item.getResultValue()),
+                        fmt(item.getQcvnLimit())
+                ),
+                true
         );
 
-        // 2.2 – Air auto monitoring stats
-        TableMappingService.mapTable(
+        // 2.2 Auto Stats (VERTICAL)
+        TableMappingService.mapVerticalTable(
                 doc,
                 "{{TEMPLATE_AIR_AUTO_STATS}}",
-                (air == null) ? null : air.getAirAutoMonitoringStats(),
-                (item, row) -> {
-                    // AirAutoMonitoringStatDTO
-                    TableMappingService.setCell(row, 0, item.getParamName());
-                    TableMappingService.setCell(row, 1, TableMappingService.fmt(item.getValDesign()));
-                    TableMappingService.setCell(row, 2, TableMappingService.fmt(item.getValReceived()));
-                    TableMappingService.setCell(row, 3, TableMappingService.fmt(item.getValError()));
-                    TableMappingService.setCell(row, 4, TableMappingService.fmt(item.getRatioReceivedDesign()));
-                    TableMappingService.setCell(row, 5, TableMappingService.fmt(item.getRatioErrorReceived()));
-                }
+                air == null ? null : List.of(
+                        air.getAirAutoMonitoringStats().isEmpty() ? "" : air.getAirAutoMonitoringStats().get(0).getParamName(),
+                        air.getAirAutoMonitoringStats().isEmpty() ? "" : fmt(air.getAirAutoMonitoringStats().get(0).getValDesign()),
+                        air.getAirAutoMonitoringStats().isEmpty() ? "" : fmt(air.getAirAutoMonitoringStats().get(0).getValReceived()),
+                        air.getAirAutoMonitoringStats().isEmpty() ? "" : fmt(air.getAirAutoMonitoringStats().get(0).getValError()),
+                        air.getAirAutoMonitoringStats().isEmpty() ? "" : fmt(air.getAirAutoMonitoringStats().get(0).getRatioReceivedDesign()),
+                        air.getAirAutoMonitoringStats().isEmpty() ? "" : fmt(air.getAirAutoMonitoringStats().get(0).getRatioErrorReceived())
+                )
         );
 
-        // 2.3 – Air auto monitoring incidents
+        // 2.3 Auto Incidents
         TableMappingService.mapTable(
                 doc,
                 "{{TEMPLATE_AIR_AUTO_INCIDENTS}}",
-                (air == null) ? null : air.getAirAutoMonitoringIncidents(),
-                (item, row) -> {
-                    // AirAutoMonitoringIncidentDTO
-                    TableMappingService.setCell(row, 0, item.getIncidentName());
-                    TableMappingService.setCell(row, 1, item.getIncidentTime());
-                    TableMappingService.setCell(row, 2, item.getIncidentRemedy());
-                }
+                air == null ? null : air.getAirAutoMonitoringIncidents(),
+                (item, row) -> row.cols(
+                        item.getIncidentName(),
+                        item.getIncidentTime(),
+                        item.getIncidentRemedy()
+                ),
+                false
         );
 
-        // 2.4 – Air QCVN exceedances (auto station)
+        // 2.4 QCVN Exceed
         TableMappingService.mapTable(
                 doc,
                 "{{TEMPLATE_AIR_QCVN_EXCEED}}",
-                (air == null) ? null : air.getAirAutoQcvnExceedances(),
-                (item, row) -> {
-                    // AirAutoQcvnExceedanceDTO
-                    TableMappingService.setCell(row, 0, item.getParamName());
-                    TableMappingService.setCell(row, 1, TableMappingService.fmt(item.getExceedDaysCount()));
-                    TableMappingService.setCell(row, 2, TableMappingService.fmt(item.getQcvnLimitValue()));
-                    TableMappingService.setCell(row, 3, TableMappingService.fmt(item.getExceedRatioPercent()));
-                }
+                air == null ? null : air.getAirAutoQcvnExceedances(),
+                (item, row) -> row.cols(
+                        item.getParamName(),
+                        fmt(item.getExceedDaysCount()),
+                        fmt(item.getQcvnLimitValue()),
+                        fmt(item.getExceedRatioPercent())
+                ),
+                false
         );
 
 
-        /* =========================================================
-         * 3–4–7. SOLID & HAZARDOUS WASTE (3.x, 4.x, 7.x)
-         * ========================================================= */
+        // -------------------- 3–4–7. WASTE MANAGEMENT --------------------
+        if (wm == null) return;
 
-        if (wm == null) {
-            // Rely on mapTable(null) + removeTableByMarker if you want,
-            // or just leave as-is (tables will keep "....." / placeholders)
-            return;
-        }
-
-        // 3.1 – Domestic solid waste
+        // Domestic solid waste
         TableMappingService.mapTable(
                 doc,
                 "{{TEMPLATE_DOMESTIC_SOLID_WASTE_STATS}}",
                 wm.getDomesticSolidWasteStats(),
-                (item, row) -> {
-                    // DomesticSolidWasteStatDTO
-                    TableMappingService.setCell(row, 0, item.getWasteTypeName());
-                    TableMappingService.setCell(row, 1, TableMappingService.fmt(item.getVolumeCy()));
-                    TableMappingService.setCell(row, 2, item.getReceiverOrg());
-                    TableMappingService.setCell(row, 3, TableMappingService.fmt(item.getVolumePy()));
-                }
+                (item, row) -> row.cols(
+                        item.getWasteTypeName(),
+                        fmt(item.getVolumeCy()),
+                        item.getReceiverOrg(),
+                        fmt(item.getVolumePy())
+                ),
+                true
         );
 
-        // 3.2 – Industrial solid waste
+        // Industrial solid waste
         TableMappingService.mapTable(
                 doc,
                 "{{TEMPLATE_INDUSTRIAL_SOLID_WASTE_STATS}}",
                 wm.getIndustrialSolidWasteStats(),
-                (item, row) -> {
-                    // IndustrialSolidWasteStatDTO
-                    TableMappingService.setCell(row, 0, item.getWasteGroup());
-                    TableMappingService.setCell(row, 1, TableMappingService.fmt(item.getVolumeCy()));
-                    TableMappingService.setCell(row, 2, item.getReceiverOrg());
-                    TableMappingService.setCell(row, 3, TableMappingService.fmt(item.getVolumePy()));
-                }
+                (item, row) -> row.cols(
+                        item.getWasteGroup(),
+                        fmt(item.getVolumeCy()),
+                        item.getReceiverOrg(),
+                        fmt(item.getVolumePy())
+                ),
+                true
         );
 
-        // 3.3 – Recycled industrial solid waste
+        // Recycle waste
         TableMappingService.mapTable(
                 doc,
                 "{{TEMPLATE_RECYCLE_INDUSTRIAL_WASTE_STATS}}",
                 wm.getRecycleIndustrialWasteStats(),
-                (item, row) -> {
-                    // RecycleIndustrialWasteStatDTO
-                    TableMappingService.setCell(row, 0, item.getTransferOrg());
-                    TableMappingService.setCell(row, 1, TableMappingService.fmt(item.getVolumeCy()));
-                    TableMappingService.setCell(row, 2, item.getWasteTypeDesc());
-                    TableMappingService.setCell(row, 3, TableMappingService.fmt(item.getVolumePy()));
-                }
+                (item, row) -> row.cols(
+                        item.getTransferOrg(),
+                        fmt(item.getVolumeCy()),
+                        item.getWasteTypeDesc(),
+                        fmt(item.getVolumePy())
+                ),
+                true
         );
 
-        // 3.4 – Other solid waste
+        // Other solid waste
         TableMappingService.mapTable(
                 doc,
                 "{{TEMPLATE_OTHER_SOLID_WASTE_STATS}}",
                 wm.getOtherSolidWasteStats(),
-                (item, row) -> {
-                    // OtherSolidWasteStatDTO
-                    TableMappingService.setCell(row, 0, item.getWasteGroupOther());
-                    TableMappingService.setCell(row, 1, TableMappingService.fmt(item.getVolumeCy()));
-                    TableMappingService.setCell(row, 2, item.getSelfTreatmentMethod());
-                    TableMappingService.setCell(row, 3, item.getReceiverOrg());
-                    TableMappingService.setCell(row, 4, TableMappingService.fmt(item.getVolumePy()));
-                }
+                (item, row) -> row.cols(
+                        item.getWasteGroupOther(),
+                        fmt(item.getVolumeCy()),
+                        item.getSelfTreatmentMethod(),
+                        item.getReceiverOrg(),
+                        fmt(item.getVolumePy())
+                ),
+                true
         );
 
-        // 4.1 – Hazardous waste stats
+        // Hazardous waste
         TableMappingService.mapTable(
                 doc,
                 "{{TEMPLATE_HAZARDOUS_WASTE_STATS}}",
                 wm.getHazardousWasteStats(),
-                (item, row) -> {
-                    // HazardousWasteStatDTO
-                    TableMappingService.setCell(row, 0, item.getWasteName());
-                    TableMappingService.setCell(row, 1, item.getHwCode());
-                    TableMappingService.setCell(row, 2, TableMappingService.fmt(item.getVolumeCy()));
-                    TableMappingService.setCell(row, 3, item.getTreatmentMethod());
-                    TableMappingService.setCell(row, 4, item.getReceiverOrg());
-                    TableMappingService.setCell(row, 5, TableMappingService.fmt(item.getVolumePy()));
-                }
+                (item, row) -> row.cols(
+                        item.getWasteName(),
+                        item.getHwCode(),
+                        fmt(item.getVolumeCy()),
+                        item.getTreatmentMethod(),
+                        item.getReceiverOrg(),
+                        fmt(item.getVolumePy())
+                ),
+                false
         );
 
-        // 4.2 – Exported hazardous waste stats
+        // Exported waste
         TableMappingService.mapTable(
                 doc,
                 "{{TEMPLATE_EXPORTED_HW_STATS}}",
                 wm.getExportedHwStats(),
-                (item, row) -> {
-                    // ExportedHwStatDTO
-                    TableMappingService.setCell(row, 0, item.getWasteName());
-                    TableMappingService.setCell(row, 1, item.getHwCode());
-                    TableMappingService.setCell(row, 2, item.getBaselCode());
-                    TableMappingService.setCell(row, 3, TableMappingService.fmt(item.getVolumeKg()));
-                    TableMappingService.setCell(row, 4, item.getTransporterOrg());
-                    TableMappingService.setCell(row, 5, item.getOverseasProcessorOrg());
-                }
+                (item, row) -> row.cols(
+                        item.getWasteName(),
+                        item.getHwCode(),
+                        item.getBaselCode(),
+                        fmt(item.getVolumeKg()),
+                        item.getTransporterOrg(),
+                        item.getOverseasProcessorOrg()
+                ),
+                false
         );
 
-        // 4.3 – Self-treated hazardous waste
+        // Self-treated HW
         TableMappingService.mapTable(
                 doc,
                 "{{TEMPLATE_SELF_TREATED_HW_STATS}}",
                 wm.getSelfTreatedHwStats(),
-                (item, row) -> {
-                    // SelfTreatedHwStatDTO
-                    TableMappingService.setCell(row, 0, item.getWasteName());
-                    TableMappingService.setCell(row, 1, item.getHwCode());
-                    TableMappingService.setCell(row, 2, TableMappingService.fmt(item.getVolumeKg()));
-                    TableMappingService.setCell(row, 3, item.getSelfTreatmentMethod());
-                }
+                (item, row) -> row.cols(
+                        item.getWasteName(),
+                        item.getHwCode(),
+                        fmt(item.getVolumeKg()),
+                        item.getSelfTreatmentMethod()
+                ),
+                false
         );
 
-        // 7.x – POP inventory stats
+        // POP stats
         TableMappingService.mapTable(
                 doc,
                 "{{TEMPLATE_POP_INVENTORY_STATS}}",
                 wm.getPopInventoryStats(),
-                (item, row) -> {
-                    // PopInventoryStatDTO
-                    TableMappingService.setCell(row, 0, item.getPopName());
-                    TableMappingService.setCell(row, 1, item.getCasCode());
-                    TableMappingService.setCell(row, 2, item.getImportDate());
-                    TableMappingService.setCell(row, 3, TableMappingService.fmt(item.getImportVolume()));
-                    TableMappingService.setCell(row, 4, item.getConcentration());
-                    TableMappingService.setCell(row, 5, TableMappingService.fmt(item.getVolumeUsed()));
-                    TableMappingService.setCell(row, 6, TableMappingService.fmt(item.getVolumeStocked()));
-                    TableMappingService.setCell(row, 7, item.getComplianceResult());
-                }
+                (item, row) -> row.cols(
+                        item.getPopName(),
+                        item.getCasCode(),
+                        item.getImportDate(),
+                        fmt(item.getImportVolume()),
+                        item.getConcentration(),
+                        fmt(item.getVolumeUsed()),
+                        fmt(item.getVolumeStocked()),
+                        item.getComplianceResult()
+                ),
+                true
         );
     }
 
-
-    // ---------------------------------------------------------------------
-    // Placeholder replacement
-    // ---------------------------------------------------------------------
-
-    /**
-     * Replace {{key}} with value in a paragraph.
-     * - inTable = false → null/empty → "....."
-     * - inTable = true  → null/empty → ""
-     */
     private void replacePlaceholders(XWPFParagraph paragraph,
                                      Map<String, String> data,
                                      boolean inTable) {
         if (paragraph == null) return;
-        List<XWPFRun> runs = paragraph.getRuns();
-        if (runs == null || runs.isEmpty()) return;
 
-        for (XWPFRun run : runs) {
-            String text = run.getText(0);
-            if (text == null) continue;
+        String text = paragraph.getText();
+        if (text == null || text.isEmpty()) return;
 
-            for (Map.Entry<String, String> entry : data.entrySet()) {
-                String key = entry.getKey();
-                String placeholder = "{{" + key + "}}";
-                if (text.contains(placeholder)) {
-                    String rawValue = entry.getValue();
-                    String filledValue = inTable
-                            ? defaultString(rawValue)
-                            : defaultParagraphValue(rawValue);
+        String original = text;
 
-                    text = text.replace(placeholder, filledValue);
-                    run.setText(text, 0);
-                }
+        // 1. Replace known placeholders from data map
+        for (Map.Entry<String, String> entry : data.entrySet()) {
+            String key = entry.getKey();
+            String placeholder = "{{" + key + "}}";
+            if (text.contains(placeholder)) {
+                String rawValue = entry.getValue();
+                String filledValue = inTable
+                        ? defaultString(rawValue)          // tables: "" nếu null/empty
+                        : defaultParagraphValue(rawValue); // paragraphs: "....." nếu null/empty
+
+                text = text.replace(placeholder, filledValue);
             }
         }
+
+        // 2. Remove stray / unknown placeholders nhưng giữ lại TEMPLATE_ cho TableMappingService
+        text = text.replaceAll("\\{\\{(?!TEMPLATE_)[^}]+\\}\\}", "");
+
+        // 3. If nothing changed, do nothing
+        if (text.equals(original)) {
+            return;
+        }
+
+        // 4. Clear all runs and recreate a single run with new text
+        int runCount = paragraph.getRuns().size();
+        for (int i = runCount - 1; i >= 0; i--) {
+            paragraph.removeRun(i);
+        }
+
+        XWPFRun run = paragraph.createRun();
+        run.setText(text);
     }
 
     // ---------------------------------------------------------------------
-    // Small helpers
+    // Helpers
     // ---------------------------------------------------------------------
 
-    private String defaultString(String value) {
-        return value != null ? value : "";
+    private String defaultString(String s) {
+        return (s == null || s.isBlank()) ? "" : s;
     }
 
-    /**
-     * For normal lines: show "....." if user did not input anything.
-     */
+    private String fmt(Object v) {
+        if (v == null) return "";
+        if (v instanceof Double d) return String.format("%.2f", d);
+        if (v instanceof Integer i) return String.valueOf(i);
+        return v.toString();
+    }
+
+    private String toStringOrEmpty(Number value) {
+        return value != null ? value.toString() : "";
+    }
+
     private String defaultParagraphValue(String value) {
         if (value == null || value.trim().isEmpty()) {
             return ".....";
@@ -636,12 +670,8 @@ public class ReportA05DocUtil {
         return value;
     }
 
-    private String toStringOrEmpty(Number value) {
-        return value != null ? value.toString() : "";
-    }
-
     /**
-     * Format LocalDate (issue date) as dd/MM/yyyy; blank if null.
+     * Format LocalDate as dd/MM/yyyy; blank if null.
      */
     private String formatDate(LocalDate date) {
         if (date == null) {

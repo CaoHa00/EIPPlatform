@@ -20,46 +20,40 @@ import java.util.function.BiConsumer;
 @Slf4j
 public class TableMappingService {
 
-    /* -------------------------------------------------------------
-     * PUBLIC API (Used by ReportService)
-     * ------------------------------------------------------------- */
-
     public static <T> void mapTable(
             XWPFDocument doc,
             String marker,
             List<T> dataList,
-            BiConsumer<T, XWPFTableRow> rowFiller) {
-
-        // 1. No data -> remove table
+            BiConsumer<T, RowWriter> rowFiller,
+            boolean needIndexing
+    ) {
         if (dataList == null || dataList.isEmpty()) {
             removeTableByMarker(doc, marker);
             log.info("Removed table '{}' because data is empty", marker);
             return;
         }
 
-        // 2. Locate template row
         TableInfo tableInfo = findTemplateRow(doc, marker);
         if (tableInfo == null) {
             log.warn("Template '{}' not found in document", marker);
             return;
         }
 
-        // 3. Insert rows for each item
         for (int i = 0; i < dataList.size(); i++) {
             XWPFTableRow newRow =
                     cloneRow(tableInfo.table, tableInfo.templateRow, tableInfo.rowIndex + 1 + i);
 
-            T item = dataList.get(i);
-            rowFiller.accept(item, newRow);
+            RowWriter writer = new RowWriter(newRow);
+
+            if (needIndexing) {
+                writer.col(String.valueOf(i + 1));
+            }
+
+            rowFiller.accept(dataList.get(i), writer);
         }
 
-        // 4. Remove template row
         tableInfo.table.removeRow(tableInfo.rowIndex);
     }
-
-    /* -------------------------------------------------------------
-     * TABLE SEARCH HELPERS
-     * ------------------------------------------------------------- */
 
     private static class TableInfo {
         XWPFTable table;
@@ -92,10 +86,6 @@ public class TableMappingService {
         return null;
     }
 
-    /* -------------------------------------------------------------
-     * TABLE REMOVAL
-     * ------------------------------------------------------------- */
-
     public static void removeTableByMarker(XWPFDocument doc, String marker) {
         if (marker == null || marker.isEmpty()) return;
 
@@ -121,9 +111,44 @@ public class TableMappingService {
         }
     }
 
-    /* -------------------------------------------------------------
-     * ROW + CELL CLONING
-     * ------------------------------------------------------------- */
+    public static void mapVerticalTable(
+            XWPFDocument doc,
+            String marker,
+            List<String> values
+    ) {
+        if (values == null || values.isEmpty()) {
+            removeTableByMarker(doc, marker);
+            log.info("Removed VERTICAL table '{}' because values empty", marker);
+            return;
+        }
+
+        TableInfo tableInfo = findTemplateRow(doc, marker);
+        if (tableInfo == null) {
+            log.warn("Vertical template '{}' not found", marker);
+            return;
+        }
+
+        XWPFTable table = tableInfo.table;
+
+        int fillColumn = tableInfo.colIndex;
+
+        for (int r = tableInfo.rowIndex; r < table.getNumberOfRows(); r++) {
+            int valueIndex = r - tableInfo.rowIndex;
+
+            if (valueIndex >= values.size())
+                break;
+
+            String val = values.get(valueIndex);
+            setCell(table.getRow(r), fillColumn, val);
+        }
+
+        XWPFTableRow markerRow = table.getRow(tableInfo.rowIndex);
+        XWPFTableCell cell = markerRow.getCell(tableInfo.colIndex);
+        cell.removeParagraph(0);
+        XWPFParagraph p = cell.addParagraph();
+        XWPFRun run = p.createRun();
+        run.setText(""); // clear marker
+    }
 
     private static XWPFTableRow cloneRow(XWPFTable table, XWPFTableRow templateRow, int insertPos) {
         XWPFTableRow newRow = table.insertNewTableRow(insertPos);
@@ -157,9 +182,6 @@ public class TableMappingService {
         }
     }
 
-    /* -------------------------------------------------------------
-     * SET TEXT (TABLE-SAFE)
-     * ------------------------------------------------------------- */
 
     public static void setCell(XWPFTableRow row, int index, String value) {
         if (index >= row.getTableCells().size()) return;
@@ -174,19 +196,25 @@ public class TableMappingService {
         run.setText(value);
     }
 
-    /* -------------------------------------------------------------
-     * FORMATTERS
-     * ------------------------------------------------------------- */
+    public static class RowWriter {
+        private final XWPFTableRow row;
+        private int colIndex = 0;
 
-    public static String fmt(Double d) {
-        return d == null ? "" : String.format("%.2f", d);
+        public RowWriter(XWPFTableRow row) {
+            this.row = row;
+        }
+
+        public RowWriter col(String value) {
+            setCell(row, colIndex++, value);
+            return this;
+        }
+
+        public RowWriter cols(String... values) {
+            for (String val : values) {
+                col(val);
+            }
+            return this;
+        }
     }
 
-    public static String fmt(Integer i) {
-        return i == null ? "" : String.valueOf(i);
-    }
-
-    public static String fmt(LocalDate d) {
-        return d == null ? "" : d.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-    }
 }

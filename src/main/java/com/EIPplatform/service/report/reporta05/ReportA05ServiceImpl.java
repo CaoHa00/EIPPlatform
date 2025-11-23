@@ -284,27 +284,21 @@ public class ReportA05ServiceImpl implements ReportA05Service {
 
     @Override
     public byte[] generateReportFile(UUID reportId, UUID userAccountId) throws Exception {
-        ReportA05 report = reportA05Repository.findById(reportId)
+        ReportA05 fullReport = reportA05Repository.findById(reportId)
                 .orElseThrow(() -> exceptionFactory.createNotFoundException(
                         "ReportA05",
                         reportId,
                         ReportError.REPORT_NOT_FOUND));
 
-        BusinessDetail business = report.getBusinessDetail();
-        if (business == null) {
-            throw exceptionFactory.createCustomException(ReportError.BUSINESS_NOT_FOUND);
-        }
-
-        ReportA05DraftDTO draftData = getDraftData(reportId, userAccountId);
-
-        byte[] result = reportA05DocUtil.generateReportDocument(business, draftData);
-
         // Still save the file on disk here (IO concerns stay in the service)
         ReportA05DTO reportDTO = ReportA05DTO.builder()
-                .reportYear(report.getReportYear())
+                .reportYear(fullReport.getReportYear())
                 .build();
 
-        String savedFilePath = saveReportFile(result, reportId, business, reportDTO);
+        byte[] result = reportA05DocUtil.generateReportDocument(fullReport);
+
+
+        String savedFilePath = saveReportFile(result, reportId, fullReport.getBusinessDetail(), reportDTO);
         log.info("✅ Report file generated and saved: {} ({} bytes)", savedFilePath, result.length);
 
         return result;
