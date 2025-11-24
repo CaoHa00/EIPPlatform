@@ -4,6 +4,7 @@ import java.util.UUID;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
@@ -29,9 +30,9 @@ public class ReportInvestorDetailController {
     @PostMapping(value = "/{reportId}/draft/part-1")
     public ApiResponse<ReportInvestorDetailDTO> createDraftPart1(
             @PathVariable UUID reportId,
-            @RequestParam UUID userAccountId,
-            @RequestPart("data") @Valid ReportInvestorDetailCreateRequest request) {
-        var result = service.createReportInvestorDetailDTO(reportId, userAccountId, request);
+            @RequestParam UUID businessDetailId,
+            @RequestBody @Valid ReportInvestorDetailCreateRequest request) {
+        var result = service.createReportInvestorDetailDTO(reportId, businessDetailId, request);
         return ApiResponse.<ReportInvestorDetailDTO>builder()
                 .result(result)
                 .build();
@@ -40,8 +41,8 @@ public class ReportInvestorDetailController {
     @GetMapping("/{reportId}/draft/part-1")
     public ApiResponse<ReportInvestorDetailDTO> getDraftPart1(
             @PathVariable UUID reportId,
-            @RequestParam UUID userAccountId) {
-        var result = service.getReportInvestorDetailDTO(reportId, userAccountId);
+            @RequestParam UUID businessDetailId) {
+        var result = service.getReportInvestorDetailDTO(reportId, businessDetailId);
         return ApiResponse.<ReportInvestorDetailDTO>builder()
                 .result(result)
                 .build();
@@ -50,8 +51,8 @@ public class ReportInvestorDetailController {
      @GetMapping("/{reportId}/initial/part-1")
     public ApiResponse<ReportInvestorDetailDTO> getInitialDraftPart1(
             @PathVariable UUID reportId,
-            @RequestParam UUID userAccountId) {
-        var result = service.getInitialReportInvestorDetailDTO(reportId,userAccountId);
+            @RequestParam UUID businessDetailId) {
+        var result = service.getInitialReportInvestorDetailDTO(reportId,businessDetailId);
         return ApiResponse.<ReportInvestorDetailDTO>builder()
                 .result(result)
                 .build();

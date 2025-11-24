@@ -3,7 +3,8 @@ package com.EIPplatform.service.report.reportB04;
 import com.EIPplatform.repository.report.reportB04.part1.ReportInvestorDetailRepository;
 import com.EIPplatform.exception.ExceptionFactory;
 import com.EIPplatform.exception.errorCategories.ReportError;
-import com.EIPplatform.model.dto.businessInformation.products.ProductDTO;
+import com.EIPplatform.model.dto.businessInformation.products.ProductCreationListRequest;
+import com.EIPplatform.model.dto.businessInformation.products.ProductCreationRequest;
 import com.EIPplatform.model.dto.report.report05.CreateReportRequest;
 import com.EIPplatform.model.dto.report.reportB04.ReportB04DTO;
 import com.EIPplatform.model.dto.report.reportB04.ReportB04DraftDTO;
@@ -11,6 +12,7 @@ import com.EIPplatform.model.dto.report.reportB04.part1.ReportInvestorDetailDTO;
 import com.EIPplatform.model.dto.report.reportB04.part3.ResourcesSavingAndReductionDTO;
 import com.EIPplatform.model.dto.report.reportB04.part4.SymbiosisIndustryDTO;
 import com.EIPplatform.model.entity.businessInformation.BusinessDetail;
+import com.EIPplatform.model.entity.businessInformation.products.Product;
 import com.EIPplatform.mapper.businessInformation.ProductMapper;
 import com.EIPplatform.model.entity.report.reportB04.ReportB04;
 import com.EIPplatform.repository.businessInformation.BusinessDetailRepository;
@@ -29,16 +31,20 @@ import lombok.experimental.NonFinal;
 import lombok.extern.slf4j.Slf4j;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
+import com.EIPplatform.mapper.report.reportB04.ReportB04Mapper;
 import com.EIPplatform.mapper.report.reportB04.part1.ReportInvestorDetailMapper;
 import com.EIPplatform.mapper.report.reportB04.part3.ResourcesSavingAndReductionMapper;
 import com.EIPplatform.mapper.report.reportB04.part4.SymbiosisIndustryMapper;
@@ -50,32 +56,57 @@ import com.EIPplatform.mapper.report.reportB04.part4.SymbiosisIndustryMapper;
 @Validated // Để enable method-level validation nếu cần
 public class ReportB04ServiceImpl implements ReportB04Service {
     // Dependencies inject qua constructor (final)
+   
+    private final ReportB04Mapper reportB04Mapper;
+    private final ReportB04Repository reportB04Repository;
+    private final BusinessDetailRepository businessDetailRepository;
+    private final ReportInvestorDetailRepository reportInvestorDetailRepository;
+    private final ReportInvestorDetailMapper reportInvestorDetailMapper;
+    private final ProductRepository productRepository;
+    private final ProductMapper productMapper;
+    private final ExceptionFactory exceptionFactory;
+    private final FileStorageService fileStorageService;
+    private final ReportCacheFactory reportCacheFactory;
+    private final ResourcesSavingAndReductionMapper resourcesSavingAndReductionMapper;
+    private final SymbiosisIndustryMapper symbiosisIndustryMapper;
 
-    ReportB04Repository reportB04Repository;
-    BusinessDetailRepository businessDetailRepository;
-    ReportInvestorDetailRepository reportInvestorDetailRepository;
-    ReportInvestorDetailMapper reportInvestorDetailMapper;
-    ProductRepository productRepository;
-    ProductMapper productMapper;
-    ExceptionFactory exceptionFactory;
-    FileStorageService fileStorageService;
-    ReportCacheFactory reportCacheFactory;
-    ResourcesSavingAndReductionMapper resourcesSavingAndReductionMapper;
-    SymbiosisIndustryMapper symbiosisIndustryMapper;
-    // Field inject qua @Value
+    private final ReportCacheService<ReportB04DraftDTO> reportCacheService;
+
+    @Autowired
+    public ReportB04ServiceImpl(
+            ReportB04Mapper reportB04Mapper,
+            ReportB04Repository reportB04Repository,
+            BusinessDetailRepository businessDetailRepository,
+            ReportInvestorDetailRepository reportInvestorDetailRepository,
+            ReportInvestorDetailMapper reportInvestorDetailMapper,
+            ProductRepository productRepository,
+            ProductMapper productMapper,
+            ExceptionFactory exceptionFactory,
+            FileStorageService fileStorageService,
+            ReportCacheFactory reportCacheFactory,
+            ResourcesSavingAndReductionMapper resourcesSavingAndReductionMapper,
+            SymbiosisIndustryMapper symbiosisIndustryMapper) {
+
+        this.reportB04Mapper = reportB04Mapper;
+        this.reportB04Repository = reportB04Repository;
+        this.businessDetailRepository = businessDetailRepository;
+        this.reportInvestorDetailRepository = reportInvestorDetailRepository;
+        this.reportInvestorDetailMapper = reportInvestorDetailMapper;
+        this.productRepository = productRepository;
+        this.productMapper = productMapper;
+        this.exceptionFactory = exceptionFactory;
+        this.fileStorageService = fileStorageService;
+        this.reportCacheFactory = reportCacheFactory;
+        this.resourcesSavingAndReductionMapper = resourcesSavingAndReductionMapper;
+        this.symbiosisIndustryMapper = symbiosisIndustryMapper;
+
+        // Lấy cache service qua factory
+        this.reportCacheService = reportCacheFactory.getCacheService(ReportB04DraftDTO.class);
+    }
+    
     @NonFinal
     @Value("${app.storage.local.upload-dir:/app/uploads}")
     String uploadDir;
-
-    // Field khởi tạo trong @PostConstruct
-    @NonFinal
-    ReportCacheService<ReportB04DraftDTO> reportCacheService;
-
-    @PostConstruct
-    @SuppressWarnings("unused")
-    void init() {
-        this.reportCacheService = reportCacheFactory.getCacheService(ReportB04DraftDTO.class);
-    }
 
     @Override
     @Transactional
@@ -86,7 +117,7 @@ public class ReportB04ServiceImpl implements ReportB04Service {
             businessDetail = businessDetailRepository
                     .findById(request.getBusinessDetailId())
                     .orElseThrow(() -> exceptionFactory.createNotFoundException("BusinessDetail",
-                    request.getBusinessDetailId(), ReportError.BUSINESS_NOT_FOUND));
+                            request.getBusinessDetailId(), ReportError.BUSINESS_NOT_FOUND));
         }
 
         String reportCode = "RPT-" + java.util.UUID.randomUUID().toString().substring(0, 8).toUpperCase();
@@ -103,10 +134,10 @@ public class ReportB04ServiceImpl implements ReportB04Service {
 
         ReportB04 saved = reportB04Repository.save(report);
         ReportB04DraftDTO draft = ReportB04DraftDTO.builder()
-                    .reportId(saved.getReportId())
-                    .isDraft(true)
-                    .lastModified(LocalDateTime.now())
-                    .build();
+                .reportId(saved.getReportId())
+                .isDraft(true)
+                .lastModified(LocalDateTime.now())
+                .build();
         reportCacheService.saveDraftReport(draft, request.getBusinessDetailId(), saved.getReportId());
         return ReportB04DTO.builder()
                 .reportId(saved.getReportId())
@@ -125,22 +156,21 @@ public class ReportB04ServiceImpl implements ReportB04Service {
     public ReportB04DTO getOrCreateReportByBusinessDetailId(UUID businessDetailId) {
 
         // 1. Fetch basic report
-        Optional<ReportB04> optionalReport = reportB04Repository.findByBusinessDetailId(businessDetailId);
-         ReportB04DTO draft = new ReportB04DTO();
+        Optional<ReportB04> optionalReport = reportB04Repository.findByBusinessDetailBusinessDetailId(businessDetailId);
+        ReportB04DTO draft = reportB04Mapper.toDTO(optionalReport.orElse(null));
         if (optionalReport.isEmpty()) {
             draft = createReport(
-                CreateReportRequest.builder()
-                        .businessDetailId(businessDetailId)
-                        .reportYear(LocalDateTime.now().getYear())
-                        .reportingPeriod("ANNUAL")
-                        .build()
-            );
+                    CreateReportRequest.builder()
+                            .businessDetailId(businessDetailId)
+                            .reportYear(LocalDateTime.now().getYear())
+                            .reportingPeriod("ANNUAL")
+                            .build());
         }
 
-         BusinessDetail businessDetail = businessDetailRepository
-                    .findById(businessDetailId)
-                    .orElseThrow(() -> exceptionFactory.createNotFoundException("BusinessDetail",
-                    businessDetailId, ReportError.BUSINESS_NOT_FOUND));
+        BusinessDetail businessDetail = businessDetailRepository
+                .findById(businessDetailId)
+                .orElseThrow(() -> exceptionFactory.createNotFoundException("BusinessDetail",
+                        businessDetailId, ReportError.BUSINESS_NOT_FOUND));
 
         return ReportB04DTO.builder()
                 .reportId(draft.getReportId())
@@ -203,14 +233,14 @@ public class ReportB04ServiceImpl implements ReportB04Service {
         if (!isDraftComplete(draftData)) {
             throw exceptionFactory.createValidationException("ReportB04Draft", "completionPercentage",
                     (draftData.getCompletionPercentage() != null
-                    ? draftData.getCompletionPercentage()
-                    : 0),
+                            ? draftData.getCompletionPercentage()
+                            : 0),
                     ReportError.DRAFT_INCOMPLETE);
         }
 
         ReportB04 report = reportB04Repository.findById(reportId)
                 .orElseThrow(() -> exceptionFactory.createNotFoundException("ReportB04", reportId,
-                ReportError.REPORT_NOT_FOUND));
+                        ReportError.REPORT_NOT_FOUND));
 
         // part 1 update reportInvestorDetail
         saveOrUpdatePart(
@@ -220,20 +250,10 @@ public class ReportB04ServiceImpl implements ReportB04Service {
                 reportInvestorDetailMapper::updateEntityFromDto,
                 reportInvestorDetailMapper::dtoToEntity,
                 (entity, r) -> entity.setReportB04(r),
-                ReportB04::setReportInvestorDetail
-        );
+                ReportB04::setReportInvestorDetail);
         // part 2 update product
-        saveOrUpdatePart(
-                report,
-                draftData.getProductDTO(),
-                () -> report.getProduct(),
-                productMapper::updateEntityFromDto,
-                productMapper::dtoToEntity,
-                (entity, r) -> entity.setReportB04(r),
-                ReportB04::setProduct
-        );
-
-        // part 3 
+        saveOrUpdateProducts(report, draftData);
+        // part 3
         saveOrUpdatePart(
                 report,
                 draftData.getResourcesSavingAndReductionDTO(),
@@ -241,10 +261,9 @@ public class ReportB04ServiceImpl implements ReportB04Service {
                 resourcesSavingAndReductionMapper::updateEntityFromDto,
                 resourcesSavingAndReductionMapper::dtoToEntity,
                 (entity, r) -> entity.setReportB04(r),
-                ReportB04::setResourcesSavingAndReduction
-        );
+                ReportB04::setResourcesSavingAndReduction);
 
-        // part 4 
+        // part 4
         saveOrUpdatePart(
                 report,
                 draftData.getSymbiosisIndustryDTO(),
@@ -252,8 +271,7 @@ public class ReportB04ServiceImpl implements ReportB04Service {
                 symbiosisIndustryMapper::updateEntityFromDto,
                 symbiosisIndustryMapper::dtoToEntity,
                 (entity, r) -> entity.setReportB04(r),
-                ReportB04::setSymbiosisIndustry
-        );
+                ReportB04::setSymbiosisIndustry);
 
         if (draftData.getCompletionPercentage() != null) {
             report.setCompletionPercentage(Double.valueOf(draftData.getCompletionPercentage()));
@@ -265,22 +283,24 @@ public class ReportB04ServiceImpl implements ReportB04Service {
         draftData.setLastModified(LocalDateTime.now());
         reportCacheService.deleteDraftReport(reportId, userAccountId);
 
-        // part 1 
+        // part 1
         ReportInvestorDetailDTO reportInvestorDetailDTO = null;
         if (saved.getReportInvestorDetail() != null) {
             reportInvestorDetailDTO = reportInvestorDetailMapper.toDTO(saved.getReportInvestorDetail());
         }
 
         // part 2
-        ProductDTO productDTO = null;
-        if (saved.getProduct() != null) {
-            productDTO = productMapper.toDTO(saved.getProduct());
+        ProductCreationListRequest products = null;
+        if (saved.getProducts() != null) {
+            products = ProductCreationListRequest.builder()
+                    .products(productMapper.toDTOList(saved.getProducts()))
+                    .build();
         }
-
         // part 3
         ResourcesSavingAndReductionDTO resourcesSavingAndReductionDTO = null;
         if (saved.getResourcesSavingAndReduction() != null) {
-            resourcesSavingAndReductionDTO = resourcesSavingAndReductionMapper.toDTO(saved.getResourcesSavingAndReduction());
+            resourcesSavingAndReductionDTO = resourcesSavingAndReductionMapper
+                    .toDTO(saved.getResourcesSavingAndReduction());
         }
 
         // part 4
@@ -301,13 +321,65 @@ public class ReportB04ServiceImpl implements ReportB04Service {
                 .reportingPeriod(saved.getReportingPeriod())
                 .reviewNotes(saved.getReviewNotes())
                 .reportInvestorDetail(reportInvestorDetailDTO)
-                .product(productDTO)
+                .products(products)
                 .resourcesSavingAndReduction(resourcesSavingAndReductionDTO)
                 .symbiosisIndustry(symbiosisIndustryDTO)
                 .inspectionRemedyReport(saved.getInspectionRemedyReport())
                 .completionPercentage(saved.getCompletionPercentage())
                 .createdAt(saved.getCreatedAt())
                 .build();
+    }
+
+    private void saveOrUpdateProducts(ReportB04 report, ReportB04DraftDTO draftData) {
+        // Lấy wrapper DTO
+        ProductCreationListRequest dtoWrapper = draftData.getProductDTOs();
+        if (dtoWrapper == null || dtoWrapper.getProducts() == null || dtoWrapper.getProducts().isEmpty()) {
+            return;
+        }
+
+        List<ProductCreationRequest> dtoList = dtoWrapper.getProducts();
+        List<Product> existingEntities = report.getProducts();
+
+        if (existingEntities != null && !existingEntities.isEmpty()) {
+            // --- Update existing list ---
+            for (int i = 0; i < dtoList.size(); i++) {
+                ProductCreationRequest dto = dtoList.get(i);
+                if (i < existingEntities.size()) {
+                    // Partial update entity hiện có
+                    Product entity = existingEntities.get(i);
+                    productMapper.updateEntityFromDto(dto, entity);
+                } else {
+                    // Create mới nếu DTO dài hơn list hiện có
+                    Product entity = productMapper.toEntity(dto);
+                    entity.setReportB04(report);
+                    existingEntities.add(entity);
+                }
+            }
+            // Lưu danh sách update trở lại report
+            report.setProducts(existingEntities);
+
+        } else {
+            // --- Create mới hoàn toàn ---
+            List<Product> newEntities = dtoList.stream()
+                    .map(dto -> {
+                        Product entity = productMapper.toEntity(dto);
+                        entity.setReportB04(report);
+                        return entity;
+                    })
+                    .toList();
+
+            report.setProducts(newEntities);
+        }
+
+        // Optional: nếu bạn muốn xóa các entity dư thừa khi DTO ngắn hơn list cũ
+        if (existingEntities != null && existingEntities.size() > dtoList.size()) {
+            List<Product> toRemove = existingEntities.subList(dtoList.size(), existingEntities.size());
+            toRemove.forEach(productRepository::delete); // xóa khỏi DB
+            existingEntities.subList(dtoList.size(), existingEntities.size()).clear();
+        }
+
+        // Cuối cùng: lưu list product
+        productRepository.saveAll(report.getProducts());
     }
 
     // @Override
@@ -361,7 +433,7 @@ public class ReportB04ServiceImpl implements ReportB04Service {
 
     private boolean isDraftComplete(ReportB04DraftDTO draftData) {
         return draftData.getReportInvestorDetailDTO() != null
-                && draftData.getProductDTO() != null;
+                && draftData.getProductDTOs() != null;
     }
 
     private <E, D, R> void saveOrUpdatePart(
@@ -954,119 +1026,124 @@ public class ReportB04ServiceImpl implements ReportB04Service {
     // return result;
     // }
     // }
-//     private String saveReportFile(byte[] fileBytes, UUID reportId, BusinessDetail business, ReportA05DTO report) {
-//         try {
-//             // Tạo subfolder theo năm: reporta05/2025/
-//             Integer reportYear = report.getReportYear() != null ? report.getReportYear()
-//                     : LocalDateTime.now().getYear();
-//             Path reportDir = Paths.get(uploadDir, "reporta05", String.valueOf(reportYear));
-//             // Tạo folder nếu chưa có
-//             Files.createDirectories(reportDir);
-//             log.info("📁 Report directory: {}", reportDir);
-//             // Tạo tên file
-//             String timestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss"));
-//             String facilityName = business.getFacilityName() != null
-//                     ? sanitizeFileName(business.getFacilityName())
-//                     : "Unknown";
-//             String fileName = String.format("BaoCaoA05_%s_%s_%s.docx",
-//                     facilityName,
-//                     reportId.toString().substring(0, 8),
-//                     timestamp);
-//             // Lưu file
-//             Path filePath = reportDir.resolve(fileName);
-//             Files.write(filePath, fileBytes);
-//             // Return relative path
-//             String relativePath = String.format("reporta05/%d/%s", reportYear, fileName);
-//             log.info(" File saved successfully: {}", relativePath);
-//             return relativePath;
-//         } catch (IOException e) {
-//             log.error("⚠️ Could not save report file: {}", e.getMessage(), e);
-//             throw new RuntimeException("Failed to save report file", e);
-//         }
-//     }
-//     private String sanitizeFileName(String input) {
-//         if (input == null || input.isEmpty()) {
-//             return "Unknown";
-//         }
-//         String sanitized = input
-//                 .replaceAll("[/\\\\:*?\"<>|]", "") // Loại bỏ ký tự không hợp lệ
-//                 .replaceAll("\\s+", "_") // Thay space = underscore
-//                 .trim();
-//         // Giới hạn độ dài
-//         if (sanitized.length() > 50) {
-//             sanitized = sanitized.substring(0, 50);
-//         }
-//         return sanitized;
-//     }
+    // private String saveReportFile(byte[] fileBytes, UUID reportId, BusinessDetail
+    // business, ReportA05DTO report) {
+    // try {
+    // // Tạo subfolder theo năm: reporta05/2025/
+    // Integer reportYear = report.getReportYear() != null ? report.getReportYear()
+    // : LocalDateTime.now().getYear();
+    // Path reportDir = Paths.get(uploadDir, "reporta05",
+    // String.valueOf(reportYear));
+    // // Tạo folder nếu chưa có
+    // Files.createDirectories(reportDir);
+    // log.info("📁 Report directory: {}", reportDir);
+    // // Tạo tên file
+    // String timestamp =
+    // LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss"));
+    // String facilityName = business.getFacilityName() != null
+    // ? sanitizeFileName(business.getFacilityName())
+    // : "Unknown";
+    // String fileName = String.format("BaoCaoA05_%s_%s_%s.docx",
+    // facilityName,
+    // reportId.toString().substring(0, 8),
+    // timestamp);
+    // // Lưu file
+    // Path filePath = reportDir.resolve(fileName);
+    // Files.write(filePath, fileBytes);
+    // // Return relative path
+    // String relativePath = String.format("reporta05/%d/%s", reportYear, fileName);
+    // log.info(" File saved successfully: {}", relativePath);
+    // return relativePath;
+    // } catch (IOException e) {
+    // log.error("⚠️ Could not save report file: {}", e.getMessage(), e);
+    // throw new RuntimeException("Failed to save report file", e);
+    // }
+    // }
+    // private String sanitizeFileName(String input) {
+    // if (input == null || input.isEmpty()) {
+    // return "Unknown";
+    // }
+    // String sanitized = input
+    // .replaceAll("[/\\\\:*?\"<>|]", "") // Loại bỏ ký tự không hợp lệ
+    // .replaceAll("\\s+", "_") // Thay space = underscore
+    // .trim();
+    // // Giới hạn độ dài
+    // if (sanitized.length() > 50) {
+    // sanitized = sanitized.substring(0, 50);
+    // }
+    // return sanitized;
+    // }
     /**
      * Format LocalDate to dd/MM/yyyy or return empty if null
      */
-//     private String formatDate(LocalDate date) {
-//         if (date == null) {
-//             return "";
-//         }
-//         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-//         return date.format(formatter);
-//     }
-//     /**
-//      * PHƯƠNG THỨC ĐÃ SỬA - Xử lý placeholder bị tách thành nhiều runs
-//      */
-//     private void replacePlaceholders(XWPFParagraph paragraph, Map<String, String> data) {
-//         // Lấy toàn bộ text của paragraph
-//         String fullText = paragraph.getText();
-//         if (fullText == null || fullText.isEmpty()) {
-//             return;
-//         }
-//         // Thay thế tất cả placeholders
-//         boolean modified = false;
-//         for (Map.Entry<String, String> entry : data.entrySet()) {
-//             String placeholder = "{{" + entry.getKey() + "}}";
-//             if (fullText.contains(placeholder)) {
-//                 String value = entry.getValue();
-//                 if (value == null) {
-//                     value = ""; // Thay thế null bằng empty string
-//                 }
-//                 fullText = fullText.replace(placeholder, value);
-//                 modified = true;
-//             }
-//         }
-//         // Nếu có thay đổi, xóa hết runs cũ và tạo run mới
-//         if (modified) {
-//             // Lưu formatting của run đầu tiên (nếu có)
-//             XWPFRun firstRun = paragraph.getRuns().isEmpty() ? null : paragraph.getRuns().get(0);
-//             // Xóa tất cả runs cũ
-//             int runCount = paragraph.getRuns().size();
-//             for (int i = runCount - 1; i >= 0; i--) {
-//                 paragraph.removeRun(i);
-//             }
-//             // Tạo run mới với text đã thay thế
-//             XWPFRun newRun = paragraph.createRun();
-//             newRun.setText(fullText);
-//             // Copy formatting từ run cũ nếu có
-//             if (firstRun != null) {
-//                 copyRunFormatting(firstRun, newRun);
-//             }
-//         }
-//     }
+    // private String formatDate(LocalDate date) {
+    // if (date == null) {
+    // return "";
+    // }
+    // DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+    // return date.format(formatter);
+    // }
+    // /**
+    // * PHƯƠNG THỨC ĐÃ SỬA - Xử lý placeholder bị tách thành nhiều runs
+    // */
+    // private void replacePlaceholders(XWPFParagraph paragraph, Map<String, String>
+    // data) {
+    // // Lấy toàn bộ text của paragraph
+    // String fullText = paragraph.getText();
+    // if (fullText == null || fullText.isEmpty()) {
+    // return;
+    // }
+    // // Thay thế tất cả placeholders
+    // boolean modified = false;
+    // for (Map.Entry<String, String> entry : data.entrySet()) {
+    // String placeholder = "{{" + entry.getKey() + "}}";
+    // if (fullText.contains(placeholder)) {
+    // String value = entry.getValue();
+    // if (value == null) {
+    // value = ""; // Thay thế null bằng empty string
+    // }
+    // fullText = fullText.replace(placeholder, value);
+    // modified = true;
+    // }
+    // }
+    // // Nếu có thay đổi, xóa hết runs cũ và tạo run mới
+    // if (modified) {
+    // // Lưu formatting của run đầu tiên (nếu có)
+    // XWPFRun firstRun = paragraph.getRuns().isEmpty() ? null :
+    // paragraph.getRuns().get(0);
+    // // Xóa tất cả runs cũ
+    // int runCount = paragraph.getRuns().size();
+    // for (int i = runCount - 1; i >= 0; i--) {
+    // paragraph.removeRun(i);
+    // }
+    // // Tạo run mới với text đã thay thế
+    // XWPFRun newRun = paragraph.createRun();
+    // newRun.setText(fullText);
+    // // Copy formatting từ run cũ nếu có
+    // if (firstRun != null) {
+    // copyRunFormatting(firstRun, newRun);
+    // }
+    // }
+    // }
     /**
      * PHƯƠNG THỨC MỚI - Copy formatting từ run cũ sang run mới
      */
-//     private void copyRunFormatting(XWPFRun source, XWPFRun target) {
-//         try {
-//             if (source.getFontFamily() != null) {
-//                 target.setFontFamily(source.getFontFamily());
-//             }
-//             if (source.getFontSize() != -1) {
-//                 target.setFontSize(source.getFontSize());
-//             }
-//             target.setBold(source.isBold());
-//             target.setItalic(source.isItalic());
-//             target.setUnderline(source.getUnderline());
-//             if (source.getColor() != null) {
-//                 target.setColor(source.getColor());
-//             }
-//         } catch (Exception e) {
-//             log.warn("Could not copy all formatting: {}", e.getMessage());
-//         }
-//     }
+    // private void copyRunFormatting(XWPFRun source, XWPFRun target) {
+    // try {
+    // if (source.getFontFamily() != null) {
+    // target.setFontFamily(source.getFontFamily());
+    // }
+    // if (source.getFontSize() != -1) {
+    // target.setFontSize(source.getFontSize());
+    // }
+    // target.setBold(source.isBold());
+    // target.setItalic(source.isItalic());
+    // target.setUnderline(source.getUnderline());
+    // if (source.getColor() != null) {
+    // target.setColor(source.getColor());
+    // }
+    // } catch (Exception e) {
+    // log.warn("Could not copy all formatting: {}", e.getMessage());
+    // }
+    // }
 }

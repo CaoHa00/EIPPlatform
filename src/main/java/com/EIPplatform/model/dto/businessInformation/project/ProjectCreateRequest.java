@@ -2,25 +2,15 @@ package com.EIPplatform.model.dto.businessInformation.project;
 
 import java.time.LocalDate;
 import java.util.UUID;
-
-import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
-import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.experimental.FieldDefaults;
 
-@Getter
-@Setter
-@Builder
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
-@FieldDefaults(level = AccessLevel.PRIVATE)
-public class ProjectDTO {
-    UUID projectId;
-    String projectName;
+public class ProjectCreateRequest {
+        String projectName;
     String projectLocation;
     String projectLegalDocType;
     String projectIssuerOrg;

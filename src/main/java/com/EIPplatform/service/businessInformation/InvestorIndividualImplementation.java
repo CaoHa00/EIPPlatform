@@ -69,7 +69,7 @@ public class InvestorIndividualImplementation implements InvestorIndividualInter
 
         InvestorIndividualDetail entity = investorIndividualMapper.toEntity(request);
         entity.setBusinessDetail(businessDetail);
-        entity.setNative(request.getIsNative());
+        entity.setVietnameseOrNot(request.getVietnameseOrNot());
         InvestorIndividualDetail savedEntity = investorIndividualRepository.save(entity);
         businessDetail.setInvestor(entity);
         return investorIndividualMapper.toResponse(savedEntity);

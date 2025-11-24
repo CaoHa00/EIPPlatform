@@ -1,5 +1,7 @@
 package com.EIPplatform.mapper.businessInformation;
 
+import com.EIPplatform.model.dto.businessInformation.project.ProjectCreateRequest;
+import com.EIPplatform.model.dto.businessInformation.project.ProjectDTO;
 import com.EIPplatform.model.dto.businessInformation.project.ProjectResponseDto;
 import com.EIPplatform.model.entity.businessInformation.Project;
 import org.mapstruct.*;
@@ -24,4 +26,24 @@ public interface ProjectMapper {
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     @Mapping(target = "businessDetail", ignore = true)
     void updateEntity(@MappingTarget Project entity, ProjectResponseDto dto);
+
+    Project toEntityFromCreate(ProjectCreateRequest dto);
+
+    @Named("toProjectDTO")
+    default ProjectDTO toDTO(Project entity) {
+        if (entity == null)
+            return null;
+        return ProjectDTO.builder()
+                .projectId(entity.getProjectId())
+                .projectName(entity.getProjectName())
+                .projectLocation(entity.getProjectLocation())
+                .projectLegalDocType(entity.getProjectLegalDocType())
+                .projectIssuerOrg(entity.getProjectIssuerOrg())
+                .projectIssueDate(entity.getProjectIssueDate())
+                .projectIssueDateLatest(entity.getProjectIssueDateLatest())
+                .businessDetailId(
+                        entity.getBusinessDetail() != null ? entity.getBusinessDetail().getBusinessDetailId() : null)
+                .build();
+    }
+
 }

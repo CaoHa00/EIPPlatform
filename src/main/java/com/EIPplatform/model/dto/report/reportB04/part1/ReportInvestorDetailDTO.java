@@ -1,5 +1,9 @@
 package com.EIPplatform.model.dto.report.reportB04.part1;
 
+import com.EIPplatform.model.dto.businessInformation.investors.InvestorIndividualCreationRequest;
+import com.EIPplatform.model.dto.businessInformation.investors.InvestorIndividualResponse;
+import com.EIPplatform.model.dto.businessInformation.investors.InvestorOrganizationCreationRequest;
+import com.EIPplatform.model.dto.businessInformation.investors.InvestorOrganizationResponse;
 import com.EIPplatform.model.dto.businessInformation.investors.InvestorResponse;
 import com.EIPplatform.model.dto.businessInformation.project.ProjectDTO;
 import com.EIPplatform.model.dto.legalDoc.LegalDocDTO;
@@ -29,6 +33,10 @@ public class ReportInvestorDetailDTO {
 
     // Investor from businessDetail
     InvestorResponse investor;
+
+    InvestorIndividualResponse investorIndividual;
+
+    InvestorOrganizationResponse investorOrganization;
 
     // Bên thứ 3 thực hiện
     ThirdPartyImplementerDTO thirdPartyImplementer;

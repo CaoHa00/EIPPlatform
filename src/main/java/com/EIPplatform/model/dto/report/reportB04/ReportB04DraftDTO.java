@@ -1,10 +1,13 @@
 package com.EIPplatform.model.dto.report.reportB04;
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
+import com.EIPplatform.model.dto.businessInformation.products.ProductCreationListRequest;
 import com.EIPplatform.model.dto.businessInformation.products.ProductDTO;
 import com.EIPplatform.model.dto.report.reportB04.part1.ReportInvestorDetailDTO;
+import com.EIPplatform.model.dto.report.reportB04.part1.request.ReportInvestorDetailCreateRequest;
 import com.EIPplatform.model.dto.report.reportB04.part3.ResourcesSavingAndReductionDTO;
 import com.EIPplatform.model.dto.report.reportB04.part4.SymbiosisIndustryDTO;
 import lombok.AccessLevel;
@@ -32,7 +35,7 @@ public class ReportB04DraftDTO implements Serializable{
     ReportInvestorDetailDTO reportInvestorDetailDTO;
 
     // part2
-    ProductDTO productDTO;
+    ProductCreationListRequest productDTOs;
 
     //part3
     ResourcesSavingAndReductionDTO resourcesSavingAndReductionDTO;

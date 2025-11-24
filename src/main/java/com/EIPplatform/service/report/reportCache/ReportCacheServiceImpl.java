@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
+import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.connection.RedisConnection;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.connection.RedisKeyCommands;
@@ -68,7 +69,7 @@ public class ReportCacheServiceImpl<T> implements ReportCacheService<T> {
             redisTemplate.opsForValue().set(key, json, CACHE_TTL);
             log.info("Draft report saved to cache with key: {}", key);
         } catch (JsonProcessingException e) {
-            log.error("Failed to serialize draft to JSON - reportId: {}, userAccountId: {}",
+            log.error("Failed to serialize draft to JSON - reportId: {}, businessDetailId: {}",
                     reportId, businessDetailId, e);
             throw new RuntimeException("Serialization error for draft report", e);
         }
