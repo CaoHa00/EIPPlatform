@@ -9,58 +9,36 @@ import com.EIPplatform.model.dto.report.report05.*;
 import com.EIPplatform.model.dto.report.report05.airemmissionmanagement.airemissiondata.AirEmissionDataDTO;
 import com.EIPplatform.model.dto.report.report05.wastemanagement.WasteManagementDataDTO;
 import com.EIPplatform.model.dto.report.report05.wastewatermanager.wastewatermanagement.WasteWaterDataDTO;
-import com.EIPplatform.model.entity.permitshistory.EnvPermits;
 import com.EIPplatform.model.entity.report.report05.ReportA05;
 import com.EIPplatform.model.entity.report.report05.airemmissionmanagement.AirEmissionData;
 import com.EIPplatform.model.entity.report.report05.wastemanagement.WasteManagementData;
 import com.EIPplatform.model.entity.report.report05.wastewatermanager.WasteWaterData;
 import com.EIPplatform.model.entity.user.businessInformation.BusinessDetail;
-import com.EIPplatform.model.entity.user.businessInformation.BusinessHistoryConsumption;
 import com.EIPplatform.repository.report.ReportA05Repository;
 import com.EIPplatform.repository.report.report05.airemmissionmanagement.AirEmissionDataRepository;
 import com.EIPplatform.repository.report.report05.wastemanagement.WasteManagementDataRepository;
 import com.EIPplatform.repository.report.report05.wastewatermanager.WasteWaterRepository;
 import com.EIPplatform.repository.user.BusinessDetailRepository;
-import com.EIPplatform.service.report.reportCache.ReportCacheFactory;
-import com.EIPplatform.service.report.reportCache.ReportCacheService;
+import com.EIPplatform.service.report.reportcache.ReportCacheService;
+import com.EIPplatform.util.ReportA05DocUtil;
 import jakarta.transaction.Transactional;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.experimental.NonFinal;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.poi.xwpf.usermodel.*;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import org.apache.poi.xwpf.usermodel.XWPFDocument;
-import org.apache.poi.xwpf.usermodel.XWPFParagraph;
-import org.apache.poi.xwpf.usermodel.XWPFRun;
-import org.apache.poi.xwpf.usermodel.XWPFTable;
-import org.apache.poi.xwpf.usermodel.XWPFTableCell;
-import org.apache.poi.xwpf.usermodel.XWPFTableRow;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.core.io.Resource;
-import org.springframework.stereotype.Service;
-import org.springframework.validation.annotation.Validated;
+import java.util.Objects;
+import java.util.UUID;
 
 @Service
 @Slf4j
@@ -669,6 +647,9 @@ public class ReportA05ServiceImpl implements ReportA05Service {
                             ? wasteWaterDataDTO.getAutoExceedSummary()
                             : "");
 
+        AirEmissionDataDTO airEmissionDataDTO = null;
+        if (saved.getAirEmissionData() != null) {
+            airEmissionDataDTO = airEmissionDataMapper.toDto(saved.getAirEmissionData());
         }
         if (airEmissionDataDTO != null) {
             data.put("air_treatment_desc",
@@ -788,209 +769,175 @@ public class ReportA05ServiceImpl implements ReportA05Service {
                             ? wasteManagementDataDTO.getIncidentResponseReport()
                             : "");
 
-        }
-        Resource resource = new ClassPathResource("templates/reportA05/ReportA05_template_v2.docx");
-        log.info("Loading template from: {}", resource.getFilename());
-
-        try (InputStream fis = resource.getInputStream();
-             XWPFDocument doc = new XWPFDocument(fis);
-             ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
-
-            /* ============================================================
-             * 1) Replace text placeholders everywhere
-             * ============================================================ */
-            doc.getParagraphs().forEach(p -> replacePlaceholders(p, data, false));
-
-            for (XWPFTable table : doc.getTables()) {
-                for (XWPFTableRow row : table.getRows()) {
-                    for (XWPFTableCell cell : row.getTableCells()) {
-                        // Paragraphs inside a table → table mode
-                        cell.getParagraphs().forEach(p -> replacePlaceholders(p, data, true));
-                    }
-                }
-            }
-
-            /* ============================================================
-             * 2) SECTION 1 – WASTE WATER
-             * ============================================================ */
-            if (wasteWaterDataDTO != null) {
-
-                fillOrRemove(
-                        "Monitoring Exceedances",
-                        wasteWaterDataDTO.getMonitoringExceedances(),
-                        doc,
-                        "Bảng 1.1",
-                        list -> TableMappingService.fillWasteWaterMonitoringTable(doc, list)
-                );
-
-                fillOrRemove(
-                        "Monitoring Stats",
-                        wasteWaterDataDTO.getMonitoringStats(),
-                        doc,
-                        "Bảng 1.2",
-                        list -> TableMappingService.fillAutoMonitoringStatsTable(doc, list)
-                );
-
-                fillOrRemove(
-                        "Monitoring Incidents",
-                        wasteWaterDataDTO.getMonitoringIncidents(),
-                        doc,
-                        "Bảng 1.3",
-                        list -> TableMappingService.fillAutoMonitoringIncidentsTable(doc, list)
-                );
-
-                fillOrRemove(
-                        "QCVN Exceedances",
-                        wasteWaterDataDTO.getQcvnExceedances(),
-                        doc,
-                        "Bảng 1.4",
-                        list -> TableMappingService.fillQcvnExceedancesTable(doc, list)
-                );
-            }
-
-
-            /* ============================================================
-             * 3) SECTION 2 – AIR EMISSION
-             * ============================================================ */
-            if (airEmissionDataDTO != null) {
-
-                fillOrRemove(
-                        "Air Monitoring Exceedances",
-                        airEmissionDataDTO.getAirMonitoringExceedances(),
-                        doc,
-                        "Bảng 2.1",
-                        list -> TableMappingService.fillAirMonitoringTable(doc, list)
-                );
-
-                fillOrRemove(
-                        "Air Auto Monitoring Stats",
-                        airEmissionDataDTO.getAirAutoMonitoringStats(),
-                        doc,
-                        "Bảng 2.2",
-                        list -> TableMappingService.fillAirAutoMonitoringTable(doc, list)
-                );
-
-                fillOrRemove(
-                        "Air Auto Incidents",
-                        airEmissionDataDTO.getAirAutoMonitoringIncidents(),
-                        doc,
-                        "Bảng 2.3",
-                        list -> TableMappingService.fillAirAutoMonitoringIncidentsTable(doc, list)
-                );
-
-                fillOrRemove(
-                        "Air QCVN Exceedances",
-                        airEmissionDataDTO.getAirAutoQcvnExceedances(),
-                        doc,
-                        "Bảng 2.4",
-                        list -> TableMappingService.fillAirQcvnExceedancesTable(doc, list)
-                );
-            }
-
-
-            /* ============================================================
-             * 4) SECTION 3–4 – SOLID WASTE MANAGEMENT
-             * ============================================================ */
-            if (wasteManagementDataDTO != null) {
-
-                fillOrRemove(
-                        "Domestic SW",
-                        wasteManagementDataDTO.getDomesticSolidWasteStats(),
-                        doc,
-                        "Bảng 3.1",
-                        list -> TableMappingService.fillDomesticSolidWasteStatsTable(doc, list)
-                );
-
-                fillOrRemove(
-                        "Industrial SW",
-                        wasteManagementDataDTO.getIndustrialSolidWasteStats(),
-                        doc,
-                        "Bảng 3.2",
-                        list -> TableMappingService.fillIndustrialSolidWasteStatsTable(doc, list)
-                );
-
-                fillOrRemove(
-                        "Recycle SW",
-                        wasteManagementDataDTO.getRecycleIndustrialWasteStats(),
-                        doc,
-                        "Bảng 3.3",
-                        list -> TableMappingService.fillRecycleIndustrialWasteTable(doc, list)
-                );
-
-                fillOrRemove(
-                        "Other SW",
-                        wasteManagementDataDTO.getOtherSolidWasteStats(),
-                        doc,
-                        "Bảng 3.4",
-                        list -> TableMappingService.fillOtherSolidWasteStatsTable(doc, list)
-                );
-
-                fillOrRemove(
-                        "Hazardous SW",
-                        wasteManagementDataDTO.getHazardousWasteStats(),
-                        doc,
-                        "Bảng 4.1",
-                        list -> TableMappingService.fillHazardousWasteStatsTable(doc, list)
-                );
-
-                fillOrRemove(
-                        "Exported HW",
-                        wasteManagementDataDTO.getExportedHwStats(),
-                        doc,
-                        "Bảng 4.2",
-                        list -> TableMappingService.fillExportedHwStatsTable(doc, list)
-                );
-
-                fillOrRemove(
-                        "Self-Treated HW",
-                        wasteManagementDataDTO.getSelfTreatedHwStats(),
-                        doc,
-                        "Bảng 4.3",
-                        list -> TableMappingService.fillSelfTreatedHwStatsTable(doc, list)
-                );
-
-                fillOrRemove(
-                        "POP Inventory",
-                        wasteManagementDataDTO.getPopInventoryStats(),
-                        doc,
-                        "Bảng 4.4",
-                        list -> TableMappingService.fillPopInventoryStatsTable(doc, list)
-                );
-            }
-
-
-            /* ============================================================
-             * 5) WRITE RESULT + SAVE FILE
-             * ============================================================ */
-            doc.write(baos);
-            byte[] result = baos.toByteArray();
-
-            ReportA05DTO reportDTO = ReportA05DTO.builder()
-                    .reportYear(report.getReportYear())
-                    .build();
-
-            String savedFilePath = saveReportFile(result, reportId, business, reportDTO);
-            log.info("Report file generated and saved: {} ({} bytes)", savedFilePath, result.length);
-
-            return result;
-
+        WasteWaterDataDTO wasteWaterDataDTO = null;
+        if (saved.getWasteWaterData() != null) {
+            wasteWaterDataDTO = wasteWaterDataMapper.toDto(saved.getWasteWaterData());
         }
 
+        BusinessDetail bd = saved.getBusinessDetail();
+        return ReportA05DTO.builder()
+                .reportId(saved.getReportId())
+                .reportCode(saved.getReportCode())
+                .businessDetailId(bd != null ? bd.getBusinessDetailId() : null)
+                .facilityName(bd != null ? bd.getFacilityName() : null)
+                .reportYear(saved.getReportYear())
+                .reportingPeriod(saved.getReportingPeriod())
+                .reviewNotes(saved.getReviewNotes())
+                .airEmissionData(airEmissionDataDTO)
+                .wasteManagementData(wasteManagementDataDTO)
+                .wasteWaterData(wasteWaterDataDTO)
+                .inspectionRemedyReport(saved.getInspectionRemedyReport())
+                .completionPercentage(saved.getCompletionPercentage())
+                .createdAt(saved.getCreatedAt())
+                .build();
     }
 
+    @Override
+    @Transactional
+    public InspectionRemedyResponse updateInspectionRemedyReport(UUID reportId,
+                                                                 UpdateInspectionRemedyReportRequest request) {
+        ReportA05 report = reportA05Repository.findById(reportId)
+                .orElseThrow(() -> exceptionFactory.createNotFoundException(
+                        "ReportA05", reportId, ReportError.REPORT_NOT_FOUND));
 
-    private String saveReportFile(byte[] fileBytes, UUID reportId, BusinessDetail business, ReportA05DTO report) {
+        if (request == null) {
+            throw exceptionFactory.createValidationException(
+                    "UpdateInspectionRemedyReportRequest",
+                    "request",
+                    null,
+                    ReportError.INVALID_REQUEST);
+        }
+        if (Objects.isNull(request.getInspectionRemedyReport())) {
+            throw exceptionFactory.createValidationException(
+                    "UpdateInspectionRemedyReportRequest",
+                    "inspectionRemedyReport",
+                    null,
+                    ReportError.FIELD_REQUIRED);
+        }
+    }
+
+        report.setInspectionRemedyReport(request.getInspectionRemedyReport());
+        report.setUpdatedAt(LocalDateTime.now());
+
+        ReportA05 saved = reportA05Repository.save(report);
+        log.info("Updated inspection remedy report for reportId: {}", reportId);
+
+        return InspectionRemedyResponse.builder()
+                .reportId(saved.getReportId())
+                .inspectionRemedyReport(saved.getInspectionRemedyReport())
+                .updatedAt(saved.getUpdatedAt())
+                .build();
+    }
+
+    // -------------------------------------------------------------
+    // Generate DOCX report – now delegated to ReportA05DocUtil
+    // -------------------------------------------------------------
+
+    @Override
+    public byte[] generateReportFile(UUID reportId, UUID userAccountId) throws Exception {
+        ReportA05 report = reportA05Repository.findById(reportId)
+                .orElseThrow(() -> exceptionFactory.createNotFoundException(
+                        "ReportA05",
+                        reportId,
+                        ReportError.REPORT_NOT_FOUND));
+
+        // Still save the file on disk here (IO concerns stay in the service)
+        ReportA05DTO reportDTO = ReportA05DTO.builder()
+                .reportYear(report.getReportYear())
+                .build();
+
+        ReportA05DraftDTO draftData = getDraftData(reportId, userAccountId);
+
+        byte[] result = reportA05DocUtil.generateReportDocument(report, draftData);
+
+
+        String savedFilePath = saveReportFile(result, reportId, report.getBusinessDetail(), reportDTO);
+        log.info("✅ Report file generated and saved: {} ({} bytes)", savedFilePath, result.length);
+
+        return result;
+    }
+
+    // -------------------------------------------------------------
+    // Internal helpers (business/draft, not DOCX-specific)
+    // -------------------------------------------------------------
+
+    private int calculateCompletionPercentage(ReportA05DraftDTO draft) {
+        if (draft.getWasteWaterData() != null
+                && draft.getWasteManagementData() != null
+                && draft.getAirEmissionData() != null) {
+            return 100;
+        }
+        return 0;
+    }
+
+    private boolean isDraftComplete(ReportA05DraftDTO draftData) {
+        return draftData.getWasteWaterData() != null
+                && draftData.getWasteManagementData() != null
+                && draftData.getAirEmissionData() != null;
+    }
+
+    private void saveOrUpdateWasteWaterData(ReportA05 report, ReportA05DraftDTO draftData) {
+        WasteWaterDataDTO dto = draftData.getWasteWaterData();
+        if (dto == null) return;
+
+        WasteWaterData entity;
+        if (report.getWasteWaterData() != null && report.getWasteWaterData().getWwId() != null) {
+            entity = report.getWasteWaterData();
+            wasteWaterDataMapper.updateEntityFromDto(dto, entity);
+        } else {
+            entity = wasteWaterDataMapper.dtoToEntity(dto);
+            entity.setReport(report);
+        }
+        report.setWasteWaterData(entity);
+    }
+
+    private void saveOrUpdateWasteManagementData(ReportA05 report, ReportA05DraftDTO draftData) {
+        WasteManagementDataDTO dto = draftData.getWasteManagementData();
+        if (dto == null) return;
+
+        WasteManagementData entity;
+        if (report.getWasteManagementData() != null && report.getWasteManagementData().getWmId() != null) {
+            entity = report.getWasteManagementData();
+            wasteManagementDataMapper.updateEntityFromDto(dto, entity);
+        } else {
+            entity = wasteManagementDataMapper.dtoToEntity(dto);
+            entity.setReport(report);
+        }
+        report.setWasteManagementData(entity);
+    }
+
+    private void saveOrUpdateAirEmissionData(ReportA05 report, ReportA05DraftDTO draftData) {
+        AirEmissionDataDTO dto = draftData.getAirEmissionData();
+        if (dto == null) return;
+
+        AirEmissionData entity;
+        if (report.getAirEmissionData() != null && report.getAirEmissionData().getAirEmissionDataId() != null) {
+            entity = report.getAirEmissionData();
+            airEmissionDataMapper.updateEntityFromDto(dto, entity);
+        } else {
+            entity = airEmissionDataMapper.dtoToEntity(dto);
+            entity.setReport(report);
+        }
+        report.setAirEmissionData(entity);
+    }
+
+    // -------------------------------------------------------------
+    // File saving stays here (IO = service responsibility)
+    // -------------------------------------------------------------
+
+    private String saveReportFile(byte[] fileBytes,
+                                  UUID reportId,
+                                  BusinessDetail business,
+                                  ReportA05DTO report) {
         try {
-            // Tạo subfolder theo năm: reporta05/2025/
-            Integer reportYear = report.getReportYear() != null ? report.getReportYear()
+            Integer reportYear = report.getReportYear() != null
+                    ? report.getReportYear()
                     : LocalDateTime.now().getYear();
-            Path reportDir = Paths.get(uploadDir, "reporta05", String.valueOf(reportYear));
 
-            // Tạo folder nếu chưa có
+            Path reportDir = Paths.get(uploadDir, "reporta05", String.valueOf(reportYear));
             Files.createDirectories(reportDir);
             log.info("📁 Report directory: {}", reportDir);
 
-            // Tạo tên file
             String timestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss"));
             String facilityName = business.getFacilityName() != null
                     ? sanitizeFileName(business.getFacilityName())
@@ -1001,571 +948,17 @@ public class ReportA05ServiceImpl implements ReportA05Service {
                     reportId.toString().substring(0, 8),
                     timestamp);
 
-                ReportA05DraftDTO draftData = getDraftData(reportId, userAccountId);
-                WasteWaterDataDTO wasteWaterDataDTO = draftData != null ? draftData.getWasteWaterData() : null;
-                AirEmissionDataDTO airEmissionDataDTO = draftData != null ? draftData.getAirEmissionData() : null;
-                WasteManagementDataDTO wasteManagementDataDTO = draftData != null ? draftData.getWasteManagementData()
-                                : null;
-                EnvPermits envPermits = business.getEnvPermits();
-                List<BusinessHistoryConsumption> businessHistoryConsumptions = business
-                                .getBusinessHistoryConsumptions();
-                LocalDate today = LocalDate.now();
-                String day = String.valueOf(today.getDayOfMonth());
-                String month = String.valueOf(today.getMonthValue());
-                String year = String.valueOf(today.getYear());
-                // FIX: Map dữ liệu với key chính xác
-                Map<String, String> data = new HashMap<>();
-                data.put("facility_name", business.getFacilityName());
-                data.put("address", business.getAddress());
-                data.put("phone_number", business.getPhoneNumber());
-                // data.put("legal_representative", business.getLegalRepresentative());
-                data.put("activity_type", business.getActivityType());
-//                data.put("scale_capacity", business.getScaleCapacity());
-                data.put("iso_14001_certificate",
-                                business.getISO_certificate_14001() != null ? business.getISO_certificate_14001() : "");
-                data.put("business_license_number", business.getBusinessRegistrationNumber());
-                data.put("tax_code", business.getTaxCode());
-                data.put("seasonal_period", business.getOperationType().name());
+            Path filePath = reportDir.resolve(fileName);
+            Files.write(filePath, fileBytes);
 
-                // permit
-                data.put("env_permit_number", envPermits.getPermitNumber());
-                data.put("env_permit_issue_date", formatDate(envPermits.getIssueDate()));
-                data.put("env_permit_issuer", envPermits.getIssuerOrg());
-                data.put("env_permit_file", envPermits.getPermitFilePath());
-                // business history
-                for (BusinessHistoryConsumption bhc : businessHistoryConsumptions) {
-                        data.put("product_volume_cy",
-                                        bhc.getProductVolumeCy() != null ? bhc.getProductVolumeCy().toString() : "");
-                        data.put("product_unit_cy", bhc.getProductUnitCy());
-                        data.put("product_volume_py",
-                                        bhc.getProductVolumePy() != null ? bhc.getProductVolumePy().toString() : "");
-                        data.put("product_unit_py", bhc.getProductUnitPy());
-                        data.put("fuel_consumption_cy",
-                                        bhc.getFuelConsumptionCy() != null ? bhc.getFuelConsumptionCy().toString()
-                                                        : "");
-                        data.put("fuel_unit_cy", bhc.getFuelUnitCy());
-                        data.put("fuel_consumption_py",
-                                        bhc.getFuelConsumptionPy() != null ? bhc.getFuelConsumptionPy().toString()
-                                                        : "");
-                        data.put("fuel_unit_py", bhc.getFuelUnitPy());
-                        data.put("electricity_consumption_cy",
-                                        bhc.getElectricityConsumptionCy() != null
-                                                        ? bhc.getElectricityConsumptionCy().toString()
-                                                        : "");
-                        data.put("electricity_consumption_py",
-                                        bhc.getElectricityConsumptionPy() != null
-                                                        ? bhc.getElectricityConsumptionPy().toString()
-                                                        : "");
-                        data.put("water_consumption_cy",
-                                        bhc.getWaterConsumptionCy() != null ? bhc.getWaterConsumptionCy().toString()
-                                                        : "");
-                        data.put("water_consumption_py",
-                                        bhc.getWaterConsumptionPy() != null ? bhc.getWaterConsumptionPy().toString()
-                                                        : "");
-                }
-                data.put("dateStr", day);
-                data.put("monthYearStr", month);
-                data.put("yearStr", year);
-
-                if (wasteWaterDataDTO != null) {
-                        log.debug("Log wasteWaterDATAdto");
-                        data.put("ww_treatment_desc",
-                                        wasteWaterDataDTO.getTreatmentWwDesc() != null
-                                                        ? wasteWaterDataDTO.getTreatmentWwDesc()
-                                                        : "");
-                        // Nước thải sinh hoạt
-                        data.put("domestic_ww_cy",
-                                        wasteWaterDataDTO.getDomWwCy() != null
-                                                        ? wasteWaterDataDTO.getDomWwCy().toString()
-                                                        : "");
-                        data.put("domestic_ww_py",
-                                        wasteWaterDataDTO.getDomWwPy() != null
-                                                        ? wasteWaterDataDTO.getDomWwPy().toString()
-                                                        : "");
-                        data.put("domestic_ww_design",
-                                        wasteWaterDataDTO.getDomWwDesign() != null
-                                                        ? wasteWaterDataDTO.getDomWwDesign().toString()
-                                                        : "");
-                        // Nước thải công nghiệp
-                        data.put("industrial_ww_cy",
-                                        wasteWaterDataDTO.getIndustrialWwCy() != null
-                                                        ? wasteWaterDataDTO.getIndustrialWwCy().toString()
-                                                        : "");
-                        data.put("industrial_ww_py",
-                                        wasteWaterDataDTO.getIndustrialWwPy() != null
-                                                        ? wasteWaterDataDTO.getIndustrialWwPy().toString()
-                                                        : "");
-                        data.put("industrial_ww_design", wasteWaterDataDTO.getIndustrialWwDesign() != null
-                                        ? wasteWaterDataDTO.getIndustrialWwDesign().toString()
-                                        : "");
-                        // Nước làm mát
-                        data.put("cooling_water_cy",
-                                        wasteWaterDataDTO.getCoolingWaterCy() != null
-                                                        ? wasteWaterDataDTO.getCoolingWaterCy().toString()
-                                                        : "");
-                        data.put("cooling_water_py",
-                                        wasteWaterDataDTO.getCoolingWaterPy() != null
-                                                        ? wasteWaterDataDTO.getCoolingWaterPy().toString()
-                                                        : "");
-                        data.put("cooling_water_design",
-                                        wasteWaterDataDTO.getCoolingWaterDesign() != null
-                                                        ? wasteWaterDataDTO.getCoolingWaterDesign().toString()
-                                                        : "");
-                        // Tình hình đầu nối hệ thống XLNT tập trung
-                        data.put("connection_status_desc",
-                                        wasteWaterDataDTO.getConnectionStatusDesc() != null
-                                                        ? wasteWaterDataDTO.getConnectionStatusDesc()
-                                                        : "");
-                        // kết quả quan trắc nước thải
-                        // nước thải sinh hoạt
-                        data.put("dom_monitor_period",
-                                        wasteWaterDataDTO.getDomMonitorPeriod() != null
-                                                        ? wasteWaterDataDTO.getDomMonitorPeriod()
-                                                        : "");
-                        data.put("dom_monitor_freq", wasteWaterDataDTO.getDomMonitorFreq() != null
-                                        ? wasteWaterDataDTO.getDomMonitorFreq()
-                                        : "");
-                        data.put("dom_monitor_locations",
-                                        wasteWaterDataDTO.getDomMonitorLocations() != null
-                                                        ? wasteWaterDataDTO.getDomMonitorLocations()
-                                                        : "");
-                        data.put("dom_sample_count", wasteWaterDataDTO.getDomSampleCount() != null
-                                        ? wasteWaterDataDTO.getDomSampleCount().toString()
-                                        : "");
-                        data.put("dom_qcvn_standard",
-                                        wasteWaterDataDTO.getDomQcvnStandard() != null
-                                                        ? wasteWaterDataDTO.getDomQcvnStandard()
-                                                        : "");
-                        data.put("dom_agency_name",
-                                        wasteWaterDataDTO.getDomAgencyName() != null
-                                                        ? wasteWaterDataDTO.getDomAgencyName()
-                                                        : "");
-                        data.put("dom_agency_vimcerts",
-                                        wasteWaterDataDTO.getDomAgencyVimcerts() != null
-                                                        ? wasteWaterDataDTO.getDomAgencyVimcerts()
-                                                        : "");
-                        // nước thải công nghiệp
-                        data.put("ind_monitor_period",
-                                        wasteWaterDataDTO.getIndMonitorPeriod() != null
-                                                        ? wasteWaterDataDTO.getIndMonitorPeriod()
-                                                        : "");
-                        data.put("ind_monitor_freq",
-                                        wasteWaterDataDTO.getIndMonitorFreq() != null
-                                                        ? wasteWaterDataDTO.getIndMonitorFreq()
-                                                        : "");
-                        data.put("ind_monitor_locations",
-                                        wasteWaterDataDTO.getIndMonitorLocations() != null
-                                                        ? wasteWaterDataDTO.getIndMonitorLocations()
-                                                        : "");
-                        data.put("ind_sample_count",
-                                        wasteWaterDataDTO.getIndSampleCount() != null
-                                                        ? wasteWaterDataDTO.getIndSampleCount().toString()
-                                                        : "");
-                        data.put("ind_qcvn_standard",
-                                        wasteWaterDataDTO.getIndQcvnStandard() != null
-                                                        ? wasteWaterDataDTO.getIndQcvnStandard()
-                                                        : "");
-                        data.put("ind_agency_name",
-                                        wasteWaterDataDTO.getIndAgencyName() != null
-                                                        ? wasteWaterDataDTO.getIndAgencyName()
-                                                        : "");
-                        data.put("ind_agency_vimcerts",
-                                        wasteWaterDataDTO.getIndAgencyVimcerts() != null
-                                                        ? wasteWaterDataDTO.getIndAgencyVimcerts()
-                                                        : "");
-                        // Quan trắc nước thải liên tục tự động (Nếu có
-                        // thông tin chung
-                        data.put("auto_station_location",
-                                        wasteWaterDataDTO.getAutoStationLocation() != null
-                                                        ? wasteWaterDataDTO.getAutoStationLocation()
-                                                        : "");
-                        data.put("auto_station_GPS",
-                                        wasteWaterDataDTO.getAutoStationGps() != null
-                                                        ? wasteWaterDataDTO.getAutoStationGps()
-                                                        : "");
-                        data.put("auto_station_map",
-                                        wasteWaterDataDTO.getAutoStationMap() != null
-                                                        ? wasteWaterDataDTO.getAutoStationMap()
-                                                        : "");
-                        data.put("auto_source_desc",
-                                        wasteWaterDataDTO.getAutoSourceDesc() != null
-                                                        ? wasteWaterDataDTO.getAutoSourceDesc()
-                                                        : "");
-                        data.put("auto_data_frequency",
-                                        wasteWaterDataDTO.getAutoDataFrequency() != null
-                                                        ? wasteWaterDataDTO.getAutoDataFrequency()
-                                                        : "");
-                        data.put("auto_calibration_info",
-                                        wasteWaterDataDTO.getAutoCalibrationInfo() != null
-                                                        ? wasteWaterDataDTO.getAutoCalibrationInfo()
-                                                        : "");
-                        // tình trangh haot động của trạm
-                        data.put("auto_incident_summary",
-                                        wasteWaterDataDTO.getAutoIncidentSummary() != null
-                                                        ? wasteWaterDataDTO.getAutoIncidentSummary()
-                                                        : "");
-                        data.put("auto_downtime_desc",
-                                        wasteWaterDataDTO.getAutoDowntimeDesc() != null
-                                                        ? wasteWaterDataDTO.getAutoDowntimeDesc()
-                                                        : "");
-                        // nhận xét kết quả quan trắc
-                        data.put("auto_exceed_days_summary",
-                                        wasteWaterDataDTO.getAutoExceedDaysSummary() != null
-                                                        ? wasteWaterDataDTO.getAutoExceedDaysSummary()
-                                                        : "");
-                        data.put("auto_abnormal_reason",
-                                        wasteWaterDataDTO.getAutoAbnormalReason() != null
-                                                        ? wasteWaterDataDTO.getAutoAbnormalReason()
-                                                        : "");
-                        // kết luận
-                        data.put("auto_completeness_review",
-                                        wasteWaterDataDTO.getAutoCompletenessReview() != null
-                                                        ? wasteWaterDataDTO.getAutoCompletenessReview()
-                                                        : "");
-                        data.put("auto_exceed_summary",
-                                        wasteWaterDataDTO.getAutoExceedSummary() != null
-                                                        ? wasteWaterDataDTO.getAutoExceedSummary()
-                                                        : "");
-
-            // Return relative path
             String relativePath = String.format("reporta05/%d/%s", reportYear, fileName);
             log.info(" File saved successfully: {}", relativePath);
 
-                }
-                Resource resource = new ClassPathResource("templates/reportA05/ReportA05_template.docx");
-                log.info("Loading template from: {}", resource.getFilename());
+            return relativePath;
 
-                try (InputStream fis = resource.getInputStream();
-                                XWPFDocument doc = new XWPFDocument(fis);
-                                ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
-
-                        // Thay thế trong paragraphs
-                        for (XWPFParagraph paragraph : doc.getParagraphs()) {
-                                replacePlaceholders(paragraph, data);
-                        }
-
-                        // Thay thế trong tables
-                        for (XWPFTable table : doc.getTables()) {
-                                for (XWPFTableRow row : table.getRows()) {
-                                        for (XWPFTableCell cell : row.getTableCells()) {
-                                                for (XWPFParagraph p : cell.getParagraphs()) {
-                                                        replacePlaceholders(p, data);
-                                                }
-                                        }
-                                }
-                        }
-                        if (wasteWaterDataDTO != null) {
-                                log.debug("Log wasteWaterDATAdto");
-                                data.put("ww_treatment_desc",
-                                        wasteWaterDataDTO.getTreatmentWwDesc() != null
-                                                ? wasteWaterDataDTO.getTreatmentWwDesc()
-                                                : "");
-                                // Nước thải sinh hoạt
-                                data.put("domestic_ww_cy",
-                                        wasteWaterDataDTO.getDomWwCy() != null
-                                                ? wasteWaterDataDTO.getDomWwCy().toString()
-                                                : "");
-                                data.put("domestic_ww_py",
-                                        wasteWaterDataDTO.getDomWwPy() != null
-                                                ? wasteWaterDataDTO.getDomWwPy().toString()
-                                                : "");
-                                data.put("domestic_ww_design",
-                                        wasteWaterDataDTO.getDomWwDesign() != null
-                                                ? wasteWaterDataDTO.getDomWwDesign().toString()
-                                                : "");
-                                // Nước thải công nghiệp
-                                data.put("industrial_ww_cy",
-                                        wasteWaterDataDTO.getIndustrialWwCy() != null
-                                                ? wasteWaterDataDTO.getIndustrialWwCy().toString()
-                                                : "");
-                                data.put("industrial_ww_py",
-                                        wasteWaterDataDTO.getIndustrialWwPy() != null
-                                                ? wasteWaterDataDTO.getIndustrialWwPy().toString()
-                                                : "");
-                                data.put("industrial_ww_design", wasteWaterDataDTO.getIndustrialWwDesign() != null
-                                        ? wasteWaterDataDTO.getIndustrialWwDesign().toString()
-                                        : "");
-                                // Nước làm mát
-                                data.put("cooling_water_cy",
-                                        wasteWaterDataDTO.getCoolingWaterCy() != null
-                                                ? wasteWaterDataDTO.getCoolingWaterCy().toString()
-                                                : "");
-                                data.put("cooling_water_py",
-                                        wasteWaterDataDTO.getCoolingWaterPy() != null
-                                                ? wasteWaterDataDTO.getCoolingWaterPy().toString()
-                                                : "");
-                                data.put("cooling_water_design",
-                                        wasteWaterDataDTO.getCoolingWaterDesign() != null
-                                                ? wasteWaterDataDTO.getCoolingWaterDesign().toString()
-                                                : "");
-                                // Tình hình đầu nối hệ thống XLNT tập trung
-                                data.put("connection_status_desc",
-                                        wasteWaterDataDTO.getConnectionStatusDesc() != null
-                                                ? wasteWaterDataDTO.getConnectionStatusDesc()
-                                                : "");
-                                // kết quả quan trắc nước thải
-                                // nước thải sinh hoạt
-                                data.put("dom_monitor_period",
-                                        wasteWaterDataDTO.getDomMonitorPeriod() != null
-                                                ? wasteWaterDataDTO.getDomMonitorPeriod()
-                                                : "");
-                                data.put("dom_monitor_freq", wasteWaterDataDTO.getDomMonitorFreq() != null
-                                        ? wasteWaterDataDTO.getDomMonitorFreq()
-                                        : "");
-                                data.put("dom_monitor_locations",
-                                        wasteWaterDataDTO.getDomMonitorLocations() != null
-                                                ? wasteWaterDataDTO.getDomMonitorLocations()
-                                                : "");
-                                data.put("dom_sample_count", wasteWaterDataDTO.getDomSampleCount() != null
-                                        ? wasteWaterDataDTO.getDomSampleCount().toString()
-                                        : "");
-                                data.put("dom_qcvn_standard",
-                                        wasteWaterDataDTO.getDomQcvnStandard() != null
-                                                ? wasteWaterDataDTO.getDomQcvnStandard()
-                                                : "");
-                                data.put("dom_agency_name",
-                                        wasteWaterDataDTO.getDomAgencyName() != null
-                                                ? wasteWaterDataDTO.getDomAgencyName()
-                                                : "");
-                                data.put("dom_agency_vimcerts",
-                                        wasteWaterDataDTO.getDomAgencyVimcerts() != null
-                                                ? wasteWaterDataDTO.getDomAgencyVimcerts()
-                                                : "");
-                                // nước thải công nghiệp
-                                data.put("ind_monitor_period",
-                                        wasteWaterDataDTO.getIndMonitorPeriod() != null
-                                                ? wasteWaterDataDTO.getIndMonitorPeriod()
-                                                : "");
-                                data.put("ind_monitor_freq",
-                                        wasteWaterDataDTO.getIndMonitorFreq() != null
-                                                ? wasteWaterDataDTO.getIndMonitorFreq()
-                                                : "");
-                                data.put("ind_monitor_locations",
-                                        wasteWaterDataDTO.getIndMonitorLocations() != null
-                                                ? wasteWaterDataDTO.getIndMonitorLocations()
-                                                : "");
-                                data.put("ind_sample_count",
-                                        wasteWaterDataDTO.getIndSampleCount() != null
-                                                ? wasteWaterDataDTO.getIndSampleCount().toString()
-                                                : "");
-                                data.put("ind_qcvn_standard",
-                                        wasteWaterDataDTO.getIndQcvnStandard() != null
-                                                ? wasteWaterDataDTO.getIndQcvnStandard()
-                                                : "");
-                                data.put("ind_agency_name",
-                                        wasteWaterDataDTO.getIndAgencyName() != null
-                                                ? wasteWaterDataDTO.getIndAgencyName()
-                                                : "");
-                                data.put("ind_agency_vimcerts",
-                                        wasteWaterDataDTO.getIndAgencyVimcerts() != null
-                                                ? wasteWaterDataDTO.getIndAgencyVimcerts()
-                                                : "");
-                                // Quan trắc nước thải liên tục tự động (Nếu có
-                                // thông tin chung
-                                data.put("auto_station_location",
-                                        wasteWaterDataDTO.getAutoStationLocation() != null
-                                                ? wasteWaterDataDTO.getAutoStationLocation()
-                                                : "");
-                                data.put("auto_station_GPS",
-                                        wasteWaterDataDTO.getAutoStationGps() != null
-                                                ? wasteWaterDataDTO.getAutoStationGps()
-                                                : "");
-                                data.put("auto_station_map",
-                                        wasteWaterDataDTO.getAutoStationMap() != null
-                                                ? wasteWaterDataDTO.getAutoStationMap()
-                                                : "");
-                                data.put("auto_source_desc",
-                                        wasteWaterDataDTO.getAutoSourceDesc() != null
-                                                ? wasteWaterDataDTO.getAutoSourceDesc()
-                                                : "");
-                                data.put("auto_data_frequency",
-                                        wasteWaterDataDTO.getAutoDataFrequency() != null
-                                                ? wasteWaterDataDTO.getAutoDataFrequency()
-                                                : "");
-                                data.put("auto_calibration_info",
-                                        wasteWaterDataDTO.getAutoCalibrationInfo() != null
-                                                ? wasteWaterDataDTO.getAutoCalibrationInfo()
-                                                : "");
-                                // tình trangh haot động của trạm
-                                data.put("auto_incident_summary",
-                                        wasteWaterDataDTO.getAutoIncidentSummary() != null
-                                                ? wasteWaterDataDTO.getAutoIncidentSummary()
-                                                : "");
-                                data.put("auto_downtime_desc",
-                                        wasteWaterDataDTO.getAutoDowntimeDesc() != null
-                                                ? wasteWaterDataDTO.getAutoDowntimeDesc()
-                                                : "");
-                                // nhận xét kết quả quan trắc
-                                data.put("auto_exceed_days_summary",
-                                        wasteWaterDataDTO.getAutoExceedDaysSummary() != null
-                                                ? wasteWaterDataDTO.getAutoExceedDaysSummary()
-                                                : "");
-                                data.put("auto_abnormal_reason",
-                                        wasteWaterDataDTO.getAutoAbnormalReason() != null
-                                                ? wasteWaterDataDTO.getAutoAbnormalReason()
-                                                : "");
-                                // kết luận
-                                data.put("auto_completeness_review",
-                                        wasteWaterDataDTO.getAutoCompletenessReview() != null
-                                                ? wasteWaterDataDTO.getAutoCompletenessReview()
-                                                : "");
-                                data.put("auto_exceed_summary",
-                                        wasteWaterDataDTO.getAutoExceedSummary() != null
-                                                ? wasteWaterDataDTO.getAutoExceedSummary()
-                                                : "");
-
-                        }
-                        // Bảng 2
-                        if (airEmissionDataDTO != null) {
-                                // Bảng 2.1
-                                if (airEmissionDataDTO.getAirMonitoringExceedances() != null
-                                                && !airEmissionDataDTO.getAirMonitoringExceedances().isEmpty()) {
-                                        log.info(" Filling Air Monitoring Exceedances table ({} records)",
-                                                        airEmissionDataDTO.getAirMonitoringExceedances().size());
-                                        TableMappingService.fillAirMonitoringTable(doc,
-                                                        airEmissionDataDTO.getAirMonitoringExceedances());
-                                } else {
-                                        log.info("No Air Monitoring Exceedances data to fill.");
-                                }
-                                // 2.2
-                                if (airEmissionDataDTO.getAirAutoMonitoringStats() != null
-                                                && !airEmissionDataDTO.getAirAutoMonitoringStats().isEmpty()) {
-                                        log.info(" Filling Air Auto Monitoring Stats table ({} records)",
-                                                        airEmissionDataDTO.getAirAutoMonitoringStats().size());
-                                        TableMappingService.fillAirAutoMonitoringTable(doc,
-                                                        airEmissionDataDTO.getAirAutoMonitoringStats());
-                                } else {
-                                        log.info("No Air Auto Monitoring Stats data to fill.");
-                                }
-                                // 2.3
-                                if (airEmissionDataDTO.getAirAutoMonitoringIncidents() != null
-                                                && !airEmissionDataDTO.getAirAutoMonitoringIncidents().isEmpty()) {
-                                        log.info(" Filling Air Auto Monitoring Incidents table ({} records)",
-                                                        airEmissionDataDTO.getAirAutoMonitoringIncidents().size());
-                                        TableMappingService.fillAirAutoMonitoringIncidentsTable(doc,
-                                                        airEmissionDataDTO.getAirAutoMonitoringIncidents());
-                                } else {
-                                        log.info("No Air Auto Monitoring Incidents data to fill.");
-                                }
-                                // 2.4
-                                if (airEmissionDataDTO.getAirAutoQcvnExceedances() != null
-                                                && !airEmissionDataDTO.getAirAutoQcvnExceedances().isEmpty()) {
-                                        log.info(" Filling Air QCVN Exceedances table ({} records)",
-                                                        airEmissionDataDTO.getAirAutoQcvnExceedances().size());
-                                        TableMappingService.fillAirQcvnExceedancesTable(doc,
-                                                        airEmissionDataDTO.getAirAutoQcvnExceedances());
-                                } else {
-                                        log.info("No Air QCVN Exceedances data to fill.");
-                                }
-                        }
-
-                        // Bảng 3,4
-                        if (wasteManagementDataDTO != null) {
-                                // 3.1
-                                if (wasteManagementDataDTO.getDomesticSolidWasteStats() != null
-                                                && !wasteManagementDataDTO.getDomesticSolidWasteStats().isEmpty()) {
-                                        log.info(" Filling Domestic Solid Waste Stats table ({} records)",
-                                                        wasteManagementDataDTO.getDomesticSolidWasteStats().size());
-                                        TableMappingService.fillDomesticSolidWasteStatsTable(doc,
-                                                        wasteManagementDataDTO.getDomesticSolidWasteStats());
-                                } else {
-                                        log.info("No Domestic Solid Waste Stats data to fill.");
-                                }
-
-                                // 3.2
-                                if (wasteManagementDataDTO.getIndustrialSolidWasteStats() != null
-                                                && !wasteManagementDataDTO.getIndustrialSolidWasteStats().isEmpty()) {
-                                        log.info(" Filling Industrial Solid Waste Stats table ({} records)",
-                                                        wasteManagementDataDTO.getIndustrialSolidWasteStats().size());
-                                        TableMappingService.fillIndustrialSolidWasteStatsTable(doc,
-                                                        wasteManagementDataDTO.getIndustrialSolidWasteStats());
-                                } else {
-                                        log.info("No Industrial Solid Waste Stats data to fill.");
-                                }
-                                // 3.3
-                                if (wasteManagementDataDTO.getRecycleIndustrialWasteStats() != null
-                                                && !wasteManagementDataDTO.getRecycleIndustrialWasteStats().isEmpty()) {
-                                        log.info(" Filling Recycle Industrial Waste Stats table ({} records)",
-                                                        wasteManagementDataDTO.getRecycleIndustrialWasteStats().size());
-                                        TableMappingService.fillRecycleIndustrialWasteTable(doc,
-                                                        wasteManagementDataDTO.getRecycleIndustrialWasteStats());
-                                } else {
-                                        log.info("No Recycle Industrial Waste Stats data to fill.");
-                                }
-                                // 3.4
-                                if (wasteManagementDataDTO.getOtherSolidWasteStats() != null
-                                                && !wasteManagementDataDTO.getOtherSolidWasteStats().isEmpty()) {
-                                        log.info(" Filling Other Solid Waste Stats table ({} records)",
-                                                        wasteManagementDataDTO.getOtherSolidWasteStats().size());
-                                        TableMappingService.fillOtherSolidWasteStatsTable(doc,
-                                                        wasteManagementDataDTO.getOtherSolidWasteStats());
-                                } else {
-                                        log.info("No Other Solid Waste Stats data to fill.");
-                                }
-                                // 4.1
-                                if (wasteManagementDataDTO.getHazardousWasteStats() != null
-                                                && !wasteManagementDataDTO.getHazardousWasteStats().isEmpty()) {
-                                        log.info(" Filling Hazardous Waste Stats table ({} records)",
-                                                        wasteManagementDataDTO.getHazardousWasteStats().size());
-                                        TableMappingService.fillHazardousWasteStatsTable(doc,
-                                                        wasteManagementDataDTO.getHazardousWasteStats());
-                                } else {
-                                        log.info("No Hazardous Waste Stats data to fill.");
-                                }
-                                // 4.2
-                                if (wasteManagementDataDTO.getExportedHwStats() != null
-                                                && !wasteManagementDataDTO.getExportedHwStats().isEmpty()) {
-                                        log.info(" Filling Exported HW Stats table ({} records)",
-                                                        wasteManagementDataDTO.getExportedHwStats().size());
-                                        TableMappingService.fillExportedHwStatsTable(doc,
-                                                        wasteManagementDataDTO.getExportedHwStats());
-                                } else {
-                                        log.info("No Exported HW Stats data to fill.");
-                                }
-                                // 4.3
-                                if (wasteManagementDataDTO.getSelfTreatedHwStats() != null
-                                                && !wasteManagementDataDTO.getSelfTreatedHwStats().isEmpty()) {
-                                        log.info(" Filling Self Treated HW Stats table ({} records)",
-                                                        wasteManagementDataDTO.getSelfTreatedHwStats().size());
-                                        TableMappingService.fillSeftTreatedHwStatsTable(doc,
-                                                        wasteManagementDataDTO.getSelfTreatedHwStats());
-                                } else {
-                                        log.info("No Self Treated HW Stats data to fill.");
-                                }
-                                // 7.1
-                                if (wasteManagementDataDTO.getPopInventoryStats() != null
-                                                && !wasteManagementDataDTO.getPopInventoryStats().isEmpty()) {
-                                        log.info(" Filling POP Inventory Stats table ({} records)",
-                                                        wasteManagementDataDTO.getPopInventoryStats().size());
-                                        TableMappingService.fillPopInventoryStatsTable(doc,
-                                                        wasteManagementDataDTO.getPopInventoryStats());
-                                } else {
-                                        log.info("No POP Inventory Stats data to fill.");
-                                }
-                        }
-
-                        doc.write(baos);
-
-                        byte[] result = baos.toByteArray();
-
-                        // Ghi ra file để kiểm tra (optional)
-                        // String outputDir = "D:\\Cao Ha\\eipFolder\\generated\\reports";
-                        // Files.createDirectories(Paths.get(outputDir));
-
-                        // String fileName = String.format("%s/ReportA05_%s_%s.docx",
-                        // outputDir,
-                        // business.getFacilityName().replaceAll("[^a-zA-Z0-9]", "_"),
-                        // reportId);
-                        // Files.write(Paths.get(fileName), result);
-                        // log.info(" File generated: {}", fileName);
-                        ReportA05DTO reportDTO = ReportA05DTO.builder()
-                                        .reportYear(report.getReportYear())
-                                        .build();
-                        String savedFilePath = saveReportFile(result, reportId, business, reportDTO);
-                        log.info("✅ Report file generated and saved: {} ({} bytes)", savedFilePath, result.length);
-
-                        return result;
-                }
+        } catch (IOException e) {
+            log.error("⚠️ Could not save report file: {}", e.getMessage(), e);
+            throw new RuntimeException("Failed to save report file", e);
         }
     }
 
@@ -1573,154 +966,20 @@ public class ReportA05ServiceImpl implements ReportA05Service {
         if (input == null || input.isEmpty()) {
             return "Unknown";
         }
-
-        String sanitized = input
-                .replaceAll("[/\\\\:*?\"<>|]", "") // Loại bỏ ký tự không hợp lệ
-                .replaceAll("\\s+", "_") // Thay space = underscore
-                .trim();
-
-        // Giới hạn độ dài
-        if (sanitized.length() > 50) {
-            sanitized = sanitized.substring(0, 50);
-        }
-
-        return sanitized;
-    }
-
-    /**
-     * Format LocalDate to dd/MM/yyyy or return empty if null
-     */
-    private String formatDate(LocalDate date) {
-        if (date == null) {
-            return "";
-        }
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-        return date.format(formatter);
-    }
-
-    private void replacePlaceholders(
-            XWPFParagraph paragraph,
-            Map<String, String> data,
-            boolean inTable
-    ) {
-        String fullText = paragraph.getText();
-        if (fullText == null || fullText.isEmpty()) return;
-        if (!fullText.contains("{{")) return;
-
-        boolean modified = false;
-
-        for (Map.Entry<String, String> entry : data.entrySet()) {
-            String key = entry.getKey();
-            String placeholder = "{{" + key + "}}";
-
-            if (fullText.contains(placeholder)) {
-                String value = entry.getValue();
-
-                if (value == null || value.isEmpty()) {
-                    value = inTable ? "" : ".........";
-                    log.warn("Missing value for key '{}', using fallback '{}'", key, value);
-                }
-
-                fullText = fullText.replace(placeholder, value);
-                modified = true;
-            }
-        }
-
-        Pattern leftover = Pattern.compile("\\{\\{([^}]+)}}");
-        Matcher lm = leftover.matcher(fullText);
-
-        if (lm.find()) {
-            do {
-                String missingKey = lm.group(1);
-                log.warn("Placeholder '{}' not in data map → replaced with fallback", missingKey);
-            } while (lm.find());
-
-            fullText = leftover.matcher(fullText).replaceAll(inTable ? "" : ".........");
-            modified = true;
-        }
-
-        if (!modified) return;
-
-        List<XWPFRun> oldRuns = new ArrayList<>(paragraph.getRuns()); // safe copy
-        XWPFRun baseFormat = oldRuns.isEmpty() ? null : oldRuns.get(0);
-
-        // remove all runs safely
-        for (int i = paragraph.getRuns().size() - 1; i >= 0; i--) {
-            paragraph.removeRun(i);
-        }
-
-        // Create one new run
-        XWPFRun newRun = paragraph.createRun();
-        newRun.setText(fullText);
-
-        if (baseFormat != null) copyRunFormatting(baseFormat, newRun);
-    }
-
-
-    /**
-     * PHƯƠNG THỨC MỚI - Copy formatting từ run cũ sang run mới
-     */
-    private void copyRunFormatting(XWPFRun source, XWPFRun target) {
-        try {
-            if (source.getFontFamily() != null) target.setFontFamily(source.getFontFamily());
-        } catch (Exception ignored) {
-        }
-        try {
-            if (source.getFontSize() != -1) target.setFontSize(source.getFontSize());
-        } catch (Exception ignored) {
-        }
-        try {
-            target.setBold(source.isBold());
-        } catch (Exception ignored) {
-        }
-        try {
-            target.setItalic(source.isItalic());
-        } catch (Exception ignored) {
-        }
-        try {
-            target.setUnderline(source.getUnderline());
-        } catch (Exception ignored) {
-        }
         try {
             if (source.getColor() != null) target.setColor(source.getColor());
         } catch (Exception ignored) {
         }
     }
 
-    private void removeTable(XWPFDocument doc, XWPFTable table) {
-        int index = doc.getTables().indexOf(table);
-        if (index >= 0) {
-            doc.removeBodyElement(doc.getPosOfTable(table));
-            log.info("Removed empty table at index {}", index);
+        String sanitized = input
+                .replaceAll("[/\\\\:*?\"<>|]", "")
+                .replaceAll("\\s+", "_")
+                .trim();
+
+        if (sanitized.length() > 50) {
+            sanitized = sanitized.substring(0, 50);
         }
+        return sanitized;
     }
-
-    private XWPFTable findTableByHeader(XWPFDocument doc, String headerText) {
-        for (XWPFTable table : doc.getTables()) {
-            if (table.getRows().size() > 0 &&
-                    table.getRow(0).getTableCells().size() > 0) {
-
-                String txt = table.getRow(0).getCell(0).getText();
-                if (txt != null && txt.contains(headerText)) {
-                    return table;
-                }
-            }
-        }
-        return null;
-    }
-
-    private <T> void fillOrRemove(
-            String label,
-            List<T> list,
-            XWPFDocument doc,
-            String tableHeaderText,
-            java.util.function.Consumer<List<T>> filler
-    ) {
-        XWPFTable table = findTableByHeader(doc, tableHeaderText);
-
-        if (list == null || list.isEmpty()) {
-            log.info("[{}] has NO DATA → removing table [{}]", label, tableHeaderText);
-            removeTable(doc, table);
-            return;
-        }
 }

@@ -29,6 +29,7 @@ import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -59,7 +60,7 @@ public class PermitServiceImpl implements PermitService {
             EnvComponentPermitRepository componentPermitRepository,
             BusinessDetailRepository businessDetailRepository,
             FileStorageService fileStorageService,
-            PermitMapper permitMapper,
+            @Qualifier("permitMapperImpl")PermitMapper permitMapper,
             UserAccountRepository userAccountRepository,
             ExceptionFactory exceptionFactory) {
         this.envPermitsRepository = envPermitsRepository;
