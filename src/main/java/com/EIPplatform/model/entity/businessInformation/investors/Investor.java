@@ -53,7 +53,7 @@ public abstract class Investor {
     @Column(name = "address", columnDefinition = "NVARCHAR(500)")
     String address;
 
-    @Column(name = "tax_code", columnDefinition = "NVARCHAR(50)")
+    @Column(name = "tax_code", length = 50)
     String taxCode;
 
     @Column(name = "phone", columnDefinition = "NVARCHAR(20)", nullable = false)
