@@ -300,25 +300,25 @@ public class ReportA05DocUtil {
         data.put("incident_prevention_measures", defaultString(wm.getIncidentPreventionMeasures()));
         data.put("incident_response_report", defaultString(wm.getIncidentResponseReport()));
 
-        data.put("water_total_volume", fmt(wm.getWaterTotalVolumeKg()));
+        data.put("water_total_volume", fmt(wm.getWaterTotalVolume()));
         data.put("water_estimation_method", defaultString(wm.getWaterEstimationMethod()));
 
-        data.put("air_total_volume", fmt(wm.getAirTotalVolumeKg()));
+        data.put("air_total_volume", fmt(wm.getAirTotalVolume()));
         data.put("air_estimation_method", defaultString(wm.getAirEstimationMethod()));
 
-        data.put("soil_total_volume", fmt(wm.getSoilTotalVolumeKg()));
+        data.put("soil_total_volume", fmt(wm.getSoilTotalVolume()));
         data.put("soil_estimation_method", defaultString(wm.getSoilEstimationMethod()));
 
-        data.put("sewage_sludge_total_volume", fmt(wm.getSewageSludgeTotalVolumeKg()));
+        data.put("sewage_sludge_total_volume", fmt(wm.getSewageSludgeTotalVolume()));
         data.put("sewage_sludge_estimation_method", defaultString(wm.getSewageSludgeEstimationMethod()));
 
-        data.put("hw_onsite_total_volume", fmt(wm.getHwOnsiteTotalVolumeKg()));
+        data.put("hw_onsite_total_volume", fmt(wm.getHwOnsiteTotalVolume()));
         data.put("hw_onsite_estimation_method", defaultString(wm.getHwOnsiteEstimationMethod()));
 
-        data.put("hw_recycle_total_volume", fmt(wm.getHwRecycleTotalVolumeKg()));
+        data.put("hw_recycle_total_volume", fmt(wm.getHwRecycleTotalVolume()));
         data.put("hw_recycle_estimation_method", defaultString(wm.getHwRecycleEstimationMethod()));
 
-        data.put("hw_disposal_total_volume", fmt(wm.getHwDisposalTotalVolumeKg()));
+        data.put("hw_disposal_total_volume", fmt(wm.getHwDisposalTotalVolume()));
         data.put("hw_disposal_estimation_method", defaultString(wm.getHwDisposalEstimationMethod()));
     }
 
@@ -337,7 +337,7 @@ public class ReportA05DocUtil {
         TableMappingService.mapTable(
                 doc,
                 "{{TEMPLATE_ROW}}",
-                ww == null ? null : ww.getMonitoringExceedances(),
+                ww == null ? null : ww.getDomMonitoringExceedances(),
                 (item, row) -> row.cols(
                         item.getPointName(),
                         item.getPointSymbol(),
@@ -351,23 +351,22 @@ public class ReportA05DocUtil {
                 true
         );
 
-//        1.2 But no data yet
-//        TableMappingService.mapTable(
-//                doc,
-//                "{{TEMPLATE_ROW_2}}",
-//                ww == null ? null : ww.getMonitoringExceedances(),
-//                (item, row) -> row.cols(
-//                        item.getPointName(),
-//                        item.getPointSymbol(),
-//                        item.getMonitoringDate(),
-//                        item.getLongitude(),
-//                        item.getLatitude(),
-//                        item.getExceededParam(),
-//                        fmt(item.getResultValue()),
-//                        fmt(item.getQcvnLimit())
-//                ),
-//                true
-//        );
+        TableMappingService.mapTable(
+                doc,
+                "{{TEMPLATE_ROW_2}}",
+                ww == null ? null : ww.getIndMonitoringExceedances(),
+                (item, row) -> row.cols(
+                        item.getPointName(),
+                        item.getPointSymbol(),
+                        item.getMonitoringDate(),
+                        item.getLongitude(),
+                        item.getLatitude(),
+                        item.getExceededParam(),
+                        fmt(item.getResultValue()),
+                        fmt(item.getQcvnLimit())
+                ),
+                true
+        );
 
         TableMappingService.mapVerticalTable(
                 doc,
@@ -542,7 +541,7 @@ public class ReportA05DocUtil {
                         item.getWasteName(),
                         item.getHwCode(),
                         item.getBaselCode(),
-                        fmt(item.getVolumeKg()),
+                        fmt(item.getVolume()),
                         item.getTransporterOrg(),
                         item.getOverseasProcessorOrg()
                 ),
@@ -556,7 +555,7 @@ public class ReportA05DocUtil {
                 (item, row) -> row.cols(
                         item.getWasteName(),
                         item.getHwCode(),
-                        fmt(item.getVolumeKg()),
+                        fmt(item.getVolume()),
                         item.getSelfTreatmentMethod()
                 ),
                 false
