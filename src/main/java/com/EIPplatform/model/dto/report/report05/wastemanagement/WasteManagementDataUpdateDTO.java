@@ -24,61 +24,44 @@ public class WasteManagementDataUpdateDTO {
 
     String swGeneralNote;
 
-    @Valid
-    List<@Valid DomesticSolidWasteStatUpdateDTO> domesticSolidWasteStats;
-
-    @Valid
-    List<@Valid IndustrialSolidWasteStatUpdateDTO> industrialSolidWasteStats;
-
-    @Valid
-    List<@Valid RecycleIndustrialWasteStatUpdateDTO> recycleIndustrialWasteStats;
-
-    @Valid
-    List<@Valid OtherSolidWasteStatUpdateDTO> otherSolidWasteStats;
-
-    @Valid
-    List<@Valid HazardousWasteStatUpdateDTO> hazardousWasteStats;
-
-    @Valid
-    List<@Valid ExportedHwStatUpdateDTO> exportedHwStats;
-
-    @Valid
-    List<@Valid SelfTreatedHwStatUpdateDTO> selfTreatedHwStats;
+    @Valid List<@Valid DomesticSolidWasteStatUpdateDTO> domesticSolidWasteStats;
+    @Valid List<@Valid IndustrialSolidWasteStatUpdateDTO> industrialSolidWasteStats;
+    @Valid List<@Valid RecycleIndustrialWasteStatUpdateDTO> recycleIndustrialWasteStats;
+    @Valid List<@Valid OtherSolidWasteStatUpdateDTO> otherSolidWasteStats;
+    @Valid List<@Valid HazardousWasteStatUpdateDTO> hazardousWasteStats;
+    @Valid List<@Valid ExportedHwStatUpdateDTO> exportedHwStats;
+    @Valid List<@Valid SelfTreatedHwStatUpdateDTO> selfTreatedHwStats;
+    @Valid List<@Valid PopInventoryStatUpdateDTO> popInventoryStats;
 
     String incidentPlanDevelopment;
-
     String incidentPreventionMeasures;
-
     String incidentResponseReport;
 
-    @Valid
-    List<@Valid PopInventoryStatUpdateDTO> popInventoryStats;
-
-    Double waterTotalVolumeKg;
-
+    Double waterTotalVolume;
+    String waterTotalUnit;
     String waterEstimationMethod;
 
-    Double airTotalVolumeKg;
-
+    Double airTotalVolume;
+    String airTotalUnit;
     String airEstimationMethod;
 
-    Double soilTotalVolumeKg;
-
+    Double soilTotalVolume;
+    String soilTotalUnit;
     String soilEstimationMethod;
 
-    Double sewageSludgeTotalVolumeKg;
-
+    Double sewageSludgeTotalVolume;
+    String sewageSludgeTotalUnit;
     String sewageSludgeEstimationMethod;
 
-    Double hwOnsiteTotalVolumeKg;
-
+    Double hwOnsiteTotalVolume;
+    String hwOnsiteTotalUnit;
     String hwOnsiteEstimationMethod;
 
-    Double hwRecycleTotalVolumeKg;
-
+    Double hwRecycleTotalVolume;
+    String hwRecycleTotalUnit;
     String hwRecycleEstimationMethod;
 
-    Double hwDisposalTotalVolumeKg;
-
+    Double hwDisposalTotalVolume;
+    String hwDisposalTotalUnit;
     String hwDisposalEstimationMethod;
 }

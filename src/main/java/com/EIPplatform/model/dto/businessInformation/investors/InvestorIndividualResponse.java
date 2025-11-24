@@ -18,7 +18,7 @@ public class InvestorIndividualResponse extends InvestorResponse {
     String name;
     Gender gender;
     LocalDate dateOfBirth;
-    Boolean isNative;
+    Boolean vietnameseOrNot;
     String identificationNumber;
     String passportId;
     String nationality;

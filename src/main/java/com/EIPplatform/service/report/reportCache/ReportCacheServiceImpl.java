@@ -1,4 +1,4 @@
-package com.EIPplatform.service.report.reportCache.reportCacheA05;
+package com.EIPplatform.service.report.reportCache;
 
 
 import java.time.Duration;
@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
+import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.connection.RedisConnection;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.connection.RedisKeyCommands;
@@ -39,56 +40,56 @@ public class ReportCacheServiceImpl<T> implements ReportCacheService<T> {
         this.draftClass = draftClass;
     }
 
-    private static final String CACHE_KEY_PREFIX = "report:draft:user:";
+    private static final String CACHE_KEY_PREFIX = "report:draft:business:";
     private static final Duration CACHE_TTL = Duration.ofHours(24);
 
     /**
      * Build cache key with pattern:
      * report:draft:user:{userAccountId}:report:{reportId}
      */
-    private String buildCacheKey(UUID userAccountId, UUID reportId) {
-        return CACHE_KEY_PREFIX + userAccountId.toString() + ":report:" + reportId.toString();
+    private String buildCacheKey(UUID businessDetailId, UUID reportId) {
+        return CACHE_KEY_PREFIX + businessDetailId.toString() + ":report:" + reportId.toString();
     }
 
     /**
      * Build pattern to find all drafts of a user
      */
-    private String buildUserDraftsPattern(UUID userAccountId) {
-        return CACHE_KEY_PREFIX + userAccountId.toString() + ":report:*";
+    private String buildUserDraftsPattern(UUID businessDetailId) {
+        return CACHE_KEY_PREFIX + businessDetailId.toString() + ":report:*";
     }
 
     @Override
-    public void saveDraftReport(T draft, UUID userAccountId, UUID reportId) {
-        log.info("Saving draft report to cache - reportId: {}, userAccountId: {}, type: {}",
-                reportId, userAccountId, draftClass.getSimpleName());
+    public void saveDraftReport(T draft, UUID businessDetailId, UUID reportId) {
+        log.info("Saving draft report to cache - reportId: {}, businessDetailId: {}, type: {}",
+                reportId, businessDetailId, draftClass.getSimpleName());
 
-        String key = buildCacheKey(userAccountId, reportId);
+        String key = buildCacheKey(businessDetailId, reportId);
         try {
             String json = objectMapper.writeValueAsString(draft);
             redisTemplate.opsForValue().set(key, json, CACHE_TTL);
             log.info("Draft report saved to cache with key: {}", key);
         } catch (JsonProcessingException e) {
-            log.error("Failed to serialize draft to JSON - reportId: {}, userAccountId: {}",
-                    reportId, userAccountId, e);
+            log.error("Failed to serialize draft to JSON - reportId: {}, businessDetailId: {}",
+                    reportId, businessDetailId, e);
             throw new RuntimeException("Serialization error for draft report", e);
         }
     }
 
     @Override
-    public T getDraftReport(UUID reportId, UUID userAccountId) {
-        log.info("Getting draft report from cache - reportId: {}, userAccountId: {}, type: {}",
-                reportId, userAccountId, draftClass.getSimpleName());
-        String key = buildCacheKey(userAccountId, reportId);
+    public T getDraftReport(UUID reportId, UUID businessDetailId) {
+        log.info("Getting draft report from cache - reportId: {}, businessDetailId: {}, type: {}",
+                reportId, businessDetailId, draftClass.getSimpleName());
+        String key = buildCacheKey(businessDetailId, reportId);
         try {
             String json = redisTemplate.opsForValue().get(key);
             if (json == null) {
-                log.warn("Draft report not found in cache - reportId: {}, userAccountId: {}",
-                        reportId, userAccountId);
+                log.warn("Draft report not found in cache - reportId: {}, businessDetailId: {}",
+                        reportId, businessDetailId);
                 return null;
             }
             T draft = objectMapper.readValue(json, draftClass);
-            log.info("Draft report found in cache - reportId: {}, userAccountId: {}",
-                    reportId, userAccountId);
+            log.info("Draft report found in cache - reportId: {}, businessDetailId: {}",
+                    reportId, businessDetailId);
             return draft;
         } catch (Exception e) {
             log.error("Failed to deserialize draft from cache, deleting corrupted entry - key: {}",
@@ -99,14 +100,14 @@ public class ReportCacheServiceImpl<T> implements ReportCacheService<T> {
     }
 
     @Override
-    public <S> void updateSectionData(UUID reportId, UUID userAccountId, S sectionData, String sectionName) {
-        log.info("Updating section '{}' in cache - reportId: {}, userAccountId: {}",
-                sectionName, reportId, userAccountId);
+    public <S> void updateSectionData(UUID reportId, UUID businessDetailId, S sectionData, String sectionName) {
+        log.info("Updating section '{}' in cache - reportId: {}, businessDetailId: {}",
+                sectionName, reportId, businessDetailId);
 
-        T draft = getDraftReport(reportId, userAccountId);
+        T draft = getDraftReport(reportId, businessDetailId);
         if (draft == null) {
-            log.warn("Draft not found for update - reportId: {}, userAccountId: {}",
-                    reportId, userAccountId);
+            log.warn("Draft not found for update - reportId: {}, businessDetailId: {}",
+                    reportId, businessDetailId);
             throw new RuntimeException("Draft report not found for update");
         }
 
@@ -116,36 +117,36 @@ public class ReportCacheServiceImpl<T> implements ReportCacheService<T> {
                     .getMethod(setterMethod, sectionData.getClass())
                     .invoke(draft, sectionData);
 
-            saveDraftReport(draft, userAccountId, reportId);
-            log.info("Updated section '{}' in cache - reportId: {}, userAccountId: {}",
-                    sectionName, reportId, userAccountId);
+            saveDraftReport(draft, businessDetailId, reportId);
+            log.info("Updated section '{}' in cache - reportId: {}, businessDetailId: {}",
+                    sectionName, reportId, businessDetailId);
         } catch (Exception e) {
-            log.error("Failed to update section data - reportId: {}, userAccountId: {}, section: {}",
-                    reportId, userAccountId, sectionName, e);
+            log.error("Failed to update section data - reportId: {}, businessDetailId: {}, section: {}",
+                    reportId, businessDetailId, sectionName, e);
             throw new RuntimeException("Failed to update section data", e);
         }
     }
 
     @Override
-    public void deleteDraftReport(UUID reportId, UUID userAccountId) {
-        log.info("Deleting draft report from cache - reportId: {}, userAccountId: {}",
-                reportId, userAccountId);
-        String key = buildCacheKey(userAccountId, reportId);
+    public void deleteDraftReport(UUID reportId, UUID businessDetailId) {
+        log.info("Deleting draft report from cache - reportId: {}, businessDetailId: {}",
+                reportId, businessDetailId);
+        String key = buildCacheKey(businessDetailId, reportId);
         Boolean deleted = redisTemplate.delete(key);
         if (Boolean.TRUE.equals(deleted)) {
-            log.info("Draft report deleted from cache - reportId: {}, userAccountId: {}",
-                    reportId, userAccountId);
+            log.info("Draft report deleted from cache - reportId: {}, businessDetailId: {}",
+                    reportId, businessDetailId);
         } else {
-            log.warn("Draft report not found for deletion - reportId: {}, userAccountId: {}",
-                    reportId, userAccountId);
+            log.warn("Draft report not found for deletion - reportId: {}, businessDetailId: {}",
+                    reportId, businessDetailId);
         }
     }
 
     @Override
-    public void deleteAllDraftsByUser(UUID userAccountId) {
-        log.info("Deleting all draft reports for userAccountId: {}", userAccountId);
+    public void deleteAllDraftsByUser(UUID businessDetailId) {
+        log.info("Deleting all draft reports for businessDetailId: {}", businessDetailId);
 
-        String pattern = buildUserDraftsPattern(userAccountId);
+        String pattern = buildUserDraftsPattern(businessDetailId);
         ScanOptions scanOptions = ScanOptions.scanOptions().match(pattern).count(1000).build();
 
         RedisConnectionFactory factory = Objects.requireNonNull(
@@ -164,16 +165,16 @@ public class ReportCacheServiceImpl<T> implements ReportCacheService<T> {
                 deletedCount++;
             }
 
-            log.info("Deleted {} draft reports for userAccountId: {}", deletedCount, userAccountId);
+            log.info("Deleted {} draft reports for businessDetailId: {}", deletedCount, businessDetailId);
         }
     }
 
     @Override
-    public List<T> getAllDraftsByUser(UUID userAccountId) {
-        log.info("Getting all draft reports for userAccountId: {}", userAccountId);
+    public List<T> getAllDraftsByUser(UUID businessDetailId) {
+        log.info("Getting all draft reports for businessDetailId: {}", businessDetailId);
 
         List<T> drafts = new ArrayList<>();
-        String pattern = buildUserDraftsPattern(userAccountId);
+        String pattern = buildUserDraftsPattern(businessDetailId);
         ScanOptions scanOptions = ScanOptions.scanOptions().match(pattern).count(1000).build();
 
         RedisConnectionFactory factory = Objects.requireNonNull(
@@ -198,15 +199,15 @@ public class ReportCacheServiceImpl<T> implements ReportCacheService<T> {
                 }
             }
 
-            log.info("Found {} draft reports for userAccountId: {}", drafts.size(), userAccountId);
+            log.info("Found {} draft reports for businessDetailId: {}", drafts.size(), businessDetailId);
         }
 
         return drafts;
     }
 
     @Override
-    public boolean draftExists(UUID reportId, UUID userAccountId) {
-        String key = buildCacheKey(userAccountId, reportId);
+    public boolean draftExists(UUID reportId, UUID businessDetailId) {
+        String key = buildCacheKey(businessDetailId, reportId);
         Boolean exists = redisTemplate.hasKey(key);
         return Boolean.TRUE.equals(exists);
     }

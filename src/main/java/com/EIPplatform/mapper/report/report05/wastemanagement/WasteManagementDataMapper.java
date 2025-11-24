@@ -4,6 +4,8 @@ import com.EIPplatform.model.dto.report.report05.wastemanagement.WasteManagement
 import com.EIPplatform.model.dto.report.report05.wastemanagement.WasteManagementDataDTO;
 import com.EIPplatform.model.entity.report.report05.wastemanagement.WasteManagementData;
 import org.mapstruct.*;
+import org.mapstruct.factory.Mappers;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,83 +21,105 @@ import java.util.List;
 })
 public interface WasteManagementDataMapper {
 
+    WasteManagementDataMapper INSTANCE = Mappers.getMapper(WasteManagementDataMapper.class);
+
+    // ==================== CREATE: DTO → Entity ====================
     @Mapping(target = "wmId", ignore = true)
     @Mapping(target = "report", ignore = true)
-    @Mapping(target = "domesticSolidWasteStats", source = "domesticSolidWasteStats")
-    @Mapping(target = "industrialSolidWasteStats", source = "industrialSolidWasteStats")
-    @Mapping(target = "recycleIndustrialWasteStats", source = "recycleIndustrialWasteStats")
-    @Mapping(target = "otherSolidWasteStats", source = "otherSolidWasteStats")
-    @Mapping(target = "hazardousWasteStats", source = "hazardousWasteStats")
-    @Mapping(target = "exportedHwStats", source = "exportedHwStats")
-    @Mapping(target = "selfTreatedHwStats", source = "selfTreatedHwStats")
-    @Mapping(target = "popInventoryStats", source = "popInventoryStats")
+    @Mapping(source = "waterTotalVolume",           target = "waterTotalVolume")
+    @Mapping(source = "waterTotalUnit",             target = "waterTotalUnit")
+    @Mapping(source = "airTotalVolume",             target = "airTotalVolume")
+    @Mapping(source = "airTotalUnit",               target = "airTotalUnit")
+    @Mapping(source = "soilTotalVolume",            target = "soilTotalVolume")
+    @Mapping(source = "soilTotalUnit",              target = "soilTotalUnit")
+    @Mapping(source = "sewageSludgeTotalVolume",    target = "sewageSludgeTotalVolume")
+    @Mapping(source = "sewageSludgeTotalUnit",      target = "sewageSludgeTotalUnit")
+    @Mapping(source = "hwOnsiteTotalVolume",        target = "hwOnsiteTotalVolume")
+    @Mapping(source = "hwOnsiteTotalUnit",          target = "hwOnsiteTotalUnit")
+    @Mapping(source = "hwRecycleTotalVolume",       target = "hwRecycleTotalVolume")
+    @Mapping(source = "hwRecycleTotalUnit",         target = "hwRecycleTotalUnit")
+    @Mapping(source = "hwDisposalTotalVolume",      target = "hwDisposalTotalVolume")
+    @Mapping(source = "hwDisposalTotalUnit",        target = "hwDisposalTotalUnit")
     WasteManagementData toEntity(WasteManagementDataCreateDTO dto);
 
-    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
-    @Mapping(target = "wmId", ignore = true)
-    @Mapping(target = "report", ignore = true)
-    @Mapping(target = "domesticSolidWasteStats", source = "domesticSolidWasteStats")
-    @Mapping(target = "industrialSolidWasteStats", source = "industrialSolidWasteStats")
-    @Mapping(target = "recycleIndustrialWasteStats", source = "recycleIndustrialWasteStats")
-    @Mapping(target = "otherSolidWasteStats", source = "otherSolidWasteStats")
-    @Mapping(target = "hazardousWasteStats", source = "hazardousWasteStats")
-    @Mapping(target = "exportedHwStats", source = "exportedHwStats")
-    @Mapping(target = "selfTreatedHwStats", source = "selfTreatedHwStats")
-    @Mapping(target = "popInventoryStats", source = "popInventoryStats")
-    void updateEntityFromDto(WasteManagementDataCreateDTO dto, @MappingTarget WasteManagementData entity);
-
-    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
-    @Mapping(target = "wmId", ignore = true)
-    @Mapping(target = "report", ignore = true)
-    @Mapping(target = "domesticSolidWasteStats", source = "domesticSolidWasteStats")
-    @Mapping(target = "industrialSolidWasteStats", source = "industrialSolidWasteStats")
-    @Mapping(target = "recycleIndustrialWasteStats", source = "recycleIndustrialWasteStats")
-    @Mapping(target = "otherSolidWasteStats", source = "otherSolidWasteStats")
-    @Mapping(target = "hazardousWasteStats", source = "hazardousWasteStats")
-    @Mapping(target = "exportedHwStats", source = "exportedHwStats")
-    @Mapping(target = "selfTreatedHwStats", source = "selfTreatedHwStats")
-    @Mapping(target = "popInventoryStats", source = "popInventoryStats")
-    void updateEntityFromDto(WasteManagementDataDTO dto, @MappingTarget WasteManagementData entity);
-
-    @Mapping(source = "wmId", target = "wmId")
-    @Mapping(target = "domesticSolidWasteStats", source = "domesticSolidWasteStats")
-    @Mapping(target = "industrialSolidWasteStats", source = "industrialSolidWasteStats")
-    @Mapping(target = "recycleIndustrialWasteStats", source = "recycleIndustrialWasteStats")
-    @Mapping(target = "otherSolidWasteStats", source = "otherSolidWasteStats")
-    @Mapping(target = "hazardousWasteStats", source = "hazardousWasteStats")
-    @Mapping(target = "exportedHwStats", source = "exportedHwStats")
-    @Mapping(target = "selfTreatedHwStats", source = "selfTreatedHwStats")
-    @Mapping(target = "popInventoryStats", source = "popInventoryStats")
+    // ==================== Entity → DTO (Response) ====================
+    @Mapping(source = "waterTotalVolume",           target = "waterTotalVolume")
+    @Mapping(source = "waterTotalUnit",             target = "waterTotalUnit")
+    @Mapping(source = "airTotalVolume",             target = "airTotalVolume")
+    @Mapping(source = "airTotalUnit",               target = "airTotalUnit")
+    @Mapping(source = "soilTotalVolume",            target = "soilTotalVolume")
+    @Mapping(source = "soilTotalUnit",              target = "soilTotalUnit")
+    @Mapping(source = "sewageSludgeTotalVolume",    target = "sewageSludgeTotalVolume")
+    @Mapping(source = "sewageSludgeTotalUnit",      target = "sewageSludgeTotalUnit")
+    @Mapping(source = "hwOnsiteTotalVolume",        target = "hwOnsiteTotalVolume")
+    @Mapping(source = "hwOnsiteTotalUnit",          target = "hwOnsiteTotalUnit")
+    @Mapping(source = "hwRecycleTotalVolume",       target = "hwRecycleTotalVolume")
+    @Mapping(source = "hwRecycleTotalUnit",         target = "hwRecycleTotalUnit")
+    @Mapping(source = "hwDisposalTotalVolume",      target = "hwDisposalTotalVolume")
+    @Mapping(source = "hwDisposalTotalUnit",        target = "hwDisposalTotalUnit")
     WasteManagementDataDTO toDto(WasteManagementData entity);
 
     List<WasteManagementDataDTO> toDtoList(List<WasteManagementData> entities);
 
+    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     @Mapping(target = "wmId", ignore = true)
     @Mapping(target = "report", ignore = true)
-    @Mapping(target = "domesticSolidWasteStats", source = "domesticSolidWasteStats")
-    @Mapping(target = "industrialSolidWasteStats", source = "industrialSolidWasteStats")
-    @Mapping(target = "recycleIndustrialWasteStats", source = "recycleIndustrialWasteStats")
-    @Mapping(target = "otherSolidWasteStats", source = "otherSolidWasteStats")
-    @Mapping(target = "hazardousWasteStats", source = "hazardousWasteStats")
-    @Mapping(target = "exportedHwStats", source = "exportedHwStats")
-    @Mapping(target = "selfTreatedHwStats", source = "selfTreatedHwStats")
-    @Mapping(target = "popInventoryStats", source = "popInventoryStats")
+    @Mapping(source = "waterTotalVolume",           target = "waterTotalVolume")
+    @Mapping(source = "waterTotalUnit",             target = "waterTotalUnit")
+    @Mapping(source = "airTotalVolume",             target = "airTotalVolume")
+    @Mapping(source = "airTotalUnit",               target = "airTotalUnit")
+    @Mapping(source = "soilTotalVolume",            target = "soilTotalVolume")
+    @Mapping(source = "soilTotalUnit",              target = "soilTotalUnit")
+    @Mapping(source = "sewageSludgeTotalVolume",    target = "sewageSludgeTotalVolume")
+    @Mapping(source = "sewageSludgeTotalUnit",      target = "sewageSludgeTotalUnit")
+    @Mapping(source = "hwOnsiteTotalVolume",        target = "hwOnsiteTotalVolume")
+    @Mapping(source = "hwOnsiteTotalUnit",          target = "hwOnsiteTotalUnit")
+    @Mapping(source = "hwRecycleTotalVolume",       target = "hwRecycleTotalVolume")
+    @Mapping(source = "hwRecycleTotalUnit",         target = "hwRecycleTotalUnit")
+    @Mapping(source = "hwDisposalTotalVolume",      target = "hwDisposalTotalVolume")
+    @Mapping(source = "hwDisposalTotalUnit",        target = "hwDisposalTotalUnit")
+    void updateEntityFromDto(WasteManagementDataCreateDTO dto, @MappingTarget WasteManagementData entity);
+
+    // THÊM METHOD NÀY VÀO WasteManagementDataMapper (giữ nguyên tên hàm cũ)
+    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+    @Mapping(target = "wmId", ignore = true)
+    @Mapping(target = "report", ignore = true)
+    @Mapping(source = "waterTotalVolume",           target = "waterTotalVolume")
+    @Mapping(source = "waterTotalUnit",             target = "waterTotalUnit")
+    @Mapping(source = "airTotalVolume",             target = "airTotalVolume")
+    @Mapping(source = "airTotalUnit",               target = "airTotalUnit")
+    @Mapping(source = "soilTotalVolume",            target = "soilTotalVolume")
+    @Mapping(source = "soilTotalUnit",              target = "soilTotalUnit")
+    @Mapping(source = "sewageSludgeTotalVolume",    target = "sewageSludgeTotalVolume")
+    @Mapping(source = "sewageSludgeTotalUnit",      target = "sewageSludgeTotalUnit")
+    @Mapping(source = "hwOnsiteTotalVolume",        target = "hwOnsiteTotalVolume")
+    @Mapping(source = "hwOnsiteTotalUnit",          target = "hwOnsiteTotalUnit")
+    @Mapping(source = "hwRecycleTotalVolume",       target = "hwRecycleTotalVolume")
+    @Mapping(source = "hwRecycleTotalUnit",         target = "hwRecycleTotalUnit")
+    @Mapping(source = "hwDisposalTotalVolume",      target = "hwDisposalTotalVolume")
+    @Mapping(source = "hwDisposalTotalUnit",        target = "hwDisposalTotalUnit")
+    void updateEntityFromDto(WasteManagementDataDTO dto, @MappingTarget WasteManagementData entity);
+
+    @Mapping(target = "wmId", ignore = true)
+    @Mapping(target = "report", ignore = true)
+    @Mapping(source = "waterTotalVolume",           target = "waterTotalVolume")
+    @Mapping(source = "waterTotalUnit",             target = "waterTotalUnit")
+    @Mapping(source = "airTotalVolume",             target = "airTotalVolume")
+    @Mapping(source = "airTotalUnit",               target = "airTotalUnit")
+    @Mapping(source = "soilTotalVolume",            target = "soilTotalVolume")
+    @Mapping(source = "soilTotalUnit",              target = "soilTotalUnit")
+    @Mapping(source = "sewageSludgeTotalVolume",    target = "sewageSludgeTotalVolume")
+    @Mapping(source = "sewageSludgeTotalUnit",      target = "sewageSludgeTotalUnit")
+    @Mapping(source = "hwOnsiteTotalVolume",        target = "hwOnsiteTotalVolume")
+    @Mapping(source = "hwOnsiteTotalUnit",          target = "hwOnsiteTotalUnit")
+    @Mapping(source = "hwRecycleTotalVolume",       target = "hwRecycleTotalVolume")
+    @Mapping(source = "hwRecycleTotalUnit",         target = "hwRecycleTotalUnit")
+    @Mapping(source = "hwDisposalTotalVolume",      target = "hwDisposalTotalVolume")
+    @Mapping(source = "hwDisposalTotalUnit",        target = "hwDisposalTotalUnit")
     WasteManagementData dtoToEntity(WasteManagementDataDTO dto);
 
     @AfterMapping
-    default void handleNullLists(@MappingTarget WasteManagementData entity, WasteManagementDataCreateDTO dto) {
-        initializeLists(entity);
-        setParentReferences(entity);
-    }
-
-    @AfterMapping
-    default void handleNullListsFromDto(@MappingTarget WasteManagementData entity, WasteManagementDataDTO dto) {
-        initializeLists(entity);
-        setParentReferences(entity);
-    }
-
-    @AfterMapping
-    default void handleNullListsOnUpdateFromDto(@MappingTarget WasteManagementData entity, WasteManagementDataDTO dto) {
+    default void linkChildren(@MappingTarget WasteManagementData entity) {
         initializeLists(entity);
         setParentReferences(entity);
     }

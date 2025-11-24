@@ -43,6 +43,18 @@ public class ReportInvestorDetail {
     @Column(name = "rid_id", updatable = false, nullable = false)
     Long ridId;
 
+    @Column(name = "tax_code" ,length = 50)
+    String taxCode;
+
+    @Column(name = "phone_number", columnDefinition = "NVARCHAR(20)", nullable = false)
+    String phoneNumber;
+
+    @Column(name = "fax", columnDefinition = "NVARCHAR(20)")
+    String fax;
+
+    @Column(name = "email", columnDefinition = "NVARCHAR(255)")
+    String email;
+
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "report_b04_id", nullable = false, unique = true)
     @JsonBackReference(value = "report-rid-ref")

@@ -66,7 +66,7 @@ public class LegalRepresentativeController {
                 .build();
     }
 
-    @GetMapping("/{businessDetailId}")
+    @GetMapping("/by-business/{businessDetailId}")
     public ApiResponse<LegalRepresentativeResponse> getLegalRepresentativeByBusinessDetailId(
             @PathVariable UUID businessDetailId) {
 
@@ -77,7 +77,6 @@ public class LegalRepresentativeController {
                 .result(response)
                 .build();
     }
-
 
     @GetMapping
     public ApiResponse<List<LegalRepresentativeResponse>> getAllLegalRepresentatives() {

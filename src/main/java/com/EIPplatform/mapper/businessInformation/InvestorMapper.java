@@ -13,14 +13,12 @@ import org.mapstruct.Named;
 import org.mapstruct.NullValuePropertyMappingStrategy;
 import org.mapstruct.ReportingPolicy;
 
-@Mapper(
-    componentModel = "spring",
-    // Dùng LegalDocMapper để map List<LegalDoc> -> List<LegalDocResponse>
-    uses = { LegalDocMapper.class },
-    // Bỏ qua các trường không map được (như investorType từ entity -> DTO)
-    // chúng ta sẽ map thủ công
-    unmappedTargetPolicy = ReportingPolicy.IGNORE
-)
+@Mapper(componentModel = "spring",
+        // Dùng LegalDocMapper để map List<LegalDoc> -> List<LegalDocResponse>
+        uses = { LegalDocMapper.class },
+        // Bỏ qua các trường không map được (như investorType từ entity -> DTO)
+        // chúng ta sẽ map thủ công
+        unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public interface InvestorMapper {
 
     // =================================================================
@@ -41,7 +39,6 @@ public interface InvestorMapper {
      */
     @Mapping(target = "investorId", ignore = true)
     @Mapping(target = "auditMetaData", ignore = true)
-    @Mapping(target = "legalDocs", ignore = true) // DTO create không có list này
     InvestorOrganizationDetail toEntity(InvestorOrganizationCreationRequest request);
 
     // =================================================================
@@ -67,7 +64,6 @@ public interface InvestorMapper {
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     @Mapping(target = "investorId", ignore = true)
     @Mapping(target = "auditMetaData", ignore = true)
-    @Mapping(target = "legalDocs", ignore = true) // BẮT BUỘC IGNORE
     void updateEntity(InvestorOrganizationUpdateRequest request, @MappingTarget InvestorOrganizationDetail entity);
 
     // =================================================================
@@ -99,20 +95,65 @@ public interface InvestorMapper {
      * Tên (Named) là "toInvestorResponse" để khớp với DTO base của bạn
      * (InvestorIndividualResponse extends InvestorResponse).
      */
-    @Named("toInvestorResponse") 
+    @Named("toInvestorResponse")
     default InvestorResponse toResponse(Investor investor) {
         if (investor == null) {
             return null;
         }
-        
+
         // Kiểm tra kiểu cụ thể và gọi mapper tương ứng
         if (investor instanceof InvestorIndividualDetail ind) {
             return toIndividualResponse(ind); // Trả về InvestorIndividualResponse
         } else if (investor instanceof InvestorOrganizationDetail org) {
             return toOrganizationResponse(org); // Trả về InvestorOrganizationResponse
         }
-        
+
         // Ném lỗi nếu gặp kiểu Investor không xác định
         throw new IllegalArgumentException("Unknown investor type: " + investor.getClass().getName());
+    }
+
+    @Named("toInvestorEntity")
+    default Investor toEntityFromPart1(InvestorResponse dto) {
+
+        if (dto == null)
+            return null;
+
+        // Tổ chức
+        if (dto instanceof InvestorOrganizationResponse org) {
+            return InvestorOrganizationDetail.builder()
+                    .investorId(org.getInvestorId())
+                    .address(org.getAddress())
+                    .taxCode(org.getTaxCode())
+                    .phone(org.getPhone())
+                    .fax(org.getFax())
+                    .email(org.getEmail())
+                    .organizationName(org.getOrganizationName())
+                    .organizationLegalDocType(org.getOrganizationLegalDocType())
+                    .organizationIssueDate(org.getOrganizationIssueDate())
+                    .organizationIssuerOrg(org.getOrganizationIssuerOrg())
+                    .organizationAddress(org.getOrganizationAddress())
+                    .build();
+        }
+
+        // Cá nhân
+        if (dto instanceof InvestorIndividualResponse ind) {
+            return InvestorIndividualDetail.builder()
+                    .investorId(ind.getInvestorId())
+                    .address(ind.getAddress())
+                    .taxCode(ind.getTaxCode())
+                    .phone(ind.getPhone())
+                    .fax(ind.getFax())
+                    .email(ind.getEmail())
+                    .name(ind.getName())
+                    .gender(ind.getGender())
+                    .dateOfBirth(ind.getDateOfBirth())
+                    .vietnameseOrNot(ind.getVietnameseOrNot())
+                    .identificationNumber(ind.getIdentificationNumber())
+                    .passportId(ind.getPassportId())
+                    .nationality(ind.getNationality())
+                    .build();
+        }
+
+        throw new IllegalArgumentException("Unknown investorType " + dto.getClass().getSimpleName());
     }
 }

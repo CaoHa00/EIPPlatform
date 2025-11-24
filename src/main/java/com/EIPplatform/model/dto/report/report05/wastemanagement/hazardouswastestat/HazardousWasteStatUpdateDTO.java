@@ -17,9 +17,13 @@ public class HazardousWasteStatUpdateDTO {
 
     Double volumeCy;
 
+    String unitCy;
+
     String treatmentMethod;
 
     String receiverOrg;
 
     Double volumePy;
+
+    String unitPy;
 }

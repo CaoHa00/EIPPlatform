@@ -14,6 +14,7 @@ import lombok.experimental.FieldDefaults;
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class SelfTreatedHwStatCreateDTO {
+
     @NotBlank(message = "IS_REQUIRED")
     String wasteName;
 
@@ -22,7 +23,10 @@ public class SelfTreatedHwStatCreateDTO {
 
     @NotNull(message = "IS_REQUIRED")
     @DecimalMin(value = "0.0", inclusive = true)
-    Double volumeKg;
+    Double volume;
+
+    @NotBlank(message = "IS_REQUIRED")
+    String unit;
 
     @NotBlank(message = "IS_REQUIRED")
     String selfTreatmentMethod;

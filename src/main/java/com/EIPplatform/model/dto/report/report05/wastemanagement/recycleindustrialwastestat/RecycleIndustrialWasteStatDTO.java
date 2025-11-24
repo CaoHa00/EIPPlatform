@@ -15,6 +15,8 @@ public class RecycleIndustrialWasteStatDTO {
     Long recycleId;
     String transferOrg;
     Double volumeCy;
+    String unitCy;
     String wasteTypeDesc;
     Double volumePy;
+    String unitPy;
 }

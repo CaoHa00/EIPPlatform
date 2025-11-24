@@ -22,9 +22,15 @@ public class OtherSolidWasteStatCreateDTO {
     @DecimalMin(value = "0.0", inclusive = true)
     Double volumeCy;
 
+    @NotBlank(message = "IS_REQUIRED")
+    String unitCy;
+
     @NotNull(message = "IS_REQUIRED")
     @DecimalMin(value = "0.0", inclusive = true)
     Double volumePy;
+
+    @NotBlank(message = "IS_REQUIRED")
+    String unitPy;
 
     @Size(max = 255)
     String selfTreatmentMethod;

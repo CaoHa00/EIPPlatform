@@ -16,6 +16,7 @@ public class SelfTreatedHwStatDTO {
     Long selfTreatedId;
     String wasteName;
     String hwCode;
-    Double volumeKg;
+    Double volume;
+    String unit;
     String selfTreatmentMethod;
 }

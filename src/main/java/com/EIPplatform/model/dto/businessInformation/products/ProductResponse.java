@@ -4,9 +4,6 @@ import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import java.util.UUID;
-
-import com.EIPplatform.configuration.AuditMetaData;
-
 @Getter
 @Setter
 @NoArgsConstructor
@@ -23,5 +20,4 @@ public class ProductResponse {
     String productEnergyConsumedSources;
     String productImage;
 
-    AuditMetaData auditMetaData;
 }

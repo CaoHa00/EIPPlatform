@@ -3,7 +3,8 @@ package com.EIPplatform.model.dto.report.report05.wastewatermanager.wastewaterma
 import com.EIPplatform.model.dto.report.report05.wastewatermanager.autowwmonitoringincidents.AutoWWMonitoringIncidentsCreateDTO;
 import com.EIPplatform.model.dto.report.report05.wastewatermanager.autowwmonitoringstats.AutoWWMonitoringStatsCreateDTO;
 import com.EIPplatform.model.dto.report.report05.wastewatermanager.autowwqcvnexceedances.AutoWWQcvnExceedancesCreateDTO;
-import com.EIPplatform.model.dto.report.report05.wastewatermanager.wastewatermonitoringexceedances.WasteWaterMonitoringExceedancesCreateDTO;
+import com.EIPplatform.model.dto.report.report05.wastewatermanager.wastewatermonitoringexceedances.DomMonitoringExceedancesCreateDTO;
+import com.EIPplatform.model.dto.report.report05.wastewatermanager.wastewatermonitoringexceedances.IndMonitoringExceedancesCreateDTO;
 import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -101,7 +102,10 @@ public class WasteWaterDataCreateDTO {
     String indAgencyVimcerts;
 
     @NotNull(message = "IS_REQUIRED")
-    List<WasteWaterMonitoringExceedancesCreateDTO> monitoringExceedances;
+    List<DomMonitoringExceedancesCreateDTO> domMonitoringExceedances;
+
+    @NotNull(message = "IS_REQUIRED")
+    List<IndMonitoringExceedancesCreateDTO> indMonitoringExceedances;
 
     @NotBlank(message = "IS_REQUIRED")
     String autoStationLocation;

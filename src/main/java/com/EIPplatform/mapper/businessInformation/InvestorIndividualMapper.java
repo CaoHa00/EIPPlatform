@@ -11,14 +11,16 @@ import com.EIPplatform.model.entity.businessInformation.investors.InvestorIndivi
 public interface InvestorIndividualMapper {
 
     @Mapping(target = "auditMetaData", ignore = true)
+        @Mapping(target = "investorId", ignore = true)
+            @Mapping(target = "businessDetail", ignore = true)
     InvestorIndividualDetail toEntity(InvestorIndividualCreationRequest request);
 
     @Mapping(target = "investorId", ignore = true)
     @Mapping(target = "auditMetaData", ignore = true)
     @Mapping(target = "businessDetail", ignore = true)
-    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     void updateEntityFromRequest(InvestorIndividualUpdateRequest request,
             @MappingTarget InvestorIndividualDetail entity);
 
+    @Mapping(target = "investorType", constant = "INDIVIDUAL")
     InvestorIndividualResponse toResponse(InvestorIndividualDetail entity);
 }

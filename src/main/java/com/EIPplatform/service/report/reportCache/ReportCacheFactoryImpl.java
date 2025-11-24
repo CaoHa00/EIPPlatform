@@ -1,4 +1,4 @@
-package com.EIPplatform.service.report.reportCache.reportCacheA05;
+package com.EIPplatform.service.report.reportCache;
 
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;

@@ -45,8 +45,8 @@ public class BusinessDetail {
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "business_detail_id", columnDefinition = "uniqueidentifier")
     UUID businessDetailId;
-    @Nationalized
-    @Column(nullable = false, unique = true, columnDefinition = "NVARCHAR(255)")
+
+    @Column( columnDefinition = "NVARCHAR(255)")
     String facilityName;
     
     @Column(nullable = false, length = 20, columnDefinition = "NVARCHAR(255)")
@@ -87,10 +87,10 @@ public class BusinessDetail {
     String seasonalDescription;
 
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-    @JoinColumn(name = "legal_representative_id")
+    @JoinColumn(name = "legal_representative_id", nullable = true)
     LegalRepresentative legalRepresentative;
 
-    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "investor_id")
     Investor investor;
 

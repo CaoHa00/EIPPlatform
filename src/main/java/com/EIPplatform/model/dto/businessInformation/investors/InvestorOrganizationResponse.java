@@ -4,9 +4,11 @@ import lombok.*;
 import lombok.experimental.FieldDefaults;
 import lombok.experimental.SuperBuilder;
 
-import java.util.List;
+import java.time.LocalDate;
 
-import com.EIPplatform.model.dto.legalDoc.LegalDocResponse;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 
 @Getter
 @Setter
@@ -15,6 +17,30 @@ import com.EIPplatform.model.dto.legalDoc.LegalDocResponse;
 @SuperBuilder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class InvestorOrganizationResponse extends InvestorResponse {
+
     String organizationName;
-    List<LegalDocResponse> legalDocs;
+
+    @NotBlank(message = "FIELD_REQUIRED")
+    String organizationLegalDocType;
+
+    @NotNull(message = "FIELD_REQUIRED")
+    LocalDate organizationIssueDate;
+
+    @NotBlank(message = "FIELD_REQUIRED")
+    String organizationIssuerOrg;
+
+    String organizationAddress;
+
+    String organizationWebsite;
+    
+    @NotBlank(message = "FIELD_REQUIRED")
+    String taxCode;
+
+    @NotBlank(message = "FIELD_REQUIRED")
+    String phone;
+
+    String fax;
+
+    @Email(message = "Invalid email format")
+    String email;
 }

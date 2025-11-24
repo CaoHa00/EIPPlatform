@@ -68,7 +68,7 @@ public class UserAccount {
     @Column(nullable = false)
     boolean enable = true;
     
-    @Column(nullable = false, columnDefinition = "NVARCHAR(10)")
+    @Column(nullable = false, columnDefinition = "NVARCHAR(50)")
     String phoneNumber;
 
     @OneToOne

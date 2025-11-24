@@ -33,11 +33,8 @@ public class InvestorIndividualCreationRequest {
     @NotNull(message = "FIELD_REQUIRED")
     @Past(message = "Date of birth must be in the past")
     LocalDate dateOfBirth;
+    Boolean vietnameseOrNot;
 
-    @NotNull(message = "FIELD_REQUIRED")
-    Boolean isNative;
-
-    @NotBlank(message = "FIELD_REQUIRED")
     String identificationNumber;
 
     String passportId;

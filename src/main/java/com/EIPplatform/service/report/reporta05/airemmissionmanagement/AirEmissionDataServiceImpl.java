@@ -19,8 +19,8 @@ import com.EIPplatform.model.entity.report.report05.ReportA05;
 import com.EIPplatform.model.entity.report.report05.airemmissionmanagement.AirEmissionData;
 import com.EIPplatform.repository.report.ReportA05Repository;
 import com.EIPplatform.service.fileStorage.FileStorageService;
-import com.EIPplatform.service.report.reportCache.reportCacheA05.ReportCacheFactory;
-import com.EIPplatform.service.report.reportCache.reportCacheA05.ReportCacheService;
+import com.EIPplatform.service.report.reportCache.ReportCacheFactory;
+import com.EIPplatform.service.report.reportCache.ReportCacheService;
 import com.EIPplatform.util.StringNormalizerUtil;
 
 import lombok.AccessLevel;
@@ -55,10 +55,11 @@ public class AirEmissionDataServiceImpl implements AirEmissionDataService {
         this.reportCacheService = reportCacheFactory.getCacheService(ReportA05DraftDTO.class);
     }
 
+
     @Override
     @Transactional
-    public AirEmissionDataDTO createAirEmissionData(UUID reportId, UUID userAccountId, AirEmissionDataCreateDTO request,
-            MultipartFile file) {
+    public AirEmissionDataDTO createAirEmissionData(UUID reportId, UUID businessDetailId,
+                                                    AirEmissionDataCreateDTO request, MultipartFile file) {
 
         request = StringNormalizerUtil.normalizeRequest(request);
 
@@ -69,7 +70,7 @@ public class AirEmissionDataServiceImpl implements AirEmissionDataService {
                         reportId,
                         AirEmissionError.REPORT_NOT_FOUND));
 
-        ReportA05DraftDTO draft = reportCacheService.getDraftReport(reportId, userAccountId);
+        ReportA05DraftDTO draft = reportCacheService.getDraftReport(reportId, businessDetailId);
         AirEmissionDataDTO oldDto = (draft != null) ? draft.getAirEmissionData() : null;
 
         AirEmissionData entity = airEmissionDataMapper.toEntity(request);
@@ -78,9 +79,11 @@ public class AirEmissionDataServiceImpl implements AirEmissionDataService {
             if (oldDto != null && oldDto.getAirAutoStationMapFilePath() != null) {
                 try {
                     fileStorageService.deleteFile(oldDto.getAirAutoStationMapFilePath());
-                    log.info("Deleted old map file for AirEmissionData: {}", oldDto.getAirAutoStationMapFilePath());
+                    log.info("Deleted old map file for AirEmissionData: {}",
+                            oldDto.getAirAutoStationMapFilePath());
                 } catch (Exception e) {
-                    log.warn("Failed to delete old map file: {}", oldDto.getAirAutoStationMapFilePath(), e);
+                    log.warn("Failed to delete old map file: {}",
+                            oldDto.getAirAutoStationMapFilePath(), e);
                 }
             }
             String filePath = uploadMapFile(report, file);
@@ -91,18 +94,11 @@ public class AirEmissionDataServiceImpl implements AirEmissionDataService {
 
         AirEmissionDataDTO responseDto = airEmissionDataMapper.toDto(entity);
 
-        if (draft == null) {
-            draft = ReportA05DraftDTO.builder()
-                    .reportId(reportId)
-                    .isDraft(true)
-                    .lastModified(LocalDateTime.now())
-                    .build();
-            reportCacheService.saveDraftReport(draft, userAccountId, reportId);
-        }
+        reportCacheService.updateSectionData(reportId, businessDetailId, responseDto, "airEmissionData");
 
-        reportCacheService.updateSectionData(reportId, userAccountId, responseDto, "airEmissionData");
+        log.info("Updated AirEmissionData in cache - reportId: {}, businessDetailId: {}",
+                reportId, businessDetailId);
 
-        log.info("Created AirEmissionData in cache - reportId: {}, userAccountId: {}", reportId, userAccountId);
         return responseDto;
     }
 

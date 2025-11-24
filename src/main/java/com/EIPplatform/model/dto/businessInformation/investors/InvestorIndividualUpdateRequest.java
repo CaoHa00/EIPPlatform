@@ -38,9 +38,8 @@ public class InvestorIndividualUpdateRequest {
     LocalDate dateOfBirth;
 
     @NotNull(message = "FIELD_REQUIRED")
-    Boolean isNative;
+    Boolean vietnameseOrNot;
 
-    @NotBlank(message = "FIELD_REQUIRED")
     String identificationNumber;
 
     String passportId;

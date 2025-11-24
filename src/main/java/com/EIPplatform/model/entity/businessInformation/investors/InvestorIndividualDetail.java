@@ -38,10 +38,10 @@ public class InvestorIndividualDetail extends Investor {
     @Column(name = "date_of_birth", nullable = false)
     LocalDate dateOfBirth;
 
-    @Column(name = "is_native", nullable = false, columnDefinition = "bit default 0")
-    boolean isNative;
+    @Column(name = "vietnamese_or_not", nullable = false, columnDefinition = "bit default 0")
+    boolean vietnameseOrNot;
 
-    @Column(name = "identification_number", columnDefinition = "NVARCHAR(50)", nullable = false)
+    @Column(name = "identification_number", columnDefinition = "NVARCHAR(50)", nullable = true)
     String identificationNumber;
 
     @Column(name = "passport_id", columnDefinition = "NVARCHAR(50)")
