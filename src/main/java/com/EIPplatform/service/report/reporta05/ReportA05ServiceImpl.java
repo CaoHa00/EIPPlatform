@@ -19,7 +19,8 @@ import com.EIPplatform.repository.report.report05.airemmissionmanagement.AirEmis
 import com.EIPplatform.repository.report.report05.wastemanagement.WasteManagementDataRepository;
 import com.EIPplatform.repository.report.report05.wastewatermanager.WasteWaterRepository;
 import com.EIPplatform.repository.user.BusinessDetailRepository;
-import com.EIPplatform.service.report.reportcache.ReportCacheService;
+import com.EIPplatform.service.report.reportCache.ReportCacheFactory;
+import com.EIPplatform.service.report.reportCache.ReportCacheService;
 import com.EIPplatform.util.ReportA05DocUtil;
 import jakarta.transaction.Transactional;
 import lombok.AccessLevel;
@@ -27,6 +28,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.experimental.NonFinal;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
@@ -58,8 +60,9 @@ public class ReportA05ServiceImpl implements ReportA05Service {
         private final WasteManagementDataRepository wasteManagementDataRepository;
         private final AirEmissionDataRepository airEmissionDataRepository;
         private final WasteWaterRepository wasteWaterDataRepository;
+    private ReportA05DocUtil reportA05DocUtil;
 
-        @Autowired
+    @Autowired
         public ReportA05ServiceImpl(
                 ReportA05Repository reportA05Repository,
                 BusinessDetailRepository businessDetailRepository,
@@ -70,7 +73,7 @@ public class ReportA05ServiceImpl implements ReportA05Service {
                 ExceptionFactory exceptionFactory,
                 WasteManagementDataRepository wasteManagementDataRepository,
                 AirEmissionDataRepository airEmissionDataRepository,
-                WasteWaterRepository wasteWaterDataRepository) {
+                WasteWaterRepository wasteWaterDataRepository, ReportA05DocUtil reportA05DocUtil) {
 
                 this.reportA05Repository = reportA05Repository;
                 this.businessDetailRepository = businessDetailRepository;
@@ -84,7 +87,8 @@ public class ReportA05ServiceImpl implements ReportA05Service {
                 this.wasteWaterDataRepository = wasteWaterDataRepository;
 
                 this.reportCacheService = reportCacheFactory.getCacheService(ReportA05DraftDTO.class);
-        }
+        this.reportA05DocUtil = reportA05DocUtil;
+    }
         @NonFinal
         @Value("${app.storage.local.upload-dir:/app/uploads}")
         private String uploadDir;
@@ -185,6 +189,11 @@ public class ReportA05ServiceImpl implements ReportA05Service {
         return draft;
     }
 
+    @Override
+    public ReportA05DTO submitDraftToDatabase(UUID reportId, UUID userAccountId) {
+        return null;
+    }
+
     /**
      * Cập nhật completion percentage cho draft dựa trên dữ liệu hiện tại
      * (Gọi sau mỗi step để tự động tính % và lưu lại cache)
@@ -196,88 +205,12 @@ public class ReportA05ServiceImpl implements ReportA05Service {
         if (draft == null) {
             throw exceptionFactory.createCustomException(ReportError.DRAFT_NOT_FOUND);
         }
-
-        /**
-         * Cập nhật completion percentage cho draft dựa trên dữ liệu hiện tại
-         * (Gọi sau mỗi step để tự động tính % và lưu lại cache)
-         */
-        @Override
-        @Transactional
-        public ReportA05DraftDTO updateDraftCompletion(UUID reportId, UUID userAccountId) {
-                ReportA05DraftDTO draft = getDraftData(reportId, userAccountId);
-                if (draft == null) {
-                        throw exceptionFactory.createCustomException(ReportError.DRAFT_NOT_FOUND);
-                }
-                int percentage = calculateCompletionPercentage(draft);
-                draft.setCompletionPercentage(percentage);
-                draft.setLastModified(LocalDateTime.now());
-                reportCacheService.saveDraftReport(draft, userAccountId, reportId);
-                log.info("Updated completion for report {} (user {}): {}%", reportId, userAccountId, percentage);
-                return draft;
-        }
-
-        if (draftData.getCompletionPercentage() == null) {
-            int percentage = calculateCompletionPercentage(draftData);
-            draftData.setCompletionPercentage(percentage);
-        }
-
-        if (!isDraftComplete(draftData)) {
-            throw exceptionFactory.createValidationException("ReportA05Draft", "completionPercentage",
-                    (draftData.getCompletionPercentage() != null
-                            ? draftData.getCompletionPercentage()
-                            : 0),
-                    ReportError.DRAFT_INCOMPLETE);
-        }
-
-        ReportA05 report = reportA05Repository.findById(reportId)
-                .orElseThrow(() -> exceptionFactory.createNotFoundException("ReportA05", reportId,
-                        ReportError.REPORT_NOT_FOUND));
-
-        saveOrUpdateWasteWaterData(report, draftData);
-        saveOrUpdateWasteManagementData(report, draftData);
-        saveOrUpdateAirEmissionData(report, draftData);
-
-        if (draftData.getCompletionPercentage() != null) {
-            report.setCompletionPercentage(Double.valueOf(draftData.getCompletionPercentage()));
-        }
-
-        ReportA05 saved = reportA05Repository.save(report);
-
-                reportCacheService.deleteDraftReport(reportId, userAccountId);
-
-                WasteManagementDataDTO wasteManagementDataDTO = null;
-                if (saved.getWasteManagementData() != null) {
-                        wasteManagementDataDTO = wasteManagementDataMapper.toDto(saved.getWasteManagementData()); // Gọi
-                        // trực
-                        // tiếp!
-                }
-
-        AirEmissionDataDTO airEmissionDataDTO = null;
-        if (saved.getAirEmissionData() != null) {
-            airEmissionDataDTO = airEmissionDataMapper.toDto(saved.getAirEmissionData());
-        }
-
-        WasteWaterDataDTO wasteWaterDataDTO = null;
-        if (saved.getWasteWaterData() != null) {
-            wasteWaterDataDTO = wasteWaterDataMapper.toDto(saved.getWasteWaterData());
-        }
-
-        BusinessDetail bd = saved.getBusinessDetail();
-        return ReportA05DTO.builder()
-                .reportId(saved.getReportId())
-                .reportCode(saved.getReportCode())
-                .businessDetailId(bd != null ? bd.getBusinessDetailId() : null)
-                .facilityName(bd != null ? bd.getFacilityName() : null)
-                .reportYear(saved.getReportYear())
-                .reportingPeriod(saved.getReportingPeriod())
-                .reviewNotes(saved.getReviewNotes())
-                .airEmissionData(airEmissionDataDTO)
-                .wasteManagementData(wasteManagementDataDTO)
-                .wasteWaterData(wasteWaterDataDTO)
-                .inspectionRemedyReport(saved.getInspectionRemedyReport())
-                .completionPercentage(saved.getCompletionPercentage())
-                .createdAt(saved.getCreatedAt())
-                .build();
+        int percentage = calculateCompletionPercentage(draft);
+        draft.setCompletionPercentage(percentage);
+        draft.setLastModified(LocalDateTime.now());
+        reportCacheService.saveDraftReport(draft, userAccountId, reportId);
+        log.info("Updated completion for report {} (user {}): {}%", reportId, userAccountId, percentage);
+        return draft;
     }
 
     @Override
@@ -407,435 +340,6 @@ public class ReportA05ServiceImpl implements ReportA05Service {
     @Override
     public byte[] generateReportFile(UUID reportId, UUID userAccountId) throws Exception {
         ReportA05 report = reportA05Repository.findById(reportId)
-                .orElseThrow(() -> exceptionFactory.createNotFoundException("ReportA05",
-                        reportId,
-                        ReportError.REPORT_NOT_FOUND));
-
-        BusinessDetail business = report.getBusinessDetail();
-        if (business == null) {
-            throw exceptionFactory.createCustomException(ReportError.BUSINESS_NOT_FOUND);
-        }
-
-        ReportA05DraftDTO draftData = getDraftData(reportId, userAccountId);
-        WasteWaterDataDTO wasteWaterDataDTO = draftData != null ? draftData.getWasteWaterData() : null;
-        AirEmissionDataDTO airEmissionDataDTO = draftData != null ? draftData.getAirEmissionData() : null;
-        WasteManagementDataDTO wasteManagementDataDTO = draftData != null ? draftData.getWasteManagementData()
-                : null;
-        EnvPermits envPermits = business.getEnvPermits();
-        List<BusinessHistoryConsumption> businessHistoryConsumptions = business
-                .getBusinessHistoryConsumptions();
-        LocalDate today = LocalDate.now();
-        String day = String.valueOf(today.getDayOfMonth());
-        String month = String.valueOf(today.getMonthValue());
-        String year = String.valueOf(today.getYear());
-        // FIX: Map dữ liệu với key chính xác
-        Map<String, String> data = new HashMap<>();
-        data.put("facility_name", business.getFacilityName());
-        data.put("address", business.getAddress());
-        data.put("phone_number", business.getPhoneNumber());
-        data.put("legal_representative", business.getLegalRepresentative());
-        data.put("activity_type", business.getActivityType());
-        data.put("scale_capacity", business.getScaleCapacity());
-        data.put("iso_14001_certificate",
-                business.getISO_certificate_14001() != null ? business.getISO_certificate_14001() : "");
-        data.put("business_license_number", business.getBusinessRegistrationNumber());
-        data.put("tax_code", business.getTaxCode());
-        data.put("seasonal_period", business.getOperationType().name());
-
-        // permit
-        if (envPermits == null) {
-            log.warn("EnvPermits is null, skipping permit mapping.");
-        } else {
-            data.put("env_permit_number", envPermits.getPermitNumber());
-            data.put("env_permit_issue_date", formatDate(envPermits.getIssueDate()));
-            data.put("env_permit_issuer", envPermits.getIssuerOrg());
-            data.put("env_permit_file", envPermits.getPermitFilePath());
-        }
-
-        // business history
-        for (BusinessHistoryConsumption bhc : businessHistoryConsumptions) {
-            data.put("product_volume_cy",
-                    bhc.getProductVolumeCy() != null ? bhc.getProductVolumeCy().toString() : "");
-            data.put("product_unit_cy", bhc.getProductUnitCy());
-            data.put("product_volume_py",
-                    bhc.getProductVolumePy() != null ? bhc.getProductVolumePy().toString() : "");
-            data.put("product_unit_py", bhc.getProductUnitPy());
-            data.put("fuel_consumption_cy",
-                    bhc.getFuelConsumptionCy() != null ? bhc.getFuelConsumptionCy().toString()
-                            : "");
-            data.put("fuel_unit_cy", bhc.getFuelUnitCy());
-            data.put("fuel_consumption_py",
-                    bhc.getFuelConsumptionPy() != null ? bhc.getFuelConsumptionPy().toString()
-                            : "");
-            data.put("fuel_unit_py", bhc.getFuelUnitPy());
-            data.put("electricity_consumption_cy",
-                    bhc.getElectricityConsumptionCy() != null
-                            ? bhc.getElectricityConsumptionCy().toString()
-                            : "");
-            data.put("electricity_consumption_py",
-                    bhc.getElectricityConsumptionPy() != null
-                            ? bhc.getElectricityConsumptionPy().toString()
-                            : "");
-            data.put("water_consumption_cy",
-                    bhc.getWaterConsumptionCy() != null ? bhc.getWaterConsumptionCy().toString()
-                            : "");
-            data.put("water_consumption_py",
-                    bhc.getWaterConsumptionPy() != null ? bhc.getWaterConsumptionPy().toString()
-                            : "");
-        }
-        data.put("dateStr", day);
-        data.put("monthYearStr", month);
-        data.put("yearStr", year);
-
-        if (wasteWaterDataDTO != null) {
-            log.debug("Log wasteWaterDATAdto");
-            data.put("ww_treatment_desc",
-                    wasteWaterDataDTO.getTreatmentWwDesc() != null
-                            ? wasteWaterDataDTO.getTreatmentWwDesc()
-                            : "");
-            // Nước thải sinh hoạt
-            data.put("domestic_ww_cy",
-                    wasteWaterDataDTO.getDomWwCy() != null
-                            ? wasteWaterDataDTO.getDomWwCy().toString()
-                            : "");
-            data.put("domestic_ww_py",
-                    wasteWaterDataDTO.getDomWwPy() != null
-                            ? wasteWaterDataDTO.getDomWwPy().toString()
-                            : "");
-            data.put("domestic_ww_design",
-                    wasteWaterDataDTO.getDomWwDesign() != null
-                            ? wasteWaterDataDTO.getDomWwDesign().toString()
-                            : "");
-            // Nước thải công nghiệp
-            data.put("industrial_ww_cy",
-                    wasteWaterDataDTO.getIndustrialWwCy() != null
-                            ? wasteWaterDataDTO.getIndustrialWwCy().toString()
-                            : "");
-            data.put("industrial_ww_py",
-                    wasteWaterDataDTO.getIndustrialWwPy() != null
-                            ? wasteWaterDataDTO.getIndustrialWwPy().toString()
-                            : "");
-            data.put("industrial_ww_design", wasteWaterDataDTO.getIndustrialWwDesign() != null
-                    ? wasteWaterDataDTO.getIndustrialWwDesign().toString()
-                    : "");
-            // Nước làm mát
-            data.put("cooling_water_cy",
-                    wasteWaterDataDTO.getCoolingWaterCy() != null
-                            ? wasteWaterDataDTO.getCoolingWaterCy().toString()
-                            : "");
-            data.put("cooling_water_py",
-                    wasteWaterDataDTO.getCoolingWaterPy() != null
-                            ? wasteWaterDataDTO.getCoolingWaterPy().toString()
-                            : "");
-            data.put("cooling_water_design",
-                    wasteWaterDataDTO.getCoolingWaterDesign() != null
-                            ? wasteWaterDataDTO.getCoolingWaterDesign().toString()
-                            : "");
-            // Tình hình đầu nối hệ thống XLNT tập trung
-            data.put("connection_status_desc",
-                    wasteWaterDataDTO.getConnectionStatusDesc() != null
-                            ? wasteWaterDataDTO.getConnectionStatusDesc()
-                            : "");
-            // kết quả quan trắc nước thải
-            // nước thải sinh hoạt
-            data.put("dom_monitor_period",
-                    wasteWaterDataDTO.getDomMonitorPeriod() != null
-                            ? wasteWaterDataDTO.getDomMonitorPeriod()
-                            : "");
-            data.put("dom_monitor_freq", wasteWaterDataDTO.getDomMonitorFreq() != null
-                    ? wasteWaterDataDTO.getDomMonitorFreq()
-                    : "");
-            data.put("dom_monitor_locations",
-                    wasteWaterDataDTO.getDomMonitorLocations() != null
-                            ? wasteWaterDataDTO.getDomMonitorLocations()
-                            : "");
-            data.put("dom_sample_count", wasteWaterDataDTO.getDomSampleCount() != null
-                    ? wasteWaterDataDTO.getDomSampleCount().toString()
-                    : "");
-            data.put("dom_qcvn_standard",
-                    wasteWaterDataDTO.getDomQcvnStandard() != null
-                            ? wasteWaterDataDTO.getDomQcvnStandard()
-                            : "");
-            data.put("dom_agency_name",
-                    wasteWaterDataDTO.getDomAgencyName() != null
-                            ? wasteWaterDataDTO.getDomAgencyName()
-                            : "");
-            data.put("dom_agency_vimcerts",
-                    wasteWaterDataDTO.getDomAgencyVimcerts() != null
-                            ? wasteWaterDataDTO.getDomAgencyVimcerts()
-                            : "");
-            // nước thải công nghiệp
-            data.put("ind_monitor_period",
-                    wasteWaterDataDTO.getIndMonitorPeriod() != null
-                            ? wasteWaterDataDTO.getIndMonitorPeriod()
-                            : "");
-            data.put("ind_monitor_freq",
-                    wasteWaterDataDTO.getIndMonitorFreq() != null
-                            ? wasteWaterDataDTO.getIndMonitorFreq()
-                            : "");
-            data.put("ind_monitor_locations",
-                    wasteWaterDataDTO.getIndMonitorLocations() != null
-                            ? wasteWaterDataDTO.getIndMonitorLocations()
-                            : "");
-            data.put("ind_sample_count",
-                    wasteWaterDataDTO.getIndSampleCount() != null
-                            ? wasteWaterDataDTO.getIndSampleCount().toString()
-                            : "");
-            data.put("ind_qcvn_standard",
-                    wasteWaterDataDTO.getIndQcvnStandard() != null
-                            ? wasteWaterDataDTO.getIndQcvnStandard()
-                            : "");
-            data.put("ind_agency_name",
-                    wasteWaterDataDTO.getIndAgencyName() != null
-                            ? wasteWaterDataDTO.getIndAgencyName()
-                            : "");
-            data.put("ind_agency_vimcerts",
-                    wasteWaterDataDTO.getIndAgencyVimcerts() != null
-                            ? wasteWaterDataDTO.getIndAgencyVimcerts()
-                            : "");
-            // Quan trắc nước thải liên tục tự động (Nếu có
-            // thông tin chung
-            data.put("auto_station_location",
-                    wasteWaterDataDTO.getAutoStationLocation() != null
-                            ? wasteWaterDataDTO.getAutoStationLocation()
-                            : "");
-            data.put("auto_station_GPS",
-                    wasteWaterDataDTO.getAutoStationGps() != null
-                            ? wasteWaterDataDTO.getAutoStationGps()
-                            : "");
-            data.put("auto_station_map",
-                    wasteWaterDataDTO.getAutoStationMap() != null
-                            ? wasteWaterDataDTO.getAutoStationMap()
-                            : "");
-            data.put("auto_source_desc",
-                    wasteWaterDataDTO.getAutoSourceDesc() != null
-                            ? wasteWaterDataDTO.getAutoSourceDesc()
-                            : "");
-            data.put("auto_data_frequency",
-                    wasteWaterDataDTO.getAutoDataFrequency() != null
-                            ? wasteWaterDataDTO.getAutoDataFrequency()
-                            : "");
-            data.put("auto_calibration_info",
-                    wasteWaterDataDTO.getAutoCalibrationInfo() != null
-                            ? wasteWaterDataDTO.getAutoCalibrationInfo()
-                            : "");
-            // tình trangh haot động của trạm
-            data.put("auto_incident_summary",
-                    wasteWaterDataDTO.getAutoIncidentSummary() != null
-                            ? wasteWaterDataDTO.getAutoIncidentSummary()
-                            : "");
-            data.put("auto_downtime_desc",
-                    wasteWaterDataDTO.getAutoDowntimeDesc() != null
-                            ? wasteWaterDataDTO.getAutoDowntimeDesc()
-                            : "");
-            // nhận xét kết quả quan trắc
-            data.put("auto_exceed_days_summary",
-                    wasteWaterDataDTO.getAutoExceedDaysSummary() != null
-                            ? wasteWaterDataDTO.getAutoExceedDaysSummary()
-                            : "");
-            data.put("auto_abnormal_reason",
-                    wasteWaterDataDTO.getAutoAbnormalReason() != null
-                            ? wasteWaterDataDTO.getAutoAbnormalReason()
-                            : "");
-            // kết luận
-            data.put("auto_completeness_review",
-                    wasteWaterDataDTO.getAutoCompletenessReview() != null
-                            ? wasteWaterDataDTO.getAutoCompletenessReview()
-                            : "");
-            data.put("auto_exceed_summary",
-                    wasteWaterDataDTO.getAutoExceedSummary() != null
-                            ? wasteWaterDataDTO.getAutoExceedSummary()
-                            : "");
-
-        AirEmissionDataDTO airEmissionDataDTO = null;
-        if (saved.getAirEmissionData() != null) {
-            airEmissionDataDTO = airEmissionDataMapper.toDto(saved.getAirEmissionData());
-        }
-        if (airEmissionDataDTO != null) {
-            data.put("air_treatment_desc",
-                    airEmissionDataDTO.getAirTreatmentDesc() != null
-                            ? airEmissionDataDTO.getAirTreatmentDesc()
-                            : "");
-            data.put("air_emission_cy",
-                    airEmissionDataDTO.getAirEmissionCy() != null
-                            ? airEmissionDataDTO.getAirEmissionCy().toString()
-                            : "");
-            data.put("air_emission_py",
-                    airEmissionDataDTO.getAirEmissionPy() != null
-                            ? airEmissionDataDTO.getAirEmissionPy().toString()
-                            : "");
-            data.put("air_monitor_period",
-                    airEmissionDataDTO.getAirMonitorPeriod() != null
-                            ? airEmissionDataDTO.getAirMonitorPeriod()
-                            : "");
-            data.put("air_monitor_freq", airEmissionDataDTO.getAirMonitorFreq() != null
-                    ? airEmissionDataDTO.getAirMonitorFreq()
-                    : "");
-            data.put("air_monitor_locations",
-                    airEmissionDataDTO.getAirMonitorLocations() != null
-                            ? airEmissionDataDTO.getAirMonitorLocations()
-                            : "");
-            data.put("air_sample_count", airEmissionDataDTO.getAirSampleCount() != null
-                    ? airEmissionDataDTO.getAirSampleCount().toString()
-                    : "");
-            data.put("air_qcvn_standard",
-                    airEmissionDataDTO.getAirQcvnStandard() != null
-                            ? airEmissionDataDTO.getAirQcvnStandard()
-                            : "");
-            data.put("air_agency_name",
-                    airEmissionDataDTO.getAirAgencyName() != null
-                            ? airEmissionDataDTO.getAirAgencyName()
-                            : "");
-            data.put("air_agency_vimcerts",
-                    airEmissionDataDTO.getAirAgencyVimcerts() != null
-                            ? airEmissionDataDTO.getAirAgencyVimcerts()
-                            : "");
-            data.put("air_auto_station_location",
-                    airEmissionDataDTO.getAirAutoStationLocation() != null
-                            ? airEmissionDataDTO.getAirAutoStationLocation()
-                            : "");
-            data.put("air_auto_station_GPS",
-                    airEmissionDataDTO.getAirAutoStationGps() != null
-                            ? airEmissionDataDTO.getAirAutoStationGps()
-                            : "");
-            data.put("air_auto_station_map",
-                    airEmissionDataDTO.getAirAutoStationMapFilePath() != null
-                            ? airEmissionDataDTO.getAirAutoStationMapFilePath()
-                            : "");
-            data.put("air_auto_source_desc",
-                    airEmissionDataDTO.getAirAutoSourceDesc() != null
-                            ? airEmissionDataDTO.getAirAutoSourceDesc()
-                            : "");
-            data.put("air_auto_data_frequency",
-                    airEmissionDataDTO.getAirAutoDataFrequency() != null
-                            ? airEmissionDataDTO.getAirAutoDataFrequency()
-                            : "");
-            data.put("air_auto_param_list",
-                    airEmissionDataDTO.getAirAutoParamList() != null
-                            ? airEmissionDataDTO.getAirAutoParamList()
-                            : "");
-            data.put("air_auto_calibration_info",
-                    airEmissionDataDTO.getAirAutoCalibrationInfo() != null
-                            ? airEmissionDataDTO.getAirAutoCalibrationInfo()
-                            : "");
-            data.put("air_auto_incident_summary",
-                    airEmissionDataDTO.getAirAutoIncidentSummary() != null
-                            ? airEmissionDataDTO.getAirAutoIncidentSummary()
-                            : "");
-            data.put("air_auto_downtime_desc",
-                    airEmissionDataDTO.getAirAutoDowntimeDesc() != null
-                            ? airEmissionDataDTO.getAirAutoDowntimeDesc()
-                            : "");
-            data.put("air_auto_avg_calc_desc",
-                    airEmissionDataDTO.getAirAutoAvgCalcDesc() != null
-                            ? airEmissionDataDTO.getAirAutoAvgCalcDesc()
-                            : "");
-            data.put("air_auto_avg_compare_desc",
-                    airEmissionDataDTO.getAirAutoAvgCompareDesc() != null
-                            ? airEmissionDataDTO.getAirAutoAvgCompareDesc()
-                            : "");
-            data.put("air_auto_exceed_days_summary",
-                    airEmissionDataDTO.getAirAutoExceedDaysSummary() != null
-                            ? airEmissionDataDTO.getAirAutoExceedDaysSummary()
-                            : "");
-            data.put("air_auto_abnormal_reason",
-                    airEmissionDataDTO.getAirAutoAbnormalReason() != null
-                            ? airEmissionDataDTO.getAirAutoAbnormalReason()
-                            : "");
-            data.put("air_auto_completeness_review",
-                    airEmissionDataDTO.getAirAutoCompletenessReview() != null
-                            ? airEmissionDataDTO.getAirAutoCompletenessReview()
-                            : "");
-            data.put("air_auto_exceed_conclusion",
-                    airEmissionDataDTO.getAirAutoExceedConclusion() != null
-                            ? airEmissionDataDTO.getAirAutoExceedConclusion()
-                            : "");
-        }
-        if (wasteManagementDataDTO != null) {
-            data.put("sw_general_notes",
-                    wasteManagementDataDTO.getSwGeneralNote() != null
-                            ? wasteManagementDataDTO.getSwGeneralNote()
-                            : "");
-            data.put("incident_plan_development",
-                    wasteManagementDataDTO.getIncidentPlanDevelopment() != null
-                            ? wasteManagementDataDTO.getIncidentPlanDevelopment()
-                            : "");
-            data.put("incident_prevention_measures",
-                    wasteManagementDataDTO.getIncidentPreventionMeasures() != null
-                            ? wasteManagementDataDTO.getIncidentPreventionMeasures()
-                            : "");
-            data.put("incident_response_report",
-                    wasteManagementDataDTO.getIncidentResponseReport() != null
-                            ? wasteManagementDataDTO.getIncidentResponseReport()
-                            : "");
-
-        WasteWaterDataDTO wasteWaterDataDTO = null;
-        if (saved.getWasteWaterData() != null) {
-            wasteWaterDataDTO = wasteWaterDataMapper.toDto(saved.getWasteWaterData());
-        }
-
-        BusinessDetail bd = saved.getBusinessDetail();
-        return ReportA05DTO.builder()
-                .reportId(saved.getReportId())
-                .reportCode(saved.getReportCode())
-                .businessDetailId(bd != null ? bd.getBusinessDetailId() : null)
-                .facilityName(bd != null ? bd.getFacilityName() : null)
-                .reportYear(saved.getReportYear())
-                .reportingPeriod(saved.getReportingPeriod())
-                .reviewNotes(saved.getReviewNotes())
-                .airEmissionData(airEmissionDataDTO)
-                .wasteManagementData(wasteManagementDataDTO)
-                .wasteWaterData(wasteWaterDataDTO)
-                .inspectionRemedyReport(saved.getInspectionRemedyReport())
-                .completionPercentage(saved.getCompletionPercentage())
-                .createdAt(saved.getCreatedAt())
-                .build();
-    }
-
-    @Override
-    @Transactional
-    public InspectionRemedyResponse updateInspectionRemedyReport(UUID reportId,
-                                                                 UpdateInspectionRemedyReportRequest request) {
-        ReportA05 report = reportA05Repository.findById(reportId)
-                .orElseThrow(() -> exceptionFactory.createNotFoundException(
-                        "ReportA05", reportId, ReportError.REPORT_NOT_FOUND));
-
-        if (request == null) {
-            throw exceptionFactory.createValidationException(
-                    "UpdateInspectionRemedyReportRequest",
-                    "request",
-                    null,
-                    ReportError.INVALID_REQUEST);
-        }
-        if (Objects.isNull(request.getInspectionRemedyReport())) {
-            throw exceptionFactory.createValidationException(
-                    "UpdateInspectionRemedyReportRequest",
-                    "inspectionRemedyReport",
-                    null,
-                    ReportError.FIELD_REQUIRED);
-        }
-    }
-
-        report.setInspectionRemedyReport(request.getInspectionRemedyReport());
-        report.setUpdatedAt(LocalDateTime.now());
-
-        ReportA05 saved = reportA05Repository.save(report);
-        log.info("Updated inspection remedy report for reportId: {}", reportId);
-
-        return InspectionRemedyResponse.builder()
-                .reportId(saved.getReportId())
-                .inspectionRemedyReport(saved.getInspectionRemedyReport())
-                .updatedAt(saved.getUpdatedAt())
-                .build();
-    }
-
-    // -------------------------------------------------------------
-    // Generate DOCX report – now delegated to ReportA05DocUtil
-    // -------------------------------------------------------------
-
-    @Override
-    public byte[] generateReportFile(UUID reportId, UUID userAccountId) throws Exception {
-        ReportA05 report = reportA05Repository.findById(reportId)
                 .orElseThrow(() -> exceptionFactory.createNotFoundException(
                         "ReportA05",
                         reportId,
@@ -855,70 +359,6 @@ public class ReportA05ServiceImpl implements ReportA05Service {
         log.info("✅ Report file generated and saved: {} ({} bytes)", savedFilePath, result.length);
 
         return result;
-    }
-
-    // -------------------------------------------------------------
-    // Internal helpers (business/draft, not DOCX-specific)
-    // -------------------------------------------------------------
-
-    private int calculateCompletionPercentage(ReportA05DraftDTO draft) {
-        if (draft.getWasteWaterData() != null
-                && draft.getWasteManagementData() != null
-                && draft.getAirEmissionData() != null) {
-            return 100;
-        }
-        return 0;
-    }
-
-    private boolean isDraftComplete(ReportA05DraftDTO draftData) {
-        return draftData.getWasteWaterData() != null
-                && draftData.getWasteManagementData() != null
-                && draftData.getAirEmissionData() != null;
-    }
-
-    private void saveOrUpdateWasteWaterData(ReportA05 report, ReportA05DraftDTO draftData) {
-        WasteWaterDataDTO dto = draftData.getWasteWaterData();
-        if (dto == null) return;
-
-        WasteWaterData entity;
-        if (report.getWasteWaterData() != null && report.getWasteWaterData().getWwId() != null) {
-            entity = report.getWasteWaterData();
-            wasteWaterDataMapper.updateEntityFromDto(dto, entity);
-        } else {
-            entity = wasteWaterDataMapper.dtoToEntity(dto);
-            entity.setReport(report);
-        }
-        report.setWasteWaterData(entity);
-    }
-
-    private void saveOrUpdateWasteManagementData(ReportA05 report, ReportA05DraftDTO draftData) {
-        WasteManagementDataDTO dto = draftData.getWasteManagementData();
-        if (dto == null) return;
-
-        WasteManagementData entity;
-        if (report.getWasteManagementData() != null && report.getWasteManagementData().getWmId() != null) {
-            entity = report.getWasteManagementData();
-            wasteManagementDataMapper.updateEntityFromDto(dto, entity);
-        } else {
-            entity = wasteManagementDataMapper.dtoToEntity(dto);
-            entity.setReport(report);
-        }
-        report.setWasteManagementData(entity);
-    }
-
-    private void saveOrUpdateAirEmissionData(ReportA05 report, ReportA05DraftDTO draftData) {
-        AirEmissionDataDTO dto = draftData.getAirEmissionData();
-        if (dto == null) return;
-
-        AirEmissionData entity;
-        if (report.getAirEmissionData() != null && report.getAirEmissionData().getAirEmissionDataId() != null) {
-            entity = report.getAirEmissionData();
-            airEmissionDataMapper.updateEntityFromDto(dto, entity);
-        } else {
-            entity = airEmissionDataMapper.dtoToEntity(dto);
-            entity.setReport(report);
-        }
-        report.setAirEmissionData(entity);
     }
 
     // -------------------------------------------------------------
@@ -966,11 +406,6 @@ public class ReportA05ServiceImpl implements ReportA05Service {
         if (input == null || input.isEmpty()) {
             return "Unknown";
         }
-        try {
-            if (source.getColor() != null) target.setColor(source.getColor());
-        } catch (Exception ignored) {
-        }
-    }
 
         String sanitized = input
                 .replaceAll("[/\\\\:*?\"<>|]", "")
@@ -982,4 +417,5 @@ public class ReportA05ServiceImpl implements ReportA05Service {
         }
         return sanitized;
     }
+
 }
