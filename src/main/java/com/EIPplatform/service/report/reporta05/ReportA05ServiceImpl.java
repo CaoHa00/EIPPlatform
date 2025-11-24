@@ -284,7 +284,7 @@ public class ReportA05ServiceImpl implements ReportA05Service {
 
     @Override
     public byte[] generateReportFile(UUID reportId, UUID userAccountId) throws Exception {
-        ReportA05 fullReport = reportA05Repository.findById(reportId)
+        ReportA05 report = reportA05Repository.findById(reportId)
                 .orElseThrow(() -> exceptionFactory.createNotFoundException(
                         "ReportA05",
                         reportId,
@@ -292,13 +292,15 @@ public class ReportA05ServiceImpl implements ReportA05Service {
 
         // Still save the file on disk here (IO concerns stay in the service)
         ReportA05DTO reportDTO = ReportA05DTO.builder()
-                .reportYear(fullReport.getReportYear())
+                .reportYear(report.getReportYear())
                 .build();
 
-        byte[] result = reportA05DocUtil.generateReportDocument(fullReport);
+        ReportA05DraftDTO draftData = getDraftData(reportId, userAccountId);
+
+        byte[] result = reportA05DocUtil.generateReportDocument(report, draftData);
 
 
-        String savedFilePath = saveReportFile(result, reportId, fullReport.getBusinessDetail(), reportDTO);
+        String savedFilePath = saveReportFile(result, reportId, report.getBusinessDetail(), reportDTO);
         log.info("✅ Report file generated and saved: {} ({} bytes)", savedFilePath, result.length);
 
         return result;
