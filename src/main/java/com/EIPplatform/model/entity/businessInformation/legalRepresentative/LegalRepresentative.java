@@ -70,9 +70,7 @@ public class LegalRepresentative {
     @Column(name = "address", columnDefinition = "NVARCHAR(500)")
     String address;
 
-
     @Column(name = "tax_code", length = 50, unique = true)
-
     String taxCode;
 
     @Column(name = "phone", columnDefinition = "NVARCHAR(20)", nullable = true)

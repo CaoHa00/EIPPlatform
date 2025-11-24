@@ -2,6 +2,7 @@ package com.EIPplatform.controller.userInformation;
 
 import java.util.UUID;
 
+import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -39,7 +40,7 @@ public class UserAccountController {
 
     // Tạo mới UserAccount
     @PostMapping("/create")
-    public ApiResponse<UserAccountResponseDTO> createUserAccount(@RequestBody UserAccountCreateDTO dto) {
+    public ApiResponse<UserAccountResponseDTO> createUserAccount(@RequestBody @Valid UserAccountCreateDTO dto) {
         UserAccountResponseDTO result = userAccountInterface.create(dto);
         return ApiResponse.<UserAccountResponseDTO>builder()
                 .result(result)
