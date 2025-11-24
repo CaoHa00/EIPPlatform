@@ -3,7 +3,7 @@ package com.EIPplatform.model.dto.report.report05.wastemanagement.selftreatedhws
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
-import java.lang.Double;
+
 
 @Data
 @Builder
@@ -11,11 +11,14 @@ import java.lang.Double;
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class SelfTreatedHwStatUpdateDTO {
+
     String wasteName;
 
     String hwCode;
 
-    Double volumeKg;
+    Double volume;
+
+    String unit;
 
     String selfTreatmentMethod;
 }

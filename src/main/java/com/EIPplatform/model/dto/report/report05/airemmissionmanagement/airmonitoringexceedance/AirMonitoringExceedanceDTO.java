@@ -3,9 +3,6 @@ package com.EIPplatform.model.dto.report.report05.airemmissionmanagement.airmoni
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
-import java.lang.Double;
-import java.time.LocalDate;
-
 @Data
 @Builder
 @AllArgsConstructor

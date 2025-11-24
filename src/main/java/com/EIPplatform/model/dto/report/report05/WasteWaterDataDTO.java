@@ -1,4 +1,4 @@
-//package com.EIPplatform.model.dto.report.report;
+package com.EIPplatform.model.dto.report.report05;//package com.EIPplatform.model.dto.report.report;
 //
 //import com.EIPplatform.model.dto.report.report.wastewatermanager.autowwmonitoringincidents.AutoWWMonitoringIncidentsDTO;
 //import com.EIPplatform.model.dto.report.report.wastewatermanager.autowwmonitoringstats.AutoWWMonitoringStatsDTO;

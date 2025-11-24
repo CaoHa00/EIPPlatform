@@ -11,12 +11,12 @@ public interface AirEmissionDataService {
     /**
      * Tạo AirEmissionData mới từ request và lưu vào draft cache
      * @param reportId ID của báo cáo
-     * @param userAccountId ID của người dùng
+     * @param businessDetailId ID của người dùng
      * @param request Dữ liệu tạo mới
      * @param file File bản đồ trạm (optional)
      * @return DTO của AirEmissionData đã tạo
      */
-    AirEmissionDataDTO createAirEmissionData(UUID reportId, UUID userAccountId, AirEmissionDataCreateDTO request, MultipartFile file);
+    AirEmissionDataDTO createAirEmissionData(UUID reportId, UUID businessDetailId, AirEmissionDataCreateDTO request, MultipartFile file);
 
     /**
      * Lấy AirEmissionData từ draft cache

@@ -25,9 +25,9 @@ public class WasteManagementDataController {
     @PostMapping("/{reportId}/draft/wastemanagement")
     public ApiResponse<WasteManagementDataDTO> createWasteManagementData(
             @PathVariable UUID reportId,
-            @RequestParam UUID userAccountId,
+            @RequestParam UUID businessDetailId,
             @RequestBody @Valid WasteManagementDataCreateDTO request) {
-        var result = wasteManagementDataService.createWasteManagementData(reportId, userAccountId, request);
+        var result = wasteManagementDataService.createWasteManagementData(reportId, businessDetailId, request);
         return ApiResponse.<WasteManagementDataDTO>builder()
                 .result(result)
                 .build();

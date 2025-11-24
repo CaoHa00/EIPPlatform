@@ -6,7 +6,7 @@ import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
-import java.lang.Double;
+
 
 @Data
 @Builder
@@ -14,6 +14,7 @@ import java.lang.Double;
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class DomesticSolidWasteStatCreateDTO {
+
     @NotBlank(message = "IS_REQUIRED")
     String wasteTypeName;
 
@@ -22,9 +23,15 @@ public class DomesticSolidWasteStatCreateDTO {
     Double volumeCy;
 
     @NotBlank(message = "IS_REQUIRED")
+    String unitCy;
+
+    @NotBlank(message = "IS_REQUIRED")
     String receiverOrg;
 
     @NotNull(message = "IS_REQUIRED")
     @DecimalMin(value = "0.0", inclusive = true)
     Double volumePy;
+
+    @NotBlank(message = "IS_REQUIRED")
+    String unitPy;
 }

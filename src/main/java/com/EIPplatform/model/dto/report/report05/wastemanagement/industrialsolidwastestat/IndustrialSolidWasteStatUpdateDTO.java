@@ -3,7 +3,7 @@ package com.EIPplatform.model.dto.report.report05.wastemanagement.industrialsoli
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
-import java.lang.Double;
+
 @Data
 @Builder
 @AllArgsConstructor
@@ -11,10 +11,9 @@ import java.lang.Double;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class IndustrialSolidWasteStatUpdateDTO {
     String wasteGroup;
-
     Double volumeCy;
-
+    String unitCy;
     String receiverOrg;
-
     Double volumePy;
+    String unitPy;
 }
