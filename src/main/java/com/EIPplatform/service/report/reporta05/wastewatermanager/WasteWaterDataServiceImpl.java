@@ -59,7 +59,7 @@ public class WasteWaterDataServiceImpl implements WasteWaterDataService {
     public WasteWaterDataDTO createWasteWaterData(UUID reportId, UUID businessDetailId,
             WasteWaterDataCreateDTO request, MultipartFile connectionFile, MultipartFile mapFile) {
 
-        request = StringNormalizerUtil.normalizeRequest(request);
+//        request = StringNormalizerUtil.normalizeRequest(request);
 
         ReportA05 report = reportA05Repository.findById(reportId)
                 .orElseThrow(() -> exceptionFactory.createNotFoundException(

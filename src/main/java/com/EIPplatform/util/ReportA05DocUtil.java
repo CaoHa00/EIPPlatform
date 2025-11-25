@@ -564,8 +564,8 @@ public class ReportA05DocUtil {
     // ---------------------------------------------------------------------
 
     private void replacePlaceholders(XWPFParagraph paragraph,
-            Map<String, String> data,
-            boolean inTable) {
+                                     Map<String, String> data,
+                                     boolean inTable) {
 
         if (paragraph == null)
             return;
@@ -597,12 +597,26 @@ public class ReportA05DocUtil {
         if (original.equals(text))
             return;
 
-        // Rebuild run
+        // Rebuild run - XỬ LÝ XUỐNG DÒNG
         for (int i = paragraph.getRuns().size() - 1; i >= 0; i--) {
             paragraph.removeRun(i);
         }
-        XWPFRun run = paragraph.createRun();
-        run.setText(text);
+
+        // Chuẩn hóa các loại xuống dòng về \n
+        // Xử lý cả \r\n (Windows), \r (Mac cũ), \n (Unix/Linux)
+        text = text.replace("\r\n", "\n").replace("\r", "\n");
+
+        // Tách chuỗi theo \n và thêm line break
+        String[] lines = text.split("\n", -1); // -1 để giữ lại cả dòng trống
+        for (int i = 0; i < lines.length; i++) {
+            XWPFRun run = paragraph.createRun();
+            run.setText(lines[i]);
+
+            // Thêm line break nếu không phải dòng cuối
+            if (i < lines.length - 1) {
+                run.addBreak(); // Xuống dòng trong Word
+            }
+        }
     }
 
     private String defaultString(String s) {
