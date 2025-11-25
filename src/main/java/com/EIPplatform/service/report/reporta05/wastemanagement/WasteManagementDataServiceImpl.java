@@ -52,7 +52,7 @@ public class WasteManagementDataServiceImpl implements WasteManagementDataServic
     public WasteManagementDataDTO createWasteManagementData(UUID reportId, UUID businessDetailId,
             WasteManagementDataCreateDTO request) {
 
-        request = StringNormalizerUtil.normalizeRequest(request);
+//        request = StringNormalizerUtil.normalizeRequest(request);
 
         ReportA05 report = reportA05Repository.findById(reportId)
                 .orElseThrow(() -> exceptionFactory.createNotFoundException(

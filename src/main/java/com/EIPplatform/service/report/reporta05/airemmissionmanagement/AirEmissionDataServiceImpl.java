@@ -58,9 +58,9 @@ public class AirEmissionDataServiceImpl implements AirEmissionDataService {
     public AirEmissionDataDTO createAirEmissionData(UUID reportId, UUID businessDetailId,
             AirEmissionDataCreateDTO request, MultipartFile file) {
 
-        request = StringNormalizerUtil.normalizeRequest(request);
+//        request = StringNormalizerUtil.normalizeRequest(request);
 
-        request = StringNormalizerUtil.normalizeRequest(request);
+//        request = StringNormalizerUtil.normalizeRequest(request);
 
         ReportA05 report = reportA05Repository.findById(reportId)
                 .orElseThrow(() -> exceptionFactory.createNotFoundException(
