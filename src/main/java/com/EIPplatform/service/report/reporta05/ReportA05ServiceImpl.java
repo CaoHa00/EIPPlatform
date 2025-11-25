@@ -101,45 +101,45 @@ public class ReportA05ServiceImpl implements ReportA05Service {
                 BusinessDetail businessDetail = null;
                 if (request.getBusinessDetailId() != null) {
                         businessDetail = businessDetailRepository
-                                .findById(request.getBusinessDetailId())
-                                .orElseThrow(() -> exceptionFactory.createNotFoundException("BusinessDetail",
-                                        request.getBusinessDetailId(), ReportError.BUSINESS_NOT_FOUND));
+                                        .findById(request.getBusinessDetailId())
+                                        .orElseThrow(() -> exceptionFactory.createNotFoundException("BusinessDetail",
+                                                        request.getBusinessDetailId(), ReportError.BUSINESS_NOT_FOUND));
                 }
 
                 String reportCode = "RPT-" + UUID.randomUUID().toString().substring(0, 8).toUpperCase();
 
                 ReportA05 report = ReportA05.builder()
-                        .reportCode(reportCode)
-                        .businessDetail(businessDetail)
-                        .reportYear(request.getReportYear())
-                        .reportingPeriod(request.getReportingPeriod())
-                        .version(1)
-                        .isDeleted(false)
-                        .completionPercentage(0.0)
-                        .build();
+                                .reportCode(reportCode)
+                                .businessDetail(businessDetail)
+                                .reportYear(request.getReportYear())
+                                .reportingPeriod(request.getReportingPeriod())
+                                .version(1)
+                                .isDeleted(false)
+                                .completionPercentage(0.0)
+                                .build();
 
                 ReportA05 saved = reportA05Repository.save(report);
 
                 ReportA05DraftDTO emptyDraft = ReportA05DraftDTO.builder()
-                        .reportId(saved.getReportId())
-                        .isDraft(true)
-                        .lastModified(LocalDateTime.now())
-                        .build();
+                                .reportId(saved.getReportId())
+                                .isDraft(true)
+                                .lastModified(LocalDateTime.now())
+                                .build();
 
                 reportCacheService.saveDraftReport(emptyDraft, request.getBusinessDetailId(), saved.getReportId());
 
                 log.info("Created new ReportA05 and initialized empty draft - reportId: {}", saved.getReportId());
 
                 return ReportA05DTO.builder()
-                        .reportId(saved.getReportId())
-                        .reportCode(saved.getReportCode())
-                        .businessDetailId(businessDetail != null ? businessDetail.getBusinessDetailId() : null)
-                        .facilityName(businessDetail != null ? businessDetail.getFacilityName() : null)
-                        .reportYear(saved.getReportYear())
-                        .reportingPeriod(saved.getReportingPeriod())
-                        .completionPercentage(saved.getCompletionPercentage())
-                        .createdAt(saved.getCreatedAt())
-                        .build();
+                                .reportId(saved.getReportId())
+                                .reportCode(saved.getReportCode())
+                                .businessDetailId(businessDetail != null ? businessDetail.getBusinessDetailId() : null)
+                                .facilityName(businessDetail != null ? businessDetail.getFacilityName() : null)
+                                .reportYear(saved.getReportYear())
+                                .reportingPeriod(saved.getReportingPeriod())
+                                .completionPercentage(saved.getCompletionPercentage())
+                                .createdAt(saved.getCreatedAt())
+                                .build();
         }
 
         @Override
