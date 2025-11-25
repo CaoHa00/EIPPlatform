@@ -1,6 +1,5 @@
 package com.EIPplatform.service.report.reportCache;
 
-
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
@@ -22,6 +21,7 @@ import java.util.UUID;
 
 /**
  * Generic implementation of ReportCacheService
+ * 
  * @param <T> The DTO type for the report draft
  */
 @Slf4j
@@ -151,7 +151,7 @@ public class ReportCacheServiceImpl<T> implements ReportCacheService<T> {
                 "RedisConnectionFactory is null");
 
         try (RedisConnection connection = factory.getConnection();
-             Cursor<byte[]> cursor = connection.keyCommands().scan(scanOptions)) {
+                Cursor<byte[]> cursor = connection.keyCommands().scan(scanOptions)) {
 
             RedisKeyCommands keyCommands = connection.keyCommands();
             long deletedCount = 0;
@@ -179,7 +179,7 @@ public class ReportCacheServiceImpl<T> implements ReportCacheService<T> {
                 "RedisConnectionFactory is null");
 
         try (RedisConnection connection = factory.getConnection();
-             Cursor<byte[]> cursor = connection.keyCommands().scan(scanOptions)) {
+                Cursor<byte[]> cursor = connection.keyCommands().scan(scanOptions)) {
 
             while (cursor.hasNext()) {
                 byte[] keyBytes = cursor.next();

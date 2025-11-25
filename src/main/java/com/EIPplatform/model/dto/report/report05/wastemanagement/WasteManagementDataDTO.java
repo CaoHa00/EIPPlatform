@@ -25,14 +25,22 @@ public class WasteManagementDataDTO {
     Long wmId;
     String swGeneralNote;
 
-    @Valid List<@Valid DomesticSolidWasteStatDTO> domesticSolidWasteStats;
-    @Valid List<@Valid IndustrialSolidWasteStatDTO> industrialSolidWasteStats;
-    @Valid List<@Valid RecycleIndustrialWasteStatDTO> recycleIndustrialWasteStats;
-    @Valid List<@Valid OtherSolidWasteStatDTO> otherSolidWasteStats;
-    @Valid List<@Valid HazardousWasteStatDTO> hazardousWasteStats;
-    @Valid List<@Valid ExportedHwStatDTO> exportedHwStats;
-    @Valid List<@Valid SelfTreatedHwStatDTO> selfTreatedHwStats;
-    @Valid List<@Valid PopInventoryStatDTO> popInventoryStats;
+    @Valid
+    List<@Valid DomesticSolidWasteStatDTO> domesticSolidWasteStats;
+    @Valid
+    List<@Valid IndustrialSolidWasteStatDTO> industrialSolidWasteStats;
+    @Valid
+    List<@Valid RecycleIndustrialWasteStatDTO> recycleIndustrialWasteStats;
+    @Valid
+    List<@Valid OtherSolidWasteStatDTO> otherSolidWasteStats;
+    @Valid
+    List<@Valid HazardousWasteStatDTO> hazardousWasteStats;
+    @Valid
+    List<@Valid ExportedHwStatDTO> exportedHwStats;
+    @Valid
+    List<@Valid SelfTreatedHwStatDTO> selfTreatedHwStats;
+    @Valid
+    List<@Valid PopInventoryStatDTO> popInventoryStats;
 
     String incidentPlanDevelopment;
     String incidentPreventionMeasures;

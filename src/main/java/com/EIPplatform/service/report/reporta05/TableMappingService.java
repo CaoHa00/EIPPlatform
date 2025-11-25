@@ -25,8 +25,7 @@ public class TableMappingService {
             String marker,
             List<T> dataList,
             BiConsumer<T, RowWriter> rowFiller,
-            boolean needIndexing
-    ) {
+            boolean needIndexing) {
         if (dataList == null || dataList.isEmpty()) {
             removeTableByMarker(doc, marker);
             log.info("Removed table '{}' because data is empty", marker);
@@ -40,8 +39,7 @@ public class TableMappingService {
         }
 
         for (int i = 0; i < dataList.size(); i++) {
-            XWPFTableRow newRow =
-                    cloneRow(tableInfo.table, tableInfo.templateRow, tableInfo.rowIndex + 1 + i);
+            XWPFTableRow newRow = cloneRow(tableInfo.table, tableInfo.templateRow, tableInfo.rowIndex + 1 + i);
 
             RowWriter writer = new RowWriter(newRow);
 
@@ -87,7 +85,8 @@ public class TableMappingService {
     }
 
     public static void removeTableByMarker(XWPFDocument doc, String marker) {
-        if (marker == null || marker.isEmpty()) return;
+        if (marker == null || marker.isEmpty())
+            return;
 
         List<IBodyElement> bodyElements = doc.getBodyElements();
 
@@ -114,8 +113,7 @@ public class TableMappingService {
     public static void mapVerticalTable(
             XWPFDocument doc,
             String marker,
-            List<String> values
-    ) {
+            List<String> values) {
         if (values == null || values.isEmpty()) {
             removeTableByMarker(doc, marker);
             log.info("Removed VERTICAL table '{}' because values empty", marker);
@@ -182,9 +180,9 @@ public class TableMappingService {
         }
     }
 
-
     public static void setCell(XWPFTableRow row, int index, String value) {
-        if (index >= row.getTableCells().size()) return;
+        if (index >= row.getTableCells().size())
+            return;
 
         XWPFTableCell cell = row.getCell(index);
 

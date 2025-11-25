@@ -8,16 +8,19 @@ import java.util.UUID;
 public interface WasteManagementDataService {
     /**
      * Tạo WasteManagementData mới từ request và lưu vào draft cache
-     * @param reportId ID của báo cáo
+     * 
+     * @param reportId         ID của báo cáo
      * @param businessDetailId ID của người dùng
-     * @param request Dữ liệu tạo mới
+     * @param request          Dữ liệu tạo mới
      * @return DTO của WasteManagementData đã tạo
      */
-    WasteManagementDataDTO createWasteManagementData(UUID reportId, UUID businessDetailId, WasteManagementDataCreateDTO request);
+    WasteManagementDataDTO createWasteManagementData(UUID reportId, UUID businessDetailId,
+            WasteManagementDataCreateDTO request);
 
     /**
      * Lấy WasteManagementData từ draft cache
-     * @param reportId ID của báo cáo
+     * 
+     * @param reportId      ID của báo cáo
      * @param userAccountId ID của người dùng
      * @return DTO của WasteManagementData hoặc null nếu không tồn tại
      */
@@ -25,7 +28,8 @@ public interface WasteManagementDataService {
 
     /**
      * Xóa WasteManagementData khỏi draft cache
-     * @param reportId ID của báo cáo
+     * 
+     * @param reportId      ID của báo cáo
      * @param userAccountId ID của người dùng
      */
     void deleteWasteManagementData(UUID reportId, UUID userAccountId);

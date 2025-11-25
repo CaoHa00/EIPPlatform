@@ -41,10 +41,10 @@ public class AirEmissionDataServiceImpl implements AirEmissionDataService {
 
     @Autowired
     public AirEmissionDataServiceImpl(ReportA05Repository reportA05Repository,
-                                      AirEmissionDataMapper airEmissionDataMapper,
-                                      ReportCacheFactory reportCacheFactory,
-                                      FileStorageService fileStorageService,
-                                      ExceptionFactory exceptionFactory) {
+            AirEmissionDataMapper airEmissionDataMapper,
+            ReportCacheFactory reportCacheFactory,
+            FileStorageService fileStorageService,
+            ExceptionFactory exceptionFactory) {
         this.reportA05Repository = reportA05Repository;
         this.airEmissionDataMapper = airEmissionDataMapper;
         this.reportCacheFactory = reportCacheFactory;
@@ -53,11 +53,10 @@ public class AirEmissionDataServiceImpl implements AirEmissionDataService {
         this.reportCacheService = reportCacheFactory.getCacheService(ReportA05DraftDTO.class);
     }
 
-
     @Override
     @Transactional
     public AirEmissionDataDTO createAirEmissionData(UUID reportId, UUID businessDetailId,
-                                                    AirEmissionDataCreateDTO request, MultipartFile file) {
+            AirEmissionDataCreateDTO request, MultipartFile file) {
 
         request = StringNormalizerUtil.normalizeRequest(request);
 

@@ -41,10 +41,10 @@ public class WasteWaterDataServiceImpl implements WasteWaterDataService {
 
     @Autowired
     public WasteWaterDataServiceImpl(ReportA05Repository reportA05Repository,
-                                     WasteWaterDataMapper wasteWaterDataMapper,
-                                     ReportCacheFactory reportCacheFactory,
-                                     FileStorageService fileStorageService,
-                                     ExceptionFactory exceptionFactory) {
+            WasteWaterDataMapper wasteWaterDataMapper,
+            ReportCacheFactory reportCacheFactory,
+            FileStorageService fileStorageService,
+            ExceptionFactory exceptionFactory) {
         this.reportA05Repository = reportA05Repository;
         this.wasteWaterDataMapper = wasteWaterDataMapper;
         this.reportCacheFactory = reportCacheFactory;
@@ -57,7 +57,7 @@ public class WasteWaterDataServiceImpl implements WasteWaterDataService {
     @Override
     @Transactional
     public WasteWaterDataDTO createWasteWaterData(UUID reportId, UUID businessDetailId,
-                                                  WasteWaterDataCreateDTO request, MultipartFile connectionFile, MultipartFile mapFile) {
+            WasteWaterDataCreateDTO request, MultipartFile connectionFile, MultipartFile mapFile) {
 
         request = StringNormalizerUtil.normalizeRequest(request);
 

@@ -36,9 +36,9 @@ public class WasteManagementDataServiceImpl implements WasteManagementDataServic
 
     @Autowired
     public WasteManagementDataServiceImpl(ReportA05Repository reportA05Repository,
-                                          WasteManagementDataMapper wasteManagementDataMapper,
-                                          ReportCacheFactory reportCacheFactory,
-                                          ExceptionFactory exceptionFactory) {
+            WasteManagementDataMapper wasteManagementDataMapper,
+            ReportCacheFactory reportCacheFactory,
+            ExceptionFactory exceptionFactory) {
         this.reportA05Repository = reportA05Repository;
         this.wasteManagementDataMapper = wasteManagementDataMapper;
         this.reportCacheFactory = reportCacheFactory;
@@ -50,7 +50,7 @@ public class WasteManagementDataServiceImpl implements WasteManagementDataServic
     @Override
     @Transactional
     public WasteManagementDataDTO createWasteManagementData(UUID reportId, UUID businessDetailId,
-                                                            WasteManagementDataCreateDTO request) {
+            WasteManagementDataCreateDTO request) {
 
         request = StringNormalizerUtil.normalizeRequest(request);
 
@@ -100,7 +100,8 @@ public class WasteManagementDataServiceImpl implements WasteManagementDataServic
         ReportA05DraftDTO draft = reportCacheService.getDraftReport(reportId, userAccountId);
         if (draft != null) {
             reportCacheService.updateSectionData(reportId, userAccountId, null, "wasteManagementData");
-            log.info("Deleted WasteManagementData from cache - reportId: {}, userAccountId: {}", reportId, userAccountId);
+            log.info("Deleted WasteManagementData from cache - reportId: {}, userAccountId: {}", reportId,
+                    userAccountId);
         } else {
             log.warn("No draft found in cache - reportId: {}, userAccountId: {}", reportId, userAccountId);
         }
