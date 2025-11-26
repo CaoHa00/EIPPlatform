@@ -34,6 +34,7 @@ public class GlobalExceptionHandler {
         this.exceptionHandlers = exceptionHandlers;
     }
 
+    @SuppressWarnings("unchecked")
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiResponse<?>> handleException(Exception exception) {
 

@@ -2,7 +2,11 @@ package com.EIPplatform.mapper.businessInformation;
 import com.EIPplatform.model.entity.businessInformation.Process;
 
 import com.EIPplatform.model.dto.businessInformation.process.ProcessResponseDto;
-import org.mapstruct.*;
+import org.mapstruct.BeanMapping;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.MappingTarget;
+import org.mapstruct.NullValuePropertyMappingStrategy;
 import java.util.List;
 
 @Mapper(componentModel = "spring")

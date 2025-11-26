@@ -1,6 +1,10 @@
 package com.EIPplatform.mapper.businessInformation;
 
-import org.mapstruct.*;
+import org.mapstruct.BeanMapping;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.MappingTarget;
+import org.mapstruct.NullValuePropertyMappingStrategy;
 
 import com.EIPplatform.model.dto.businessInformation.investors.InvestorOrganizationCreationRequest;
 import com.EIPplatform.model.dto.businessInformation.investors.InvestorOrganizationResponse;

@@ -4,7 +4,9 @@ import org.mapstruct.Mapper;
 import org.mapstruct.MappingTarget;
 import org.mapstruct.ReportingPolicy;
 
-import com.EIPplatform.model.dto.userAccount.*;
+import com.EIPplatform.model.dto.userAccount.UserAccountCreateDTO;
+import com.EIPplatform.model.dto.userAccount.UserAccountResponseDTO;
+import com.EIPplatform.model.dto.userAccount.UserAccountUpdateDTO;
 import com.EIPplatform.model.entity.user.authentication.UserAccount;
 
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)

@@ -221,8 +221,8 @@ public class ReportA05ServiceImpl implements ReportA05Service {
         }
 
         /**
-         * Cập nhật completion percentage cho draft dựa trên dữ liệu hiện tại
-         * (Gọi sau mỗi step để tự động tính % và lưu lại cache)
+         * Cập nhật completion percentage cho draft dựa trên dữ liệu hiện tại (Gọi
+         * sau mỗi step để tự động tính % và lưu lại cache)
          */
         @Override
         @Transactional
@@ -360,8 +360,9 @@ public class ReportA05ServiceImpl implements ReportA05Service {
         }
 
         private boolean isSectionComplete(Object sectionDto) {
-                if (sectionDto == null)
+                if (sectionDto == null) {
                         return false;
+                }
 
                 return true;
         }
@@ -374,8 +375,9 @@ public class ReportA05ServiceImpl implements ReportA05Service {
 
         private void saveOrUpdateWasteWaterData(ReportA05 report, ReportA05DraftDTO draftData) {
                 WasteWaterDataDTO dto = draftData.getWasteWaterData(); // Response DTO từ draft
-                if (dto == null)
+                if (dto == null) {
                         return;
+                }
 
                 WasteWaterData entity;
                 if (report.getWasteWaterData() != null && report.getWasteWaterData().getWwId() != null) {
@@ -394,8 +396,9 @@ public class ReportA05ServiceImpl implements ReportA05Service {
 
         private void saveOrUpdateWasteManagementData(ReportA05 report, ReportA05DraftDTO draftData) {
                 WasteManagementDataDTO dto = draftData.getWasteManagementData(); // Response DTO từ draft
-                if (dto == null)
+                if (dto == null) {
                         return;
+                }
 
                 WasteManagementData entity;
                 if (report.getWasteManagementData() != null && report.getWasteManagementData().getWmId() != null) {
@@ -415,8 +418,9 @@ public class ReportA05ServiceImpl implements ReportA05Service {
 
         private void saveOrUpdateAirEmissionData(ReportA05 report, ReportA05DraftDTO draftData) {
                 AirEmissionDataDTO dto = draftData.getAirEmissionData(); // Đây là response DTO từ draft
-                if (dto == null)
+                if (dto == null) {
                         return;
+                }
 
                 AirEmissionData entity;
                 if (report.getAirEmissionData() != null && report.getAirEmissionData().getAirEmissionDataId() != null) {
@@ -1113,7 +1117,6 @@ public class ReportA05ServiceImpl implements ReportA05Service {
                         // Ghi ra file để kiểm tra (optional)
                         // String outputDir = "D:\\Cao Ha\\eipFolder\\generated\\reports";
                         // Files.createDirectories(Paths.get(outputDir));
-
                         // String fileName = String.format("%s/ReportA05_%s_%s.docx",
                         // outputDir,
                         // business.getFacilityName().replaceAll("[^a-zA-Z0-9]", "_"),
@@ -1200,49 +1203,6 @@ public class ReportA05ServiceImpl implements ReportA05Service {
         /**
          * PHƯƠNG THỨC ĐÃ SỬA - Xử lý placeholder bị tách thành nhiều runs
          */
-        private void replacePlaceholders(XWPFParagraph paragraph, Map<String, String> data) {
-                // Lấy toàn bộ text của paragraph
-                String fullText = paragraph.getText();
-                if (fullText == null || fullText.isEmpty()) {
-                        return;
-                }
-
-                // Thay thế tất cả placeholders
-                boolean modified = false;
-                for (Map.Entry<String, String> entry : data.entrySet()) {
-                        String placeholder = "{{" + entry.getKey() + "}}";
-                        if (fullText.contains(placeholder)) {
-                                String value = entry.getValue();
-                                if (value == null) {
-                                        value = ""; // Thay thế null bằng empty string
-                                }
-                                fullText = fullText.replace(placeholder, value);
-                                modified = true;
-                        }
-                }
-
-                // Nếu có thay đổi, xóa hết runs cũ và tạo run mới
-                if (modified) {
-                        // Lưu formatting của run đầu tiên (nếu có)
-                        XWPFRun firstRun = paragraph.getRuns().isEmpty() ? null : paragraph.getRuns().get(0);
-
-                        // Xóa tất cả runs cũ
-                        int runCount = paragraph.getRuns().size();
-                        for (int i = runCount - 1; i >= 0; i--) {
-                                paragraph.removeRun(i);
-                        }
-
-                        // Tạo run mới với text đã thay thế
-                        XWPFRun newRun = paragraph.createRun();
-                        newRun.setText(fullText);
-
-                        // Copy formatting từ run cũ nếu có
-                        if (firstRun != null) {
-                                copyRunFormatting(firstRun, newRun);
-                        }
-                }
-        }
-
         /**
          * PHƯƠNG THỨC MỚI - Copy formatting từ run cũ sang run mới
          */
@@ -1262,6 +1222,52 @@ public class ReportA05ServiceImpl implements ReportA05Service {
                         }
                 } catch (Exception e) {
                         log.warn("Could not copy all formatting: {}", e.getMessage());
+                }
+        }
+
+        private void replacePlaceholders(XWPFParagraph paragraph, Map<String, String> data) {
+                String fullText = paragraph.getText();
+                if (fullText == null || fullText.isEmpty()) {
+                        return;
+                }
+
+                boolean modified = false;
+                for (Map.Entry<String, String> entry : data.entrySet()) {
+                        String placeholder = "{{" + entry.getKey() + "}}";
+                        if (fullText.contains(placeholder)) {
+                                String value = entry.getValue();
+                                if (value == null) {
+                                        value = "";
+                                }
+                                fullText = fullText.replace(placeholder, value);
+                                modified = true;
+                        }
+                }
+
+                if (modified) {
+                        XWPFRun firstRun = paragraph.getRuns().isEmpty() ? null : paragraph.getRuns().get(0);
+
+                        // Xóa tất cả runs cũ
+                        int runCount = paragraph.getRuns().size();
+                        for (int i = runCount - 1; i >= 0; i--) {
+                                paragraph.removeRun(i);
+                        }
+
+                        // ✅ XỬ LÝ XUỐNG DÒNG
+                        String[] lines = fullText.split("\n", -1);
+                        for (int i = 0; i < lines.length; i++) {
+                                XWPFRun newRun = paragraph.createRun();
+                                newRun.setText(lines[i]);
+
+                                if (firstRun != null) {
+                                        copyRunFormatting(firstRun, newRun);
+                                }
+
+                                // Thêm line break nếu chưa phải dòng cuối
+                                if (i < lines.length - 1) {
+                                        newRun.addBreak();
+                                }
+                        }
                 }
         }
 }

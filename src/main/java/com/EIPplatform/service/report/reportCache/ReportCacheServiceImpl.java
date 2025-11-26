@@ -1,13 +1,11 @@
 package com.EIPplatform.service.report.reportCache;
 
-
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
-import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.connection.RedisConnection;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.connection.RedisKeyCommands;
@@ -45,16 +43,16 @@ public class ReportCacheServiceImpl<T> implements ReportCacheService<T> {
 
     /**
      * Build cache key with pattern:
-     * report:draft:user:{userAccountId}:report:{reportId}
+     * report:draft:business:{businessDetailId}:report:{reportId}
      */
     private String buildCacheKey(UUID businessDetailId, UUID reportId) {
         return CACHE_KEY_PREFIX + businessDetailId.toString() + ":report:" + reportId.toString();
     }
 
     /**
-     * Build pattern to find all drafts of a user
+     * Build pattern to find all drafts of a business
      */
-    private String buildUserDraftsPattern(UUID businessDetailId) {
+    private String buildBusinessDraftsPattern(UUID businessDetailId) {
         return CACHE_KEY_PREFIX + businessDetailId.toString() + ":report:*";
     }
 
@@ -146,7 +144,7 @@ public class ReportCacheServiceImpl<T> implements ReportCacheService<T> {
     public void deleteAllDraftsByUser(UUID businessDetailId) {
         log.info("Deleting all draft reports for businessDetailId: {}", businessDetailId);
 
-        String pattern = buildUserDraftsPattern(businessDetailId);
+        String pattern = buildBusinessDraftsPattern(businessDetailId);
         ScanOptions scanOptions = ScanOptions.scanOptions().match(pattern).count(1000).build();
 
         RedisConnectionFactory factory = Objects.requireNonNull(
@@ -174,7 +172,7 @@ public class ReportCacheServiceImpl<T> implements ReportCacheService<T> {
         log.info("Getting all draft reports for businessDetailId: {}", businessDetailId);
 
         List<T> drafts = new ArrayList<>();
-        String pattern = buildUserDraftsPattern(businessDetailId);
+        String pattern = buildBusinessDraftsPattern(businessDetailId);
         ScanOptions scanOptions = ScanOptions.scanOptions().match(pattern).count(1000).build();
 
         RedisConnectionFactory factory = Objects.requireNonNull(

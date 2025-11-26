@@ -1,13 +1,10 @@
 package com.EIPplatform.model.dto.report.reportB04;
+
 import java.io.Serializable;
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.UUID;
-
-import com.EIPplatform.model.dto.businessInformation.products.ProductCreationListRequest;
-import com.EIPplatform.model.dto.businessInformation.products.ProductDTO;
+import com.EIPplatform.model.dto.businessInformation.products.ProductListDTO;
 import com.EIPplatform.model.dto.report.reportB04.part1.ReportInvestorDetailDTO;
-import com.EIPplatform.model.dto.report.reportB04.part1.request.ReportInvestorDetailCreateRequest;
 import com.EIPplatform.model.dto.report.reportB04.part3.ResourcesSavingAndReductionDTO;
 import com.EIPplatform.model.dto.report.reportB04.part4.SymbiosisIndustryDTO;
 import lombok.AccessLevel;
@@ -24,30 +21,38 @@ import lombok.experimental.FieldDefaults;
 @AllArgsConstructor
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class ReportB04DraftDTO implements Serializable{
+public class ReportB04DraftDTO implements Serializable {
+
     private static final long serialVersionUID = 1L;
     UUID reportId;
+    String reportCode;
     UUID businessDetailId;
     Integer reportYear;
     String reportingPeriod;
+    String facilityName;
+    String reviewNotes;
+    String inspectionRemedyReport;
+    Integer version;
+    Boolean isDeleted;
+    LocalDateTime createdAt;
+    // Tracking
+    Double completionPercentage;
 
     // part1
-    ReportInvestorDetailDTO reportInvestorDetailDTO;
+    ReportInvestorDetailDTO reportInvestorDetail;
 
     // part2
-    ProductCreationListRequest productDTOs;
+    ProductListDTO products;
 
     //part3
-    ResourcesSavingAndReductionDTO resourcesSavingAndReductionDTO;
+    ResourcesSavingAndReductionDTO resourcesSavingAndReduction;
 
     //part4
-    SymbiosisIndustryDTO symbiosisIndustryDTO;
+    SymbiosisIndustryDTO symbiosisIndustry;
 
     // Metadata
     LocalDateTime lastModified;
     Integer currentStep;
     Boolean isDraft;
 
-    // Tracking
-    Integer completionPercentage;
 }

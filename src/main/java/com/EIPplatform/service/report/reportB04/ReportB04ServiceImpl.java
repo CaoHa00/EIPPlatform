@@ -1,35 +1,5 @@
 package com.EIPplatform.service.report.reportB04;
 
-import com.EIPplatform.repository.report.reportB04.part1.ReportInvestorDetailRepository;
-import com.EIPplatform.exception.ExceptionFactory;
-import com.EIPplatform.exception.errorCategories.ReportError;
-import com.EIPplatform.model.dto.businessInformation.products.ProductCreationListRequest;
-import com.EIPplatform.model.dto.businessInformation.products.ProductCreationRequest;
-import com.EIPplatform.model.dto.report.report05.CreateReportRequest;
-import com.EIPplatform.model.dto.report.reportB04.ReportB04DTO;
-import com.EIPplatform.model.dto.report.reportB04.ReportB04DraftDTO;
-import com.EIPplatform.model.dto.report.reportB04.part1.ReportInvestorDetailDTO;
-import com.EIPplatform.model.dto.report.reportB04.part3.ResourcesSavingAndReductionDTO;
-import com.EIPplatform.model.dto.report.reportB04.part4.SymbiosisIndustryDTO;
-import com.EIPplatform.model.entity.businessInformation.BusinessDetail;
-import com.EIPplatform.model.entity.businessInformation.products.Product;
-import com.EIPplatform.mapper.businessInformation.ProductMapper;
-import com.EIPplatform.model.entity.report.reportB04.ReportB04;
-import com.EIPplatform.repository.businessInformation.BusinessDetailRepository;
-import com.EIPplatform.repository.report.reportB04.ReportB04Repository;
-import com.EIPplatform.service.fileStorage.FileStorageService;
-import com.EIPplatform.service.report.reportCache.ReportCacheFactory;
-import com.EIPplatform.service.report.reportCache.ReportCacheService;
-import com.EIPplatform.repository.businessInformation.ProductRepository;
-
-import jakarta.annotation.PostConstruct;
-import jakarta.transaction.Transactional;
-import lombok.AccessLevel;
-import lombok.RequiredArgsConstructor;
-import lombok.experimental.FieldDefaults;
-import lombok.experimental.NonFinal;
-import lombok.extern.slf4j.Slf4j;
-
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -39,15 +9,45 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
+import com.EIPplatform.exception.ExceptionFactory;
+import com.EIPplatform.exception.errorCategories.ReportError;
+import com.EIPplatform.mapper.businessInformation.ProductMapper;
 import com.EIPplatform.mapper.report.reportB04.ReportB04Mapper;
 import com.EIPplatform.mapper.report.reportB04.part1.ReportInvestorDetailMapper;
 import com.EIPplatform.mapper.report.reportB04.part3.ResourcesSavingAndReductionMapper;
 import com.EIPplatform.mapper.report.reportB04.part4.SymbiosisIndustryMapper;
+import com.EIPplatform.model.dto.businessInformation.products.ProductListDTO;
+import com.EIPplatform.model.dto.businessInformation.products.ProductResponse;
+import com.EIPplatform.model.dto.report.report05.CreateReportRequest;
+import com.EIPplatform.model.dto.report.reportB04.ReportB04DTO;
+import com.EIPplatform.model.dto.report.reportB04.ReportB04DraftDTO;
+import com.EIPplatform.model.dto.report.reportB04.part1.ReportInvestorDetailDTO;
+import com.EIPplatform.model.dto.report.reportB04.part3.ResourcesSavingAndReductionDTO;
+import com.EIPplatform.model.dto.report.reportB04.part4.SymbiosisIndustryDTO;
+import com.EIPplatform.model.entity.businessInformation.BusinessDetail;
+import com.EIPplatform.model.entity.businessInformation.products.Product;
+import com.EIPplatform.model.entity.report.reportB04.ReportB04;
+import com.EIPplatform.repository.businessInformation.BusinessDetailRepository;
+import com.EIPplatform.repository.businessInformation.ProductRepository;
+import com.EIPplatform.repository.report.reportB04.ReportB04Repository;
+import com.EIPplatform.repository.report.reportB04.part1.ReportInvestorDetailRepository;
+import com.EIPplatform.service.fileStorage.FileStorageService;
+import com.EIPplatform.service.products.ProductInterface;
+import com.EIPplatform.service.report.reportB04.part1.ReportInvestorDetailService;
+import com.EIPplatform.service.report.reportB04.part2.ReportB04Part2Service;
+import com.EIPplatform.service.report.reportCache.ReportCacheFactory;
+import com.EIPplatform.service.report.reportCache.ReportCacheService;
+
+import jakarta.transaction.Transactional;
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
+import lombok.experimental.NonFinal;
+import lombok.extern.slf4j.Slf4j;
 
 @Service
 @Slf4j
@@ -56,20 +56,21 @@ import com.EIPplatform.mapper.report.reportB04.part4.SymbiosisIndustryMapper;
 @Validated // Để enable method-level validation nếu cần
 public class ReportB04ServiceImpl implements ReportB04Service {
     // Dependencies inject qua constructor (final)
-   
-    private final ReportB04Mapper reportB04Mapper;
-    private final ReportB04Repository reportB04Repository;
-    private final BusinessDetailRepository businessDetailRepository;
-    private final ReportInvestorDetailRepository reportInvestorDetailRepository;
-    private final ReportInvestorDetailMapper reportInvestorDetailMapper;
-    private final ProductRepository productRepository;
-    private final ProductMapper productMapper;
-    private final ExceptionFactory exceptionFactory;
-    private final FileStorageService fileStorageService;
-    private final ReportCacheFactory reportCacheFactory;
-    private final ResourcesSavingAndReductionMapper resourcesSavingAndReductionMapper;
-    private final SymbiosisIndustryMapper symbiosisIndustryMapper;
 
+    ReportB04Mapper reportB04Mapper;
+    ReportB04Repository reportB04Repository;
+    BusinessDetailRepository businessDetailRepository;
+    ReportInvestorDetailRepository reportInvestorDetailRepository;
+    ReportInvestorDetailMapper reportInvestorDetailMapper;
+    ProductRepository productRepository;
+    ProductMapper productMapper;
+    ReportB04Part2Service productService;
+    ExceptionFactory exceptionFactory;
+    FileStorageService fileStorageService;
+    ReportCacheFactory reportCacheFactory;
+    ResourcesSavingAndReductionMapper resourcesSavingAndReductionMapper;
+    SymbiosisIndustryMapper symbiosisIndustryMapper;
+    ReportInvestorDetailService reportInvestorDetailService;
     private final ReportCacheService<ReportB04DraftDTO> reportCacheService;
 
     @Autowired
@@ -85,7 +86,8 @@ public class ReportB04ServiceImpl implements ReportB04Service {
             FileStorageService fileStorageService,
             ReportCacheFactory reportCacheFactory,
             ResourcesSavingAndReductionMapper resourcesSavingAndReductionMapper,
-            SymbiosisIndustryMapper symbiosisIndustryMapper) {
+            SymbiosisIndustryMapper symbiosisIndustryMapper, ReportInvestorDetailService reportInvestorDetailService,
+            ReportB04Part2Service productService) {
 
         this.reportB04Mapper = reportB04Mapper;
         this.reportB04Repository = reportB04Repository;
@@ -99,27 +101,19 @@ public class ReportB04ServiceImpl implements ReportB04Service {
         this.reportCacheFactory = reportCacheFactory;
         this.resourcesSavingAndReductionMapper = resourcesSavingAndReductionMapper;
         this.symbiosisIndustryMapper = symbiosisIndustryMapper;
-
+        this.reportInvestorDetailService = reportInvestorDetailService;
+        this.productService = productService;
         // Lấy cache service qua factory
         this.reportCacheService = reportCacheFactory.getCacheService(ReportB04DraftDTO.class);
     }
-    
+
     @NonFinal
     @Value("${app.storage.local.upload-dir:/app/uploads}")
     String uploadDir;
 
     @Override
     @Transactional
-    public ReportB04DTO createReport(CreateReportRequest request) {
-        // 1. Kiểm tra business (CHỈ KHI CÓ businessDetailId)
-        BusinessDetail businessDetail = null;
-        if (request.getBusinessDetailId() != null) {
-            businessDetail = businessDetailRepository
-                    .findById(request.getBusinessDetailId())
-                    .orElseThrow(() -> exceptionFactory.createNotFoundException("BusinessDetail",
-                            request.getBusinessDetailId(), ReportError.BUSINESS_NOT_FOUND));
-        }
-
+    public ReportB04DraftDTO createReport(CreateReportRequest request, BusinessDetail businessDetail) {
         String reportCode = "RPT-" + java.util.UUID.randomUUID().toString().substring(0, 8).toUpperCase();
 
         ReportB04 report = ReportB04.builder()
@@ -139,39 +133,46 @@ public class ReportB04ServiceImpl implements ReportB04Service {
                 .lastModified(LocalDateTime.now())
                 .build();
         reportCacheService.saveDraftReport(draft, request.getBusinessDetailId(), saved.getReportId());
-        return ReportB04DTO.builder()
-                .reportId(saved.getReportId())
-                .reportCode(saved.getReportCode())
-                .businessDetailId(businessDetail != null ? businessDetail.getBusinessDetailId() : null)
-                .facilityName(businessDetail != null ? businessDetail.getFacilityName() : null)
-                .reportYear(saved.getReportYear())
-                .reportingPeriod(saved.getReportingPeriod())
-                .completionPercentage(saved.getCompletionPercentage())
-                .createdAt(saved.getCreatedAt())
-                .build();
+        return draft;
     }
 
     @Override
     @Transactional
     public ReportB04DTO getOrCreateReportByBusinessDetailId(UUID businessDetailId) {
 
+        // 1. Kiểm tra business (CHỈ KHI CÓ businessDetailId)
+        BusinessDetail businessDetail = null;
+        if (businessDetailId != null) {
+            businessDetail = businessDetailRepository
+                    .findById(businessDetailId)
+                    .orElseThrow(() -> exceptionFactory.createNotFoundException("BusinessDetail",
+                            businessDetailId, ReportError.BUSINESS_NOT_FOUND));
+        }
         // 1. Fetch basic report
         Optional<ReportB04> optionalReport = reportB04Repository.findByBusinessDetailBusinessDetailId(businessDetailId);
-        ReportB04DTO draft = reportB04Mapper.toDTO(optionalReport.orElse(null));
-        if (optionalReport.isEmpty()) {
+        ReportB04 reportB04 = optionalReport.orElse(null);
+        ReportB04DraftDTO draft = new ReportB04DraftDTO();
+        if (optionalReport.isEmpty()) { // chưa có trong db chắc chắn chưa tạo 
             draft = createReport(
                     CreateReportRequest.builder()
                             .businessDetailId(businessDetailId)
                             .reportYear(LocalDateTime.now().getYear())
                             .reportingPeriod("ANNUAL")
-                            .build());
+                            .build(),
+                    businessDetail);
+        } else {
+            if (reportCacheService.getDraftReport(draft.getReportId(), businessDetailId) == null) { // nếu có trong db
+                                                                                                    // mà chưa có trong
+                                                                                                    // cache
+                UUID reportId = reportB04.getReportId();
+                draft.setReportId(reportId);
+                draft.setReportInvestorDetail(
+                        reportInvestorDetailService.getReportInvestorDetailDTO(reportId, businessDetailId));
+                draft.setProducts(productService.getReportB04Part2(reportId, businessDetailId));
+                reportCacheService.saveDraftReport(draft, businessDetailId, reportId);
+            }
+            ;
         }
-
-        BusinessDetail businessDetail = businessDetailRepository
-                .findById(businessDetailId)
-                .orElseThrow(() -> exceptionFactory.createNotFoundException("BusinessDetail",
-                        businessDetailId, ReportError.BUSINESS_NOT_FOUND));
-
         return ReportB04DTO.builder()
                 .reportId(draft.getReportId())
                 .reportCode(draft.getReportCode())
@@ -226,7 +227,7 @@ public class ReportB04ServiceImpl implements ReportB04Service {
         }
 
         if (draftData.getCompletionPercentage() == null) {
-            int percentage = calculateCompletionPercentage(draftData);
+            double percentage = calculateCompletionPercentage(draftData);
             draftData.setCompletionPercentage(percentage);
         }
 
@@ -245,7 +246,7 @@ public class ReportB04ServiceImpl implements ReportB04Service {
         // part 1 update reportInvestorDetail
         saveOrUpdatePart(
                 report,
-                draftData.getReportInvestorDetailDTO(),
+                draftData.getReportInvestorDetail(),
                 () -> report.getReportInvestorDetail(),
                 reportInvestorDetailMapper::updateEntityFromDto,
                 reportInvestorDetailMapper::dtoToEntity,
@@ -256,7 +257,7 @@ public class ReportB04ServiceImpl implements ReportB04Service {
         // part 3
         saveOrUpdatePart(
                 report,
-                draftData.getResourcesSavingAndReductionDTO(),
+                draftData.getResourcesSavingAndReduction(),
                 () -> report.getResourcesSavingAndReduction(),
                 resourcesSavingAndReductionMapper::updateEntityFromDto,
                 resourcesSavingAndReductionMapper::dtoToEntity,
@@ -266,7 +267,7 @@ public class ReportB04ServiceImpl implements ReportB04Service {
         // part 4
         saveOrUpdatePart(
                 report,
-                draftData.getSymbiosisIndustryDTO(),
+                draftData.getSymbiosisIndustry(),
                 () -> report.getSymbiosisIndustry(),
                 symbiosisIndustryMapper::updateEntityFromDto,
                 symbiosisIndustryMapper::dtoToEntity,
@@ -290,10 +291,10 @@ public class ReportB04ServiceImpl implements ReportB04Service {
         }
 
         // part 2
-        ProductCreationListRequest products = null;
+        ProductListDTO products = null;
         if (saved.getProducts() != null) {
-            products = ProductCreationListRequest.builder()
-                    .products(productMapper.toDTOList(saved.getProducts()))
+            products = ProductListDTO.builder()
+                    .products(productMapper.toDTOListFromCreate(saved.getProducts()))
                     .build();
         }
         // part 3
@@ -332,18 +333,18 @@ public class ReportB04ServiceImpl implements ReportB04Service {
 
     private void saveOrUpdateProducts(ReportB04 report, ReportB04DraftDTO draftData) {
         // Lấy wrapper DTO
-        ProductCreationListRequest dtoWrapper = draftData.getProductDTOs();
+        ProductListDTO dtoWrapper = draftData.getProducts();
         if (dtoWrapper == null || dtoWrapper.getProducts() == null || dtoWrapper.getProducts().isEmpty()) {
             return;
         }
 
-        List<ProductCreationRequest> dtoList = dtoWrapper.getProducts();
+        List<ProductResponse> dtoList = dtoWrapper.getProducts();
         List<Product> existingEntities = report.getProducts();
 
         if (existingEntities != null && !existingEntities.isEmpty()) {
             // --- Update existing list ---
             for (int i = 0; i < dtoList.size(); i++) {
-                ProductCreationRequest dto = dtoList.get(i);
+                ProductResponse dto = dtoList.get(i);
                 if (i < existingEntities.size()) {
                     // Partial update entity hiện có
                     Product entity = existingEntities.get(i);
@@ -432,8 +433,8 @@ public class ReportB04ServiceImpl implements ReportB04Service {
     }
 
     private boolean isDraftComplete(ReportB04DraftDTO draftData) {
-        return draftData.getReportInvestorDetailDTO() != null
-                && draftData.getProductDTOs() != null;
+        return draftData.getReportInvestorDetail() != null
+                && draftData.getProducts() != null;
     }
 
     private <E, D, R> void saveOrUpdatePart(
