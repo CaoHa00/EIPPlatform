@@ -5,11 +5,11 @@ import java.util.UUID;
 import com.EIPplatform.model.dto.report.report05.CreateReportRequest;
 import com.EIPplatform.model.dto.report.reportB04.ReportB04DTO;
 import com.EIPplatform.model.dto.report.reportB04.ReportB04DraftDTO;
-import com.EIPplatform.model.entity.report.reportB04.ReportB04;
+import com.EIPplatform.model.entity.businessInformation.BusinessDetail;
 
 public interface  ReportB04Service {
     
-    ReportB04DTO createReport(CreateReportRequest request);
+    ReportB04DraftDTO createReport(CreateReportRequest request,BusinessDetail businessDetail);
 
     ReportB04DTO getOrCreateReportByBusinessDetailId(UUID businessDetailId);
 
@@ -33,5 +33,6 @@ public interface  ReportB04Service {
     //  * Cập nhật inspection remedy report cho report (trực tiếp vào database)
     //  */
     // InspectionRemedyResponse updateInspectionRemedyReport(UUID reportId, UpdateInspectionRemedyReportRequest request);
+
 
 }

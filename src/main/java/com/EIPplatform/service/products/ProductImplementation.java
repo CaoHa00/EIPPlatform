@@ -1,15 +1,14 @@
 package com.EIPplatform.service.products;
 
-import com.EIPplatform.exception.errorCategories.BusinessDetailError;
+import java.util.List;
+import java.util.UUID;
+import java.util.stream.Collectors;
 
-import lombok.AccessLevel;
-import lombok.RequiredArgsConstructor;
-import lombok.experimental.FieldDefaults;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.EIPplatform.exception.ExceptionFactory;
+import com.EIPplatform.exception.errorCategories.BusinessDetailError;
 import com.EIPplatform.exception.errorCategories.ProductError;
 import com.EIPplatform.mapper.businessInformation.ProductMapper;
 import com.EIPplatform.model.dto.businessInformation.products.ProductCreationRequest;
@@ -20,9 +19,10 @@ import com.EIPplatform.model.entity.businessInformation.products.Product;
 import com.EIPplatform.repository.businessInformation.BusinessDetailRepository;
 import com.EIPplatform.repository.businessInformation.ProductRepository;
 
-import java.util.List;
-import java.util.UUID;
-import java.util.stream.Collectors;
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Service
@@ -48,16 +48,16 @@ public class ProductImplementation implements ProductInterface {
                     ProductError.PRODUCT_NAME_ALREADY_EXISTS);
         }
 
-        Product entity = productMapper.toEntity(request);
+        Product entity = productMapper.toEntityFromCreate(request);
 
-        //Mapping businessDetail to product
-        BusinessDetail businessDetail = businessDetailRepository
-                .findById(request.getBusinessDetailId())
-                .orElseThrow(() -> exceptionFactory.createNotFoundException(
-                        "BusinessDetail",
-                        request.getBusinessDetailId(),
-                        BusinessDetailError.BUSINESS_DETAIL_ID_NOT_FOUND));
-        entity.setBusinessDetail(businessDetail);
+        // //Mapping businessDetail to product
+        // BusinessDetail businessDetail = businessDetailRepository
+        //         .findById(request.getBusinessDetailId())
+        //         .orElseThrow(() -> exceptionFactory.createNotFoundException(
+        //                 "BusinessDetail",
+        //                 request.getBusinessDetailId(),
+        //                 BusinessDetailError.BUSINESS_DETAIL_ID_NOT_FOUND));
+        // entity.setBusinessDetail(businessDetail);
 
 
         Product savedEntity = productRepository.save(entity);

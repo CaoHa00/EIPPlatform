@@ -9,9 +9,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.FieldDefaults;
-
-import java.util.UUID;
-
 @Getter
 @Setter
 @NoArgsConstructor
@@ -36,8 +33,5 @@ public class ProductCreationRequest {
     String productEnergyConsumedSources;
 
     String productImage;
-
-    @NotBlank(message = "FIELD_REQUIRED")
-    UUID businessDetailId;
 
 }

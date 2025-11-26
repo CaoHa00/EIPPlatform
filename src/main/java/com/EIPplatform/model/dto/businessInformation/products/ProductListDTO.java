@@ -21,3 +21,4 @@ public class ProductListDTO {
         @NotEmpty(message = "FIELD_REQUIRED")
         List<ProductResponse> products;
 }
+

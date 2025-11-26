@@ -4,7 +4,12 @@ import com.EIPplatform.model.dto.businessInformation.project.ProjectCreateReques
 import com.EIPplatform.model.dto.businessInformation.project.ProjectDTO;
 import com.EIPplatform.model.dto.businessInformation.project.ProjectResponseDto;
 import com.EIPplatform.model.entity.businessInformation.Project;
-import org.mapstruct.*;
+import org.mapstruct.BeanMapping;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.MappingTarget;
+import org.mapstruct.Named;
+import org.mapstruct.NullValuePropertyMappingStrategy;
 import java.util.List;
 
 @Mapper(componentModel = "spring")

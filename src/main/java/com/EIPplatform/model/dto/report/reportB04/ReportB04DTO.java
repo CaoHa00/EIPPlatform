@@ -3,11 +3,11 @@ package com.EIPplatform.model.dto.report.reportB04;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-import com.EIPplatform.model.dto.businessInformation.products.ProductCreationListRequest;
-import com.EIPplatform.model.dto.businessInformation.products.ProductDTO;
+import com.EIPplatform.model.dto.businessInformation.products.ProductListDTO;
 import com.EIPplatform.model.dto.report.reportB04.part1.ReportInvestorDetailDTO;
 import com.EIPplatform.model.dto.report.reportB04.part3.ResourcesSavingAndReductionDTO;
 import com.EIPplatform.model.dto.report.reportB04.part4.SymbiosisIndustryDTO;
+
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -42,7 +42,7 @@ public class ReportB04DTO {
     ReportInvestorDetailDTO reportInvestorDetail;
 
     // -- part 2 --
-    ProductCreationListRequest products;
+    ProductListDTO products;
 
     // -- part 3 --
     ResourcesSavingAndReductionDTO resourcesSavingAndReduction;

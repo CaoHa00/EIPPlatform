@@ -3,6 +3,7 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
 import com.EIPplatform.model.dto.report.reportB04.ReportB04DTO;
+import com.EIPplatform.model.dto.report.reportB04.ReportB04DraftDTO;
 import com.EIPplatform.model.entity.report.reportB04.ReportB04;
 @Mapper(componentModel = "spring")
 public interface ReportB04Mapper {
@@ -10,4 +11,8 @@ public interface ReportB04Mapper {
     @Mapping(target = "reportInvestorDetail", ignore = true)
     @Mapping(target = "products", ignore = true)
     ReportB04DTO toDTO(ReportB04 dto);
+
+    @Mapping(target = "reportInvestorDetail", ignore = true)
+    @Mapping(target = "products", ignore = true)
+    ReportB04DraftDTO toDraftDTO(ReportB04 dto);
 }

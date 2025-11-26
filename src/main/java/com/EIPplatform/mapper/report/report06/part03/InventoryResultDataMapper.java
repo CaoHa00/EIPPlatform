@@ -1,11 +1,15 @@
 package com.EIPplatform.mapper.report.report06.part03;
 
+import org.mapstruct.BeanMapping;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.MappingTarget;
+import org.mapstruct.NullValuePropertyMappingStrategy;
+import org.mapstruct.factory.Mappers;
+
 import com.EIPplatform.model.dto.report.report06.part03.inventoryResultData.InventoryResultDataCreateDTO;
 import com.EIPplatform.model.dto.report.report06.part03.inventoryResultData.InventoryResultDataDTO;
-import com.EIPplatform.model.dto.report.report06.part03.inventoryResultData.InventoryResultDataUpdateDTO;
 import com.EIPplatform.model.entity.report.report06.part03.InventoryResultData;
-import org.mapstruct.*;
-import org.mapstruct.factory.Mappers;
 
 @Mapper(componentModel = "spring", uses = {EmissionDataMapper.class, ResultMapper.class, UncertaintyEvaluationMapper.class})
 public interface InventoryResultDataMapper {

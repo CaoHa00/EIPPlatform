@@ -50,7 +50,7 @@ public class Product {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "business_detail_id")
     @JsonBackReference(value = "businessDetail-products")
-    private BusinessDetail businessDetail;
+    BusinessDetail businessDetail;
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "report_b04_id", nullable = true, unique = true)

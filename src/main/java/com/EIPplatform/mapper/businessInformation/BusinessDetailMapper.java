@@ -1,18 +1,21 @@
 package com.EIPplatform.mapper.businessInformation;
 
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
+import org.mapstruct.BeanMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.MappingTarget;
+import org.mapstruct.NullValuePropertyMappingStrategy;
+import org.mapstruct.ReportingPolicy;
 
-import com.EIPplatform.model.dto.businessInformation.BusinessDetailResponse;
 import com.EIPplatform.model.dto.businessInformation.BusinessDetailDTO;
+import com.EIPplatform.model.dto.businessInformation.BusinessDetailResponse;
 import com.EIPplatform.model.entity.businessInformation.BusinessDetail;
 import com.EIPplatform.model.entity.businessInformation.legalRepresentative.LegalRepresentative;
 import com.EIPplatform.model.entity.user.authentication.UserAccount;
-import org.mapstruct.*;
-import java.util.UUID;
 
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public interface BusinessDetailMapper {
