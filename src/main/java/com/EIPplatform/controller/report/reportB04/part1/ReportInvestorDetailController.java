@@ -33,6 +33,7 @@ public class ReportInvestorDetailController {
             @RequestParam UUID businessDetailId,
             @RequestBody @Valid ReportInvestorDetailCreateRequest request) {
         var result = service.createReportInvestorDetailDTO(reportId, businessDetailId, request);
+
         return ApiResponse.<ReportInvestorDetailDTO>builder()
                 .result(result)
                 .build();

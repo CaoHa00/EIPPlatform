@@ -9,27 +9,27 @@ public interface ResourcesSavingAndReductionService {
     /**
      * Tạo ResourcesSavingAndReduction mới từ request và lưu vào draft cache
      * @param reportId ID của báo cáo
-     * @param userAccountId ID của người dùng
+     * @param businessDetailId ID của người dùng
      * @param request Dữ liệu tạo mới
      * @return DTO của ResourcesSavingAndReduction đã tạo
      */
-    ResourcesSavingAndReductionDTO createResourcesSavingAndReduction(
-            UUID reportId, UUID userAccountId, ResourcesSavingAndReductionCreateRequestDTO request);
+    ResourcesSavingAndReductionDTO createReportB04Part3(
+            UUID reportId, UUID businessDetailId, ResourcesSavingAndReductionCreateRequestDTO request);
 
     /**
      * Lấy ResourcesSavingAndReduction từ draft cache
      * @param reportId ID của báo cáo
-     * @param userAccountId ID của người dùng
+     * @param businessDetailId ID của người dùng
      * @return DTO của ResourcesSavingAndReduction hoặc null nếu không tồn tại
      */
-    ResourcesSavingAndReductionDTO getResourcesSavingAndReduction(UUID reportId, UUID userAccountId);
+    ResourcesSavingAndReductionDTO getReportB04Part3(UUID reportId, UUID businessDetailId);
 
     /**
      * Xóa ResourcesSavingAndReduction khỏi draft cache
      * @param reportId ID của báo cáo
-     * @param userAccountId ID của người dùng
+     * @param businessDetailId ID của người dùng
      */
-    void deleteResourcesSavingAndReduction(UUID reportId, UUID userAccountId);
+    void deleteReportB04Part3(UUID reportId, UUID businessDetailId);
 
 
 }

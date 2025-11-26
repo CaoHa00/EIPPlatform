@@ -16,7 +16,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class SymbiosisIndustryUpdateDTO {
+public class SymbiosisIndustryUpdateRequestDTO {
 
     // Indus
     String indusSymCount;
@@ -107,5 +107,5 @@ public class SymbiosisIndustryUpdateDTO {
 
     // Relationships (optional - include only if needed)
     private UUID reportB04Id;
-    private List<SymCompanyUpdateDTO> symCompanies;
+    private List<SymCompanyUpdateRequestDTO> symCompanies;
 }

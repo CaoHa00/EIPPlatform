@@ -1,9 +1,8 @@
 package com.EIPplatform.model.dto.report.reportB04.part4;
 
 import java.util.List;
-import java.util.UUID;
 
-import com.EIPplatform.model.dto.report.reportB04.part4.request.SymCompanyCreateDTO;
+import com.EIPplatform.model.dto.report.reportB04.part4.request.SymCompanyCreateRequestDTO;
 
 import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
@@ -109,5 +108,5 @@ public class SymbiosisIndustryDTO {
     String symServiceSharingCostSaving;
 
     // Relationships (optional - include only if needed)
-    List<SymCompanyCreateDTO> symCompanies;
+    List<SymCompanyCreateRequestDTO> symCompanies;
 }

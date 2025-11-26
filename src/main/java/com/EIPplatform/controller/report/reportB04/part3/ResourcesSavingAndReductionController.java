@@ -26,33 +26,33 @@ import java.util.UUID;
 public class ResourcesSavingAndReductionController {
     ResourcesSavingAndReductionService resourcesSavingAndReductionService;
 
-    @PostMapping(value="/{reportId}/draft/resources-saving-and-reduction")
-    public ApiResponse<ResourcesSavingAndReductionDTO> createResourcesSavingAndReduction (
+    @PostMapping(value="/{reportId}/draft/part-3")
+    public ApiResponse<ResourcesSavingAndReductionDTO> createReportB04Part3(
             @PathVariable UUID reportId,
             @RequestParam UUID userAccountId,
             @RequestPart("data") @Valid ResourcesSavingAndReductionCreateRequestDTO request
     ) {
-        var result = resourcesSavingAndReductionService.createResourcesSavingAndReduction(reportId, userAccountId, request);
+        var result = resourcesSavingAndReductionService.createReportB04Part3(reportId, userAccountId, request);
         return ApiResponse.<ResourcesSavingAndReductionDTO>builder()
                 .result(result)
                 .build();
     }
-    @GetMapping(value="/{reportId}/draft/resources-saving-and-reduction")
-    public ApiResponse<ResourcesSavingAndReductionDTO> getResourcesSavingAndReduction (
+    @GetMapping(value="/{reportId}/draft/part-3")
+    public ApiResponse<ResourcesSavingAndReductionDTO> getReportB04Part3(
             @PathVariable UUID reportId,
             @RequestParam UUID userAccountId
     ) {
-        var result = resourcesSavingAndReductionService.getResourcesSavingAndReduction(reportId, userAccountId);
+        var result = resourcesSavingAndReductionService.getReportB04Part3(reportId, userAccountId);
         return ApiResponse.<ResourcesSavingAndReductionDTO>builder()
                 .result(result)
                 .build();
     }
-    @DeleteMapping(value="/{reportId}/draft/resources-saving-and-reduction")
-    public ApiResponse<Void> deleteResourcesSavingAndReduction (
+    @DeleteMapping(value="/{reportId}/draft/part-3")
+    public ApiResponse<Void> deleteReportB04Part3(
             @PathVariable UUID reportId,
             @RequestParam UUID userAccountId
     ) {
-      resourcesSavingAndReductionService.deleteResourcesSavingAndReduction(reportId, userAccountId);
+      resourcesSavingAndReductionService.deleteReportB04Part3(reportId, userAccountId);
       return ApiResponse.<Void>builder()
               .build();
     }
