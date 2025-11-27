@@ -13,7 +13,7 @@ WORKDIR /app
 COPY target/EIPplatform-0.0.1-SNAPSHOT.jar app.jar
 
 # Expose port
-EXPOSE 7000
+EXPOSE 7001
 
 # JVM options
 ENV JAVA_TOOL_OPTIONS="-Djava.awt.headless=true -XX:MaxRAMPercentage=75.0"
