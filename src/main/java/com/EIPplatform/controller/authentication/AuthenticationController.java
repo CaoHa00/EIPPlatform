@@ -1,80 +1,116 @@
-package com.EIPplatform.controller.authentication;
+// package com.EIPplatform.controller.authentication;
 
-import java.text.ParseException;
+// import java.text.ParseException;
+// import java.time.Duration;
+// import org.springframework.http.HttpHeaders;
+// import org.springframework.http.ResponseCookie;
+// import org.springframework.web.bind.annotation.PostMapping;
+// import org.springframework.web.bind.annotation.RequestBody;
+// import org.springframework.web.bind.annotation.RequestMapping;
+// import org.springframework.web.bind.annotation.RestController;
 
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.ResponseCookie;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+// import com.EIPplatform.annotations.RateLimit;
+// import com.EIPplatform.model.dto.api.ApiResponse;
+// import com.EIPplatform.model.dto.authentication.AuthenticationResponse;
+// import com.EIPplatform.model.dto.authentication.IsValidTokenRequest;
+// import com.EIPplatform.model.dto.authentication.IsValidTokenResponse;
+// import com.EIPplatform.model.dto.authentication.LoginRequest;
+// import com.EIPplatform.model.dto.authentication.UserAccountAuthenticationResponse;
+// import com.EIPplatform.service.authentication.AuthenticationServiceInterface;
+// import com.nimbusds.jose.JOSEException;
 
-import com.EIPplatform.annotations.RateLimit;
-import com.EIPplatform.model.dto.api.ApiResponse;
-import com.EIPplatform.model.dto.authentication.AuthenticationResponse;
-import com.EIPplatform.model.dto.authentication.IsValidTokenRequest;
-import com.EIPplatform.model.dto.authentication.IsValidTokenResponse;
-import com.EIPplatform.model.dto.authentication.LoginRequest;
-import com.EIPplatform.model.dto.authentication.UserAccountAuthenticationResponse;
-import com.EIPplatform.service.authentication.AuthenticationServiceInterface;
-import com.nimbusds.jose.JOSEException;
+// import jakarta.servlet.http.HttpServletRequest;
+// import jakarta.servlet.http.HttpServletResponse;
+// import jakarta.validation.Valid;
+// import lombok.AccessLevel;
+// import lombok.RequiredArgsConstructor;
+// import lombok.experimental.FieldDefaults;
 
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import jakarta.validation.Valid;
-import lombok.AccessLevel;
-import lombok.RequiredArgsConstructor;
-import lombok.experimental.FieldDefaults;
+// @RestController
+// @RequestMapping("/api/v1/authentication")
+// @RequiredArgsConstructor
+// @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+// public class AuthenticationController {
 
-@RestController
-@RequestMapping("/api/v1/authentication")
-@RequiredArgsConstructor
-@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-public class AuthenticationController {
+//     AuthenticationServiceInterface authenticationService;
 
-    AuthenticationServiceInterface authenticationService;
+//     @PostMapping("/checkJWTToken")
+//     @RateLimit(value = "session")
+//     ApiResponse<IsValidTokenResponse> checkJWTToken(@RequestBody IsValidTokenRequest request)
+//             throws JOSEException, ParseException {
+//         var result = authenticationService.checkJWTToken(request);
 
-    @PostMapping("/checkJWTToken")
-    @RateLimit(value = "session")
-    ApiResponse<IsValidTokenResponse> checkJWTToken(@RequestBody IsValidTokenRequest request)
-            throws JOSEException, ParseException {
-        var result = authenticationService.checkJWTToken(request);
+//         return ApiResponse.<IsValidTokenResponse>builder()
+//                 .message("Check Successfully!")
+//                 .result(result)
+//                 .build();
+//     }
 
-        return ApiResponse.<IsValidTokenResponse>builder()
-                .message("Check Successfully!")
-                .result(result)
-                .build();
-    }
+//     @PostMapping("/logout")
+//     public ApiResponse<Void> logout(HttpServletRequest request, HttpServletResponse response) {
 
-    @PostMapping("/logout")
-    public ApiResponse<Void> logout(HttpServletRequest request, HttpServletResponse response) {
+//         request.getSession().invalidate();
+//         ResponseCookie deleteSessionCookie = ResponseCookie.from("JSESSIONID", "")
+//                 .path("/")
+//                 .maxAge(0)
+//                 .sameSite("Lax")
+//                 .build();
 
-        request.getSession().invalidate();
-        ResponseCookie deleteSessionCookie = ResponseCookie.from("JSESSIONID", "")
-                .path("/")
-                .maxAge(0)
-                .sameSite("Lax")
-                .build();
+//         response.addHeader(HttpHeaders.SET_COOKIE, deleteSessionCookie.toString());
+//         return ApiResponse.<Void>builder()
+//                 .message("Logout successfully!")
+//                 .build();
+//     }
 
-        response.addHeader(HttpHeaders.SET_COOKIE, deleteSessionCookie.toString());
-        return ApiResponse.<Void>builder()
-                .message("Logout successfully!")
-                .build();
-    }
+//     @PostMapping("/login")
+//     public ApiResponse<UserAccountAuthenticationResponse> loginAuthentication(
+//             @Valid @RequestBody LoginRequest request,
+//             HttpServletRequest httpRequest) {
 
-    @PostMapping("/login")
-    public ApiResponse<UserAccountAuthenticationResponse> loginAuthentication(
-            @Valid @RequestBody LoginRequest request,
-            HttpServletRequest httpRequest) {
+//         AuthenticationResponse authResult = authenticationService.loginAuthenticate(request, httpRequest);
 
-        AuthenticationResponse authResult = authenticationService.loginAuthenticate(request, httpRequest);
+//         // ✅ Lưu user vào session (đăng nhập thành công)
+//         httpRequest.getSession(true).setAttribute("loggedUser", authResult.getUser());
 
-        // ✅ Lưu user vào session (đăng nhập thành công)
-        httpRequest.getSession(true).setAttribute("loggedUser", authResult.getUser());
+//         return ApiResponse.<UserAccountAuthenticationResponse>builder()
+//                 .message("Login successfully!")
+//                 .result(authResult.getUser())
+//                 .build();
+//     }
 
-        return ApiResponse.<UserAccountAuthenticationResponse>builder()
-                .message("Login successfully!")
-                .result(authResult.getUser())
-                .build();
-    }
-}
+//     @PostMapping("/refresh")
+//     @RateLimit(value = "session")
+//     ApiResponse<AuthenticationResponse> refreshToken(HttpServletRequest request, HttpServletResponse response)
+//             throws Exception {
+//         var result = authenticationService.refreshToken(request);
+
+//         if (result.getTokens().getRefreshToken() != null) {
+//             ResponseCookie refreshCookie = ResponseCookie
+//                     .from("refreshToken", result.getTokens().getRefreshToken())
+//                     .httpOnly(true)
+//                     .secure(true)
+//                     .path("/")
+//                     .maxAge(Duration.ofSeconds(24 * 60 * 60))
+//                     .sameSite("Lax")
+//                     .build();
+
+//             response.addHeader(HttpHeaders.SET_COOKIE, refreshCookie.toString());
+//             result.getTokens().setRefreshToken(null);
+//         }
+
+//         String rolesValue = String.join(",", result.getUser().getRoles());
+//         ResponseCookie rolesCookie = ResponseCookie.from("userRoles", rolesValue)
+//                 .httpOnly(true)
+//                 .secure(true)
+//                 .path("/")
+//                 .maxAge(Duration.ofHours(1))
+//                 .sameSite("Lax")
+//                 .build();
+
+//         response.addHeader(HttpHeaders.SET_COOKIE, rolesCookie.toString());
+
+//         return ApiResponse.<AuthenticationResponse>builder()
+//                 .result(result)
+//                 .build();
+//     }
+// }

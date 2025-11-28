@@ -1,5 +1,5 @@
 
-package com.EIPplatform.util;
+package com.EIPplatform.utils;
 
 import com.EIPplatform.exception.ExceptionFactory;
 import com.EIPplatform.exception.errorCategories.BusinessDetailError;

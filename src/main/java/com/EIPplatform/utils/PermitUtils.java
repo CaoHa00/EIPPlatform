@@ -1,5 +1,5 @@
 
-package com.EIPplatform.util;
+package com.EIPplatform.utils;
 
 import java.util.Arrays;
 import java.util.UUID;

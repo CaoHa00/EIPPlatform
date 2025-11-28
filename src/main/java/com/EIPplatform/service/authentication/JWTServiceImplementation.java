@@ -52,8 +52,8 @@
 //     @Value("${jwt.refreshToken}")
 //     long REFRESH_TOKEN_TIME;
 
-//     String ISSUER = "EIU-IIC4.0-SBMS";
-//     String AUDIENCE = "EIU-IIC4.0-sbms-application";
+//     String ISSUER = "EIU-IIC4.0-EIP";
+//     String AUDIENCE = "EIU-IIC4.0-eip-application";
 
 //     InvalidatedTokenRepository invalidatedTokenRepository;
 //     RedisSessionService redisSessionService;
