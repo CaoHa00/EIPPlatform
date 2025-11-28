@@ -1,0 +1,36 @@
+package com.EIPplatform.exception.errorCategories;
+
+import com.EIPplatform.exception.ErrorCodeInterface;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatusCode;
+import org.springframework.http.HttpStatus;
+
+@RequiredArgsConstructor
+public enum FormError implements ErrorCodeInterface {
+    SURVEY_FORM_NOT_FOUND(40401, "Survey form not found", HttpStatus.NOT_FOUND),
+    SURVEY_FORM_CATEGORY_NOT_FOUND(40402, "Survey form category not found", HttpStatus.NOT_FOUND),
+    QUESTION_NOT_FOUND(40403, "Question not found", HttpStatus.NOT_FOUND),
+    QUESTION_CATEGORY_NOT_FOUND(40404, "Question category not found", HttpStatus.NOT_FOUND),
+    QUESTION_OPTION_NOT_FOUND(40405, "Question option not found", HttpStatus.NOT_FOUND),
+    SUBMISSION_NOT_FOUND(40406, "Submission not found", HttpStatus.NOT_FOUND),
+    SUBMISSIONS_EXIST(40001, "Cannot delete survey with existing submissions", HttpStatus.BAD_REQUEST);
+
+    private final int code;
+    private final String message;
+    private final HttpStatusCode statusCode;
+
+    @Override
+    public int getCode() {
+        return this.code;
+    }
+
+    @Override
+    public String getMessage() {
+        return this.message;
+    }
+
+    @Override
+    public HttpStatusCode getStatusCode() {
+        return this.statusCode;
+    }
+}

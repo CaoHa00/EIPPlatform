@@ -75,7 +75,15 @@ public enum ValidationError implements ErrorCodeInterface {
     INVALID_PROJECT_NAME(9057, "Invalid project name", HttpStatus.BAD_REQUEST),
     PERMIT_EXPIRED(9058, "Permit has expired", HttpStatus.BAD_REQUEST),
     NO_PERMITS_TO_DELETE(9059, "No permits found to delete", HttpStatus.BAD_REQUEST),
-    CANNOT_DELETE_ACTIVE_PERMIT(9060, "Cannot delete active permit. Please deactivate first", HttpStatus.BAD_REQUEST);
+    CANNOT_DELETE_ACTIVE_PERMIT(9060, "Cannot delete active permit. Please deactivate first", HttpStatus.BAD_REQUEST),
+
+    // Form-specific validation errors
+    INVALID_QUESTION_TYPE(9061, "Question type is not valid", HttpStatus.BAD_REQUEST),
+    DISPLAY_ORDER_ALREADY_EXISTS(9062, "displayOrder already used by another item.", HttpStatus.BAD_REQUEST),
+    FORM_INACTIVE(9063, "Form is inactive.", HttpStatus.BAD_REQUEST),
+    FORM_EXPIRED(9064, "Form has expired.", HttpStatus.BAD_REQUEST),
+    REQUIRED_QUESTION(9065, "This question is required.", HttpStatus.BAD_REQUEST);
+
 
     int code;
     String message;
