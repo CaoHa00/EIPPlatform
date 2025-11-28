@@ -11,7 +11,8 @@ import com.EIPplatform.model.entity.report.reportB04.part04.SymbiosisIndustry;
 import com.EIPplatform.repository.report.reportB04.ReportB04Repository;
 import com.EIPplatform.service.report.reportCache.ReportCacheFactory;
 import com.EIPplatform.service.report.reportCache.ReportCacheService;
-import com.EIPplatform.util.StringNormalizerUtil;
+import com.EIPplatform.utils.StringNormalizerUtil;
+
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -69,9 +70,9 @@ public class SymbiosisIndustryServiceImpl implements SymbiosisIndustryService{
     @Override
     public SymbiosisIndustryDTO getReportB04Part4(UUID reportId, UUID businessDetailId) {
         ReportB04DraftDTO draft = reportCacheService.getDraftReport(reportId, businessDetailId);
-        if(draft != null && draft.getSymbiosisIndustryDTO() != null){
+        if(draft != null && draft.getSymbiosisIndustry() != null){
             log.info("Found SymbiosisIndustry in cache - reportId: {}, businessDetailId: {}", reportId, businessDetailId);
-            return draft.getSymbiosisIndustryDTO();
+            return draft.getSymbiosisIndustry();
         }
         log.warn("SymbiosisIndustry not found in cache - reportId: {}, businessDetailId: {}", reportId, businessDetailId);
         return null;
@@ -81,7 +82,7 @@ public class SymbiosisIndustryServiceImpl implements SymbiosisIndustryService{
     public void deleteReportB04Part4(UUID reportId, UUID businessDetailId) {
         ReportB04DraftDTO draft = reportCacheService.getDraftReport(reportId, businessDetailId);
         if(draft != null){
-            SymbiosisIndustryDTO dto = draft.getSymbiosisIndustryDTO();
+            SymbiosisIndustryDTO dto = draft.getSymbiosisIndustry();
             if(dto != null){
                 reportCacheService.updateSectionData(reportId, businessDetailId, null, "symbiosisIndustryDTO");
                 log.info("Deleted SymbiosisIndustry from cache - reportId: {}, businessDetailId: {}", reportId,

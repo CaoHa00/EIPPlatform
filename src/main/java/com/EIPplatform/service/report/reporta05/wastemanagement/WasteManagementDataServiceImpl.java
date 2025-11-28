@@ -3,7 +3,6 @@ package com.EIPplatform.service.report.reporta05.wastemanagement;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-import com.EIPplatform.util.StringNormalizerUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,6 +18,7 @@ import com.EIPplatform.model.entity.report.report05.wastemanagement.WasteManagem
 import com.EIPplatform.repository.report.ReportA05Repository;
 import com.EIPplatform.service.report.reportCache.ReportCacheFactory;
 import com.EIPplatform.service.report.reportCache.ReportCacheService;
+import com.EIPplatform.utils.StringNormalizerUtil;
 
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;

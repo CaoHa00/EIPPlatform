@@ -11,7 +11,8 @@ import com.EIPplatform.model.entity.report.reportB04.part03.ResourcesSavingAndRe
 import com.EIPplatform.repository.report.reportB04.ReportB04Repository;
 import com.EIPplatform.service.report.reportCache.ReportCacheFactory;
 import com.EIPplatform.service.report.reportCache.ReportCacheService;
-import com.EIPplatform.util.StringNormalizerUtil;
+import com.EIPplatform.utils.StringNormalizerUtil;
+
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -74,9 +75,9 @@ public class ResourcesSavingAndReductionServiceImpl implements ResourcesSavingAn
     @Transactional(readOnly = true)
     public ResourcesSavingAndReductionDTO getReportB04Part3(UUID reportId, UUID businessDetailId) {
         ReportB04DraftDTO draft = reportCacheService.getDraftReport(reportId, businessDetailId);
-        if(draft != null && draft.getResourcesSavingAndReductionDTO() != null){
+        if(draft != null && draft.getResourcesSavingAndReduction() != null){
             log.info("Found ResourcesSavingAndReduction in cache - reportId: {}, businessDetailId: {}", reportId, businessDetailId);
-            return draft.getResourcesSavingAndReductionDTO();
+            return draft.getResourcesSavingAndReduction();
         }
         log.warn("ResourcesSavingAndReduction not found in cache - reportId: {}, businessDetailId: {}", reportId, businessDetailId);
         return null;
@@ -86,7 +87,7 @@ public class ResourcesSavingAndReductionServiceImpl implements ResourcesSavingAn
     public void deleteReportB04Part3(UUID reportId, UUID businessDetailId) {
         ReportB04DraftDTO draft = reportCacheService.getDraftReport(reportId, businessDetailId);
         if(draft != null){
-            ResourcesSavingAndReductionDTO dto = draft.getResourcesSavingAndReductionDTO();
+            ResourcesSavingAndReductionDTO dto = draft.getResourcesSavingAndReduction();
             if(dto != null){
                 reportCacheService.updateSectionData(reportId, businessDetailId, null, "resourcesSavingAndReductionDTO");
                 log.info("Deleted ResourcesSavingAndReduction from cache - reportId: {}, businessDetailId: {}", reportId,

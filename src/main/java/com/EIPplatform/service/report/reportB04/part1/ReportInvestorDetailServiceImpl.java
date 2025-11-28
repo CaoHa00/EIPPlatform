@@ -26,7 +26,7 @@ import com.EIPplatform.repository.report.reportB04.ReportB04Repository;
 import com.EIPplatform.service.fileStorage.FileStorageService;
 import com.EIPplatform.service.report.reportCache.ReportCacheFactory;
 import com.EIPplatform.service.report.reportCache.ReportCacheService;
-import com.EIPplatform.util.StringNormalizerUtil;
+import com.EIPplatform.utils.StringNormalizerUtil;
 
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
