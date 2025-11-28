@@ -37,7 +37,7 @@ import com.EIPplatform.repository.businessInformation.BusinessDetailRepository;
 import com.EIPplatform.repository.permitshistory.EnvComponentPermitRepository;
 import com.EIPplatform.repository.permitshistory.EnvPermitsRepository;
 import com.EIPplatform.service.fileStorage.FileStorageService;
-import com.EIPplatform.util.PermitUtils;
+import com.EIPplatform.utils.PermitUtils;
 
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;

@@ -11,7 +11,8 @@ import com.EIPplatform.model.entity.report.report05.wastewatermanager.WasteWater
 import com.EIPplatform.service.fileStorage.FileStorageService;
 import com.EIPplatform.service.report.reportCache.ReportCacheFactory;
 import com.EIPplatform.service.report.reportCache.ReportCacheService;
-import com.EIPplatform.util.StringNormalizerUtil;
+import com.EIPplatform.utils.StringNormalizerUtil;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;

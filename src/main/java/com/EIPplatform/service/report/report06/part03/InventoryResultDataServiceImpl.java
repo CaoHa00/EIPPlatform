@@ -4,27 +4,27 @@ package com.EIPplatform.service.report.report06.part03;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-import com.EIPplatform.exception.errorCategories.InventoryResultError;
-import com.EIPplatform.mapper.report.report06.part03.InventoryResultDataMapper;
-import com.EIPplatform.model.dto.report.report06.part03.inventoryResultData.InventoryResultDataCreateDTO;
-import com.EIPplatform.model.dto.report.report06.part03.inventoryResultData.InventoryResultDataDTO;
-import com.EIPplatform.model.entity.report.report06.part03.InventoryResultData;
-import com.EIPplatform.repository.report.report06.Report06Repository;
-import com.EIPplatform.service.report.reportCache.ReportCacheFactory;
-import com.EIPplatform.service.report.reportCache.ReportCacheService;
-import com.EIPplatform.util.StringNormalizerUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.EIPplatform.exception.ExceptionFactory;
+import com.EIPplatform.exception.errorCategories.InventoryResultError;
+import com.EIPplatform.mapper.report.report06.part03.InventoryResultDataMapper;
 import com.EIPplatform.model.dto.report.report06.Report06DraftDTO;
+import com.EIPplatform.model.dto.report.report06.part03.inventoryResultData.InventoryResultDataCreateDTO;
+import com.EIPplatform.model.dto.report.report06.part03.inventoryResultData.InventoryResultDataDTO;
 import com.EIPplatform.model.entity.report.report06.Report06;
+import com.EIPplatform.model.entity.report.report06.part03.InventoryResultData;
+import com.EIPplatform.repository.report.report06.Report06Repository;
+import com.EIPplatform.service.report.reportCache.ReportCacheFactory;
+import com.EIPplatform.service.report.reportCache.ReportCacheService;
+import com.EIPplatform.utils.StringNormalizerUtil;
 
+import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
-import lombok.AccessLevel;
 
 @Service
 @Slf4j

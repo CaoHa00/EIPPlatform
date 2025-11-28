@@ -25,7 +25,7 @@ import com.EIPplatform.repository.businessInformation.ProductRepository;
 import com.EIPplatform.repository.report.reportB04.ReportB04Repository;
 import com.EIPplatform.service.report.reportCache.ReportCacheFactory;
 import com.EIPplatform.service.report.reportCache.ReportCacheService;
-import com.EIPplatform.util.StringNormalizerUtil;
+import com.EIPplatform.utils.StringNormalizerUtil;
 
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -104,7 +104,7 @@ public class ReportB04Part2ServiceImpl implements ReportB04Part2Service {
                 reportB04Id,
                 businessDetailId,
                 responseList,
-                "ProductListDTO");
+                "Products");
 
         log.info("Created product list for reportB04 part 2 - reportB04Id: {}, businessDetailId: {}",
                 reportB04Id, businessDetailId);
