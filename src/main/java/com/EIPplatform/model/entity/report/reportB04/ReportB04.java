@@ -1,8 +1,9 @@
 package com.EIPplatform.model.entity.report.reportB04;
 
 import java.time.LocalDateTime;
-import java.util.UUID;
 import java.util.List;
+import java.util.UUID;
+
 import org.hibernate.annotations.UuidGenerator;
 
 import com.EIPplatform.model.entity.businessInformation.BusinessDetail;
@@ -13,7 +14,6 @@ import com.EIPplatform.model.entity.report.reportB04.part04.SymbiosisIndustry;
 import com.EIPplatform.model.entity.user.authentication.UserAccount;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
-
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -111,7 +111,7 @@ public class ReportB04 {
     ReportInvestorDetail reportInvestorDetail;
 
     // -- part 2 --
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
+    @OneToMany(mappedBy = "reportB04",cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     List<Product> products;
     
     // -- part 3 --

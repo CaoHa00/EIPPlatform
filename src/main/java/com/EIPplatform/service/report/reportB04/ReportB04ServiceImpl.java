@@ -36,7 +36,6 @@ import com.EIPplatform.repository.businessInformation.ProductRepository;
 import com.EIPplatform.repository.report.reportB04.ReportB04Repository;
 import com.EIPplatform.repository.report.reportB04.part1.ReportInvestorDetailRepository;
 import com.EIPplatform.service.fileStorage.FileStorageService;
-import com.EIPplatform.service.products.ProductInterface;
 import com.EIPplatform.service.report.reportB04.part1.ReportInvestorDetailService;
 import com.EIPplatform.service.report.reportB04.part2.ReportB04Part2Service;
 import com.EIPplatform.service.report.reportCache.ReportCacheFactory;
@@ -113,10 +112,11 @@ public class ReportB04ServiceImpl implements ReportB04Service {
 
     @Override
     @Transactional
-    public ReportB04DraftDTO createReport(CreateReportRequest request, BusinessDetail businessDetail) {
+    public ReportB04DraftDTO createReport(CreateReportRequest request, ReportB04 reportB04,
+            BusinessDetail businessDetail) {
         String reportCode = "RPT-" + java.util.UUID.randomUUID().toString().substring(0, 8).toUpperCase();
-
-        ReportB04 report = ReportB04.builder()
+        UUID businessDetailId = businessDetail.getBusinessDetailId();
+        reportB04 = ReportB04.builder()
                 .reportCode(reportCode)
                 .businessDetail(businessDetail)
                 .reportYear(request.getReportYear())
@@ -126,60 +126,67 @@ public class ReportB04ServiceImpl implements ReportB04Service {
                 .completionPercentage(0.0)
                 .build();
 
-        ReportB04 saved = reportB04Repository.save(report);
+        reportB04 = reportB04Repository.save(reportB04);
+        ReportB04DraftDTO draft = createDraftReportInCache(reportB04, businessDetailId);
+        return draft;
+    }
+
+    private ReportB04DraftDTO createDraftReportInCache(ReportB04 reportB04, UUID businessDetailId) {
         ReportB04DraftDTO draft = ReportB04DraftDTO.builder()
-                .reportId(saved.getReportId())
+                .reportId(reportB04.getReportId())
                 .isDraft(true)
                 .lastModified(LocalDateTime.now())
                 .build();
-        reportCacheService.saveDraftReport(draft, request.getBusinessDetailId(), saved.getReportId());
+        UUID reportId = reportB04.getReportId();
+
+        draft.setReportId(reportId);
+        draft.setReportInvestorDetail(
+                reportInvestorDetailService.getReportInvestorDetailDTO(reportId, businessDetailId));
+        draft.setProducts(productService.getReportB04Part2(reportId, businessDetailId));
+        reportCacheService.saveDraftReport(draft, businessDetailId, reportB04.getReportId());
         return draft;
     }
 
     @Override
     @Transactional
     public ReportB04DTO getOrCreateReportByBusinessDetailId(UUID businessDetailId) {
-
-        // 1. Kiểm tra business (CHỈ KHI CÓ businessDetailId)
         BusinessDetail businessDetail = null;
         if (businessDetailId != null) {
-            businessDetail = businessDetailRepository
-                    .findById(businessDetailId)
-                    .orElseThrow(() -> exceptionFactory.createNotFoundException("BusinessDetail",
-                            businessDetailId, ReportError.BUSINESS_NOT_FOUND));
+            businessDetail = businessDetailRepository.findById(businessDetailId).orElseThrow(() -> exceptionFactory.createNotFoundException("BusinessDetail", businessDetailId, ReportError.BUSINESS_NOT_FOUND));
         }
-        // 1. Fetch basic report
-        Optional<ReportB04> optionalReport = reportB04Repository.findByBusinessDetailBusinessDetailId(businessDetailId);
-        ReportB04 reportB04 = optionalReport.orElse(null);
-        ReportB04DraftDTO draft = new ReportB04DraftDTO();
-        if (optionalReport.isEmpty()) { // chưa có trong db chắc chắn chưa tạo 
+        // 2. Kiểm tra report B04 đã tồn tại chưa
+        ReportB04 reportB04 = reportB04Repository
+                .findByBusinessDetailBusinessDetailId(businessDetailId)
+                .orElse(null);
+
+        ReportB04DraftDTO draft;
+
+        if (reportB04 != null) {
+            // 3. Lấy draft từ cache nếu có
+            draft = getDraftData(reportB04.getReportId(), businessDetailId);
+            if (draft == null) {
+                // 4. Nếu draft chưa có trong cache thì tạo mới
+                draft = createDraftReportInCache(reportB04, businessDetailId);
+            }
+        } else {
+            // 5. Nếu report chưa có, tạo mới và draft luôn
             draft = createReport(
                     CreateReportRequest.builder()
                             .businessDetailId(businessDetailId)
                             .reportYear(LocalDateTime.now().getYear())
                             .reportingPeriod("ANNUAL")
                             .build(),
-                    businessDetail);
-        } else {
-            if (reportCacheService.getDraftReport(draft.getReportId(), businessDetailId) == null) { // nếu có trong db
-                                                                                                    // mà chưa có trong
-                                                                                                    // cache
-                UUID reportId = reportB04.getReportId();
-                draft.setReportId(reportId);
-                draft.setReportInvestorDetail(
-                        reportInvestorDetailService.getReportInvestorDetailDTO(reportId, businessDetailId));
-                draft.setProducts(productService.getReportB04Part2(reportId, businessDetailId));
-                reportCacheService.saveDraftReport(draft, businessDetailId, reportId);
-            }
-            ;
+                    null, // reportB04 chưa có
+                    businessDetail
+            );
         }
+
+        // 6. Trả về DTO
         return ReportB04DTO.builder()
                 .reportId(draft.getReportId())
                 .reportCode(draft.getReportCode())
                 .businessDetailId(businessDetailId)
-                .facilityName(businessDetail != null
-                        ? businessDetail.getFacilityName()
-                        : null)
+                .facilityName(draft.getFacilityName())
                 .reportYear(draft.getReportYear())
                 .reportingPeriod(draft.getReportingPeriod())
                 .reviewNotes(draft.getReviewNotes())
@@ -234,14 +241,14 @@ public class ReportB04ServiceImpl implements ReportB04Service {
         if (!isDraftComplete(draftData)) {
             throw exceptionFactory.createValidationException("ReportB04Draft", "completionPercentage",
                     (draftData.getCompletionPercentage() != null
-                            ? draftData.getCompletionPercentage()
-                            : 0),
+                    ? draftData.getCompletionPercentage()
+                    : 0),
                     ReportError.DRAFT_INCOMPLETE);
         }
 
         ReportB04 report = reportB04Repository.findById(reportId)
                 .orElseThrow(() -> exceptionFactory.createNotFoundException("ReportB04", reportId,
-                        ReportError.REPORT_NOT_FOUND));
+                ReportError.REPORT_NOT_FOUND));
 
         // part 1 update reportInvestorDetail
         saveOrUpdatePart(

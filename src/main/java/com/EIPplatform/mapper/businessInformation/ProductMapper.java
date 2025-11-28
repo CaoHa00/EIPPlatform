@@ -26,6 +26,7 @@ public interface ProductMapper {
     @Mapping(target = "reportB04", ignore = true)
     Product toEntity(ProductResponse request);
 
+    @Named("fromCreate")
     @Mapping(target = "productId", ignore = true)
     @Mapping(target = "auditMetaData", ignore = true)
     @Mapping(target = "businessDetail", ignore = true)
@@ -57,9 +58,12 @@ public interface ProductMapper {
 
     List<Product> toEntityList(List<ProductResponse> dtos);
 
+    @IterableMapping(qualifiedByName = "fromCreate")
+
     List<Product> toEntityListFromCreate(List<ProductCreationRequest> dtos);
 
     @Named("toDTOFromCreate")
+    @Mapping(target = "productId", ignore = true)
     ProductResponse toDTOFromCreate(Product entity);
 
     // Map list → list

@@ -1,6 +1,7 @@
 package com.EIPplatform.service.report.reportB04.part1;
 
 import java.util.UUID;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -100,7 +101,7 @@ public class ReportInvestorDetailServiceImpl implements ReportInvestorDetailServ
         // Map entity sang DTO response
         ReportInvestorDetailDTO responseDto = reportInvestorDetailMapper.toDTO(entity);
         reportCacheService.updateSectionData(reportB04Id, businessDetailId, responseDto,
-                "ReportInvestorDetailDTO");
+                "ReportInvestorDetail");
 
         log.info("created reportInvestorDetail in cache - reportB04Id: {}, businessDetailId: {}", reportB04Id,
                 businessDetailId);

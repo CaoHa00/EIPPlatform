@@ -104,7 +104,7 @@ public class ReportB04Part2ServiceImpl implements ReportB04Part2Service {
                 reportB04Id,
                 businessDetailId,
                 responseList,
-                "ProductListDTO");
+                "Products");
 
         log.info("Created product list for reportB04 part 2 - reportB04Id: {}, businessDetailId: {}",
                 reportB04Id, businessDetailId);
