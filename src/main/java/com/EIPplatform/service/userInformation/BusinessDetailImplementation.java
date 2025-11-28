@@ -97,7 +97,7 @@ public class BusinessDetailImplementation implements BusinessDetailInterface {
     public BusinessDetailResponse createBusinessDetail(UUID userAccountId, BusinessDetailDTO dto, MultipartFile isoFile) {
         dto = StringNormalizerUtil.normalizeRequest(dto);
         businessDetailUtils.validateOperationDetails(dto.getOperationType(), dto.getSeasonalDescription());
-        businessDetailUtils.validateUniqueFields(dto, null);
+        businessDetailUtils.validateUniqueFieldsForCreate(dto);
         UserAccount userAccount = userAccountRepository.findByUserAccountId(userAccountId)
                 .orElseThrow(() -> exceptionFactory.createNotFoundException(
                         "UserAccount",
@@ -140,7 +140,7 @@ public class BusinessDetailImplementation implements BusinessDetailInterface {
                 ));
 
         businessDetailUtils.validateOperationDetails(dto.getOperationType(), dto.getSeasonalDescription());
-        businessDetailUtils.validateUniqueFields(dto, entity.getBusinessDetailId());
+        businessDetailUtils.validateUniqueFieldsForUpdate(dto, entity.getBusinessDetailId());
 
         if (dto.getFacilityName() != null) {
             entity.setFacilityName(dto.getFacilityName().trim());

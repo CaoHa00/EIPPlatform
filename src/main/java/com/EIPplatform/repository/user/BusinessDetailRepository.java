@@ -54,4 +54,8 @@ public interface BusinessDetailRepository extends JpaRepository<BusinessDetail, 
     @Modifying  // Để JPA biết đây là update/delete query
     @Query("DELETE FROM EnvComponentPermit e WHERE e.businessDetail.businessDetailId = :businessDetailId")
     void deleteByBusinessDetailBusinessDetailId(@Param("businessDetailId") UUID businessDetailId);
+
+    boolean existsByFacilityName(String facilityName);
+
+    Optional<BusinessDetail> findByFacilityName(String facilityName);
 }
