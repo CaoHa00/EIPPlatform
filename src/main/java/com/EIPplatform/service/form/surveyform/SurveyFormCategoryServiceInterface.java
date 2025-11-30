@@ -12,4 +12,6 @@ public interface SurveyFormCategoryServiceInterface {
     List<SurveyFormCategoryDTO> getAll();
     List<SurveyFormCategoryDTO>  createCategoryList(List<CreateSurveyFormCategoryDTO> list);
     void deleteCategory(UUID categoryId);
+
+    SurveyFormCategoryDTO editCategoryName(UUID categoryId, String name);
 }

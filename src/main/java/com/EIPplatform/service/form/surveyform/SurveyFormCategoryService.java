@@ -88,6 +88,18 @@ public class SurveyFormCategoryService implements SurveyFormCategoryServiceInter
         surveyFormCategoryRepository.deleteById(categoryId);
     }
 
+    @Override
+    @Transactional
+    public SurveyFormCategoryDTO editCategoryName(UUID categoryId, String name){
+        SurveyFormCategory category = surveyFormCategoryRepository.findById(categoryId).orElseThrow(() ->
+                exceptionFactory.createNotFoundException("SurveyFormCategory", "id", categoryId, FormError.SURVEY_FORM_CATEGORY_NOT_FOUND));
+
+        category.setName(name);
+        surveyFormCategoryRepository.save(category);
+
+        return categoryMapper.toDTO(category);
+    }
+
     private SurveyFormCategory buildSurveyFormCategoryEntity(CreateSurveyFormCategoryDTO dto) {
         SurveyFormCategory surveyFormCategory = new SurveyFormCategory();
         surveyFormCategory.setName(dto.getName());

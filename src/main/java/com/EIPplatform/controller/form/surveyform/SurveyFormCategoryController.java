@@ -41,4 +41,9 @@ public class SurveyFormCategoryController {
         categoryService.deleteCategory(categoryId);
         return ResponseEntity.noContent().build();
     }
+
+    @PatchMapping("/{categoryId}")
+    public ResponseEntity<SurveyFormCategoryDTO> editCategoryName(@PathVariable UUID categoryId, @RequestParam String name){
+        return ResponseEntity.ok(categoryService.editCategoryName(categoryId, name));
+    }
 }
