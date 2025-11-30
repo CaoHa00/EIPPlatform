@@ -60,7 +60,7 @@ public class QuestionOptionService {
      * Used for single additions via API.
      */
     @Transactional
-    public OptionDTO addOption(UUID questionId, CreateOptionDTO dto) throws IllegalAccessException {
+    public OptionDTO addOption(UUID questionId, CreateOptionDTO dto) {
         Question parentQuestion = securityService.getQuestionIfCreator(questionId);
 
         //validate question type, short answers and paragraphs shouldn't have multiple options
@@ -88,7 +88,7 @@ public class QuestionOptionService {
     }
 
     @Transactional
-    public OptionDTO editOption(String text, UUID optionId) throws IllegalAccessException {
+    public OptionDTO editOption(String text, UUID optionId) {
         QuestionOption option = securityService.getOptionIfCreator(optionId);
 
         if (text != null && !text.isBlank()) {
@@ -99,7 +99,7 @@ public class QuestionOptionService {
     }
 
     @Transactional
-    public void activeSwitch(UUID optionId) throws IllegalAccessException {
+    public void activeSwitch(UUID optionId) {
         QuestionOption option = securityService.getOptionIfCreator(optionId);
 
         option.setActive(!option.isActive());
@@ -111,7 +111,7 @@ public class QuestionOptionService {
     }
 
     @Transactional
-    public void reorderOptions(UUID questionId, ReorderRequestDTO dto) throws IllegalAccessException {
+    public void reorderOptions(UUID questionId, ReorderRequestDTO dto) {
         Question question = securityService.getQuestionIfCreator(questionId);
 
         List<QuestionOption> options = question.getOptions();
@@ -151,7 +151,7 @@ public class QuestionOptionService {
      * Granular single delete for API Endpoint
      */
     @Transactional
-    public void hardDeleteOption(UUID optionId) throws IllegalAccessException {
+    public void hardDeleteOption(UUID optionId) {
         QuestionOption option = securityService.getOptionIfCreator(optionId);
 
         Question parentQuestion = option.getQuestion();

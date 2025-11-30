@@ -37,7 +37,7 @@ public class QuestionController {
     @PostMapping("/create")
     public ResponseEntity<QuestionDTO> createQuestion(
             @RequestParam UUID formId,
-            @Valid @RequestBody CreateQuestionDTO dto) throws IllegalAccessException {
+            @Valid @RequestBody CreateQuestionDTO dto) {
 
         QuestionDTO createdQuestion = questionService.addQuestion(dto, formId);
 
@@ -45,7 +45,7 @@ public class QuestionController {
     }
 
     @DeleteMapping("/{id}/hard-delete")
-    public ResponseEntity<Void> deleteQuestion(@PathVariable UUID id) throws IllegalAccessException {
+    public ResponseEntity<Void> deleteQuestion(@PathVariable UUID id) {
         questionService.hardDeleteQuestion(id);
         return ResponseEntity.noContent().build();
     }
@@ -62,7 +62,7 @@ public class QuestionController {
     }
 
     @PatchMapping("/{id}/active-switch")
-    public ResponseEntity<Void> activeSwitchQuestion(@PathVariable UUID id) throws IllegalAccessException {
+    public ResponseEntity<Void> activeSwitchQuestion(@PathVariable UUID id) {
         questionService.activeSwitch(id);
         return ResponseEntity.ok().build();
     }
@@ -70,7 +70,7 @@ public class QuestionController {
     @PatchMapping("/{id}/options/reorder")
     public ResponseEntity<Void> reorderOptions(
             @PathVariable("id") UUID questionId,
-            @RequestBody @Valid ReorderRequestDTO dto) throws IllegalAccessException {
+            @RequestBody @Valid ReorderRequestDTO dto) {
 
         questionOptionService.reorderOptions(questionId, dto);
         return ResponseEntity.ok().build();

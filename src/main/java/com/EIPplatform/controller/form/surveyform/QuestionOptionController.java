@@ -27,7 +27,7 @@ public class QuestionOptionController {
     @PostMapping("/create")
     public ResponseEntity<OptionDTO> createQuestion(
             @RequestParam UUID questionId,
-            @Valid @RequestBody CreateOptionDTO dto) throws IllegalAccessException {
+            @Valid @RequestBody CreateOptionDTO dto) {
 
         OptionDTO createdOption = questionOptionService.addOption(questionId, dto);
 
@@ -35,7 +35,7 @@ public class QuestionOptionController {
     }
 
     @DeleteMapping("/{id}/hard-delete")
-    public ResponseEntity<Void> deleteOption(@PathVariable UUID id) throws IllegalAccessException {
+    public ResponseEntity<Void> deleteOption(@PathVariable UUID id) {
         questionOptionService.hardDeleteOption(id);
         return ResponseEntity.noContent().build();
     }
@@ -48,7 +48,7 @@ public class QuestionOptionController {
     }
 
     @PatchMapping("/{id}/active-switch")
-    public ResponseEntity<Void> toggleActive(@PathVariable UUID id) throws IllegalAccessException {
+    public ResponseEntity<Void> toggleActive(@PathVariable UUID id) {
         questionOptionService.activeSwitch(id);
         return ResponseEntity.ok().build();
     }
