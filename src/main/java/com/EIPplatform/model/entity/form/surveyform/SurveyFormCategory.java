@@ -30,4 +30,7 @@ public class SurveyFormCategory {
 
     @OneToMany(mappedBy = "surveyFormCategory", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Set<QuestionCategory> questionCategories = new HashSet<>();
+
+    @OneToMany(mappedBy = "surveyFormCategory", fetch = FetchType.LAZY)
+    private Set<SurveyForm> surveyForms = new HashSet<>();
 }

@@ -22,7 +22,7 @@ public class CreateQuestionDTO {
 
     private Boolean required;
 
-    @NotBlank(message = "CategoryId is required")
+    @NotNull(message = "CategoryId is required")
     private UUID categoryId;
 
     @Valid

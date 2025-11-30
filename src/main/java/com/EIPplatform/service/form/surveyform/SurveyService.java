@@ -12,10 +12,12 @@ import com.EIPplatform.service.form.submission.SubmissionService;
 import com.EIPplatform.model.entity.form.surveyform.*;
 import com.EIPplatform.model.dto.form.surveyform.survey.*;
 
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
@@ -51,7 +53,10 @@ public class SurveyService implements SurveyServiceInterface {
     @Transactional
     @Override
     public SurveyDTO createSurvey(CreateSurveyFormDTO dto) {
-        UserAccount creator = userService.getCurrentUser();
+        //PLACEHOLDER USER, CREATE METHOD TO GET ACTUAL USER FROM REQUEST!!!!!!!!!
+        UserAccount creator = userAccountRepository.findAll().stream()
+                .findFirst()
+                .orElseThrow(() -> new IllegalStateException("No users exist in the database. Please create at least one user to serve as a placeholder."));
 
         SurveyForm form = new SurveyForm();
         form.setTitle(dto.getTitle());
@@ -82,7 +87,7 @@ public class SurveyService implements SurveyServiceInterface {
 
     @Transactional // edit TITLE and DESCRIPTION
     @Override
-    public SurveyDTO editSurvey(UUID id, EditSurveyDTO dto) throws IllegalAccessException {
+    public SurveyDTO editSurvey(UUID id, EditSurveyDTO dto) {
         SurveyForm form = securityService.getFormIfCreator(id);
 
         if (dto.getTitle() != null && !dto.getTitle().isEmpty()) {
@@ -106,7 +111,7 @@ public class SurveyService implements SurveyServiceInterface {
 
     @Transactional
     @Override
-    public void activeSwitch(UUID id) throws IllegalAccessException {
+    public void activeSwitch(UUID id) {
         SurveyForm form = securityService.getFormIfCreator(id);
 
         boolean newActive = !form.isActive();
@@ -115,7 +120,7 @@ public class SurveyService implements SurveyServiceInterface {
 
     @Transactional
     @Override
-    public SurveyDTO updateExpiry(UUID id, LocalDateTime expiresAt) throws IllegalAccessException {
+    public SurveyDTO updateExpiry(UUID id, LocalDateTime expiresAt) {
         SurveyForm form = securityService.getFormIfCreator(id);
 
         form.setExpiresAt(expiresAt);
@@ -126,9 +131,14 @@ public class SurveyService implements SurveyServiceInterface {
         return surveyFormMapper.toDTO(form);
     }
 
+    /**
+     * Hard delete SurveyForm from Database
+     * Cannot be deleted if Submissions related to that SurveyForm entity still exists in the Database
+     * @param id SurveyForm ID
+     */
     @Transactional
     @Override
-    public void hardDeleteSurvey(UUID id) throws IllegalAccessException {
+    public void hardDeleteSurvey(UUID id) {
         // Creator check
         SurveyForm form = securityService.getFormIfCreator(id);
 
@@ -163,9 +173,18 @@ public class SurveyService implements SurveyServiceInterface {
         return surveyFormMapper.toDTO(form);
     }
 
+    /**
+     * Get all SurveyForms that belong to a creatorId
+     * @param id user ID of the form creator
+     * @return a SurveyDTO
+     * @deprecated use searchSurveys() instead
+     */
+    @Deprecated
     @Override
     public List<SurveyDTO> getSurveyByCreatorId(UUID id) {
+        //REPLACE this in the future maybe
         UserAccount creator = userAccountRepository.findById(id).orElseThrow(() -> exceptionFactory.createNotFoundException("User", "id", id, UserError.NOT_FOUND));
+
         List<SurveyForm> formList = surveyRepository.findByCreator(creator);
         return surveyFormMapper.toDTOList(formList);
     }
@@ -173,6 +192,51 @@ public class SurveyService implements SurveyServiceInterface {
     @Override
     public List<SurveyDTO> getAllSurveys() {
         List<SurveyForm> formList = surveyRepository.findAll();
+        return surveyFormMapper.toDTOList(formList);
+    }
+
+    /**
+     * Get all SurveyForms that belong to a categoryId
+     * @param categoryId category ID
+     * @return a SurveyDTO
+     * @deprecated use searchSurveys() instead
+     */
+    @Deprecated
+    @Override
+    public List<SurveyDTO> getAllSurveysByCategory(UUID categoryId){
+        SurveyFormCategory category = surveyFormCategoryRepository.findById(categoryId)
+                .orElseThrow(() -> exceptionFactory
+                        .createNotFoundException("SurveyFormCategory", "id", categoryId, FormError.SURVEY_FORM_CATEGORY_NOT_FOUND));
+
+        List<SurveyForm> formList = surveyRepository.findBySurveyFormCategory(category);
+
+        return surveyFormMapper.toDTOList(formList);
+
+    }
+
+    /**
+     *  Build search query
+     * @param creatorId creatorId
+     * @param categoryId categoryId
+     * @param title title
+     * @return SurveyDTO
+     */
+    @Override
+    public List<SurveyDTO> searchSurveys(UUID creatorId, UUID categoryId, String title) {
+        Specification<SurveyForm> spec = (root, query, criteriaBuilder) -> {
+            List<jakarta.persistence.criteria.Predicate> predicates = new ArrayList<>();
+            if (creatorId != null) {
+                predicates.add(criteriaBuilder.equal(root.get("creator").get("id"), creatorId));
+            }
+            if (categoryId != null) {
+                predicates.add(criteriaBuilder.equal(root.get("surveyFormCategory").get("id"), categoryId));
+            }
+            if (title != null && !title.isEmpty()) {
+                predicates.add(criteriaBuilder.like(root.get("title"), "%" + title + "%"));
+            }
+            return criteriaBuilder.and(predicates.toArray(new jakarta.persistence.criteria.Predicate[0]));
+        };
+        List<SurveyForm> formList = surveyRepository.findAll(spec);
         return surveyFormMapper.toDTOList(formList);
     }
 }

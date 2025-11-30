@@ -51,17 +51,5 @@ public class UserAccountImplementation implements UserAccountInterface {
         var entities = userAccountRepository.findAll();
         return userAccountMapper.toDTOList(entities);
     }
-
-    /**
-     * Retrieves the currently authenticated user from the Security Context
-     *
-     * @return The authenticated UserAccount entity
-     * @throws com.EIPplatform.exception.exceptions.AppException if no user is authenticated
-     */
-    public UserAccount getCurrentUser() {
-        String username = SecurityContextHolder.getContext().getAuthentication().getName();
-        return userAccountRepository.findUserWithRolesByEmail(username)
-                .orElseThrow(() -> exceptionFactory.createCustomException(AuthenticationError.USER_NOT_AUTHENTICATED));
-    }
     
 }

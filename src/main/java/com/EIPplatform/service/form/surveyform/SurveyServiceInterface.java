@@ -10,17 +10,19 @@ import java.util.UUID;
 public interface SurveyServiceInterface {
     SurveyDTO createSurvey(CreateSurveyFormDTO dto);
 
-    SurveyDTO editSurvey(UUID id, EditSurveyDTO dto) throws IllegalAccessException;
+    SurveyDTO editSurvey(UUID id, EditSurveyDTO dto);
 
-    void activeSwitch(UUID id) throws IllegalAccessException;
+    void activeSwitch(UUID id);
 
-    SurveyDTO updateExpiry(UUID id, LocalDateTime expiresAt) throws IllegalAccessException;
+    SurveyDTO updateExpiry(UUID id, LocalDateTime expiresAt);
 
-    void hardDeleteSurvey(UUID id) throws IllegalAccessException;
+    void hardDeleteSurvey(UUID id);
 
     SurveyDTO getSurveyDTO(UUID id);
 
     List<SurveyDTO> getSurveyByCreatorId(UUID id);
 
     List<SurveyDTO> getAllSurveys();
+    List<SurveyDTO> getAllSurveysByCategory(UUID categoryId);
+    List<SurveyDTO> searchSurveys(UUID creatorId, UUID categoryId, String title);
 }

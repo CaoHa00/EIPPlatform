@@ -98,8 +98,9 @@ public class SubmissionService {
 
         // handle User
         try {
-            UserAccount currentUser = userService.getCurrentUser();
-            submission.setRespondent(currentUser);
+            //IMPLEMENT GET USER FROM REQUEST
+//            UserAccount currentUser = userService.getCurrentUser();
+//            submission.setRespondent(currentUser);
         } catch (Exception e) {
             // catch anonymous submission
         }

@@ -29,10 +29,12 @@ public class SurveyController {
 
     @GetMapping
     public ResponseEntity<List<SurveyDTO>> Get(
-            @RequestParam(required = false) UUID creatorId
+            @RequestParam(required = false) UUID creatorId,
+            @RequestParam(required = false) UUID categoryId,
+            @RequestParam(required = false) String title
     ) {
-        if (creatorId != null) {
-            return ResponseEntity.ok(surveyService.getSurveyByCreatorId(creatorId));
+        if (creatorId != null || categoryId != null || title != null) {
+            return ResponseEntity.ok(surveyService.searchSurveys(creatorId, categoryId, title));
         }
 
         return ResponseEntity.ok(surveyService.getAllSurveys());
@@ -45,14 +47,14 @@ public class SurveyController {
     }
 
     @PatchMapping("/{id}/edit")
-    public ResponseEntity<SurveyDTO> editSurvey(@PathVariable UUID id, @RequestBody EditSurveyDTO dto) throws IllegalAccessException {
+    public ResponseEntity<SurveyDTO> editSurvey(@PathVariable UUID id, @RequestBody EditSurveyDTO dto) {
         SurveyDTO editSurvey = surveyService.editSurvey(id, dto);
         return ResponseEntity.ok(editSurvey);
     }
 
     //this is basically soft delete
     @PatchMapping("{id}/active-switch")
-    public ResponseEntity<Void> activeSwitch(@PathVariable UUID id) throws IllegalAccessException {
+    public ResponseEntity<Void> activeSwitch(@PathVariable UUID id) {
         surveyService.activeSwitch(id);
         return ResponseEntity.ok().build();
     }
@@ -60,7 +62,7 @@ public class SurveyController {
     //To Set: Send { "expiresAt": "2025-12-31T23:59:59" }
     //To Clear: Send { "expiresAt": null }
     @PatchMapping("/{id}/expire")
-    public ResponseEntity<SurveyDTO> updateExpiry(@PathVariable UUID id, @RequestBody ExpiryRequest request) throws IllegalAccessException {
+    public ResponseEntity<SurveyDTO> updateExpiry(@PathVariable UUID id, @RequestBody ExpiryRequest request) {
         return ResponseEntity.ok(surveyService.updateExpiry(id, request.getExpiresAt()));
     }
 
@@ -70,7 +72,7 @@ public class SurveyController {
     }
 
     @DeleteMapping("/{id}/hard-delete")
-    public ResponseEntity<Void> hardDeleteSurvey(@PathVariable UUID id) throws IllegalAccessException {
+    public ResponseEntity<Void> hardDeleteSurvey(@PathVariable UUID id) {
         surveyService.hardDeleteSurvey(id);
         return ResponseEntity.noContent().build();
     }
@@ -79,7 +81,7 @@ public class SurveyController {
     @PatchMapping("/{id}/questions/reorder")
     public ResponseEntity<Void> reorderQuestions(
             @PathVariable UUID id,
-            @RequestBody @Valid ReorderRequestDTO dto) throws IllegalAccessException {
+            @RequestBody @Valid ReorderRequestDTO dto) {
 
         questionService.reorderQuestions(id, dto);
         return ResponseEntity.ok().build();

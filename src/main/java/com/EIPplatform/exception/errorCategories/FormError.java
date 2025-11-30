@@ -13,7 +13,8 @@ public enum FormError implements ErrorCodeInterface {
     QUESTION_CATEGORY_NOT_FOUND(40404, "Question category not found", HttpStatus.NOT_FOUND),
     QUESTION_OPTION_NOT_FOUND(40405, "Question option not found", HttpStatus.NOT_FOUND),
     SUBMISSION_NOT_FOUND(40406, "Submission not found", HttpStatus.NOT_FOUND),
-    SUBMISSIONS_EXIST(40001, "Cannot delete survey with existing submissions", HttpStatus.BAD_REQUEST);
+    SUBMISSIONS_EXIST(40407, "Cannot delete Survey/Question with existing submissions", HttpStatus.BAD_REQUEST),
+    SURVEY_FORM_CATEGORY_IN_USE(40408, "Cannot delete SurveyFormCategory, there are SurveyForm/Question using this ", HttpStatus.BAD_REQUEST);
 
     private final int code;
     private final String message;

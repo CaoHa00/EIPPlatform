@@ -2,7 +2,7 @@ package com.EIPplatform.controller.form.surveyform;
 
 import com.EIPplatform.model.dto.form.surveyform.survey.CreateSurveyFormCategoryDTO;
 import com.EIPplatform.model.dto.form.surveyform.survey.SurveyFormCategoryDTO;
-import com.EIPplatform.service.form.surveyform.SurveyFormCategoryService;
+import com.EIPplatform.service.form.surveyform.SurveyFormCategoryServiceInterface;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotEmpty;
 import lombok.RequiredArgsConstructor;
@@ -18,7 +18,7 @@ import java.util.UUID;
 @Validated
 @RequiredArgsConstructor
 public class SurveyFormCategoryController {
-    private final SurveyFormCategoryService categoryService;
+    private final SurveyFormCategoryServiceInterface categoryService;
 
     @GetMapping("{id}")
     public ResponseEntity<SurveyFormCategoryDTO> getById(@PathVariable UUID id){
@@ -34,5 +34,11 @@ public class SurveyFormCategoryController {
     public ResponseEntity<List<SurveyFormCategoryDTO>> createCategoryList(@RequestBody @NotEmpty(message = "Please input at least ONE category.") List<@Valid CreateSurveyFormCategoryDTO> createSurveyFormCategoryDTOs) {
         List<SurveyFormCategoryDTO> createdCategories = categoryService.createCategoryList(createSurveyFormCategoryDTOs);
         return ResponseEntity.ok(createdCategories);
+    }
+
+    @DeleteMapping("/{categoryId}")
+    public ResponseEntity<Void> deleteCategory(@PathVariable UUID categoryId) {
+        categoryService.deleteCategory(categoryId);
+        return ResponseEntity.noContent().build();
     }
 }

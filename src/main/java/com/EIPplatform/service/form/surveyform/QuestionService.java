@@ -53,7 +53,7 @@ public class QuestionService {
     }
 
     @Transactional
-    public void reorderQuestions(UUID surveyId, ReorderRequestDTO dto) throws IllegalAccessException {
+    public void reorderQuestions(UUID surveyId, ReorderRequestDTO dto) {
         //creator check
         SurveyForm form = securityService.getFormIfCreator(surveyId);
 
@@ -86,7 +86,7 @@ public class QuestionService {
 
     //edit question text and the boolean required
     @Transactional
-    public QuestionDTO editQuestion(UUID questionId, EditQuestionDTO dto) throws IllegalAccessException {
+    public QuestionDTO editQuestion(UUID questionId, EditQuestionDTO dto) {
         // creator check
         Question question = securityService.getQuestionIfCreator(questionId);
 
@@ -147,7 +147,7 @@ public class QuestionService {
      * Granular: Builds AND Saves.
      */
     @Transactional
-    public QuestionDTO addQuestion(CreateQuestionDTO dto, UUID parentId) throws IllegalAccessException {
+    public QuestionDTO addQuestion(CreateQuestionDTO dto, UUID parentId){
         SurveyForm parent = securityService.getFormIfCreator(parentId);
 
         //validate displayOrder
@@ -167,7 +167,7 @@ public class QuestionService {
     }
 
     @Transactional
-    public void activeSwitch(UUID id) throws IllegalAccessException {
+    public void activeSwitch(UUID id) {
         Question question = securityService.getQuestionIfCreator(id);
 
         boolean newActive = !question.isActive();
@@ -178,7 +178,7 @@ public class QuestionService {
      * Granular: Single delete for API Endpoint
      */
     @Transactional
-    public void hardDeleteQuestion(UUID questionId) throws IllegalAccessException {
+    public void hardDeleteQuestion(UUID questionId){
         // Creator check
         Question question = securityService.getQuestionIfCreator(questionId);
         SurveyForm parentForm = question.getSurveyForm();

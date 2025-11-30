@@ -37,14 +37,15 @@ public class SurveySecurityService {
      * Throws exception if not found or not authorized.
      */
     public SurveyForm getFormIfCreator(UUID formId) {
-        UserAccount currentUser = userService.getCurrentUser();
+        //IMPLEMENT GET USER FROM REQUEST
+//        UserAccount currentUser = userService.getCurrentUser();
 
         SurveyForm form = surveyRepository.findById(formId)
                 .orElseThrow(() -> exceptionFactory.createNotFoundException("SurveyForm", "id", formId, FormError.SURVEY_FORM_NOT_FOUND));
 
-        if (!form.getCreator().getUserAccountId().equals(currentUser.getUserAccountId())) {
-            throw exceptionFactory.createCustomException(ForbiddenError.FORBIDDEN);
-        }
+//        if (!form.getCreator().getUserAccountId().equals(currentUser.getUserAccountId())) {
+//            throw exceptionFactory.createCustomException(ForbiddenError.FORBIDDEN);
+//        }
 
         return form;
     }
@@ -54,14 +55,16 @@ public class SurveySecurityService {
      * Returns the Question if allowed.
      */
     public Question getQuestionIfCreator(UUID questionId) {
-        UserAccount currentUser = userService.getCurrentUser();
+        //IMPLEMENT GET USER FROM REQUEST
+
+//        UserAccount currentUser = userService.getCurrentUser();
 
         Question question = questionRepository.findById(questionId)
                 .orElseThrow(() -> exceptionFactory.createNotFoundException("Question", "id", questionId, FormError.QUESTION_NOT_FOUND));
 
-        if (!question.getSurveyForm().getCreator().getUserAccountId().equals(currentUser.getUserAccountId())) {
-            throw exceptionFactory.createCustomException(ForbiddenError.FORBIDDEN);
-        }
+//        if (!question.getSurveyForm().getCreator().getUserAccountId().equals(currentUser.getUserAccountId())) {
+//            throw exceptionFactory.createCustomException(ForbiddenError.FORBIDDEN);
+//        }
 
         return question;
     }
@@ -71,15 +74,17 @@ public class SurveySecurityService {
      * Returns the QuestionOption if allowed.
      */
     public QuestionOption getOptionIfCreator(UUID optionId) {
-        UserAccount currentUser = userService.getCurrentUser();
+        //IMPLEMENT GET USER FROM REQUEST
+
+//        UserAccount currentUser = userService.getCurrentUser();
 
         QuestionOption option = optionRepository.findById(optionId)
                 .orElseThrow(() -> exceptionFactory.createNotFoundException("QuestionOption", "id", optionId, FormError.QUESTION_NOT_FOUND)); // Assuming you'll add a QUESTION_OPTION_NOT_FOUND
 
         // Option -> Question -> Form -> Creator
-        if (!option.getQuestion().getSurveyForm().getCreator().getUserAccountId().equals(currentUser.getUserAccountId())) {
-            throw exceptionFactory.createCustomException(ForbiddenError.FORBIDDEN);
-        }
+//        if (!option.getQuestion().getSurveyForm().getCreator().getUserAccountId().equals(currentUser.getUserAccountId())) {
+//            throw exceptionFactory.createCustomException(ForbiddenError.FORBIDDEN);
+//        }
 
         return option;
     }
