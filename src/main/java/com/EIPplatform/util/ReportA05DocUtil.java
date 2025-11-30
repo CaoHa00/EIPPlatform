@@ -118,8 +118,11 @@ public class ReportA05DocUtil {
         data.put("business_license_number", defaultString(business.getBusinessRegistrationNumber()));
         data.put("tax_code", defaultString(business.getTaxCode()));
 
-        data.put("seasonal_period",
-                business.getOperationType() != null ? business.getOperationType().name() : "");
+        if (business.getOperationType().name().equals("SEASONAL")) {
+            data.put("seasonal_period", "Thường xuyên");
+        } else {
+            data.put("seasonal_period", "Theo mùa");
+        }
 
         data.put("operating_frequency", "");
 
@@ -173,17 +176,17 @@ public class ReportA05DocUtil {
                 : null;
 
         data.put("product_volume_cy", toStringOrEmpty(current.getProductVolumeCy()));
-        data.put("product_unit_cy", defaultString(current.getProductUnitCy()));
+        data.put("product_unit_cy", convertUnitToVietnamese(current.getProductUnitCy()));
         data.put("fuel_consumption_cy", toStringOrEmpty(current.getFuelConsumptionCy()));
-        data.put("fuel_unit_cy", defaultString(current.getFuelUnitCy()));
+        data.put("fuel_unit_cy", convertUnitToVietnamese(current.getFuelUnitCy()));
         data.put("electricity_consumption_cy", toStringOrEmpty(current.getElectricityConsumptionCy()));
         data.put("water_consumption_cy", toStringOrEmpty(current.getWaterConsumptionCy()));
 
         if (previous != null) {
             data.put("product_volume_py", toStringOrEmpty(previous.getProductVolumePy()));
-            data.put("product_unit_py", defaultString(previous.getProductUnitPy()));
+            data.put("product_unit_py", convertUnitToVietnamese(previous.getProductUnitPy()));
             data.put("fuel_consumption_py", toStringOrEmpty(previous.getFuelConsumptionPy()));
-            data.put("fuel_unit_py", defaultString(previous.getFuelUnitPy()));
+            data.put("fuel_unit_py", convertUnitToVietnamese(previous.getFuelUnitPy()));
             data.put("electricity_consumption_py", toStringOrEmpty(previous.getElectricityConsumptionPy()));
             data.put("water_consumption_py", toStringOrEmpty(previous.getWaterConsumptionPy()));
         } else {
@@ -564,8 +567,8 @@ public class ReportA05DocUtil {
     // ---------------------------------------------------------------------
 
     private void replacePlaceholders(XWPFParagraph paragraph,
-                                     Map<String, String> data,
-                                     boolean inTable) {
+            Map<String, String> data,
+            boolean inTable) {
 
         if (paragraph == null)
             return;
@@ -645,5 +648,22 @@ public class ReportA05DocUtil {
         if (date == null)
             return "";
         return date.format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+    }
+
+    private String convertUnitToVietnamese(String unit) {
+        if (unit == null || unit.trim().isEmpty()) {
+            return "";
+        }
+
+        Map<String, String> unitMap = Map.of(
+                "tons", "tấn",
+                "kg", "kg",
+                "liters", "lít",
+                "m³", "m³",
+                "kWh", "kWh",
+                "units", "đơn vị",
+                "other", "khác");
+
+        return unitMap.getOrDefault(unit.trim(), unit);
     }
 }
