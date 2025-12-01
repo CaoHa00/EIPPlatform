@@ -16,7 +16,7 @@ import java.util.List;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/api/forms")
+@RequestMapping("/api/formsystem/surveyforms")
 public class SurveyController {
 
     private final SurveyService surveyService;

@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/api/options")
+@RequestMapping("/api/formsystem/surveyforms/questions/options")
 public class QuestionOptionController {
     private final QuestionOptionService questionOptionService;
 

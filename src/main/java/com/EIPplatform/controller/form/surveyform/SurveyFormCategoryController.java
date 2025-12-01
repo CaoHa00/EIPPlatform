@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/api/forms/categories")
+@RequestMapping("/api/formsystem/surveyforms/categories")
 @Validated
 @RequiredArgsConstructor
 public class SurveyFormCategoryController {

@@ -7,6 +7,8 @@ import java.util.UUID;
 @Data
 public class AnswerDTO {
     private UUID id;
+    private String questionCategory;
     private UUID questionId;
+    private String questionText;
     private String value;
 }

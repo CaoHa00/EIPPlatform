@@ -4,6 +4,7 @@ import com.EIPplatform.model.entity.form.surveyform.SurveyForm;
 import com.EIPplatform.model.entity.user.authentication.UserAccount;
 import jakarta.persistence.*;
 import lombok.Data;
+import org.springframework.cglib.core.Local;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -18,7 +19,9 @@ public class Submission {
     private UUID id;
 
     @Column(updatable = false)
-    private LocalDateTime submittedAt = LocalDateTime.now();
+    private LocalDateTime createdAt = LocalDateTime.now();
+
+    private LocalDateTime updatedAt = LocalDateTime.now();
 
     @Column(name = "is_deleted", nullable = false)
     private boolean isDeleted = false;

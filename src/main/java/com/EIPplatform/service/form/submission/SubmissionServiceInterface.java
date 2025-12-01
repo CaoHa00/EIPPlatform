@@ -1,7 +1,11 @@
 package com.EIPplatform.service.form.submission;
 
+import com.EIPplatform.model.dto.form.submission.AnswerDTO;
+import com.EIPplatform.model.dto.form.submission.CreateAnswerDTO;
 import com.EIPplatform.model.dto.form.submission.CreateSubmissionDTO;
 import com.EIPplatform.model.dto.form.submission.SubmissionDTO;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotEmpty;
 
 import java.util.List;
 import java.util.UUID;
@@ -15,4 +19,7 @@ public interface SubmissionServiceInterface {
     SubmissionDTO createSubmission(CreateSubmissionDTO dto);
     void softDeleteSubmission(UUID submissionId);
     void hardDeleteSubmission(UUID submissionId);
+
+    List<AnswerDTO> submitAnswers(@NotEmpty(message = "Please input at least ONE answer.") List<@Valid CreateAnswerDTO> answerDTOList, UUID submissionId);
+    AnswerDTO editAnswer(UUID answerID, String value);
 }
