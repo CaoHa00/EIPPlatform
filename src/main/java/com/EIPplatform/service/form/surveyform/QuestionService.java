@@ -11,7 +11,8 @@ import com.EIPplatform.model.dto.form.surveyform.question.QuestionDTO;
 import com.EIPplatform.model.entity.form.surveyform.*;
 import com.EIPplatform.repository.form.surveyform.QuestionCategoryRepository;
 import com.EIPplatform.repository.form.surveyform.QuestionRepository;
-import com.EIPplatform.service.form.submission.SubmissionService;
+import com.EIPplatform.service.form.submission.SubmissionServiceInterface;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,26 +26,17 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Service
-public class QuestionService {
+@RequiredArgsConstructor
+public class QuestionService implements QuestionServiceInterface {
 
     private final QuestionRepository questionRepository;
     private final QuestionCategoryRepository questionCategoryRepository;
-    private final SurveySecurityService securityService;
-    private final QuestionOptionService optionService;
-    private final SubmissionService submissionService; // replace this with submission service later
+    private final SurveySecurityServiceInterface securityService;
+    private final QuestionOptionServiceInterface optionService;
+    private final SubmissionServiceInterface submissionService;
     private final ExceptionFactory exceptionFactory;
     private final QuestionMapper questionMapper;
 
-    public QuestionService(QuestionRepository questionRepository, QuestionCategoryRepository questionCategoryRepository, SurveySecurityService securityService,
-                           QuestionOptionService optionService, SubmissionService submissionService, ExceptionFactory exceptionFactory, QuestionMapper questionMapper) {
-        this.questionRepository = questionRepository;
-        this.questionCategoryRepository = questionCategoryRepository;
-        this.securityService = securityService;
-        this.optionService = optionService;
-        this.submissionService = submissionService;
-        this.exceptionFactory = exceptionFactory;
-        this.questionMapper = questionMapper;
-    }
 
     public QuestionDTO getQuestion(UUID id) {
         Question question = questionRepository.findById(id).orElseThrow(() -> exceptionFactory.createNotFoundException("Question", "id", id, FormError.QUESTION_NOT_FOUND));

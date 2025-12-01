@@ -19,6 +19,7 @@ import com.EIPplatform.repository.form.submission.SubmissionRepository;
 import com.EIPplatform.repository.form.surveyform.*;
 
 import com.EIPplatform.service.authentication.UserAccountImplementation;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -31,25 +32,14 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Service
-public class SubmissionService {
+@RequiredArgsConstructor
+public class SubmissionService implements SubmissionServiceInterface {
     private final SubmissionRepository submissionRepository;
     private final SurveyFormRepository surveyRepository;
     private final QuestionRepository questionRepository;
     private final UserAccountImplementation userService;
     private final UserAccountRepository userAccountRepository;
     private final ExceptionFactory exceptionFactory;
-
-    public SubmissionService(SubmissionRepository submissionRepository,
-                             SurveyFormRepository surveyRepository,
-                             QuestionRepository questionRepository,
-                             UserAccountImplementation userService, UserAccountRepository userAccountRepository, ExceptionFactory exceptionFactory) {
-        this.submissionRepository = submissionRepository;
-        this.surveyRepository = surveyRepository;
-        this.questionRepository = questionRepository;
-        this.userService = userService;
-        this.userAccountRepository = userAccountRepository;
-        this.exceptionFactory = exceptionFactory;
-    }
 
     public SubmissionDTO getSubmissionById(UUID id) {
         Submission submission = submissionRepository.findById(id)

@@ -11,6 +11,7 @@ import com.EIPplatform.model.entity.form.surveyform.Question;
 import com.EIPplatform.model.entity.form.surveyform.QuestionOption;
 import com.EIPplatform.repository.form.surveyform.QuestionOptionRepository;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,19 +24,13 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Service
-public class QuestionOptionService {
+@RequiredArgsConstructor
+public class QuestionOptionService implements QuestionOptionServiceInterface {
     private final List<String> VALID_QUESTION_TYPES = List.of("MULTIPLE_CHOICE", "CHECKBOX", "DROPDOWN", "LIKERT");
     private final QuestionOptionRepository optionRepository;
-    private final SurveySecurityService securityService;
+    private final SurveySecurityServiceInterface securityService;
     private final ExceptionFactory exceptionFactory;
     private final QuestionOptionMapper questionOptionMapper;
-
-    public QuestionOptionService(QuestionOptionRepository optionRepository, SurveySecurityService securityService, ExceptionFactory exceptionFactory, QuestionOptionMapper questionOptionMapper) {
-        this.optionRepository = optionRepository;
-        this.securityService = securityService;
-        this.exceptionFactory = exceptionFactory;
-        this.questionOptionMapper = questionOptionMapper;
-    }
 
     public OptionDTO getOption(UUID id) {
         QuestionOption option = optionRepository.findById(id).orElseThrow(() -> exceptionFactory.createNotFoundException("QuestionOption", "id", id, FormError.QUESTION_OPTION_NOT_FOUND));

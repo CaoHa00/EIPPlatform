@@ -8,28 +8,20 @@ import com.EIPplatform.model.entity.user.authentication.UserAccount;
 import com.EIPplatform.repository.form.surveyform.*;
 import com.EIPplatform.service.authentication.UserAccountImplementation;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.UUID;
 
 @Service
-public class SurveySecurityService {
+@RequiredArgsConstructor
+public class SurveySecurityService implements SurveySecurityServiceInterface {
 
     private final SurveyFormRepository surveyRepository;
     private final QuestionOptionRepository optionRepository;
     private final QuestionRepository questionRepository;
     private final UserAccountImplementation userService;
     private final ExceptionFactory exceptionFactory;
-
-    public SurveySecurityService(SurveyFormRepository surveyRepository, QuestionOptionRepository optionRepository,
-                                 QuestionRepository questionRepository,
-                                 UserAccountImplementation userService, ExceptionFactory exceptionFactory) {
-        this.surveyRepository = surveyRepository;
-        this.optionRepository = optionRepository;
-        this.questionRepository = questionRepository;
-        this.userService = userService;
-        this.exceptionFactory = exceptionFactory;
-    }
 
     /**
      * Checks if current user is creator.

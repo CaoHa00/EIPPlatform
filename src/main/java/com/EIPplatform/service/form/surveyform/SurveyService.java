@@ -12,6 +12,8 @@ import com.EIPplatform.service.form.submission.SubmissionService;
 import com.EIPplatform.model.entity.form.surveyform.*;
 import com.EIPplatform.model.dto.form.surveyform.survey.*;
 
+import com.EIPplatform.service.form.submission.SubmissionServiceInterface;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,31 +26,19 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class SurveyService implements SurveyServiceInterface {
 
     private final SurveyFormRepository surveyRepository;
     private final SurveyFormCategoryRepository surveyFormCategoryRepository;
     private final UserAccountImplementation userService;
-    private final SurveySecurityService securityService;
-    private final QuestionService questionService;
-    private final SubmissionService submissionService;
+    private final SurveySecurityServiceInterface securityService;
+    private final QuestionServiceInterface questionService;
+    private final SubmissionServiceInterface submissionService;
     private final UserAccountRepository userAccountRepository;
     private final ExceptionFactory exceptionFactory;
     private final SurveyFormMapper surveyFormMapper;
 
-    public SurveyService(SurveyFormRepository surveyRepository,
-                         SurveyFormCategoryRepository surveyFormCategoryRepository, UserAccountImplementation userService, SurveySecurityService securityService,
-                         QuestionService questionService, SubmissionService submissionService, UserAccountRepository userAccountRepository, ExceptionFactory exceptionFactory, SurveyFormMapper surveyFormMapper) {
-        this.surveyRepository = surveyRepository;
-        this.surveyFormCategoryRepository = surveyFormCategoryRepository;
-        this.userService = userService;
-        this.securityService = securityService;
-        this.questionService = questionService;
-        this.submissionService = submissionService;
-        this.userAccountRepository = userAccountRepository;
-        this.exceptionFactory = exceptionFactory;
-        this.surveyFormMapper = surveyFormMapper;
-    }
 
     @Transactional
     @Override
