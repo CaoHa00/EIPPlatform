@@ -10,9 +10,9 @@ public enum BusinessDetailError implements ErrorCodeInterface {
     PHONE_NUMBER_DUPLICATE(1003, "Phone number already exists", HttpStatus.BAD_REQUEST),
     NOT_FOUND(1004, "Business not found for the provided user account ID", HttpStatus.NOT_FOUND),
     BUSINESS_DETAIL_ID_NOT_FOUND(1005, "Business detail not found for the provided ID", HttpStatus.NOT_FOUND),
-    ISO_CERT_FILE_NOT_FOUND(1006, "ISO certificate file not found for the provided business detail ID", HttpStatus.NOT_FOUND),
-    FACILITY_NAME_DUPLICATE(1007, "Facility name '%s' already exists", HttpStatus.BAD_REQUEST);
-
+    ISO_CERT_FILE_NOT_FOUND(1006, "ISO certificate file not found for the provided business detail ID",
+            HttpStatus.NOT_FOUND),
+    FACILITY_NAME_DUPLICATE(1007, "Facility name already exists", HttpStatus.BAD_REQUEST);
 
     private final int code;
     private final String message;
