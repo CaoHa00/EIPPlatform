@@ -11,12 +11,15 @@ import com.EIPplatform.model.entity.user.businessInformation.BusinessDetail;
 import com.EIPplatform.model.entity.user.businessInformation.BusinessHistoryConsumption;
 import com.EIPplatform.service.report.reporta05.TableMappingService;
 import lombok.extern.slf4j.Slf4j;
+
+import org.apache.poi.util.Units;
 import org.apache.poi.xwpf.usermodel.*;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Component;
 
 import java.io.ByteArrayOutputStream;
+import java.io.FileInputStream;
 import java.io.InputStream;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -50,6 +53,7 @@ public class ReportA05DocUtil {
         String year = String.valueOf(today.getYear());
 
         Map<String, String> data = new HashMap<>();
+        Map<String, String> imageMapp = new HashMap<>();
 
         // 1. General info
         buildGeneralInfoData(data, business, envPermits, historyList, day, month, year, report);
@@ -59,6 +63,8 @@ public class ReportA05DocUtil {
         buildAirEmissionPlaceholders(data, airEmissionData);
         buildWasteManagementPlaceholders(data, wasteManagementData);
 
+        buildImagePlaceholders(imageMapp, wasteWaterData);
+        data.put("inspeaction_remedy_report", defaultString(report.getInspectionRemedyReport()));
         Resource resource = new ClassPathResource(TEMPLATE_PATH);
         log.info("Loading ReportA05 template from: {}", TEMPLATE_PATH);
 
@@ -81,7 +87,7 @@ public class ReportA05DocUtil {
                     }
                 }
             }
-
+            replaceImagePlaceholders(doc, imageMapp);
             // Fill dynamic tables
             fillTables(doc, wasteWaterData, airEmissionData, wasteManagementData);
 
@@ -119,12 +125,13 @@ public class ReportA05DocUtil {
         data.put("tax_code", defaultString(business.getTaxCode()));
 
         if (business.getOperationType().name().equals("SEASONAL")) {
-            data.put("seasonal_period", "Thường xuyên");
-        } else {
-            data.put("seasonal_period", "Theo mùa");
-        }
+            data.put("operating_frequency", "Theo mùa");
+            data.put("seasonal_period", business.getSeasonalDescription());
 
-        data.put("operating_frequency", "");
+        } else {
+            data.put("operating_frequency", "Thường xuyên");
+            // data.put("seasonal_period", "");
+        }
 
         if (envPermits != null) {
             data.put("env_permit_number", defaultString(envPermits.getPermitNumber()));
@@ -209,10 +216,11 @@ public class ReportA05DocUtil {
 
         data.put("ww_treatment_desc", defaultString(ww.getTreatmentWwDesc()));
         data.put("connection_status_desc", defaultString(ww.getConnectionStatusDesc()));
-        data.put("connection_diagram", defaultString(ww.getConnectionDiagram()));
+        // data.put("connection_diagram", defaultString(ww.getConnectionDiagram()));
 
         data.put("domestic_ww_cy", fmt(ww.getDomWwCy()));
         data.put("domestic_ww_py", fmt(ww.getDomWwPy()));
+        data.put("domestic_ww_design", fmt(ww.getDomWwDesign()));
 
         data.put("industrial_ww_cy", fmt(ww.getIndustrialWwCy()));
         data.put("industrial_ww_py", fmt(ww.getIndustrialWwPy()));
@@ -324,6 +332,15 @@ public class ReportA05DocUtil {
 
         data.put("hw_disposal_total_volume", fmt(wm.getHwDisposalTotalVolume()));
         data.put("hw_disposal_estimation_method", defaultString(wm.getHwDisposalEstimationMethod()));
+
+    }
+
+    private void buildImagePlaceholders(Map<String, String> imageMap, WasteWaterDataDTO ww) {
+        if (ww == null)
+            return;
+        // imageMap.put("IMG_connection_diagram", ww.getConnectionDiagram());
+        // imageMap.put("IMG_auto_station_map", ww.getAutoStationMap());
+        imageMap.put("connection_diagram", ww.getConnectionDiagram());
     }
 
     // ---------------------------------------------------------------------
@@ -622,6 +639,48 @@ public class ReportA05DocUtil {
             if (i < lines.length - 1) {
                 run.addBreak(); // Xuống dòng trong Word
             }
+        }
+    }
+
+    private void replaceImagePlaceholders(XWPFDocument doc, Map<String, String> imageMap) {
+
+        for (XWPFParagraph paragraph : doc.getParagraphs()) {
+            String text = paragraph.getText();
+            if (text == null)
+                continue;
+
+            for (var entry : imageMap.entrySet()) {
+                String key = entry.getKey();
+                String imagePath = entry.getValue();
+                String placeholder = "{{" + key + "}}";
+
+                if (text.contains(placeholder)) {
+
+                    // Xóa toàn bộ run
+                    for (int i = paragraph.getRuns().size() - 1; i >= 0; i--) {
+                        paragraph.removeRun(i);
+                    }
+
+                    // Chèn ảnh
+                    addImageToParagraph(paragraph, imagePath);
+
+                    break;
+                }
+            }
+        }
+    }
+
+    private void addImageToParagraph(XWPFParagraph paragraph, String imagePath) {
+        try (InputStream is = new FileInputStream(imagePath)) {
+            XWPFRun run = paragraph.createRun();
+            run.addPicture(
+                    is,
+                    XWPFDocument.PICTURE_TYPE_PNG,
+                    imagePath,
+                    Units.toEMU(450),
+                    Units.toEMU(260));
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
