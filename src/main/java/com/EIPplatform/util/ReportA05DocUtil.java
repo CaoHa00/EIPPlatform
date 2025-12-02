@@ -26,7 +26,7 @@ import java.util.*;
 @Slf4j
 public class ReportA05DocUtil {
 
-    private static final String TEMPLATE_PATH = "templates/reportA05/ReportA05_template_ver2.docx";
+    private static final String TEMPLATE_PATH = "templates/reportA05/ReportA05_template_ver3.docx";
 
     public byte[] generateReportDocument(ReportA05 report, ReportA05DraftDTO draft) {
 
@@ -367,22 +367,18 @@ public class ReportA05DocUtil {
                         fmt(item.getQcvnLimit())),
                 true);
 
-        TableMappingService.mapVerticalTable(
+        TableMappingService.mapTable(
                 doc,
                 "{{TEMPLATE_AUTO_STATS}}",
-                ww == null ? null
-                        : List.of(
-                                ww.getMonitoringStats().isEmpty() ? "" : ww.getMonitoringStats().get(0).getParamName(),
-                                ww.getMonitoringStats().isEmpty() ? ""
-                                        : fmt(ww.getMonitoringStats().get(0).getValDesign()),
-                                ww.getMonitoringStats().isEmpty() ? ""
-                                        : fmt(ww.getMonitoringStats().get(0).getValReceived()),
-                                ww.getMonitoringStats().isEmpty() ? ""
-                                        : fmt(ww.getMonitoringStats().get(0).getValError()),
-                                ww.getMonitoringStats().isEmpty() ? ""
-                                        : fmt(ww.getMonitoringStats().get(0).getRatioReceivedDesign()),
-                                ww.getMonitoringStats().isEmpty() ? ""
-                                        : fmt(ww.getMonitoringStats().get(0).getRatioErrorReceived())));
+                air == null ? null : air.getAirAutoMonitoringStats(),
+                (item, row) -> row.cols(
+                        item.getParamName(),
+                        fmt(item.getValDesign()),
+                        fmt(item.getValReceived()),
+                        fmt(item.getValError()),
+                        fmt(item.getRatioReceivedDesign()),
+                        fmt(item.getRatioErrorReceived())),
+                true);
 
         TableMappingService.mapTable(
                 doc,
@@ -421,23 +417,30 @@ public class ReportA05DocUtil {
                         fmt(item.getQcvnLimit())),
                 true);
 
-        TableMappingService.mapVerticalTable(
+        TableMappingService.mapTable(
                 doc,
                 "{{TEMPLATE_AIR_AUTO_STATS}}",
-                air == null ? null
-                        : List.of(
-                                air.getAirAutoMonitoringStats().isEmpty() ? ""
-                                        : air.getAirAutoMonitoringStats().get(0).getParamName(),
-                                air.getAirAutoMonitoringStats().isEmpty() ? ""
-                                        : fmt(air.getAirAutoMonitoringStats().get(0).getValDesign()),
-                                air.getAirAutoMonitoringStats().isEmpty() ? ""
-                                        : fmt(air.getAirAutoMonitoringStats().get(0).getValReceived()),
-                                air.getAirAutoMonitoringStats().isEmpty() ? ""
-                                        : fmt(air.getAirAutoMonitoringStats().get(0).getValError()),
-                                air.getAirAutoMonitoringStats().isEmpty() ? ""
-                                        : fmt(air.getAirAutoMonitoringStats().get(0).getRatioReceivedDesign()),
-                                air.getAirAutoMonitoringStats().isEmpty() ? ""
-                                        : fmt(air.getAirAutoMonitoringStats().get(0).getRatioErrorReceived())));
+                air == null ? null : air.getAirAutoMonitoringStats(),
+                (item, row) -> row.cols(
+                        item.getParamName(),
+                        fmt(item.getValDesign()),
+                        fmt(item.getValReceived()),
+                        fmt(item.getValError()),
+                        fmt(item.getRatioReceivedDesign()),
+                        fmt(item.getRatioErrorReceived())),
+                true);
+        TableMappingService.mapTable(
+                doc,
+                "{{TEMPLATE_AIR_AUTO_STATS}}",
+                air == null ? null : air.getAirAutoMonitoringStats(),
+                (item, row) -> row.cols(
+                        item.getParamName(),
+                        fmt(item.getValDesign()),
+                        fmt(item.getValReceived()),
+                        fmt(item.getValError()),
+                        fmt(item.getRatioReceivedDesign()),
+                        fmt(item.getRatioErrorReceived())),
+                true);
 
         TableMappingService.mapTable(
                 doc,
