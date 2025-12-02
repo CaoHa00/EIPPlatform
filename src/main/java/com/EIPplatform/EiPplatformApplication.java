@@ -2,11 +2,21 @@ package com.EIPplatform;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.cache.annotation.EnableCaching;
+import org.springframework.scheduling.annotation.EnableAsync;
+
+import com.EIPplatform.properties.RateLimitProperties;
 
 @SpringBootApplication
+@EnableConfigurationProperties({
+    RateLimitProperties.class})
+@EnableCaching
+@EnableAsync
 public class EiPplatformApplication {
-	public static void main(String[] args) {
-		SpringApplication.run(EiPplatformApplication.class, args);
-	}
+
+    public static void main(String[] args) {
+        SpringApplication.run(EiPplatformApplication.class, args);
+    }
 
 }

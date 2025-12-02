@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -14,15 +15,19 @@ import com.EIPplatform.model.dto.userAccount.UserAccountUpdateDTO;
 import com.EIPplatform.model.entity.user.authentication.UserAccount;
 import com.EIPplatform.repository.authentication.UserAccountRepository;
 
+import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
 
 @Service
 @RequiredArgsConstructor
 @Transactional
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class UserAccountImplementation implements UserAccountInterface {
 
-    private final UserAccountRepository userAccountRepository;
-    private final UserAccountMapper userAccountMapper;
+    PasswordEncoder passwordEncoder;
+    UserAccountRepository userAccountRepository;
+    UserAccountMapper userAccountMapper;
 
     @Override
     public UserAccountResponseDTO findById(UUID id) {
@@ -42,6 +47,9 @@ public class UserAccountImplementation implements UserAccountInterface {
     @Override
     public UserAccountResponseDTO create(UserAccountCreateDTO dto) {
         // DTO -> Entity
+
+        String encodedNewPassword = passwordEncoder.encode(dto.getPassword());
+        dto.setPassword(encodedNewPassword);
         UserAccount entity = userAccountMapper.toEntity(dto);
         entity = userAccountRepository.save(entity);
         return userAccountMapper.toResponseDTO(entity);
