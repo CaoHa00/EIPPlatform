@@ -1,3 +1,4 @@
+
 package com.EIPplatform.mapper.businessInformation;
 
 import org.mapstruct.BeanMapping;
@@ -9,7 +10,7 @@ import org.mapstruct.NullValuePropertyMappingStrategy;
 import com.EIPplatform.model.dto.businessInformation.BusinessHistoryConsumptionCreateDTO;
 import com.EIPplatform.model.dto.businessInformation.BusinessHistoryConsumptionDTO;
 import com.EIPplatform.model.dto.businessInformation.BusinessHistoryConsumptionUpdateDTO;
-import com.EIPplatform.model.entity.user.businessInformation.BusinessHistoryConsumption;
+import com.EIPplatform.model.entity.businessInformation.BusinessHistoryConsumption;
 
 import java.util.List;
 

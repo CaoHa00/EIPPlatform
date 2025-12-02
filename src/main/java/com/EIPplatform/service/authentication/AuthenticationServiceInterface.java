@@ -6,6 +6,8 @@ import com.EIPplatform.model.dto.authentication.AuthenticationResponse;
 import com.EIPplatform.model.dto.authentication.IsValidTokenRequest;
 import com.EIPplatform.model.dto.authentication.IsValidTokenResponse;
 import com.EIPplatform.model.dto.authentication.LoginRequest;
+import com.EIPplatform.model.dto.authentication.PasswordChangeVerificationRequest;
+import com.EIPplatform.model.dto.authentication.PasswordChangeWithCodeRequest;
 import com.nimbusds.jose.JOSEException;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -20,7 +22,7 @@ public interface AuthenticationServiceInterface {
 
     void logout(IsValidTokenRequest request, HttpServletRequest httpRequest) throws JOSEException, ParseException;
 
-    // void passwordChangeVerification(PasswordChangeVerificationRequest request);
+    void passwordChangeVerification(PasswordChangeVerificationRequest request);
 
-    // void changePasswordWithCode(PasswordChangeWithCodeRequest request);
+    void changePasswordWithCode(PasswordChangeWithCodeRequest request);
 }

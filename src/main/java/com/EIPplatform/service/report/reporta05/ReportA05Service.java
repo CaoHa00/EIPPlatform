@@ -1,6 +1,6 @@
 package com.EIPplatform.service.report.reporta05;
 
-import com.EIPplatform.model.dto.report.report.*;
+import com.EIPplatform.model.dto.report.report05.*;
 
 import java.util.UUID;
 
@@ -13,18 +13,18 @@ public interface ReportA05Service {
     /**
      * Lấy draft data từ CACHE
      */
-    ReportA05DraftDTO getDraftData(UUID reportId);
+    ReportA05DraftDTO getDraftData(UUID reportId, UUID userAccountId);
 
     /**
      * Submit draft từ CACHE xuống DATABASE
      */
-    ReportA05DTO submitDraftToDatabase(UUID reportId);
+    ReportA05DTO submitDraftToDatabase(UUID reportId, UUID userAccountId);
 
     /**
      * Cập nhật completion percentage cho draft dựa trên dữ liệu hiện tại
      * (Gọi sau mỗi step để tự động tính % và lưu lại cache)
      */
-    ReportA05DraftDTO updateDraftCompletion(UUID reportId);
+    ReportA05DraftDTO updateDraftCompletion(UUID reportId, UUID userAccountId);
 
     /**
      * Cập nhật inspection remedy report cho report (trực tiếp vào database)
@@ -38,6 +38,6 @@ public interface ReportA05Service {
     // void deleteDraftAirEmissionData(UUID reportId);
 
     // Generate report file
-    byte[] generateReportFile(UUID reportId) throws Exception;
+    byte[] generateReportFile(UUID reportId, UUID userAccountId) throws Exception;
 
 }

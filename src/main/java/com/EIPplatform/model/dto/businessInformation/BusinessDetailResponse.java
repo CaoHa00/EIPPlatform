@@ -1,10 +1,9 @@
 package com.EIPplatform.model.dto.businessInformation;
 
-import java.time.LocalDateTime;
-import java.util.List;
 import java.util.UUID;
 
 import com.EIPplatform.model.enums.OperationType;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -18,6 +17,7 @@ public class BusinessDetailResponse {
 
     UUID businessDetailId;
     String facilityName;
+    // LegalRepresentative legalRepresentative;
     String legalRepresentative;
     String phoneNumber;
     String address;
@@ -29,11 +29,11 @@ public class BusinessDetailResponse {
     String taxCode;
     OperationType operationType;
     String seasonalDescription;
+    String email;
+    // List<String> userAccounts;
 
-    List<String> userAccounts;
-
-    LocalDateTime createdAt;
-    String createdBy;
-    LocalDateTime updatedAt;
-    String updatedBy;
+    // LocalDateTime createdAt;
+    // String createdBy;
+    // LocalDateTime updatedAt;
+    // String updatedBy;
 }

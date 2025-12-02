@@ -30,15 +30,15 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class SecurityConfig {
         String[] PUBLIC_ENDPOINTS = {
-                        "/api/authentication/login",
-                        "/api/authentication/logout",
-                        "/api/authentication/refresh"
+                        "/api/v1/authentication/login",
+                        "/api/v1/authentication/logout",
+                        "/api/v1/authentication/refresh"
         };
         List<String> endPointsCORS = List.of(
                         "https://eip-bcm.eiu.vn",
                         "http://localhost:3000",
-                        "http://10.10.115.20:3000",
-                        "http://localhost:7000");
+                        "http://10.10.115.20:3000","http://10.80.249.89:3000/","http://10.60.237.101:3000/",
+                        "http://10.60.237.101:3000/");
 
         @Bean
         public SecurityFilterChain filterChain(HttpSecurity httpSecurity,

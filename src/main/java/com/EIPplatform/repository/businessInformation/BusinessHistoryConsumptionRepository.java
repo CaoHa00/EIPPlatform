@@ -1,0 +1,18 @@
+
+package com.EIPplatform.repository.businessInformation;
+
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+
+import com.EIPplatform.model.entity.businessInformation.BusinessHistoryConsumption;
+
+@Repository
+public interface BusinessHistoryConsumptionRepository extends JpaRepository<BusinessHistoryConsumption, UUID> {
+    Optional<BusinessHistoryConsumption> findByBusinessHistoryConsumptionId(UUID id);
+    void deleteByBusinessDetail_BusinessDetailId(UUID id);
+    List<BusinessHistoryConsumption> findByBusinessDetail_BusinessDetailId(UUID businessDetailId);
+}
