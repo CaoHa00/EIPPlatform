@@ -114,7 +114,7 @@ public class ReportA05DocUtil {
         data.put("activity_type", defaultString(business.getActivityType()));
         data.put("scale_capacity", defaultString(business.getScaleCapacity()));
 
-        data.put("iso_14001_certificate", defaultString(business.getISO_certificate_14001()));
+        data.put("iso_14001_certificate", convertYesNoToVietnamese(business.getISO_certificate_14001()));
         data.put("business_license_number", defaultString(business.getBusinessRegistrationNumber()));
         data.put("tax_code", defaultString(business.getTaxCode()));
 
@@ -667,6 +667,16 @@ public class ReportA05DocUtil {
                 "units", "đơn vị",
                 "other", "khác");
 
+        return unitMap.getOrDefault(unit.trim(), unit);
+    }
+
+    private String convertYesNoToVietnamese(String unit) {
+        if (unit == null || unit.trim().isEmpty()) {
+            return "";
+        }
+        Map<String, String> unitMap = Map.of(
+                "yes", "Có",
+                "No", "Không");
         return unitMap.getOrDefault(unit.trim(), unit);
     }
 }
