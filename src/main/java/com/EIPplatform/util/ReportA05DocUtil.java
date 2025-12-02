@@ -29,7 +29,7 @@ import java.util.*;
 @Slf4j
 public class ReportA05DocUtil {
 
-    private static final String TEMPLATE_PATH = "templates/reportA05/ReportA05_template_ver3.docx";
+    private static final String TEMPLATE_PATH = "templates/reportA05/ReportA05_template_ver4.docx";
 
     public byte[] generateReportDocument(ReportA05 report, ReportA05DraftDTO draft) {
 
@@ -620,6 +620,8 @@ public class ReportA05DocUtil {
         if (original.equals(text))
             return;
 
+        RunStyle normalStyle = null;
+
         // Rebuild run - XỬ LÝ XUỐNG DÒNG
         for (int i = paragraph.getRuns().size() - 1; i >= 0; i--) {
             paragraph.removeRun(i);
@@ -634,6 +636,8 @@ public class ReportA05DocUtil {
         for (int i = 0; i < lines.length; i++) {
             XWPFRun run = paragraph.createRun();
             run.setText(lines[i]);
+
+            applyRunStyle(normalStyle, run);
 
             // Thêm line break nếu không phải dòng cuối
             if (i < lines.length - 1) {
@@ -738,4 +742,88 @@ public class ReportA05DocUtil {
                 "No", "Không");
         return unitMap.getOrDefault(unit.trim(), unit);
     }
+
+    /**
+     * Copy ALL run formatting from templateRun → newRun
+     */
+    private void copyRunStyle(XWPFRun source, XWPFRun target) {
+        if (source == null || target == null)
+            return;
+
+        // Font family
+        if (source.getFontFamily() != null)
+            target.setFontFamily(source.getFontFamily());
+
+        // Font size
+        if (source.getFontSize() > 0)
+            target.setFontSize(source.getFontSize());
+
+        // Basic text styling
+        target.setBold(source.isBold());
+        target.setItalic(source.isItalic());
+        target.setUnderline(source.getUnderline());
+
+        // Color
+        if (source.getColor() != null)
+            target.setColor(source.getColor());
+
+        // Additional styling
+        target.setCapitalized(source.isCapitalized());
+        target.setShadow(source.isShadowed());
+        target.setSmallCaps(source.isSmallCaps());
+        // target.setSubscript(source.getSubscript());
+    }
+
+    private static class RunStyle {
+        String fontFamily;
+        int fontSize;
+        boolean bold;
+        boolean italic;
+        int underline;
+        String color;
+        boolean caps;
+        boolean shadow;
+        boolean smallCaps;
+    }
+
+    private RunStyle extractRunStyle(XWPFRun run) {
+        if (run == null)
+            return null;
+
+        RunStyle rs = new RunStyle();
+        rs.fontFamily = run.getFontFamily();
+        rs.fontSize = run.getFontSize();
+        rs.bold = run.isBold();
+        rs.italic = run.isItalic();
+        // rs.underline = run.getUnderline();
+        rs.color = run.getColor();
+        rs.caps = run.isCapitalized();
+        rs.shadow = run.isShadowed();
+        rs.smallCaps = run.isSmallCaps();
+
+        return rs;
+    }
+
+    private void applyRunStyle(RunStyle style, XWPFRun target) {
+        if (style == null || target == null)
+            return;
+
+        if (style.fontFamily != null)
+            target.setFontFamily(style.fontFamily);
+
+        if (style.fontSize > 0)
+            target.setFontSize(style.fontSize);
+
+        target.setBold(style.bold);
+        target.setItalic(style.italic);
+        // target.setUnderline(style.underline);
+
+        if (style.color != null)
+            target.setColor(style.color);
+
+        target.setCapitalized(style.caps);
+        target.setShadow(style.shadow);
+        target.setSmallCaps(style.smallCaps);
+    }
+
 }
