@@ -8,7 +8,6 @@ import com.EIPplatform.model.entity.user.authentication.UserAccount;
 import com.EIPplatform.repository.authentication.UserAccountRepository;
 import com.EIPplatform.repository.form.surveyform.*;
 import com.EIPplatform.service.authentication.UserAccountImplementation;
-import com.EIPplatform.service.form.submission.SubmissionService;
 import com.EIPplatform.model.entity.form.surveyform.*;
 import com.EIPplatform.model.dto.form.surveyform.survey.*;
 
@@ -17,6 +16,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import jakarta.persistence.criteria.Predicate;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -30,10 +30,7 @@ import java.util.stream.Collectors;
 public class SurveyService implements SurveyServiceInterface {
 
     private final SurveyFormRepository surveyRepository;
-    private final SurveyFormCategoryRepository surveyFormCategoryRepository;
-    private final UserAccountImplementation userService;
-    private final SurveySecurityServiceInterface securityService;
-    private final QuestionServiceInterface questionService;
+    private final SurveyAccessControlServiceInterface accessControlService;
     private final SubmissionServiceInterface submissionService;
     private final UserAccountRepository userAccountRepository;
     private final ExceptionFactory exceptionFactory;
@@ -42,11 +39,11 @@ public class SurveyService implements SurveyServiceInterface {
 
     @Transactional
     @Override
-    public SurveyDTO createSurvey(CreateSurveyFormDTO dto) {
-        //PLACEHOLDER USER, CREATE METHOD TO GET ACTUAL USER FROM REQUEST!!!!!!!!!
-        UserAccount creator = userAccountRepository.findAll().stream()
-                .findFirst()
-                .orElseThrow(() -> new IllegalStateException("No users exist in the database. Please create at least one user to serve as a placeholder."));
+    public SurveyDTO createSurvey(CreateSurveyFormDTO dto, UUID userAccountId) {
+        accessControlService.ensureBecamexRole(userAccountId);
+        
+        UserAccount creator = userAccountRepository.findById(userAccountId)
+                .orElseThrow(() -> exceptionFactory.createNotFoundException("User", "id", userAccountId, UserError.NOT_FOUND));
 
         SurveyForm form = new SurveyForm();
         form.setTitle(dto.getTitle());
@@ -54,21 +51,8 @@ public class SurveyService implements SurveyServiceInterface {
         form.setCreator(creator);
         form.setActive(true);
 
-        if (dto.getCategoryId() != null) {
-            SurveyFormCategory category = surveyFormCategoryRepository.findById(dto.getCategoryId())
-                    .orElseThrow(() -> exceptionFactory.createNotFoundException("SurveyFormCategory", "id", dto.getCategoryId(), FormError.SURVEY_FORM_CATEGORY_NOT_FOUND));
-            form.setSurveyFormCategory(category);
-        }
-
-        // DELEGATION
-        if (dto.getQuestions() != null) {
-            List<Question> questions = dto.getQuestions().stream()
-                    .map(qDto -> questionService.buildQuestionEntity(qDto, form))
-                    .collect(Collectors.toList());
-
-            form.setQuestions(questions);
-        }
-
+        // Questions are no longer directly created on SurveyForm, they must be added to GroupDimensions later.
+        
         // SAVE ONCE. cascades all is enabled
         surveyRepository.save(form);
 
@@ -77,20 +61,17 @@ public class SurveyService implements SurveyServiceInterface {
 
     @Transactional // edit TITLE and DESCRIPTION
     @Override
-    public SurveyDTO editSurvey(UUID id, EditSurveyDTO dto) {
-        SurveyForm form = securityService.getFormIfCreator(id);
+    public SurveyDTO editSurvey(UUID id, EditSurveyDTO dto, UUID userAccountId) {
+        accessControlService.ensureBecamexRole(userAccountId);
+        
+        SurveyForm form = surveyRepository.findById(id)
+                .orElseThrow(() -> exceptionFactory.createNotFoundException("SurveyForm", "id", id, FormError.SURVEY_FORM_NOT_FOUND));
 
         if (dto.getTitle() != null && !dto.getTitle().isEmpty()) {
             form.setTitle(dto.getTitle());
         }
         if (dto.getDescription() != null && !dto.getDescription().isEmpty()) {
             form.setDescription(dto.getDescription());
-        }
-
-        if (dto.getCategoryId() != null) {
-            SurveyFormCategory category = surveyFormCategoryRepository.findById(dto.getCategoryId())
-                    .orElseThrow(() -> exceptionFactory.createNotFoundException("SurveyFormCategory", "id", dto.getCategoryId(), FormError.SURVEY_FORM_CATEGORY_NOT_FOUND));
-            form.setSurveyFormCategory(category);
         }
 
         form.setUpdatedAt(LocalDateTime.now());
@@ -101,8 +82,11 @@ public class SurveyService implements SurveyServiceInterface {
 
     @Transactional
     @Override
-    public void activeSwitch(UUID id) {
-        SurveyForm form = securityService.getFormIfCreator(id);
+    public void activeSwitch(UUID id, UUID userAccountId) {
+        accessControlService.ensureBecamexRole(userAccountId);
+        
+        SurveyForm form = surveyRepository.findById(id)
+                .orElseThrow(() -> exceptionFactory.createNotFoundException("SurveyForm", "id", id, FormError.SURVEY_FORM_NOT_FOUND));
 
         boolean newActive = !form.isActive();
         form.setActive(newActive);
@@ -110,8 +94,11 @@ public class SurveyService implements SurveyServiceInterface {
 
     @Transactional
     @Override
-    public SurveyDTO updateExpiry(UUID id, LocalDateTime expiresAt) {
-        SurveyForm form = securityService.getFormIfCreator(id);
+    public SurveyDTO updateExpiry(UUID id, LocalDateTime expiresAt, UUID userAccountId) {
+        accessControlService.ensureBecamexRole(userAccountId);
+        
+        SurveyForm form = surveyRepository.findById(id)
+                .orElseThrow(() -> exceptionFactory.createNotFoundException("SurveyForm", "id", id, FormError.SURVEY_FORM_NOT_FOUND));
 
         form.setExpiresAt(expiresAt);
 
@@ -128,9 +115,11 @@ public class SurveyService implements SurveyServiceInterface {
      */
     @Transactional
     @Override
-    public void hardDeleteSurvey(UUID id) {
-        // Creator check
-        SurveyForm form = securityService.getFormIfCreator(id);
+    public void hardDeleteSurvey(UUID id, UUID userAccountId) {
+        accessControlService.ensureBecamexRole(userAccountId);
+        
+        SurveyForm form = surveyRepository.findById(id)
+                .orElseThrow(() -> exceptionFactory.createNotFoundException("SurveyForm", "id", id, FormError.SURVEY_FORM_NOT_FOUND));
 
         // Check for existing submission before deleting
         long submissionCount = submissionService.getSubmissionCountOfSurvey(id);
@@ -141,16 +130,9 @@ public class SurveyService implements SurveyServiceInterface {
                     FormError.SUBMISSIONS_EXIST);
         }
 
-        // DELEGATION: Clean up Questions => Questions will clean up Options
-        questionService.batchDeleteQuestions(form);
+        // everything should cascade from SurveyForm downwards
 
-        // same logic in QuestionService, clear the Questions list so Hibernate doesn't resave it
-        if (form.getQuestions() != null) {
-            form.getQuestions().clear();
-        }
-
-        // Delete the Form
-        surveyRepository.deleteAllInBatch(List.of(form));
+        surveyRepository.delete(form);
     }
 
 
@@ -186,47 +168,34 @@ public class SurveyService implements SurveyServiceInterface {
     }
 
     /**
-     * Get all SurveyForms that belong to a categoryId
-     * @param categoryId category ID
-     * @return a SurveyDTO
-     * @deprecated use searchSurveys() instead
-     */
-    @Deprecated
-    @Override
-    public List<SurveyDTO> getAllSurveysByCategory(UUID categoryId){
-        SurveyFormCategory category = surveyFormCategoryRepository.findById(categoryId)
-                .orElseThrow(() -> exceptionFactory
-                        .createNotFoundException("SurveyFormCategory", "id", categoryId, FormError.SURVEY_FORM_CATEGORY_NOT_FOUND));
-
-        List<SurveyForm> formList = surveyRepository.findBySurveyFormCategory(category);
-
-        return surveyFormMapper.toDTOList(formList);
-
-    }
-
-    /**
      *  Build search query
      * @param creatorId creatorId
-     * @param categoryId categoryId
      * @param title title
      * @return SurveyDTO
      */
     @Override
-    public List<SurveyDTO> searchSurveys(UUID creatorId, UUID categoryId, String title) {
+    public List<SurveyDTO> searchSurveys(UUID creatorId, String title) {
         Specification<SurveyForm> spec = (root, query, criteriaBuilder) -> {
-            List<jakarta.persistence.criteria.Predicate> predicates = new ArrayList<>();
+            List<Predicate> predicates = new ArrayList<>();
             if (creatorId != null) {
-                predicates.add(criteriaBuilder.equal(root.get("creator").get("id"), creatorId));
-            }
-            if (categoryId != null) {
-                predicates.add(criteriaBuilder.equal(root.get("surveyFormCategory").get("id"), categoryId));
+                predicates.add(criteriaBuilder.equal(root.get("creator").get("userAccountId"), creatorId));
             }
             if (title != null && !title.isEmpty()) {
                 predicates.add(criteriaBuilder.like(root.get("title"), "%" + title + "%"));
             }
-            return criteriaBuilder.and(predicates.toArray(new jakarta.persistence.criteria.Predicate[0]));
+            return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
         };
         List<SurveyForm> formList = surveyRepository.findAll(spec);
         return surveyFormMapper.toDTOList(formList);
+    }
+
+    @Override
+    @Transactional
+    public void updateSurveyUpdatedAt(UUID surveyFormId) {
+        SurveyForm form = surveyRepository.findById(surveyFormId)
+                .orElseThrow(() -> exceptionFactory.createNotFoundException("SurveyForm", "id", surveyFormId, FormError.SURVEY_FORM_NOT_FOUND));
+        
+        form.setUpdatedAt(LocalDateTime.now());
+        surveyRepository.save(form);
     }
 }

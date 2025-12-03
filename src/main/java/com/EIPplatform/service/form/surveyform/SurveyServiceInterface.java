@@ -9,14 +9,14 @@ import java.util.List;
 import java.util.UUID;
 
 public interface SurveyServiceInterface {
-    SurveyDTO createSurvey(CreateSurveyFormDTO dto);
-    SurveyDTO editSurvey(UUID id, EditSurveyDTO dto);
-    void activeSwitch(UUID id);
-    SurveyDTO updateExpiry(UUID id, LocalDateTime expiresAt);
-    void hardDeleteSurvey(UUID id);
+    SurveyDTO createSurvey(CreateSurveyFormDTO dto, UUID userAccountId);
+    SurveyDTO editSurvey(UUID id, EditSurveyDTO dto, UUID userAccountId);
+    void activeSwitch(UUID id, UUID userAccountId);
+    SurveyDTO updateExpiry(UUID id, LocalDateTime expiresAt, UUID userAccountId);
+    void hardDeleteSurvey(UUID id, UUID userAccountId);
     SurveyDTO getSurveyDTO(UUID id);
     List<SurveyDTO> getSurveyByCreatorId(UUID id);
     List<SurveyDTO> getAllSurveys();
-    List<SurveyDTO> getAllSurveysByCategory(UUID categoryId);
-    List<SurveyDTO> searchSurveys(UUID creatorId, UUID categoryId, String title);
+    List<SurveyDTO> searchSurveys(UUID creatorId, String title);
+    void updateSurveyUpdatedAt(UUID surveyFormId);
 }

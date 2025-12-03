@@ -15,7 +15,7 @@ public interface AnswerMapper {
 
     @Mapping(source = "question.id", target = "questionId")
     @Mapping(source = "question.text", target = "questionText")
-    @Mapping(source = "question.questionCategory.name", target = "questionCategory")
+    @Mapping(source = "question.groupDimension.name", target = "groupDimension")
     AnswerDTO toDTO(Answer answer);
 
     List<AnswerDTO> toDTOList(List<Answer> answers);

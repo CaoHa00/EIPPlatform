@@ -11,7 +11,6 @@ public class SubmissionDTO {
     private UUID id;
     private LocalDateTime submittedAt;
     private LocalDateTime updatedAt;
-    private String surveyFormCategory;
     private UUID surveyFormId;
     private String surveyFormTitle;
     private UUID respondentId;

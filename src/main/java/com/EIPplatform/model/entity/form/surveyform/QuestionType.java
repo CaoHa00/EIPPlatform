@@ -9,5 +9,6 @@ public enum QuestionType {
     DROPDOWN,
     CHECKBOX,
     MULTIPLE_CHOICE,
-    LIKERT
+    LIKERT,
+    YES_NO
 }

@@ -7,6 +7,7 @@ import java.util.UUID;
 @Data
 public class EditQuestionDTO {
     private String text;
+    private String code;
     private Boolean required;
-    private UUID categoryId;
+    private UUID groupDimensionId;
 }

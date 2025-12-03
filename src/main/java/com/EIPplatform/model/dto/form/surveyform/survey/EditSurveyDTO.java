@@ -10,6 +10,4 @@ public class EditSurveyDTO {
     private String title;
 
     private String description;
-
-    private UUID categoryId;
 }
