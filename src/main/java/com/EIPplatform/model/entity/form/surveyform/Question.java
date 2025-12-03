@@ -1,6 +1,5 @@
 package com.EIPplatform.model.entity.form.surveyform;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -14,6 +13,9 @@ public class Question {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
+
+    @Column(nullable = false)
+    private String code; //MS01, TR01
 
     @Enumerated(EnumType.STRING)
     private QuestionType type;
@@ -29,14 +31,9 @@ public class Question {
     private int displayOrder; //1 -> n
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "form_id", nullable = false)
-    @JsonIgnore
-    private SurveyForm surveyForm;
+    @JoinColumn(name = "group_dimension_id")
+    private GroupDimension groupDimension;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "category_id")
-    private QuestionCategory questionCategory;
-
-    @OneToMany(mappedBy = "question", cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH})
+    @OneToMany(mappedBy = "question", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<QuestionOption> options;
 }

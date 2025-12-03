@@ -6,8 +6,9 @@ import com.EIPplatform.model.entity.form.surveyform.SurveyForm;
 
 import java.util.UUID;
 
+@Deprecated
 public interface SurveySecurityServiceInterface {
-    SurveyForm getFormIfCreator(UUID formId);
-    Question getQuestionIfCreator(UUID questionId);
-    QuestionOption getOptionIfCreator(UUID optionId);
+    SurveyForm getFormIfCreator(UUID formId, UUID userAccountId);
+    Question getQuestionIfCreator(UUID questionId, UUID userAccountId);
+    QuestionOption getOptionIfCreator(UUID optionId, UUID userAccountId);
 }

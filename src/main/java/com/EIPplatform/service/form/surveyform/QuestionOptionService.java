@@ -7,9 +7,11 @@ import com.EIPplatform.mapper.form.surveyform.QuestionOptionMapper;
 import com.EIPplatform.model.dto.form.surveyform.ReorderRequestDTO;
 import com.EIPplatform.model.dto.form.surveyform.option.CreateOptionDTO;
 import com.EIPplatform.model.dto.form.surveyform.option.OptionDTO;
+import com.EIPplatform.model.dto.form.surveyform.question.DeleteQuestionDTO;
 import com.EIPplatform.model.entity.form.surveyform.Question;
 import com.EIPplatform.model.entity.form.surveyform.QuestionOption;
 import com.EIPplatform.repository.form.surveyform.QuestionOptionRepository;
+import com.EIPplatform.repository.form.surveyform.QuestionRepository;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -26,12 +28,15 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class QuestionOptionService implements QuestionOptionServiceInterface {
-    private final List<String> VALID_QUESTION_TYPES = List.of("MULTIPLE_CHOICE", "CHECKBOX", "DROPDOWN", "LIKERT");
+    private final List<String> VALID_QUESTION_TYPES = List.of("MULTIPLE_CHOICE", "CHECKBOX", "DROPDOWN", "LIKERT", "YES_NO");
     private final QuestionOptionRepository optionRepository;
-    private final SurveySecurityServiceInterface securityService;
+    private final SurveyAccessControlServiceInterface accessControlService;
+    private final QuestionRepository questionRepository;
     private final ExceptionFactory exceptionFactory;
     private final QuestionOptionMapper questionOptionMapper;
+    private final SurveyServiceInterface surveyService;
 
+    @Override
     public OptionDTO getOption(UUID id) {
         QuestionOption option = optionRepository.findById(id).orElseThrow(() -> exceptionFactory.createNotFoundException("QuestionOption", "id", id, FormError.QUESTION_OPTION_NOT_FOUND));
         return questionOptionMapper.toDTO(option);
@@ -41,6 +46,7 @@ public class QuestionOptionService implements QuestionOptionServiceInterface {
      * Helper: Builds the entity WITHOUT saving it.
      * Used by QuestionService for bulk operations.
      */
+    @Override
     public QuestionOption buildOptionEntity(CreateOptionDTO dto, Question parent) {
         QuestionOption option = new QuestionOption();
         option.setText(dto.getText());
@@ -55,8 +61,12 @@ public class QuestionOptionService implements QuestionOptionServiceInterface {
      * Used for single additions via API.
      */
     @Transactional
-    public OptionDTO addOption(UUID questionId, CreateOptionDTO dto) {
-        Question parentQuestion = securityService.getQuestionIfCreator(questionId);
+    @Override
+    public OptionDTO addOption(UUID questionId, CreateOptionDTO dto, UUID userAccountId) {
+        accessControlService.ensureBecamexRole(userAccountId);
+        
+        Question parentQuestion = questionRepository.findById(questionId)
+                .orElseThrow(() -> exceptionFactory.createNotFoundException("Question", "id", questionId, FormError.QUESTION_NOT_FOUND));
 
         //validate question type, short answers and paragraphs shouldn't have multiple options
         String parentQuestionType = parentQuestion.getType().toString();
@@ -75,16 +85,18 @@ public class QuestionOptionService implements QuestionOptionServiceInterface {
         QuestionOption option = buildOptionEntity(dto, parentQuestion);
         OptionDTO savedOptionDTO = questionOptionMapper.toDTO(optionRepository.save(option));
 
-        //update updatedAt
-        if (parentQuestion.getSurveyForm() != null) {
-            parentQuestion.getSurveyForm().setUpdatedAt(LocalDateTime.now());
-        }
+        //update updatedAt - Needs to traverse via GroupDimension -> Dimension -> SurveyForm
+        updateParentSurveyUpdatedAt(parentQuestion);
         return savedOptionDTO;
     }
 
     @Transactional
-    public OptionDTO editOption(String text, UUID optionId) {
-        QuestionOption option = securityService.getOptionIfCreator(optionId);
+    @Override
+    public OptionDTO editOption(String text, UUID optionId, UUID userAccountId) {
+        accessControlService.ensureBecamexRole(userAccountId);
+        
+        QuestionOption option = optionRepository.findById(optionId)
+                .orElseThrow(() -> exceptionFactory.createNotFoundException("QuestionOption", "id", optionId, FormError.QUESTION_NOT_FOUND));
 
         if (text != null && !text.isBlank()) {
             option.setText(text);
@@ -94,22 +106,33 @@ public class QuestionOptionService implements QuestionOptionServiceInterface {
     }
 
     @Transactional
-    public void activeSwitch(UUID optionId) {
-        QuestionOption option = securityService.getOptionIfCreator(optionId);
+    @Override
+    public void activeSwitch(UUID optionId, UUID userAccountId) {
+        accessControlService.ensureBecamexRole(userAccountId);
+        
+        QuestionOption option = optionRepository.findById(optionId)
+                .orElseThrow(() -> exceptionFactory.createNotFoundException("QuestionOption", "id", optionId, FormError.QUESTION_NOT_FOUND));
 
         option.setActive(!option.isActive());
 
-        //update updatedAt property
-        if (option.getQuestion() != null && option.getQuestion().getSurveyForm() != null) {
-            option.getQuestion().getSurveyForm().setUpdatedAt(LocalDateTime.now());
-        }
+        //update updatedAt property - Needs to traverse via GroupDimension -> Dimension -> SurveyForm
+        updateParentSurveyUpdatedAt(option.getQuestion());
     }
 
     @Transactional
-    public void reorderOptions(UUID questionId, ReorderRequestDTO dto) {
-        Question question = securityService.getQuestionIfCreator(questionId);
+    @Override
+    public void reorderOptions(UUID questionId, ReorderRequestDTO dto, UUID userAccountId) {
+        accessControlService.ensureBecamexRole(userAccountId);
+        
+        Question question = questionRepository.findById(questionId)
+                .orElseThrow(() -> exceptionFactory.createNotFoundException("Question", "id", questionId, FormError.QUESTION_NOT_FOUND));
 
         List<QuestionOption> options = question.getOptions();
+
+        if (options.size() != dto.getOrderedIds().size()){
+            throw exceptionFactory.createValidationException("ReorderRequestDTO", "orderedIds.size()", dto.getOrderedIds().size(), ValidationError.INVALID_REORDER_REQUEST_SIZE);
+        }
+
         Map<UUID, QuestionOption> optionMap = options.stream()
                 .collect(Collectors.toMap(QuestionOption::getId, Function.identity()));
 
@@ -125,36 +148,50 @@ public class QuestionOptionService implements QuestionOptionServiceInterface {
             }
         }
 
-        if (question.getSurveyForm() != null) {
-            question.getSurveyForm().setUpdatedAt(LocalDateTime.now());
-        }
+        //update updatedAt property - Needs to traverse via GroupDimension -> Dimension -> SurveyForm
+        updateParentSurveyUpdatedAt(question);
     }
 
     /**
      * Batch Delete: Delete all Options in a Question
-     * Used by QuestionService
      */
     @Transactional
-    public void batchDeleteOptions(Question question) {
-        // delete from database
-        if (question.getOptions() != null && !question.getOptions().isEmpty()) {
-            optionRepository.deleteAllInBatch(question.getOptions());
-        }
+    @Override
+    public void batchDeleteOptions(DeleteQuestionDTO dto, UUID userAccountId) {
+        accessControlService.ensureBecamexRole(userAccountId);
+
+
+        List<UUID> optionsList = dto.getQuestionIdsList();
+        List<QuestionOption> options = optionRepository.findAllById(optionsList);
+
+        optionRepository.deleteAllInBatch(options);
     }
 
     /**
      * Granular single delete for API Endpoint
      */
     @Transactional
-    public void hardDeleteOption(UUID optionId) {
-        QuestionOption option = securityService.getOptionIfCreator(optionId);
+    @Override
+    public void hardDeleteOption(UUID optionId, UUID userAccountId) {
+        accessControlService.ensureBecamexRole(userAccountId);
+        
+        QuestionOption option = optionRepository.findById(optionId)
+                .orElseThrow(() -> exceptionFactory.createNotFoundException("QuestionOption", "id", optionId, FormError.QUESTION_NOT_FOUND));
 
         Question parentQuestion = option.getQuestion();
 
         optionRepository.delete(option);
 
-        if (parentQuestion.getSurveyForm() != null) {
-            parentQuestion.getSurveyForm().setUpdatedAt(LocalDateTime.now());
+        //update updatedAt property - Needs to traverse via GroupDimension -> Dimension -> SurveyForm
+        updateParentSurveyUpdatedAt(parentQuestion);
+    }
+
+    private void updateParentSurveyUpdatedAt(Question question) {
+        if (question != null &&
+            question.getGroupDimension() != null &&
+            question.getGroupDimension().getDimension() != null &&
+            question.getGroupDimension().getDimension().getSurveyForm() != null) {
+            surveyService.updateSurveyUpdatedAt(question.getGroupDimension().getDimension().getSurveyForm().getId());
         }
     }
 }

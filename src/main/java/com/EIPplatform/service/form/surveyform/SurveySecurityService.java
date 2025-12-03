@@ -15,12 +15,12 @@ import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
+@Deprecated
 public class SurveySecurityService implements SurveySecurityServiceInterface {
 
     private final SurveyFormRepository surveyRepository;
     private final QuestionOptionRepository optionRepository;
     private final QuestionRepository questionRepository;
-    private final UserAccountImplementation userService;
     private final ExceptionFactory exceptionFactory;
 
     /**
@@ -28,16 +28,13 @@ public class SurveySecurityService implements SurveySecurityServiceInterface {
      * Returns the Form if allowed.
      * Throws exception if not found or not authorized.
      */
-    public SurveyForm getFormIfCreator(UUID formId) {
-        //IMPLEMENT GET USER FROM REQUEST
-//        UserAccount currentUser = userService.getCurrentUser();
-
+    public SurveyForm getFormIfCreator(UUID formId, UUID userAccountId) {
         SurveyForm form = surveyRepository.findById(formId)
                 .orElseThrow(() -> exceptionFactory.createNotFoundException("SurveyForm", "id", formId, FormError.SURVEY_FORM_NOT_FOUND));
 
-//        if (!form.getCreator().getUserAccountId().equals(currentUser.getUserAccountId())) {
-//            throw exceptionFactory.createCustomException(ForbiddenError.FORBIDDEN);
-//        }
+        if (!form.getCreator().getUserAccountId().equals(userAccountId)) {
+            throw exceptionFactory.createCustomException(ForbiddenError.FORBIDDEN);
+        }
 
         return form;
     }
@@ -46,17 +43,13 @@ public class SurveySecurityService implements SurveySecurityServiceInterface {
      * Checks if current user is creator of the form that owns this question.
      * Returns the Question if allowed.
      */
-    public Question getQuestionIfCreator(UUID questionId) {
-        //IMPLEMENT GET USER FROM REQUEST
-
-//        UserAccount currentUser = userService.getCurrentUser();
-
+    public Question getQuestionIfCreator(UUID questionId, UUID userAccountId) {
         Question question = questionRepository.findById(questionId)
                 .orElseThrow(() -> exceptionFactory.createNotFoundException("Question", "id", questionId, FormError.QUESTION_NOT_FOUND));
 
-//        if (!question.getSurveyForm().getCreator().getUserAccountId().equals(currentUser.getUserAccountId())) {
-//            throw exceptionFactory.createCustomException(ForbiddenError.FORBIDDEN);
-//        }
+        if (!question.getGroupDimension().getDimension().getSurveyForm().getCreator().getUserAccountId().equals(userAccountId)) {
+            throw exceptionFactory.createCustomException(ForbiddenError.FORBIDDEN);
+        }
 
         return question;
     }
@@ -65,18 +58,14 @@ public class SurveySecurityService implements SurveySecurityServiceInterface {
      * Checks if current user is creator of the form that owns this question option.
      * Returns the QuestionOption if allowed.
      */
-    public QuestionOption getOptionIfCreator(UUID optionId) {
-        //IMPLEMENT GET USER FROM REQUEST
-
-//        UserAccount currentUser = userService.getCurrentUser();
-
+    public QuestionOption getOptionIfCreator(UUID optionId, UUID userAccountId) {
         QuestionOption option = optionRepository.findById(optionId)
                 .orElseThrow(() -> exceptionFactory.createNotFoundException("QuestionOption", "id", optionId, FormError.QUESTION_NOT_FOUND)); // Assuming you'll add a QUESTION_OPTION_NOT_FOUND
 
-        // Option -> Question -> Form -> Creator
-//        if (!option.getQuestion().getSurveyForm().getCreator().getUserAccountId().equals(currentUser.getUserAccountId())) {
-//            throw exceptionFactory.createCustomException(ForbiddenError.FORBIDDEN);
-//        }
+        // Option -> Question -> GroupDimension -> Dimension -> Form -> Creator
+        if (!option.getQuestion().getGroupDimension().getDimension().getSurveyForm().getCreator().getUserAccountId().equals(userAccountId)) {
+            throw exceptionFactory.createCustomException(ForbiddenError.FORBIDDEN);
+        }
 
         return option;
     }

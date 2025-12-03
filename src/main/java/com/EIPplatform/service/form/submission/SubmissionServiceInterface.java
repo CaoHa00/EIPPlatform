@@ -16,10 +16,10 @@ public interface SubmissionServiceInterface {
     List<SubmissionDTO> getSubmissionByFormId(UUID id);
     List<SubmissionDTO> getAllSubmissions();
     long getSubmissionCountOfSurvey(UUID surveyFormId);
-    SubmissionDTO createSubmission(CreateSubmissionDTO dto);
-    void softDeleteSubmission(UUID submissionId);
-    void hardDeleteSubmission(UUID submissionId);
+    SubmissionDTO createSubmission(CreateSubmissionDTO dto, UUID userAccountId);
+    void softDeleteSubmission(UUID submissionId, UUID userAccountId);
+    void hardDeleteSubmission(UUID submissionId, UUID userAccountId);
 
-    List<AnswerDTO> submitAnswers(@NotEmpty(message = "Please input at least ONE answer.") List<@Valid CreateAnswerDTO> answerDTOList, UUID submissionId);
-    AnswerDTO editAnswer(UUID answerID, String value);
+    List<AnswerDTO> submitAnswers(@NotEmpty(message = "Please input at least ONE answer.") List<@Valid CreateAnswerDTO> answerDTOList, UUID submissionId, UUID userAccountId);
+    AnswerDTO editAnswer(UUID answerID, String value, UUID userAccountId);
 }

@@ -84,7 +84,8 @@ public enum ValidationError implements ErrorCodeInterface {
     ANSWER_ALREADY_EXISTS(9066, "Answer already exists.", HttpStatus.BAD_REQUEST),
     ANSWER_EMPTY_VALUE(9067, "Answer value cannot be empty.", HttpStatus.BAD_REQUEST),
     SUBMISSION_DELETED(9068, "This submission has been deleted.", HttpStatus.BAD_REQUEST),
-    FORM_EXPIRED(9064, "Form has expired.", HttpStatus.BAD_REQUEST);
+    INVALID_REORDER_REQUEST_SIZE(9069, "The requested ID list size must be equal to the number of Questions/Options in the database.", HttpStatus.BAD_REQUEST),
+    FORM_EXPIRED(9070, "Form has expired.", HttpStatus.BAD_REQUEST);
 
     int code;
     String message;
