@@ -13,8 +13,8 @@ public interface QuestionMapper {
 
     QuestionMapper INSTANCE = Mappers.getMapper(QuestionMapper.class);
 
-    @Mapping(source = "questionCategory.categoryId", target = "categoryId")
-    @Mapping(source = "questionCategory.name", target = "categoryName")
+    @Mapping(source = "groupDimension.id", target = "groupDimensionId")
+    @Mapping(source = "groupDimension.name", target = "groupDimensionName")
     @Mapping(source = "type", target = "type")
     QuestionDTO toDTO(Question question);
 

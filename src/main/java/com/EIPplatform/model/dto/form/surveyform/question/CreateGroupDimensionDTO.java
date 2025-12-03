@@ -6,10 +6,10 @@ import lombok.Data;
 import java.util.UUID;
 
 @Data
-public class CreateQuestionCategoryDTO {
-    @NotBlank(message = "Category name is required")
+public class CreateGroupDimensionDTO {
+    @NotBlank(message = "Group dimension name is required")
     private String name;
 
-    @NotBlank(message = "Category code is required. E.G: Indicator Group 1")
+    @NotBlank(message = "Group dimension code is required. E.G: Indicator Group 1")
     private String code;
 }

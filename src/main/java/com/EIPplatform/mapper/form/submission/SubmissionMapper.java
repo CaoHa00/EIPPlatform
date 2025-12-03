@@ -17,7 +17,6 @@ public interface SubmissionMapper {
     @Mapping(source = "createdAt", target = "submittedAt")
     @Mapping(source = "surveyForm.id", target = "surveyFormId")
     @Mapping(source = "surveyForm.title", target = "surveyFormTitle")
-    @Mapping(source = "surveyForm.surveyFormCategory.name", target = "surveyFormCategory")
     @Mapping(source = "respondent.userAccountId", target = "respondentId")
     @Mapping(source = "respondent.fullName", target = "respondentUsername")
     SubmissionDTO toDTO(Submission submission);

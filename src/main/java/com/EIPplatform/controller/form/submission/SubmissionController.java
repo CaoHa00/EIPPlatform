@@ -56,8 +56,10 @@ public class SubmissionController {
      * @return SubmissionDTO
      */
     @PostMapping("/create")
-    public ResponseEntity<SubmissionDTO> create(@RequestBody CreateSubmissionDTO createSubmissionDTO) {
-        SubmissionDTO submissionDTO =  submissionService.createSubmission(createSubmissionDTO);
+    public ResponseEntity<SubmissionDTO> create(
+            @RequestBody CreateSubmissionDTO createSubmissionDTO,
+            @RequestParam(required = false) UUID userAccountId) {
+        SubmissionDTO submissionDTO =  submissionService.createSubmission(createSubmissionDTO, userAccountId);
         return ResponseEntity.ok().body(submissionDTO);
     }
 
@@ -70,8 +72,9 @@ public class SubmissionController {
     @PutMapping("{submissionId}/answers/submit")
     public ResponseEntity<List<AnswerDTO>> submitAnswers(
             @PathVariable UUID submissionId,
-            @RequestBody @NotEmpty(message = "Please input at least ONE answer.") List<@Valid CreateAnswerDTO> answerDTOList){
-        List<AnswerDTO> dto = submissionService.submitAnswers(answerDTOList, submissionId);
+            @RequestBody @NotEmpty(message = "Please input at least ONE answer.") List<@Valid CreateAnswerDTO> answerDTOList,
+            @RequestParam(required = false) UUID userAccountId){
+        List<AnswerDTO> dto = submissionService.submitAnswers(answerDTOList, submissionId, userAccountId);
         return ResponseEntity.ok(dto);
     }
 
@@ -81,20 +84,27 @@ public class SubmissionController {
      * @return void
      */
     @DeleteMapping("{submissionId}/soft-delete")
-    public ResponseEntity<SubmissionDTO> softDelete(@PathVariable UUID submissionId) {
-        submissionService.softDeleteSubmission(submissionId);
+    public ResponseEntity<SubmissionDTO> softDelete(
+            @PathVariable UUID submissionId,
+            @RequestParam(required = false) UUID userAccountId) {
+        submissionService.softDeleteSubmission(submissionId, userAccountId);
         return ResponseEntity.noContent().build();
     }
 
     @DeleteMapping("{submissionId}/hard-delete")
-    public ResponseEntity<SubmissionDTO> hardDelete(@PathVariable UUID submissionId) {
-        submissionService.hardDeleteSubmission(submissionId);
+    public ResponseEntity<SubmissionDTO> hardDelete(
+            @PathVariable UUID submissionId,
+            @RequestParam(required = false) UUID userAccountId) {
+        submissionService.hardDeleteSubmission(submissionId, userAccountId);
         return ResponseEntity.noContent().build();
     }
 
     @PatchMapping("/answers/{answerId}")
-    public ResponseEntity<AnswerDTO> editAnswer(@PathVariable UUID answerId, @RequestParam @NotEmpty String value){
-        AnswerDTO dto = submissionService.editAnswer(answerId, value);
+    public ResponseEntity<AnswerDTO> editAnswer(
+            @PathVariable UUID answerId,
+            @RequestParam @NotEmpty String value,
+            @RequestParam(required = false) UUID userAccountId){
+        AnswerDTO dto = submissionService.editAnswer(answerId, value, userAccountId);
         return ResponseEntity.ok(dto);
     }
 }

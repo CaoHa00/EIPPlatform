@@ -1,5 +1,6 @@
 package com.EIPplatform.model.entity.form.surveyform;
 
+import jakarta.persistence.Entity;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -16,25 +17,21 @@ import java.util.UUID;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "forms_question_category")
-public class QuestionCategory {
+@Table(name = "forms_dimension")
+public class Dimension {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(name = "category_id")
-    private UUID categoryId;
+    @Column(name = "id")
+    private UUID id;
 
     @Column(name = "name")
     private String name;
 
-    // INDICATOR GROUPS
-    @Column(name = "code")
-    private String code;
+    @OneToMany(mappedBy = "dimension", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
+    private Set<GroupDimension> groupDimensions = new HashSet<>();
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "survey_form_category_id")
-    private SurveyFormCategory surveyFormCategory;
-
-    @OneToMany(mappedBy = "questionCategory", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private Set<Question> questions = new HashSet<>();
+    @JoinColumn(name = "survey_form_id")
+    private SurveyForm surveyForm;
 }

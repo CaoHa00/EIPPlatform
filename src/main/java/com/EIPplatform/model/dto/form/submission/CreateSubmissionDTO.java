@@ -10,6 +10,4 @@ import java.util.UUID;
 public class CreateSubmissionDTO {
     @NotNull(message = "Form ID is required")
     private UUID formId;
-
-    private List<CreateAnswerDTO> answers;
 }

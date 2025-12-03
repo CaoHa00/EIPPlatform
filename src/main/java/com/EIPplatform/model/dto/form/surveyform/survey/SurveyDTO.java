@@ -1,6 +1,5 @@
 package com.EIPplatform.model.dto.form.surveyform.survey;
 
-import com.EIPplatform.model.dto.form.surveyform.question.QuestionDTO;
 import lombok.Data;
 
 import java.time.LocalDateTime;
@@ -18,7 +17,5 @@ public class SurveyDTO {
     private LocalDateTime expiresAt;
     private UUID creatorId;
     private String creatorName;
-    private UUID categoryId;
-    private String categoryName;
-    private List<QuestionDTO> questions;
+    private List<DimensionDTO> dimensions;
 }

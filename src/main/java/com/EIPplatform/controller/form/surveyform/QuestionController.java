@@ -14,8 +14,8 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/api/formsystem/surveyforms/questions")
 public class QuestionController {
-    private final QuestionService questionService;
-    private final QuestionOptionService questionOptionService;
+    private final QuestionServiceInterface questionService;
+    private final QuestionOptionServiceInterface questionOptionService;
 
     public QuestionController(QuestionService questionService, QuestionOptionService questionOptionService) {
         this.questionService = questionService;
@@ -36,17 +36,19 @@ public class QuestionController {
 //    }
     @PostMapping("/create")
     public ResponseEntity<QuestionDTO> createQuestion(
-            @RequestParam UUID formId,
-            @Valid @RequestBody CreateQuestionDTO dto) {
+            @Valid @RequestBody CreateQuestionDTO dto,
+            @RequestParam UUID userAccountId) {
 
-        QuestionDTO createdQuestion = questionService.addQuestion(dto, formId);
+        QuestionDTO createdQuestion = questionService.addQuestion(dto, userAccountId);
 
         return ResponseEntity.ok(createdQuestion);
     }
 
     @DeleteMapping("/{id}/hard-delete")
-    public ResponseEntity<Void> deleteQuestion(@PathVariable UUID id) {
-        questionService.hardDeleteQuestion(id);
+    public ResponseEntity<Void> deleteQuestion(
+            @PathVariable UUID id,
+            @RequestParam UUID userAccountId) {
+        questionService.hardDeleteQuestion(id, userAccountId);
         return ResponseEntity.noContent().build();
     }
 
@@ -55,24 +57,28 @@ public class QuestionController {
     @PatchMapping("/{id}/edit")
     public ResponseEntity<QuestionDTO> editQuestion(
             @PathVariable UUID id,
-            @RequestBody EditQuestionDTO dto) throws IllegalAccessException {
+            @RequestBody EditQuestionDTO dto,
+            @RequestParam UUID userAccountId) throws IllegalAccessException {
 
-        QuestionDTO updatedQuestion = questionService.editQuestion(id, dto);
+        QuestionDTO updatedQuestion = questionService.editQuestion(id, dto, userAccountId);
         return ResponseEntity.ok(updatedQuestion);
     }
 
     @PatchMapping("/{id}/active-switch")
-    public ResponseEntity<Void> activeSwitchQuestion(@PathVariable UUID id) {
-        questionService.activeSwitch(id);
+    public ResponseEntity<Void> activeSwitchQuestion(
+            @PathVariable UUID id,
+            @RequestParam UUID userAccountId) {
+        questionService.activeSwitch(id, userAccountId);
         return ResponseEntity.ok().build();
     }
 
     @PatchMapping("/{id}/options/reorder")
     public ResponseEntity<Void> reorderOptions(
             @PathVariable("id") UUID questionId,
-            @RequestBody @Valid ReorderRequestDTO dto) {
+            @RequestBody @Valid ReorderRequestDTO dto,
+            @RequestParam UUID userAccountId) {
 
-        questionOptionService.reorderOptions(questionId, dto);
+        questionOptionService.reorderOptions(questionId, dto, userAccountId);
         return ResponseEntity.ok().build();
     }
 }

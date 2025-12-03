@@ -1,15 +1,17 @@
 package com.EIPplatform.service.form.surveyform;
 
 import com.EIPplatform.exception.ExceptionFactory;
+import com.EIPplatform.exception.errorCategories.ForbiddenError;
 import com.EIPplatform.exception.errorCategories.FormError;
 import com.EIPplatform.exception.errorCategories.ValidationError;
 import com.EIPplatform.mapper.form.surveyform.QuestionMapper;
 import com.EIPplatform.model.dto.form.surveyform.ReorderRequestDTO;
 import com.EIPplatform.model.dto.form.surveyform.question.CreateQuestionDTO;
+import com.EIPplatform.model.dto.form.surveyform.question.DeleteQuestionDTO;
 import com.EIPplatform.model.dto.form.surveyform.question.EditQuestionDTO;
 import com.EIPplatform.model.dto.form.surveyform.question.QuestionDTO;
 import com.EIPplatform.model.entity.form.surveyform.*;
-import com.EIPplatform.repository.form.surveyform.QuestionCategoryRepository;
+import com.EIPplatform.repository.form.surveyform.GroupDimensionRepository;
 import com.EIPplatform.repository.form.surveyform.QuestionRepository;
 import com.EIPplatform.service.form.submission.SubmissionServiceInterface;
 import lombok.RequiredArgsConstructor;
@@ -17,11 +19,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -30,12 +28,13 @@ import java.util.stream.Collectors;
 public class QuestionService implements QuestionServiceInterface {
 
     private final QuestionRepository questionRepository;
-    private final QuestionCategoryRepository questionCategoryRepository;
-    private final SurveySecurityServiceInterface securityService;
+    private final GroupDimensionRepository groupDimensionRepository;
+    private final SurveyAccessControlServiceInterface accessControlService;
     private final QuestionOptionServiceInterface optionService;
     private final SubmissionServiceInterface submissionService;
     private final ExceptionFactory exceptionFactory;
     private final QuestionMapper questionMapper;
+    private final SurveyServiceInterface surveyService;
 
 
     public QuestionDTO getQuestion(UUID id) {
@@ -44,62 +43,71 @@ public class QuestionService implements QuestionServiceInterface {
         return questionMapper.toDTO(question);
     }
 
+    /**
+     * Reorder every single question in a GroupDimension
+     * @throws ValidationError if the request DTO does not send every QuestionID in a GroupDimension
+     * @param groupDimensionId
+     * @param dto
+     */
     @Transactional
-    public void reorderQuestions(UUID surveyId, ReorderRequestDTO dto) {
-        //creator check
-        SurveyForm form = securityService.getFormIfCreator(surveyId);
+    @Override
+    public void reorderQuestions(UUID groupDimensionId, ReorderRequestDTO dto, UUID userAccountId) {
+        accessControlService.ensureBecamexRole(userAccountId);
+        
+        GroupDimension groupDimension = groupDimensionRepository.findById(groupDimensionId).orElseThrow(() ->
+                exceptionFactory.createNotFoundException("GroupDimension", "id", groupDimensionId, FormError.GROUP_DIMENSION_NOT_FOUND));
 
-        List<Question> questions = form.getQuestions();
+        Set<Question> questions = groupDimension.getQuestions();
+
+        if (questions.size() != dto.getOrderedIds().size()){
+            throw exceptionFactory.createValidationException("ReorderRequestDTO", "orderedIds.size()", dto.getOrderedIds().size(), ValidationError.INVALID_REORDER_REQUEST_SIZE);
+        }
 
         Map<UUID, Question> questionMap = questions.stream()
                 .collect(Collectors.toMap(Question::getId, Function.identity()));
 
         List<UUID> newOrder = dto.getOrderedIds();
-
         for (int i = 1; i <= newOrder.size(); i++) {
             UUID questionId = newOrder.get(i-1);
 
-            // only update if the question actually exists in this form
             if (questionMap.containsKey(questionId)) {
-                Question question = questionMap.get(questionId);
-
-                // only update if the order actually changed (optimization)
-                if (question.getDisplayOrder() != i) {
-                    question.setDisplayOrder(i);
+                Question q = questionMap.get(questionId);
+                if (q.getDisplayOrder() != i) {
+                    q.setDisplayOrder(i);
                 }
             }
         }
-
-        // update updatedAt
-        form.setUpdatedAt(LocalDateTime.now());
-
-        // hibernate handles update
     }
 
     //edit question text and the boolean required
     @Transactional
-    public QuestionDTO editQuestion(UUID questionId, EditQuestionDTO dto) {
-        // creator check
-        Question question = securityService.getQuestionIfCreator(questionId);
+    @Override
+    public QuestionDTO editQuestion(UUID questionId, EditQuestionDTO dto, UUID userAccountId) {
+        accessControlService.ensureBecamexRole(userAccountId);
+        
+        Question question = questionRepository.findById(questionId)
+                .orElseThrow(() -> exceptionFactory.createNotFoundException("Question", "id", questionId, FormError.QUESTION_NOT_FOUND));
 
         if (dto.getText() != null && !dto.getText().isBlank()) {
             question.setText(dto.getText());
+        }
+
+        if (dto.getCode() != null && !dto.getCode().isBlank()) {
+            question.setCode(dto.getCode());
         }
 
         if (dto.getRequired() != null) {
             question.setRequired(dto.getRequired());
         }
 
-        if (dto.getCategoryId() != null) {
-            QuestionCategory category = questionCategoryRepository.findById(dto.getCategoryId())
-                    .orElseThrow(() -> exceptionFactory.createNotFoundException("QuestionCategory", "id", dto.getCategoryId(), FormError.QUESTION_CATEGORY_NOT_FOUND));
-            question.setQuestionCategory(category);
+        if (dto.getGroupDimensionId() != null) {
+            GroupDimension groupDimension = groupDimensionRepository.findById(dto.getGroupDimensionId())
+                    .orElseThrow(() -> exceptionFactory.createNotFoundException("GroupDimension", "id", dto.getGroupDimensionId(), FormError.GROUP_DIMENSION_NOT_FOUND));
+            question.setGroupDimension(groupDimension);
         }
 
         // update updatedAt property
-        if (question.getSurveyForm() != null) {
-            question.getSurveyForm().setUpdatedAt(LocalDateTime.now());
-        }
+        updateParentSurveyUpdatedAt(question);
 
         return questionMapper.toDTO(questionRepository.save(question));
     }
@@ -108,19 +116,20 @@ public class QuestionService implements QuestionServiceInterface {
      * Helper: Builds the entity (and children) WITHOUT saving.
      * Used by SurveyService for bulk operations.
      */
-    public Question buildQuestionEntity(CreateQuestionDTO dto, SurveyForm parent) {
+    @Override
+    public Question buildQuestionEntity(CreateQuestionDTO dto) {
         Question question = new Question();
         question.setText(dto.getText());
+        question.setCode(dto.getCode());
         question.setType(QuestionType.valueOf(dto.getType()));
         question.setDisplayOrder(dto.getDisplayOrder());
         question.setRequired(dto.getRequired() != null && dto.getRequired());
-        question.setSurveyForm(parent);
         question.setActive(true);
 
-        if (dto.getCategoryId() != null) {
-            QuestionCategory category = questionCategoryRepository.findById(dto.getCategoryId())
-                    .orElseThrow(() -> exceptionFactory.createNotFoundException("QuestionCategory", "id", dto.getCategoryId(), FormError.QUESTION_CATEGORY_NOT_FOUND));
-            question.setQuestionCategory(category);
+        if (dto.getGroupDimensionId() != null) {
+            GroupDimension groupDimension = groupDimensionRepository.findById(dto.getGroupDimensionId())
+                    .orElseThrow(() -> exceptionFactory.createNotFoundException("GroupDimension", "id", dto.getGroupDimensionId(), FormError.GROUP_DIMENSION_NOT_FOUND));
+            question.setGroupDimension(groupDimension);
         }
 
         // delegate, let QuestionOptionService create QuestionOption
@@ -139,28 +148,29 @@ public class QuestionService implements QuestionServiceInterface {
      * Granular: Builds AND Saves.
      */
     @Transactional
-    public QuestionDTO addQuestion(CreateQuestionDTO dto, UUID parentId){
-        SurveyForm parent = securityService.getFormIfCreator(parentId);
+    @Override
+    public QuestionDTO addQuestion(CreateQuestionDTO dto, UUID userAccountId){
+        accessControlService.ensureBecamexRole(userAccountId);
+        
+        // The question is linked via GroupDimension
+        
+        Question question = buildQuestionEntity(dto);
 
-        //validate displayOrder
-        Optional<Question> existingDisplayOrder = questionRepository.findByDisplayOrderAndActiveTrue(dto.getDisplayOrder());
-        existingDisplayOrder.ifPresent(e -> {
-                    throw exceptionFactory.createAlreadyExistsException("Question", "displayOrder", dto.getDisplayOrder(), ValidationError.DISPLAY_ORDER_ALREADY_EXISTS);
-                }
-        );
-
-        //save question
-        Question question = buildQuestionEntity(dto, parent);
         QuestionDTO savedQuestionDTO = questionMapper.toDTO(questionRepository.save(question));
 
-        //updatedAt
-        parent.setUpdatedAt(LocalDateTime.now());
+        // Update SurveyForm updatedAt if possible
+        updateParentSurveyUpdatedAt(question);
+
         return savedQuestionDTO;
     }
 
     @Transactional
-    public void activeSwitch(UUID id) {
-        Question question = securityService.getQuestionIfCreator(id);
+    @Override
+    public void activeSwitch(UUID id, UUID userAccountId) {
+        accessControlService.ensureBecamexRole(userAccountId);
+        
+        Question question = questionRepository.findById(id)
+                .orElseThrow(() -> exceptionFactory.createNotFoundException("Question", "id", id, FormError.QUESTION_NOT_FOUND));
 
         boolean newActive = !question.isActive();
         question.setActive(newActive);
@@ -170,54 +180,63 @@ public class QuestionService implements QuestionServiceInterface {
      * Granular: Single delete for API Endpoint
      */
     @Transactional
-    public void hardDeleteQuestion(UUID questionId){
-        // Creator check
-        Question question = securityService.getQuestionIfCreator(questionId);
-        SurveyForm parentForm = question.getSurveyForm();
-
-        // If submissions exist, deleting a question corrupts the data
-        if (submissionService.getSubmissionCountOfSurvey(parentForm.getId()) > 0) {
-            throw exceptionFactory.createCustomException("Question",
-                    Collections.singletonList("submissionCount"),
-                    Collections.singletonList(submissionService.getSubmissionCountOfSurvey(parentForm.getId())),
-                    FormError.SUBMISSIONS_EXIST);
+    @Override
+    public void hardDeleteQuestion(UUID questionId, UUID userAccountId){
+        accessControlService.ensureBecamexRole(userAccountId);
+        
+        Question question = questionRepository.findById(questionId)
+                .orElseThrow(() -> exceptionFactory.createNotFoundException("Question", "id", questionId, FormError.QUESTION_NOT_FOUND));
+        
+        // Find SurveyForm to check submissions
+        SurveyForm parentForm = null;
+        if (question.getGroupDimension() != null && 
+            question.getGroupDimension().getDimension() != null) {
+            parentForm = question.getGroupDimension().getDimension().getSurveyForm();
         }
 
-        // DELEGATE: Cleanup Children
-        optionService.batchDeleteOptions(question);
+        if (parentForm != null) {
+            // If submissions exist, deleting a question corrupts the data
+            if (submissionService.getSubmissionCountOfSurvey(parentForm.getId()) > 0) {
+                throw exceptionFactory.createCustomException("Question",
+                        Collections.singletonList("submissionCount"),
+                        Collections.singletonList(submissionService.getSubmissionCountOfSurvey(parentForm.getId())),
+                        FormError.SUBMISSIONS_EXIST);
+            }
+            
+            // update the updatedAt property
+            surveyService.updateSurveyUpdatedAt(parentForm.getId());
+        }
 
-        // this if condition prevents Hibernate from trying to "Resave" the deleted options
-        // because the entity has the CascadeType.MERGE/PERSIST rules
+        // CascadeType.ALL handles options deletion now
         if (question.getOptions() != null) {
             question.getOptions().clear();
         }
 
         questionRepository.delete(question);
-
-        // update the updatedAt property
-        parentForm.setUpdatedAt(LocalDateTime.now());
     }
 
     /**
      * Hard delete all questions for a specific form
-     * DELEGATION: Called by SurveyService
      */
     @Transactional
-    public void batchDeleteQuestions(SurveyForm form) {
-        List<Question> questions = form.getQuestions();
+    @Override
+    public void batchDeleteQuestions(DeleteQuestionDTO dto, UUID userAccountId) {
+        accessControlService.ensureBecamexRole(userAccountId);
 
-        if (questions == null || questions.isEmpty()) {
-            return;
-        }
+        List<UUID> questionIds = dto.getQuestionIdsList();
+        List<Question> questions = questionRepository.findAllById(questionIds);
 
-        //Delegation: clean up children
-        for (Question question : questions) {
-            optionService.batchDeleteOptions(question);
-        }
-
-
+        // CascadeType.ALL handles options deletion now
         // Database delete
         questionRepository.deleteAllInBatch(questions);
+    }
+
+    private void updateParentSurveyUpdatedAt(Question question) {
+        if (question.getGroupDimension() != null &&
+            question.getGroupDimension().getDimension() != null &&
+            question.getGroupDimension().getDimension().getSurveyForm() != null) {
+            surveyService.updateSurveyUpdatedAt(question.getGroupDimension().getDimension().getSurveyForm().getId());
+        }
     }
 
 }

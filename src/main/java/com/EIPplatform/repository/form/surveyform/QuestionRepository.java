@@ -8,8 +8,8 @@ import java.util.List;
 
 
 public interface QuestionRepository extends JpaRepository<Question, UUID> {
-    List<Question> findBySurveyFormIdAndActiveTrue(UUID surveyId);
+    List<Question> findByGroupDimension_Dimension_SurveyForm_IdAndActiveTrue(UUID surveyId);
     Optional<Question> findByDisplayOrderAndActiveTrue(Integer displayOrder);
-    boolean existsByQuestionCategory_SurveyFormCategory_CategoryId(UUID categoryId);
-    boolean existsByQuestionCategory_CategoryId (UUID categoryId);
+    boolean existsByGroupDimension_Dimension_Id(UUID id);
+    boolean existsByGroupDimension_Id(UUID id);
 }

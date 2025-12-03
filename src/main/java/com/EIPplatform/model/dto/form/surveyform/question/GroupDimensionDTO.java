@@ -6,8 +6,8 @@ import java.util.Set;
 import java.util.UUID;
 
 @Data
-public class QuestionCategoryDTO {
-    private UUID categoryId;
+public class GroupDimensionDTO {
+    private UUID id;
     private String name;
     private String code;
     private Set<QuestionDTO> questions;

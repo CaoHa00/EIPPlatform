@@ -8,20 +8,16 @@ import org.mapstruct.factory.Mappers;
 
 import java.util.List;
 
-@Mapper(componentModel = "spring", uses = QuestionMapper.class)
+@Mapper(componentModel = "spring", uses = {DimensionMapper.class})
 public interface SurveyFormMapper {
 
     SurveyFormMapper INSTANCE = Mappers.getMapper(SurveyFormMapper.class);
 
     @Mapping(source = "creator.userAccountId", target = "creatorId")
     @Mapping(source = "creator.fullName", target = "creatorName")
-    @Mapping(source = "surveyFormCategory.categoryId", target = "categoryId")
-    @Mapping(source = "surveyFormCategory.name", target = "categoryName")
     SurveyDTO toDTO(SurveyForm surveyForm);
 
     @Mapping(source = "creator.userAccountId", target = "creatorId")
     @Mapping(source = "creator.fullName", target = "creatorName")
-    @Mapping(source = "surveyFormCategory.categoryId", target = "categoryId")
-    @Mapping(source = "surveyFormCategory.name", target = "categoryName")
     List<SurveyDTO> toDTOList(List<SurveyForm> surveyFormList);
 }
