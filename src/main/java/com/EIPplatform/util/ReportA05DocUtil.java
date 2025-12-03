@@ -178,9 +178,9 @@ public class ReportA05DocUtil {
                 .toList();
 
         BusinessHistoryConsumption current = sorted.get(sorted.size() - 1);
-        BusinessHistoryConsumption previous = sorted.size() > 1
-                ? sorted.get(sorted.size() - 2)
-                : null;
+        // BusinessHistoryConsumption previous = sorted.size() > 1
+        // ? sorted.get(sorted.size() - 2)
+        // : null;
 
         data.put("product_volume_cy", toStringOrEmpty(current.getProductVolumeCy()));
         data.put("product_unit_cy", convertUnitToVietnamese(current.getProductUnitCy()));
@@ -189,21 +189,13 @@ public class ReportA05DocUtil {
         data.put("electricity_consumption_cy", toStringOrEmpty(current.getElectricityConsumptionCy()));
         data.put("water_consumption_cy", toStringOrEmpty(current.getWaterConsumptionCy()));
 
-        if (previous != null) {
-            data.put("product_volume_py", toStringOrEmpty(previous.getProductVolumePy()));
-            data.put("product_unit_py", convertUnitToVietnamese(previous.getProductUnitPy()));
-            data.put("fuel_consumption_py", toStringOrEmpty(previous.getFuelConsumptionPy()));
-            data.put("fuel_unit_py", convertUnitToVietnamese(previous.getFuelUnitPy()));
-            data.put("electricity_consumption_py", toStringOrEmpty(previous.getElectricityConsumptionPy()));
-            data.put("water_consumption_py", toStringOrEmpty(previous.getWaterConsumptionPy()));
-        } else {
-            data.put("product_volume_py", "");
-            data.put("product_unit_py", "");
-            data.put("fuel_consumption_py", "");
-            data.put("fuel_unit_py", "");
-            data.put("electricity_consumption_py", "");
-            data.put("water_consumption_py", "");
-        }
+        data.put("product_volume_py", toStringOrEmpty(current.getProductVolumePy()));
+        data.put("product_unit_py", convertUnitToVietnamese(current.getProductUnitPy()));
+        data.put("fuel_consumption_py", toStringOrEmpty(current.getFuelConsumptionPy()));
+        data.put("fuel_unit_py", convertUnitToVietnamese(current.getFuelUnitPy()));
+        data.put("electricity_consumption_py", toStringOrEmpty(current.getElectricityConsumptionPy()));
+        data.put("water_consumption_py", toStringOrEmpty(current.getWaterConsumptionPy()));
+
     }
 
     // ---------------------------------------------------------------------
