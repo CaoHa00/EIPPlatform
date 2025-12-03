@@ -1,18 +1,19 @@
 package com.EIPplatform.mapper.report.report05.wastewatermanager;
 
-import com.EIPplatform.model.dto.report.report05.wastewatermanager.wastewatermonitoringexceedances.DomMonitoringExceedancesCreateDTO;
-import com.EIPplatform.model.dto.report.report05.wastewatermanager.wastewatermonitoringexceedances.IndMonitoringExceedancesCreateDTO;
-import com.EIPplatform.model.dto.report.report05.wastewatermanager.wastewatermonitoringexceedances.WasteWaterMonitoringExceedancesDTO;
-import com.EIPplatform.model.entity.report.report05.wastewatermanager.WasteWaterMonitoringExceedances;
-import com.EIPplatform.model.entity.report.report05.wastewatermanager.WasteWaterType;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 import org.mapstruct.factory.Mappers;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
+import com.EIPplatform.model.dto.report.report05.wastewatermanager.wastewatermonitoringexceedances.DomMonitoringExceedancesCreateDTO;
+import com.EIPplatform.model.dto.report.report05.wastewatermanager.wastewatermonitoringexceedances.IndMonitoringExceedancesCreateDTO;
+import com.EIPplatform.model.dto.report.report05.wastewatermanager.wastewatermonitoringexceedances.WasteWaterMonitoringExceedancesDTO;
+import com.EIPplatform.model.entity.report.report05.wastewatermanager.WasteWaterMonitoringExceedances;
+import com.EIPplatform.model.entity.report.report05.wastewatermanager.WasteWaterType;
 
 @Mapper(componentModel = "spring")
 public interface WasteWaterMonitoringExceedancesMapper {

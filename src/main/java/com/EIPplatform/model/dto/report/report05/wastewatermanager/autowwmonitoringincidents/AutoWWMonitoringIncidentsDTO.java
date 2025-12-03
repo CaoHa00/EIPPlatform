@@ -1,6 +1,5 @@
 package com.EIPplatform.model.dto.report.report05.wastewatermanager.autowwmonitoringincidents;
 
-
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

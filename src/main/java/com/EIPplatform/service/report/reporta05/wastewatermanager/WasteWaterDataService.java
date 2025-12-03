@@ -10,19 +10,21 @@ import java.util.UUID;
 public interface WasteWaterDataService {
     /**
      * Tạo WasteWaterData mới từ request và lưu vào draft cache
-     * @param reportId ID của báo cáo
-     * @param userAccountId ID của người dùng
-     * @param request Dữ liệu tạo mới
-     * @param connectionFile File sơ đồ đấu nối (optional)
-     * @param mapFile File bản đồ trạm tự động (optional)
+     * 
+     * @param reportId         ID của báo cáo
+     * @param businessDetailId ID của người dùng
+     * @param request          Dữ liệu tạo mới
+     * @param connectionFile   File sơ đồ đấu nối (optional)
+     * @param mapFile          File bản đồ trạm tự động (optional)
      * @return DTO của WasteWaterData đã tạo
      */
-    WasteWaterDataDTO createWasteWaterData(UUID reportId, UUID userAccountId, WasteWaterDataCreateDTO request,
-                                           MultipartFile connectionFile, MultipartFile mapFile);
+    WasteWaterDataDTO createWasteWaterData(UUID reportId, UUID businessDetailId, WasteWaterDataCreateDTO request,
+            MultipartFile connectionFile, MultipartFile mapFile);
 
     /**
      * Lấy WasteWaterData từ draft cache
-     * @param reportId ID của báo cáo
+     * 
+     * @param reportId      ID của báo cáo
      * @param userAccountId ID của người dùng
      * @return DTO của WasteWaterData hoặc null nếu không tồn tại
      */
@@ -30,28 +32,32 @@ public interface WasteWaterDataService {
 
     /**
      * Xóa WasteWaterData khỏi draft cache
-     * @param reportId ID của báo cáo
+     * 
+     * @param reportId      ID của báo cáo
      * @param userAccountId ID của người dùng
      */
     void deleteWasteWaterData(UUID reportId, UUID userAccountId);
 
     /**
      * Xóa file sơ đồ đấu nối khỏi draft cache
-     * @param reportId ID của báo cáo
+     * 
+     * @param reportId      ID của báo cáo
      * @param userAccountId ID của người dùng
      */
     void deleteWasteWaterDataConnectionFile(UUID reportId, UUID userAccountId);
 
     /**
      * Xóa file bản đồ trạm tự động khỏi draft cache
-     * @param reportId ID của báo cáo
+     * 
+     * @param reportId      ID của báo cáo
      * @param userAccountId ID của người dùng
      */
     void deleteWasteWaterDataMapFile(UUID reportId, UUID userAccountId);
 
     /**
      * Tải xuống file sơ đồ đấu nối từ draft cache
-     * @param reportId ID của báo cáo
+     * 
+     * @param reportId      ID của báo cáo
      * @param userAccountId ID của người dùng
      * @return Resource của file
      */
@@ -59,7 +65,8 @@ public interface WasteWaterDataService {
 
     /**
      * Tải xuống file bản đồ trạm tự động từ draft cache
-     * @param reportId ID của báo cáo
+     * 
+     * @param reportId      ID của báo cáo
      * @param userAccountId ID của người dùng
      * @return Resource của file
      */
@@ -67,7 +74,8 @@ public interface WasteWaterDataService {
 
     /**
      * Kiểm tra sự tồn tại của file sơ đồ đấu nối trong draft cache
-     * @param reportId ID của báo cáo
+     * 
+     * @param reportId      ID của báo cáo
      * @param userAccountId ID của người dùng
      * @return true nếu file tồn tại, false nếu không
      */
@@ -75,7 +83,8 @@ public interface WasteWaterDataService {
 
     /**
      * Kiểm tra sự tồn tại của file bản đồ trạm tự động trong draft cache
-     * @param reportId ID của báo cáo
+     * 
+     * @param reportId      ID của báo cáo
      * @param userAccountId ID của người dùng
      * @return true nếu file tồn tại, false nếu không
      */

@@ -1,20 +1,24 @@
 package com.EIPplatform.model.dto.report.report05.airemmissionmanagement.airemissiondata;
 
+import java.util.List;
+
 import com.EIPplatform.model.dto.report.report05.airemmissionmanagement.airautomonitoringstat.AirAutoMonitoringIncidentCreateDTO;
 import com.EIPplatform.model.dto.report.report05.airemmissionmanagement.airautomonitoringstat.AirAutoMonitoringStatCreateDTO;
 import com.EIPplatform.model.dto.report.report05.airemmissionmanagement.airautoqcvnexceedance.AirAutoQcvnExceedanceCreateDTO;
 import com.EIPplatform.model.dto.report.report05.airemmissionmanagement.airmonitoringexceedance.AirMonitoringExceedanceCreateDTO;
+
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
-
-
-import java.util.List;
 
 @Data
 @Builder
@@ -94,6 +98,7 @@ public class AirEmissionDataCreateDTO {
 
     @Valid
     @NotNull(message = "IS_REQUIRED")
+    @Size(min = 0, max = 100)
     List<@Valid AirAutoMonitoringStatCreateDTO> airAutoMonitoringStats;
 
     @Valid

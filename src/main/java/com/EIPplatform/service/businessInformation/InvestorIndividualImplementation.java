@@ -44,7 +44,7 @@ public class InvestorIndividualImplementation implements InvestorIndividualInter
                     "Investor Individual",
                     "business_detail_id",
                     null,
-                    BusinessDetailError.NOT_PROVIDED
+                    BusinessDetailError.BUSINESS_DETAIL_ID_NOT_FOUND
             );
         }
         BusinessDetail businessDetail = businessDetailRepository

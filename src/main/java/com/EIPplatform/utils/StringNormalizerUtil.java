@@ -21,6 +21,7 @@ public class StringNormalizerUtil {
 
     /**
      * Normalize tất cả các trường String trong object
+     * 
      * @param request - Object cần normalize (DTO)
      * @return Object đã được normalize
      */
@@ -76,17 +77,13 @@ public class StringNormalizerUtil {
             if (value instanceof String) {
                 String normalizedValue = normalizeSpaces((String) value);
                 field.set(obj, normalizedValue);
-            }
-            else if (value instanceof Collection) {
+            } else if (value instanceof Collection) {
                 normalizeCollection((Collection<?>) value);
-            }
-            else if (value instanceof Map) {
+            } else if (value instanceof Map) {
                 normalizeMap((Map<?, ?>) value);
-            }
-            else if (value.getClass().isArray()) {
+            } else if (value.getClass().isArray()) {
                 normalizeArray(value);
-            }
-            else if (!isPrimitiveOrWrapper(value.getClass())) {
+            } else if (!isPrimitiveOrWrapper(value.getClass())) {
                 normalizeObject(value);
             }
         }

@@ -109,12 +109,12 @@ public class ReportA05Controller {
     @GetMapping("/export/{reportId}")
     public ResponseEntity<byte[]> exportReport(
             @PathVariable UUID reportId,
-            @RequestParam UUID userAccountId) {
+            @RequestParam UUID businessDetailId) {
         try {
-            log.info(" Starting report export for reportId: {} - userAccountId: {}", reportId, userAccountId);
+            log.info(" Starting report export for reportId: {} - businessDetailId: {}", reportId, businessDetailId);
 
             // 1. Generate report file
-            byte[] fileBytes = reportA05Service.generateReportFile(reportId, userAccountId);
+            byte[] fileBytes = reportA05Service.generateReportFile(reportId, businessDetailId);
 
             if (fileBytes == null || fileBytes.length == 0) {
                 log.error(" Generated file is empty for reportId: {}", reportId);

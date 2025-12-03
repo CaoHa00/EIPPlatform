@@ -1,27 +1,39 @@
 package com.EIPplatform.model.entity.businessInformation;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
-
-import com.EIPplatform.model.entity.businessInformation.investors.Investor;
-import com.EIPplatform.model.entity.businessInformation.legalRepresentative.LegalRepresentative;
-import com.EIPplatform.model.entity.businessInformation.permitshistory.EnvComponentPermit;
-import com.EIPplatform.model.entity.businessInformation.permitshistory.EnvPermits;
-import com.EIPplatform.model.entity.businessInformation.products.Product;
-import com.EIPplatform.model.enums.OperationType;
-import jakarta.persistence.*;
-import jakarta.validation.constraints.Email;
 
 import org.hibernate.annotations.Nationalized;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import com.EIPplatform.configuration.AuditMetaData;
+import com.EIPplatform.model.entity.businessInformation.investors.Investor;
+import com.EIPplatform.model.entity.businessInformation.legalRepresentative.LegalRepresentative;
+import com.EIPplatform.model.entity.businessInformation.permitshistory.EnvComponentPermit;
+import com.EIPplatform.model.entity.businessInformation.permitshistory.EnvPermits;
+import com.EIPplatform.model.entity.businessInformation.products.Product;
 import com.EIPplatform.model.entity.report.report05.ReportA05;
 import com.EIPplatform.model.entity.user.authentication.UserAccount;
+import com.EIPplatform.model.enums.OperationType;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Embedded;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EntityListeners;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
+import jakarta.validation.constraints.Email;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -61,8 +73,10 @@ public class BusinessDetail {
     @Column(length = 100, columnDefinition = "NVARCHAR(255)")
     String ISO_certificate_14001;
 
+
     @Column(name = "iso_certificate_file_path", length = 255, columnDefinition = "NVARCHAR(255)")
     String isoCertificateFilePath;
+
 
     @Column(nullable = false, length = 50, columnDefinition = "NVARCHAR(255)")
     String businessRegistrationNumber;
@@ -149,19 +163,19 @@ public class BusinessDetail {
     @Builder.Default
     List<Product> products = new ArrayList<>();
 
-    public LocalDateTime getCreatedAt() {
-        return auditMetaData.getCreatedAt();
-    }
+    // public LocalDateTime getCreatedAt() {
+    //     return auditMetaData.getCreatedAt();
+    // }
 
-    public String getCreatedBy() {
-        return auditMetaData.getCreatedBy();
-    }
+    // public String getCreatedBy() {
+    //     return auditMetaData.getCreatedBy();
+    // }
 
-    public LocalDateTime getUpdatedAt() {
-        return auditMetaData.getUpdatedAt();
-    }
+    // public LocalDateTime getUpdatedAt() {
+    //     return auditMetaData.getUpdatedAt();
+    // }
 
-    public String getUpdatedBy() {
-        return auditMetaData.getUpdatedBy();
-    }
+    // public String getUpdatedBy() {
+    //     return auditMetaData.getUpdatedBy();
+    // }
 }

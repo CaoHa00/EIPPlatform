@@ -1,14 +1,5 @@
 package com.EIPplatform.service.report.reporta05.airemmissionmanagement;
 
-import java.time.LocalDateTime;
-import java.util.UUID;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.Resource;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
-
 import com.EIPplatform.exception.ExceptionFactory;
 import com.EIPplatform.exception.errorCategories.AirEmissionError;
 import com.EIPplatform.mapper.report.report05.airemmissionmanagement.AirEmissionDataMapper;
@@ -22,11 +13,18 @@ import com.EIPplatform.service.fileStorage.FileStorageService;
 import com.EIPplatform.service.report.reportCache.ReportCacheFactory;
 import com.EIPplatform.service.report.reportCache.ReportCacheService;
 import com.EIPplatform.utils.StringNormalizerUtil;
-
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.Resource;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Service
 @Slf4j
@@ -43,10 +41,10 @@ public class AirEmissionDataServiceImpl implements AirEmissionDataService {
 
     @Autowired
     public AirEmissionDataServiceImpl(ReportA05Repository reportA05Repository,
-                                      AirEmissionDataMapper airEmissionDataMapper,
-                                      ReportCacheFactory reportCacheFactory,
-                                      FileStorageService fileStorageService,
-                                      ExceptionFactory exceptionFactory) {
+            AirEmissionDataMapper airEmissionDataMapper,
+            ReportCacheFactory reportCacheFactory,
+            FileStorageService fileStorageService,
+            ExceptionFactory exceptionFactory) {
         this.reportA05Repository = reportA05Repository;
         this.airEmissionDataMapper = airEmissionDataMapper;
         this.reportCacheFactory = reportCacheFactory;
@@ -55,13 +53,14 @@ public class AirEmissionDataServiceImpl implements AirEmissionDataService {
         this.reportCacheService = reportCacheFactory.getCacheService(ReportA05DraftDTO.class);
     }
 
-
     @Override
     @Transactional
     public AirEmissionDataDTO createAirEmissionData(UUID reportId, UUID businessDetailId,
-                                                    AirEmissionDataCreateDTO request, MultipartFile file) {
+            AirEmissionDataCreateDTO request, MultipartFile file) {
 
-        request = StringNormalizerUtil.normalizeRequest(request);
+//        request = StringNormalizerUtil.normalizeRequest(request);
+
+//        request = StringNormalizerUtil.normalizeRequest(request);
 
         ReportA05 report = reportA05Repository.findById(reportId)
                 .orElseThrow(() -> exceptionFactory.createNotFoundException(
