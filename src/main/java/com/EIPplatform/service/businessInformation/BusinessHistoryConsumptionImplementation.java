@@ -17,6 +17,7 @@ import com.EIPplatform.repository.authentication.UserAccountRepository;
 import com.EIPplatform.repository.businessInformation.BusinessDetailRepository;
 import com.EIPplatform.repository.businessInformation.BusinessHistoryConsumptionRepository;
 
+import com.EIPplatform.utils.StringNormalizerUtil;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -69,7 +70,7 @@ public class BusinessHistoryConsumptionImplementation implements BusinessHistory
     public BusinessHistoryConsumptionDTO createBusinessHistoryConsumption(
             UUID userAccountId,
             BusinessHistoryConsumptionCreateDTO dto) {
-
+        dto = StringNormalizerUtil.normalizeRequest(dto);
         BusinessDetail businessDetail = businessDetailRepository
                 .findByUserAccounts_UserAccountId(userAccountId)
                 .orElseThrow(() -> exceptionFactory.createNotFoundException(

@@ -1,15 +1,17 @@
 package com.EIPplatform.service.report.reportCache;
 
-import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.stereotype.Service;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.stereotype.Service;
+
 @Service
-public class  ReportCacheFactoryImpl implements ReportCacheFactory {
+public class ReportCacheFactoryImpl implements ReportCacheFactory {
 
     private final RedisTemplate<String, String> redisTemplate;
-    private final Map<Class<?>, ReportCacheService<?>> cacheServices = new ConcurrentHashMap<>(); // Cache instances để reuse
+    private final Map<Class<?>, ReportCacheService<?>> cacheServices = new ConcurrentHashMap<>(); // Cache instances để
+                                                                                                  // reuse
 
     public ReportCacheFactoryImpl(RedisTemplate<String, String> redisTemplate) {
         this.redisTemplate = redisTemplate;
@@ -18,8 +20,7 @@ public class  ReportCacheFactoryImpl implements ReportCacheFactory {
     @SuppressWarnings("unchecked")
     @Override
     public <T> ReportCacheService<T> getCacheService(Class<T> draftClass) {
-        return (ReportCacheService<T>) cacheServices.computeIfAbsent(draftClass, clazz ->
-                new ReportCacheServiceImpl<>(redisTemplate, draftClass)
-        );
+        return (ReportCacheService<T>) cacheServices.computeIfAbsent(draftClass,
+                clazz -> new ReportCacheServiceImpl<>(redisTemplate, draftClass));
     }
 }

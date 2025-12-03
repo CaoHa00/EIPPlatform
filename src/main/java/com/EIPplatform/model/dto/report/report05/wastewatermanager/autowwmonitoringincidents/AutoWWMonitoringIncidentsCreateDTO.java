@@ -1,6 +1,5 @@
 package com.EIPplatform.model.dto.report.report05.wastewatermanager.autowwmonitoringincidents;
 
-
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

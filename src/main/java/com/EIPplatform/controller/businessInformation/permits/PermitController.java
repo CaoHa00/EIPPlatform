@@ -1,13 +1,16 @@
 package com.EIPplatform.controller.businessInformation.permits;
 
+
 import com.EIPplatform.model.dto.api.ApiResponse;
 import com.EIPplatform.model.dto.businessInformation.permitshistory.*;
 import com.EIPplatform.service.permits.PermitService;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.core.io.Resource;
+import com.fasterxml.jackson.core.type.TypeReference;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -24,6 +27,7 @@ import java.util.UUID;
 public class PermitController {
 
     PermitService permitService;
+    ObjectMapper objectMapper;
 
     // ==================== ENV PERMITS ENDPOINTS ====================
 
@@ -134,15 +138,31 @@ public class PermitController {
                 .build();
     }
 
-    @PostMapping(value = "/component/bulk", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ApiResponse<List<EnvComponentPermitDTO>> createMultipleComponentPermits(
+    @PostMapping(value = "/components/bulk", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ApiResponse<List<EnvComponentPermitDTO>> createComponentPermits(
             @RequestParam UUID userAccountId,
-            @RequestBody @Valid List<CreateComponentPermitRequest> requests) {
-        var result = permitService.createMultipleComponentPermits(userAccountId, requests);
+            @RequestPart("data") List<CreateComponentPermitRequest> requests,
+            @RequestPart(value = "files", required = false) MultipartFile[] files) {
+
+        if (requests.isEmpty()) {
+            throw new IllegalArgumentException("Requests list cannot be empty");
+        }
+
+        var results = permitService.createComponentPermits(userAccountId, requests, files);
         return ApiResponse.<List<EnvComponentPermitDTO>>builder()
-                .result(result)
+                .result(results)
                 .build();
     }
+
+//    @PostMapping(value = "/component/bulk", consumes = MediaType.APPLICATION_JSON_VALUE)
+//    public ApiResponse<List<EnvComponentPermitDTO>> createMultipleComponentPermits(
+//            @RequestParam UUID userAccountId,
+//            @RequestBody @Valid List<CreateComponentPermitRequest> requests) {
+//        var result = permitService.createMultipleComponentPermits(userAccountId, requests);
+//        return ApiResponse.<List<EnvComponentPermitDTO>>builder()
+//                .result(result)
+//                .build();
+//    }
 
     @GetMapping("/component/{permitId}")
     public ApiResponse<EnvComponentPermitDTO> getComponentPermitById(

@@ -1,33 +1,30 @@
 package com.EIPplatform.service.report.reporta05.wastewatermanager;
 
-import java.time.LocalDateTime;
-import java.util.UUID;
-
+import com.EIPplatform.exception.ExceptionFactory;
 import com.EIPplatform.exception.errorCategories.WasteWaterError;
 import com.EIPplatform.mapper.report.report05.wastewatermanager.WasteWaterDataMapper;
+import com.EIPplatform.model.dto.report.report05.ReportA05DraftDTO;
 import com.EIPplatform.model.dto.report.report05.wastewatermanager.wastewatermanagement.WasteWaterDataCreateDTO;
 import com.EIPplatform.model.dto.report.report05.wastewatermanager.wastewatermanagement.WasteWaterDataDTO;
+import com.EIPplatform.model.entity.report.report05.ReportA05;
 import com.EIPplatform.model.entity.report.report05.wastewatermanager.WasteWaterData;
+import com.EIPplatform.repository.report.ReportA05Repository;
 import com.EIPplatform.service.fileStorage.FileStorageService;
 import com.EIPplatform.service.report.reportCache.ReportCacheFactory;
 import com.EIPplatform.service.report.reportCache.ReportCacheService;
 import com.EIPplatform.utils.StringNormalizerUtil;
-
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.EIPplatform.exception.ExceptionFactory;
-import com.EIPplatform.model.dto.report.report05.ReportA05DraftDTO;
-import com.EIPplatform.model.entity.report.report05.ReportA05;
-import com.EIPplatform.repository.report.ReportA05Repository;
-
-import lombok.AccessLevel;
-import lombok.RequiredArgsConstructor;
-import lombok.experimental.FieldDefaults;
-import lombok.extern.slf4j.Slf4j;
+import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Service
 @Slf4j
@@ -44,10 +41,10 @@ public class WasteWaterDataServiceImpl implements WasteWaterDataService {
 
     @Autowired
     public WasteWaterDataServiceImpl(ReportA05Repository reportA05Repository,
-                                     WasteWaterDataMapper wasteWaterDataMapper,
-                                     ReportCacheFactory reportCacheFactory,
-                                     FileStorageService fileStorageService,
-                                     ExceptionFactory exceptionFactory) {
+            WasteWaterDataMapper wasteWaterDataMapper,
+            ReportCacheFactory reportCacheFactory,
+            FileStorageService fileStorageService,
+            ExceptionFactory exceptionFactory) {
         this.reportA05Repository = reportA05Repository;
         this.wasteWaterDataMapper = wasteWaterDataMapper;
         this.reportCacheFactory = reportCacheFactory;
@@ -60,9 +57,9 @@ public class WasteWaterDataServiceImpl implements WasteWaterDataService {
     @Override
     @Transactional
     public WasteWaterDataDTO createWasteWaterData(UUID reportId, UUID businessDetailId,
-                                                  WasteWaterDataCreateDTO request, MultipartFile connectionFile, MultipartFile mapFile) {
+            WasteWaterDataCreateDTO request, MultipartFile connectionFile, MultipartFile mapFile) {
 
-        request = StringNormalizerUtil.normalizeRequest(request);
+//        request = StringNormalizerUtil.normalizeRequest(request);
 
         ReportA05 report = reportA05Repository.findById(reportId)
                 .orElseThrow(() -> exceptionFactory.createNotFoundException(

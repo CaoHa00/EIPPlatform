@@ -5,6 +5,7 @@ import java.util.UUID;
 
 /**
  * Generic cache service for report drafts
+ * 
  * @param <T> The DTO type for the report draft
  */
 public interface ReportCacheService<T> {

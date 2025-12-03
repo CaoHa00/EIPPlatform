@@ -21,12 +21,14 @@ import com.EIPplatform.mapper.businessInformation.ProjectMapper;
 import com.EIPplatform.model.dto.businessInformation.BusinessDetailDTO;
 import com.EIPplatform.model.dto.businessInformation.BusinessDetailResponse;
 import com.EIPplatform.model.entity.businessInformation.BusinessDetail;
+import com.EIPplatform.model.dto.businessInformation.BusinessDetailUpdateDTO;
 import com.EIPplatform.model.entity.user.authentication.UserAccount;
 import com.EIPplatform.repository.authentication.UserAccountRepository;
 import com.EIPplatform.repository.businessInformation.BusinessDetailRepository;
 import com.EIPplatform.repository.user.LegalRepresentativeRepository;
 import com.EIPplatform.service.fileStorage.FileStorageService;
 import com.EIPplatform.utils.BusinessDetailUtils;
+import com.EIPplatform.utils.StringNormalizerUtil;
 
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -53,8 +55,6 @@ public class BusinessDetailImplementation implements BusinessDetailInterface {
     FacilityMapper facilityMapper;
     ProcessMapper processMapper;
     ProductMapper productMapper;
-
-
 
     @Override
     public BusinessDetailResponse findByUserAccountId(UUID userAccountId) {
@@ -106,12 +106,10 @@ public class BusinessDetailImplementation implements BusinessDetailInterface {
     }
 
     @Override
-    public BusinessDetailResponse createBusinessDetail(
-            UUID userAccountId,
-            BusinessDetailDTO dto,
-            MultipartFile isoFile) {
-
+    public BusinessDetailResponse createBusinessDetail(UUID userAccountId, BusinessDetailDTO dto, MultipartFile isoFile) {
+        dto = StringNormalizerUtil.normalizeRequest(dto);
         businessDetailUtils.validateOperationDetails(dto.getOperationType(), dto.getSeasonalDescription());
+        //businessDetailUtils.validateUniqueFieldsForCreate(dto);
         businessDetailUtils.validateUniqueFields(dto, null);
 
         UserAccount userAccount = userAccountRepository.findByUserAccountId(userAccountId)
@@ -126,15 +124,12 @@ public class BusinessDetailImplementation implements BusinessDetailInterface {
         // // Projects
         // List<Project> projects = businessDetailUtils.mapProjects(dto.getProjects(), entity);
         // entity.setProjects(projects);
-
         // // Facilities
         // List<Facility> facilities = businessDetailUtils.mapFacilities(dto.getFacilities(), entity);
         // entity.setFacilities(facilities);
-
         // // Equipments
         // List<Equipment> equipments = businessDetailUtils.mapEquipments(dto.getEquipments(), entity);
         // entity.setEquipments(equipments);
-
         // // Processes
         // businessDetailUtils.syncProcesses(dto.getProcesses(), entity); // ĐÚNG
         // Attach UserAccount
@@ -157,18 +152,16 @@ public class BusinessDetailImplementation implements BusinessDetailInterface {
 //
 //        entity.setLegalRepresentative(legalRep);
 //        legalRep.setBusinessDetail(entity);
-
         entity = businessDetailRepository.saveAndFlush(entity);
         userAccountRepository.flush();
 
         return businessDetailMapper.toResponse(entity);
     }
 
-
     @Override
     public BusinessDetailResponse updateBusinessDetail(
             UUID userAccountId,
-            BusinessDetailDTO dto,
+            BusinessDetailUpdateDTO dto,
             MultipartFile isoFile) {
 
         BusinessDetail entity = businessDetailRepository.findByUserAccountId(userAccountId)
@@ -179,7 +172,7 @@ public class BusinessDetailImplementation implements BusinessDetailInterface {
                 BusinessDetailError.NOT_FOUND));
 
         businessDetailUtils.validateOperationDetails(dto.getOperationType(), dto.getSeasonalDescription());
-        businessDetailUtils.validateUniqueFields(dto, entity.getBusinessDetailId());
+        //businessDetailUtils.validateUniqueFields(dto, entity.getBusinessDetailId());
 
         // =======================
         // 1. BASIC FIELD UPDATE
@@ -189,27 +182,20 @@ public class BusinessDetailImplementation implements BusinessDetailInterface {
         // =======================
         // 2. RELATIONS UPDATE
         // =======================
-
         // LegalRepresentative update
-
         // LegalRepresentative legalRep = businessDetailUtils.fetchLegalRepresentative(dto.getLegalRepresentative());
         // entity.setLegalRepresentative(legalRep);
-
         // // Projects update
         // List<Project> updatedProjects = businessDetailUtils.mapProjects(dto.getProjects(), entity);
         // entity.setProjects(updatedProjects);
-
         // // Facilities update
         // List<Facility> updatedFacilities = businessDetailUtils.mapFacilities(dto.getFacilities(), entity);
         // entity.setFacilities(updatedFacilities);
-
         // // Equipments update
         // List<Equipment> updatedEquipments = businessDetailUtils.mapEquipments(dto.getEquipments(), entity);
         // entity.setEquipments(updatedEquipments);
-
         // // Processes update
         // businessDetailUtils.syncProcesses(dto.getProcesses(), entity); // ĐÚNG
-
         // =======================
         // 3. ISO FILE UPDATE
         // =======================
@@ -230,7 +216,6 @@ public class BusinessDetailImplementation implements BusinessDetailInterface {
         entity = businessDetailRepository.save(entity);
         return businessDetailMapper.toResponse(entity);
     }
-
 
     @Override
     public UUID findByBusinessDetailId(UUID userAccountId) {
@@ -373,4 +358,5 @@ public class BusinessDetailImplementation implements BusinessDetailInterface {
         log.info("Uploaded ISO cert file to: {} for BusinessDetail: {}", filePath, entity.getBusinessDetailId());
         return filePath;
     }
+
 }

@@ -1,5 +1,7 @@
 package com.EIPplatform.model.dto.report.report05.wastemanagement;
 
+import java.util.List;
+
 import com.EIPplatform.model.dto.report.report05.wastemanagement.domesticsolidwastestat.DomesticSolidWasteStatUpdateDTO;
 import com.EIPplatform.model.dto.report.report05.wastemanagement.exportedhwstat.ExportedHwStatUpdateDTO;
 import com.EIPplatform.model.dto.report.report05.wastemanagement.hazardouswastestat.HazardousWasteStatUpdateDTO;
@@ -8,12 +10,14 @@ import com.EIPplatform.model.dto.report.report05.wastemanagement.othersolidwaste
 import com.EIPplatform.model.dto.report.report05.wastemanagement.popinventorystat.PopInventoryStatUpdateDTO;
 import com.EIPplatform.model.dto.report.report05.wastemanagement.recycleindustrialwastestat.RecycleIndustrialWasteStatUpdateDTO;
 import com.EIPplatform.model.dto.report.report05.wastemanagement.selftreatedhwstat.SelfTreatedHwStatUpdateDTO;
+
 import jakarta.validation.Valid;
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
-
-
-import java.util.List;
 
 @Data
 @Builder

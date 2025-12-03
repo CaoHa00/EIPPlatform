@@ -13,6 +13,7 @@ import org.mapstruct.ReportingPolicy;
 
 import com.EIPplatform.model.dto.businessInformation.BusinessDetailDTO;
 import com.EIPplatform.model.dto.businessInformation.BusinessDetailResponse;
+import com.EIPplatform.model.dto.businessInformation.BusinessDetailUpdateDTO;
 import com.EIPplatform.model.entity.businessInformation.BusinessDetail;
 import com.EIPplatform.model.entity.businessInformation.legalRepresentative.LegalRepresentative;
 import com.EIPplatform.model.entity.user.authentication.UserAccount;
@@ -56,7 +57,6 @@ public interface BusinessDetailMapper {
     BusinessDetail toEntity(BusinessDetailDTO dto);
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
-    @Mapping(target = "legalRepresentative", ignore = true)
     @Mapping(target = "investor", ignore = true)
     @Mapping(target = "scaleCapacity", ignore = true)
     @Mapping(target = "businessDetailId", ignore = true)
@@ -71,7 +71,7 @@ public interface BusinessDetailMapper {
     @Mapping(target = "equipments", ignore = true)
     @Mapping(target = "processes", ignore = true)
     @Mapping(target = "products", ignore = true)
-    void updateEntity(@MappingTarget BusinessDetail entity, BusinessDetailDTO dto);
+    void updateEntity(@MappingTarget BusinessDetail entity, BusinessDetailUpdateDTO dto);
 
     default List<String> mapUserAccounts(List<UserAccount> accounts) {
         if (accounts == null) return null;

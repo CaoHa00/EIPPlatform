@@ -1,5 +1,8 @@
 package com.EIPplatform.model.dto.report.report05.wastemanagement;
 
+import java.time.LocalDateTime;
+import java.util.List;
+
 import com.EIPplatform.model.dto.report.report05.wastemanagement.domesticsolidwastestat.DomesticSolidWasteStatDTO;
 import com.EIPplatform.model.dto.report.report05.wastemanagement.exportedhwstat.ExportedHwStatDTO;
 import com.EIPplatform.model.dto.report.report05.wastemanagement.hazardouswastestat.HazardousWasteStatDTO;
@@ -8,13 +11,14 @@ import com.EIPplatform.model.dto.report.report05.wastemanagement.othersolidwaste
 import com.EIPplatform.model.dto.report.report05.wastemanagement.popinventorystat.PopInventoryStatDTO;
 import com.EIPplatform.model.dto.report.report05.wastemanagement.recycleindustrialwastestat.RecycleIndustrialWasteStatDTO;
 import com.EIPplatform.model.dto.report.report05.wastemanagement.selftreatedhwstat.SelfTreatedHwStatDTO;
+
 import jakarta.validation.Valid;
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
-
-
-import java.time.LocalDateTime;
-import java.util.List;
 
 @Data
 @NoArgsConstructor
@@ -26,14 +30,22 @@ public class WasteManagementDataDTO {
     Long wmId;
     String swGeneralNote;
 
-    @Valid List<@Valid DomesticSolidWasteStatDTO> domesticSolidWasteStats;
-    @Valid List<@Valid IndustrialSolidWasteStatDTO> industrialSolidWasteStats;
-    @Valid List<@Valid RecycleIndustrialWasteStatDTO> recycleIndustrialWasteStats;
-    @Valid List<@Valid OtherSolidWasteStatDTO> otherSolidWasteStats;
-    @Valid List<@Valid HazardousWasteStatDTO> hazardousWasteStats;
-    @Valid List<@Valid ExportedHwStatDTO> exportedHwStats;
-    @Valid List<@Valid SelfTreatedHwStatDTO> selfTreatedHwStats;
-    @Valid List<@Valid PopInventoryStatDTO> popInventoryStats;
+    @Valid
+    List<@Valid DomesticSolidWasteStatDTO> domesticSolidWasteStats;
+    @Valid
+    List<@Valid IndustrialSolidWasteStatDTO> industrialSolidWasteStats;
+    @Valid
+    List<@Valid RecycleIndustrialWasteStatDTO> recycleIndustrialWasteStats;
+    @Valid
+    List<@Valid OtherSolidWasteStatDTO> otherSolidWasteStats;
+    @Valid
+    List<@Valid HazardousWasteStatDTO> hazardousWasteStats;
+    @Valid
+    List<@Valid ExportedHwStatDTO> exportedHwStats;
+    @Valid
+    List<@Valid SelfTreatedHwStatDTO> selfTreatedHwStats;
+    @Valid
+    List<@Valid PopInventoryStatDTO> popInventoryStats;
 
     String incidentPlanDevelopment;
     String incidentPreventionMeasures;

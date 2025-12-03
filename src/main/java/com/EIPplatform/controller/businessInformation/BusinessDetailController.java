@@ -1,10 +1,12 @@
 package com.EIPplatform.controller.businessInformation;
 
 import com.EIPplatform.model.dto.api.ApiResponse;
-import com.EIPplatform.model.dto.businessInformation.BusinessDetailResponse;
 import com.EIPplatform.model.dto.businessInformation.BusinessDetailDTO;
+import com.EIPplatform.model.dto.businessInformation.BusinessDetailResponse;
+import com.EIPplatform.model.dto.businessInformation.BusinessDetailUpdateDTO;
 import com.EIPplatform.service.businessInformation.BusinessDetailInterface;
 
+import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -69,7 +71,7 @@ public class BusinessDetailController {
     @PostMapping(consumes = { MediaType.MULTIPART_FORM_DATA_VALUE})
     public ApiResponse<BusinessDetailResponse> createBusinessDetail(
             @RequestParam UUID userAccountId,
-            @RequestPart("data") BusinessDetailDTO dto,
+            @RequestPart("data")@Valid BusinessDetailDTO dto,
             @RequestPart(value = "isoFile", required = false) MultipartFile isoFile) {
         var result = businessDetailService.createBusinessDetail(userAccountId, dto, isoFile);
         return ApiResponse.<BusinessDetailResponse>builder()
@@ -80,7 +82,7 @@ public class BusinessDetailController {
     @PutMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ApiResponse<BusinessDetailResponse> updateBusinessDetail(
             @RequestParam UUID userAccountId,
-            @RequestPart("data") BusinessDetailDTO dto,
+            @RequestPart("data") BusinessDetailUpdateDTO dto,
             @RequestPart(value = "isoFile", required = false) MultipartFile isoFile) {
         var result = businessDetailService.updateBusinessDetail(userAccountId, dto, isoFile);
         return ApiResponse.<BusinessDetailResponse>builder()
