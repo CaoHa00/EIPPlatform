@@ -29,7 +29,7 @@ import java.util.*;
 @Slf4j
 public class ReportA05DocUtil {
 
-    private static final String TEMPLATE_PATH = "templates/reportA05/ReportA05_template_ver4.docx";
+    private static final String TEMPLATE_PATH = "templates/reportA05/ReportA05_template_ver5.docx";
 
     public byte[] generateReportDocument(ReportA05 report, ReportA05DraftDTO draft) {
 
