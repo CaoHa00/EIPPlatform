@@ -3,6 +3,7 @@ package com.EIPplatform.controller.form.submission;
 import com.EIPplatform.model.dto.form.submission.AnswerDTO;
 import com.EIPplatform.model.dto.form.submission.CreateAnswerDTO;
 import com.EIPplatform.model.dto.form.submission.CreateSubmissionDTO;
+import com.EIPplatform.model.dto.form.submission.EditAnswerRequestDTO;
 import com.EIPplatform.model.dto.form.submission.SubmissionDTO;
 import com.EIPplatform.service.form.submission.SubmissionServiceInterface;
 
@@ -57,7 +58,7 @@ public class SubmissionController {
      */
     @PostMapping("/create")
     public ResponseEntity<SubmissionDTO> create(
-            @RequestBody CreateSubmissionDTO createSubmissionDTO,
+            @Valid @RequestBody CreateSubmissionDTO createSubmissionDTO,
             @RequestParam(required = false) UUID userAccountId) {
         SubmissionDTO submissionDTO =  submissionService.createSubmission(createSubmissionDTO, userAccountId);
         return ResponseEntity.ok().body(submissionDTO);
@@ -106,5 +107,13 @@ public class SubmissionController {
             @RequestParam(required = false) UUID userAccountId){
         AnswerDTO dto = submissionService.editAnswer(answerId, value, userAccountId);
         return ResponseEntity.ok(dto);
+    }
+
+    @PutMapping("/answers/batch-edit")
+    public ResponseEntity<List<AnswerDTO>> batchEditAnswers(
+            @RequestBody @NotEmpty List<@Valid EditAnswerRequestDTO> requests,
+            @RequestParam(required = false) UUID userAccountId) {
+        List<AnswerDTO> dtos = submissionService.batchEditAnswers(requests, userAccountId);
+        return ResponseEntity.ok(dtos);
     }
 }

@@ -1,5 +1,6 @@
 package com.EIPplatform.repository.form.surveyform;
 
+import com.EIPplatform.model.entity.businessInformation.BusinessDetail;
 import com.EIPplatform.model.entity.form.surveyform.Question;
 import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.Optional;
@@ -12,4 +13,8 @@ public interface QuestionRepository extends JpaRepository<Question, UUID> {
     Optional<Question> findByDisplayOrderAndActiveTrue(Integer displayOrder);
     boolean existsByGroupDimension_Dimension_Id(UUID id);
     boolean existsByGroupDimension_Id(UUID id);
+
+    List<Question> findAllByGroupDimensionIdAndInputBusiness(UUID groupDimension_id, BusinessDetail inputBusiness);
+    List<Question> findAllByGroupDimensionIdAndComparisonBusiness(UUID groupDimension_id, BusinessDetail comparisonBusiness);
+
 }

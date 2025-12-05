@@ -7,7 +7,7 @@ import org.mapstruct.factory.Mappers;
 
 import java.util.List;
 
-@Mapper(componentModel = "spring", uses = {QuestionMapper.class})
+@Mapper(componentModel = "spring")
 public interface GroupDimensionMapper {
     GroupDimensionMapper INSTANCE = Mappers.getMapper(GroupDimensionMapper.class);
 

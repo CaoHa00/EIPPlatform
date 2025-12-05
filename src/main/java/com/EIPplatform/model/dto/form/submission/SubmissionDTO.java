@@ -1,5 +1,6 @@
 package com.EIPplatform.model.dto.form.submission;
 
+import com.EIPplatform.model.entity.form.submission.SubmissionType;
 import lombok.Data;
 
 import java.time.LocalDateTime;
@@ -13,7 +14,10 @@ public class SubmissionDTO {
     private LocalDateTime updatedAt;
     private UUID surveyFormId;
     private String surveyFormTitle;
+    private UUID groupDimensionId;
+    private String groupDimensionName;
     private UUID respondentId;
     private String respondentUsername;
+    private SubmissionType submissionType;
     private List<AnswerDTO> answers;
 }

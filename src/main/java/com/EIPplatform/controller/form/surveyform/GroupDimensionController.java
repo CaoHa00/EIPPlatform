@@ -1,8 +1,10 @@
 package com.EIPplatform.controller.form.surveyform;
 
+import com.EIPplatform.model.dto.form.surveyform.QuestionsAndAnswersDTO;
 import com.EIPplatform.model.dto.form.surveyform.ReorderRequestDTO;
 import com.EIPplatform.model.dto.form.surveyform.question.CreateGroupDimensionDTO;
 import com.EIPplatform.model.dto.form.surveyform.question.GroupDimensionDTO;
+import com.EIPplatform.model.dto.form.surveyform.question.QuestionDTO;
 import com.EIPplatform.service.form.surveyform.GroupDimensionServiceInterface;
 import com.EIPplatform.service.form.surveyform.QuestionServiceInterface;
 import jakarta.validation.Valid;
@@ -27,6 +29,21 @@ public class GroupDimensionController {
     @GetMapping("{id}")
     public ResponseEntity<GroupDimensionDTO> getById(@PathVariable UUID id){
         return ResponseEntity.ok(groupDimensionService.getById(id));
+    }
+
+    /**
+     *
+     * @param id GroupDimensionID
+     * @return a large JSON including Questions and Answers in this GroupDimension
+     */
+    @GetMapping("/{id}/questions")
+    public ResponseEntity<QuestionsAndAnswersDTO> getQuestionsByGroupDimensionId(@PathVariable UUID id, @RequestParam UUID userAccountId) {
+        return ResponseEntity.ok(groupDimensionService.getQuestionsAndAnswersByGroupDimensionId(id, userAccountId));
+    }
+
+    @GetMapping("/{id}/comparison")
+    public ResponseEntity<QuestionsAndAnswersDTO> getComparison(@PathVariable UUID id, @RequestParam UUID userAccountId) {
+        return ResponseEntity.ok(groupDimensionService.getComparison(id, userAccountId));
     }
 
     @GetMapping

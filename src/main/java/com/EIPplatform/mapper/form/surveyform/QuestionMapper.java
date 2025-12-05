@@ -16,6 +16,8 @@ public interface QuestionMapper {
     @Mapping(source = "groupDimension.id", target = "groupDimensionId")
     @Mapping(source = "groupDimension.name", target = "groupDimensionName")
     @Mapping(source = "type", target = "type")
+    @Mapping(source = "comparisonBusiness.businessDetailId", target = "comparisonBusinessId")
+    @Mapping(source = "inputBusiness.businessDetailId", target = "inputBusinessId")
     QuestionDTO toDTO(Question question);
 
     List<QuestionDTO> toDTOList(List<Question> questions);

@@ -15,6 +15,8 @@ public class QuestionDTO {
     private boolean required;
     private int displayOrder;
     private boolean active;
+    private UUID comparisonBusinessId;
+    private UUID inputBusinessId;
     private UUID groupDimensionId;
     private String groupDimensionName;
 

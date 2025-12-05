@@ -17,13 +17,11 @@ public interface SubmissionMapper {
     @Mapping(source = "createdAt", target = "submittedAt")
     @Mapping(source = "surveyForm.id", target = "surveyFormId")
     @Mapping(source = "surveyForm.title", target = "surveyFormTitle")
+    @Mapping(source = "groupDimension.id", target = "groupDimensionId")
+    @Mapping(source = "groupDimension.name", target = "groupDimensionName")
     @Mapping(source = "respondent.userAccountId", target = "respondentId")
     @Mapping(source = "respondent.fullName", target = "respondentUsername")
     SubmissionDTO toDTO(Submission submission);
 
     List<SubmissionDTO> toDTOList(List<Submission> submissions);
-
-    @Mapping(source = "question.id", target = "questionId")
-    @Mapping(source = "question.text", target = "questionText")
-    AnswerDTO toAnswerDTO(Answer answer);
 }

@@ -1,5 +1,7 @@
 package com.EIPplatform.model.dto.form.submission;
 
+import com.EIPplatform.model.entity.form.submission.SubmissionType;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
@@ -10,4 +12,13 @@ import java.util.UUID;
 public class CreateSubmissionDTO {
     @NotNull(message = "Form ID is required")
     private UUID formId;
+
+    @NotNull(message = "Group Dimension ID is required")
+    private UUID groupDimensionId;
+
+    @NotNull(message = "Submission Type is required")
+    private SubmissionType submissionType;
+
+    @Valid
+    private List<CreateAnswerDTO> answers;
 }

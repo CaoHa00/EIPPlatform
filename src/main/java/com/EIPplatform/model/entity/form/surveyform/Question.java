@@ -1,5 +1,6 @@
 package com.EIPplatform.model.entity.form.surveyform;
 
+import com.EIPplatform.model.entity.businessInformation.BusinessDetail;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -29,6 +30,14 @@ public class Question {
     private boolean active = true;
 
     private int displayOrder; //1 -> n
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "comparison_business_id")
+    private BusinessDetail comparisonBusiness;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "input_business_id")
+    private BusinessDetail inputBusiness;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "group_dimension_id")

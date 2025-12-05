@@ -1,8 +1,10 @@
 package com.EIPplatform.service.form.surveyform;
 
 import com.EIPplatform.exception.ExceptionFactory;
+import com.EIPplatform.exception.errorCategories.BusinessDetailError;
 import com.EIPplatform.exception.errorCategories.ForbiddenError;
 import com.EIPplatform.exception.errorCategories.FormError;
+import com.EIPplatform.exception.errorCategories.UserError;
 import com.EIPplatform.exception.errorCategories.ValidationError;
 import com.EIPplatform.mapper.form.surveyform.QuestionMapper;
 import com.EIPplatform.model.dto.form.surveyform.ReorderRequestDTO;
@@ -10,7 +12,11 @@ import com.EIPplatform.model.dto.form.surveyform.question.CreateQuestionDTO;
 import com.EIPplatform.model.dto.form.surveyform.question.DeleteQuestionDTO;
 import com.EIPplatform.model.dto.form.surveyform.question.EditQuestionDTO;
 import com.EIPplatform.model.dto.form.surveyform.question.QuestionDTO;
+import com.EIPplatform.model.entity.businessInformation.BusinessDetail;
 import com.EIPplatform.model.entity.form.surveyform.*;
+import com.EIPplatform.model.entity.user.authentication.UserAccount;
+import com.EIPplatform.repository.authentication.UserAccountRepository;
+import com.EIPplatform.repository.businessInformation.BusinessDetailRepository;
 import com.EIPplatform.repository.form.surveyform.GroupDimensionRepository;
 import com.EIPplatform.repository.form.surveyform.QuestionRepository;
 import com.EIPplatform.service.form.submission.SubmissionServiceInterface;
@@ -35,6 +41,8 @@ public class QuestionService implements QuestionServiceInterface {
     private final ExceptionFactory exceptionFactory;
     private final QuestionMapper questionMapper;
     private final SurveyServiceInterface surveyService;
+    private final UserAccountRepository userAccountRepository;
+    private final BusinessDetailRepository businessDetailRepository;
 
 
     public QuestionDTO getQuestion(UUID id) {
@@ -118,6 +126,11 @@ public class QuestionService implements QuestionServiceInterface {
      */
     @Override
     public Question buildQuestionEntity(CreateQuestionDTO dto) {
+        BusinessDetail inputBusiness = businessDetailRepository.findById(dto.getInputBusinessId())
+                .orElseThrow(() -> exceptionFactory.createNotFoundException("BusinessDetail", "id", dto.getInputBusinessId(), BusinessDetailError.NOT_FOUND));
+        BusinessDetail comparisonBusiness = businessDetailRepository.findById(dto.getComparisonBusinessId())
+                .orElseThrow(() -> exceptionFactory.createNotFoundException("BusinessDetail", "id", dto.getInputBusinessId(), BusinessDetailError.NOT_FOUND));
+
         Question question = new Question();
         question.setText(dto.getText());
         question.setCode(dto.getCode());
@@ -125,6 +138,8 @@ public class QuestionService implements QuestionServiceInterface {
         question.setDisplayOrder(dto.getDisplayOrder());
         question.setRequired(dto.getRequired() != null && dto.getRequired());
         question.setActive(true);
+        question.setComparisonBusiness(comparisonBusiness);
+        question.setInputBusiness(inputBusiness);
 
         if (dto.getGroupDimensionId() != null) {
             GroupDimension groupDimension = groupDimensionRepository.findById(dto.getGroupDimensionId())
@@ -151,7 +166,10 @@ public class QuestionService implements QuestionServiceInterface {
     @Override
     public QuestionDTO addQuestion(CreateQuestionDTO dto, UUID userAccountId){
         accessControlService.ensureBecamexRole(userAccountId);
-        
+
+        UserAccount user = userAccountRepository.findById(userAccountId)
+                .orElseThrow(() -> exceptionFactory.createNotFoundException("User", "id", userAccountId, UserError.NOT_FOUND));
+
         // The question is linked via GroupDimension
         
         Question question = buildQuestionEntity(dto);

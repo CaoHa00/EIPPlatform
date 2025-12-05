@@ -1,5 +1,7 @@
 package com.EIPplatform.model.entity.form.submission;
 
+import com.EIPplatform.model.entity.businessInformation.BusinessDetail;
+import com.EIPplatform.model.entity.form.surveyform.GroupDimension;
 import com.EIPplatform.model.entity.form.surveyform.SurveyForm;
 import com.EIPplatform.model.entity.user.authentication.UserAccount;
 import jakarta.persistence.*;
@@ -31,8 +33,20 @@ public class Submission {
     private SurveyForm surveyForm;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "group_dimension_id", nullable = false)
+    private GroupDimension groupDimension;
+
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private UserAccount respondent; //nullable, anonymous submission
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "business_detail_id")
+    private BusinessDetail businessDetail;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "submission_type")
+    private SubmissionType submissionType;
 
     @OneToMany(mappedBy = "submission", cascade = CascadeType.ALL)
     private List<Answer> answers;

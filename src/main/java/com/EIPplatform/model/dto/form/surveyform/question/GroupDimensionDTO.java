@@ -10,6 +10,4 @@ public class GroupDimensionDTO {
     private UUID id;
     private String name;
     private String code;
-    private Set<QuestionDTO> questions;
-
 }

@@ -30,6 +30,12 @@ public class CreateQuestionDTO {
     @NotNull(message = "Group Dimension ID is required")
     private UUID groupDimensionId;
 
+    @NotNull(message = "Input Business ID is required")
+    private UUID inputBusinessId;
+
+    @NotNull(message = "Comparison Business ID is required")
+    private UUID comparisonBusinessId;
+
     @Valid
     private List<CreateOptionDTO> options;
 }

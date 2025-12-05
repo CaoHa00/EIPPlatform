@@ -1,5 +1,6 @@
 package com.EIPplatform.service.form.surveyform;
 
+import com.EIPplatform.model.dto.form.surveyform.QuestionsAndAnswersDTO;
 import com.EIPplatform.model.dto.form.surveyform.question.CreateGroupDimensionDTO;
 import com.EIPplatform.model.dto.form.surveyform.question.GroupDimensionDTO;
 import com.EIPplatform.model.entity.form.surveyform.GroupDimension;
@@ -9,6 +10,8 @@ import java.util.List;
 import java.util.UUID;
 
 public interface GroupDimensionServiceInterface {
+    QuestionsAndAnswersDTO getQuestionsAndAnswersByGroupDimensionId(UUID groupDimensionId, UUID userAccountId);
+    QuestionsAndAnswersDTO getComparison(UUID groupDimensionId, UUID userAccountId);
     GroupDimension buildGroupDimensionEntity(CreateGroupDimensionDTO dto, Dimension parent);
     GroupDimensionDTO getById(UUID id);
     List<GroupDimensionDTO> getAll();
