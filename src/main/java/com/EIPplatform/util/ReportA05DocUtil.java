@@ -120,7 +120,13 @@ public class ReportA05DocUtil {
         data.put("activity_type", defaultString(business.getActivityType()));
         data.put("scale_capacity", defaultString(business.getScaleCapacity()));
 
-        data.put("iso_14001_certificate", convertYesNoToVietnamese(business.getISO_certificate_14001()));
+        if (business.getISO_certificate_14001().equals("Yes") || business.getIsoCertificateFilePath() != null) {
+            data.put("iso_14001_certificate", "Có");
+        }
+        if (business.getISO_certificate_14001().equals("No")) {
+            data.put("iso_14001_certificate", "không");
+        }
+
         data.put("business_license_number", defaultString(business.getBusinessRegistrationNumber()));
         data.put("tax_code", defaultString(business.getTaxCode()));
 
